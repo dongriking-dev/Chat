@@ -28,29 +28,15 @@
     .avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e5e7eb; background: #f3f4f6; }
     .avatar-lg { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0284c7; background: #f3f4f6; }
 
-    .online-dot {
-      display: inline-block; width: 10px; height: 10px; border-radius: 50%;
-      background: #9ca3af; border: 2px solid #fff;
-      transition: background 0.3s; flex-shrink: 0;
-    }
-    .online-dot.online { background: #22c55e; box-shadow: 0 0 0 0 rgba(34,197,94,0.5); animation: onlinePulse 2s infinite; }
-    @keyframes onlinePulse {
-      0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
-      70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
-      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
-    }
+    .online-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #9ca3af; border: 2px solid #fff; transition: background 0.3s; flex-shrink: 0; }
+    .online-dot.online { background: #22c55e; }
     .avatar-online-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
     .avatar-online-wrap .online-dot { position: absolute; right: -1px; bottom: -1px; width: 13px; height: 13px; border: 2px solid #fff; }
     .avatar-online-wrap .online-dot.small { width: 10px; height: 10px; }
     .online-count { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #16a34a; font-weight: 600; }
     .online-count.offline { color: #9ca3af; }
 
-    .msg-bubble {
-      background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 14px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05); word-break: break-word;
-      position: relative; transition: box-shadow 0.25s, transform 0.25s;
-    }
-    .msg-bubble:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .msg-bubble { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); word-break: break-word; position: relative; }
     .msg-mine .msg-bubble { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border-color: #93c5fd; }
     .msg-row { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start; animation: msgIn 0.35s cubic-bezier(.21,1.02,.73,1) both; }
     @keyframes msgIn { from { opacity: 0; transform: translateY(12px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
@@ -60,158 +46,177 @@
     .msg-meta .time { margin-left: 6px; }
     .msg-content { font-size: 14px; color: #111827; white-space: pre-wrap; }
     .msg-file img { max-height: 240px; max-width: 100%; border-radius: 8px; margin-top: 6px; border: 1px solid #e5e7eb; }
-    .msg-file a { font-size: 12px; color: #2563eb; text-decoration: underline; word-break: break-all; }
 
-    .story-reply-context {
-      background: #f3f4f6; border-radius: 8px; padding: 6px 8px;
-      margin-bottom: 6px; font-size: 11px; color: #6b7280;
-      display: flex; align-items: center; gap: 6px;
-      border-left: 3px solid #0284c7;
-    }
+    .story-reply-context { background: #f3f4f6; border-radius: 8px; padding: 6px 8px; margin-bottom: 6px; font-size: 11px; color: #6b7280; display: flex; align-items: center; gap: 6px; border-left: 3px solid #0284c7; }
     .story-reply-context img { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; }
-
     .edited-label { font-size: 10px; color: #9ca3af; margin-left: 6px; font-style: italic; }
-    .read-receipt { font-size: 10px; color: #0284c7; font-weight: 600; margin-top: 3px; display: flex; align-items: center; gap: 3px; animation: fadeIn 0.3s ease both; }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .read-receipt { font-size: 10px; color: #0284c7; font-weight: 600; margin-top: 3px; display: flex; align-items: center; gap: 3px; }
 
-    .typing-indicator { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; font-size: 12px; color: #6b7280; box-shadow: 0 1px 3px rgba(0,0,0,0.05); animation: msgIn 0.3s ease both; margin-bottom: 12px; }
+    .typing-indicator { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; font-size: 12px; color: #6b7280; margin-bottom: 12px; }
     .typing-indicator .typing-dots { display: inline-flex; align-items: center; gap: 3px; }
     .typing-indicator .typing-dots span { width: 6px; height: 6px; background: #0284c7; border-radius: 50%; animation: typingBounce 1.2s infinite ease-in-out; }
     .typing-indicator .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
     .typing-indicator .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
     @keyframes typingBounce { 0%, 60%, 100% { transform: translateY(0); opacity: 0.5; } 30% { transform: translateY(-4px); opacity: 1; } }
 
-    .msg-menu-btn { position: absolute; top: 6px; width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; color: #6b7280; font-size: 14px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transform: scale(0.8); transition: opacity 0.2s, transform 0.2s, background 0.2s; z-index: 5; }
+    .msg-menu-btn { position: absolute; top: 6px; width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.9); border: 1px solid #e5e7eb; color: #6b7280; font-size: 14px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; z-index: 5; }
     .msg-row.mine .msg-menu-btn { left: -32px; }
     .msg-row:not(.mine) .msg-menu-btn { right: -32px; }
-    .msg-row:hover .msg-menu-btn, .msg-menu-btn.open { opacity: 1; transform: scale(1); }
-    .msg-menu-btn:hover { background: #eff6ff; color: #1e40af; }
-
-    .msg-menu-popup { position: absolute; top: 32px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 120px; z-index: 20; overflow: hidden; animation: menuIn 0.18s cubic-bezier(.21,1.02,.73,1) both; transform-origin: top; }
+    .msg-row:hover .msg-menu-btn, .msg-menu-btn.open { opacity: 1; }
+    .msg-menu-popup { position: absolute; top: 32px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 120px; z-index: 20; overflow: hidden; }
     .msg-row.mine .msg-menu-popup { left: -32px; }
     .msg-row:not(.mine) .msg-menu-popup { right: -32px; }
-    @keyframes menuIn { from { opacity: 0; transform: scale(0.85) translateY(-6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-    .msg-menu-popup button { display: block; width: 100%; text-align: left; padding: 8px 14px; font-size: 13px; background: none; border: none; cursor: pointer; color: #374151; transition: background 0.15s; }
+    .msg-menu-popup button { display: block; width: 100%; text-align: left; padding: 8px 14px; font-size: 13px; background: none; border: none; cursor: pointer; color: #374151; }
     .msg-menu-popup button:hover { background: #f3f4f6; }
     .msg-menu-popup button.danger { color: #ef4444; }
-    .msg-menu-popup button.danger:hover { background: #fef2f2; }
 
-    #statusBanner { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; text-align: center; padding: 8px; font-size: 12px; transition: transform 0.35s cubic-bezier(.21,1.02,.73,1), opacity 0.35s; transform: translateY(-100%); opacity: 0; }
+    #statusBanner { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; text-align: center; padding: 8px; font-size: 12px; transition: transform 0.35s, opacity 0.35s; transform: translateY(-100%); opacity: 0; }
     #statusBanner.show { transform: translateY(0); opacity: 1; }
 
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 16px; animation: backdropIn 0.25s ease both; backdrop-filter: blur(2px); }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 16px; }
     .modal-backdrop.hidden { display: none; }
-    @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
     .modal-content { background: #fff; border-radius: 12px; padding: 20px; max-width: 520px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; animation: modalIn 0.3s cubic-bezier(.34,1.56,.64,1) both; }
-    @keyframes modalIn { from { opacity: 0; transform: scale(0.9) translateY(20px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-    #bootOverlay { position: fixed; inset: 0; background: #111827; z-index: 99997; display: flex; align-items: center; justify-content: center; color: #fff; font-family: sans-serif; flex-direction: column; gap: 16px; }
+    #bootOverlay { position: fixed; inset: 0; background: #111827; z-index: 99997; display: flex; align-items: center; justify-content: center; color: #fff; flex-direction: column; gap: 16px; }
     #bootOverlay.hidden { display: none; }
     #bootOverlay .boot-spinner { width: 40px; height: 40px; border: 3px solid #374151; border-top-color: #0284c7; border-radius: 50%; animation: spin 0.8s linear infinite; }
-    #bootOverlay .boot-text { animation: pulse 1.5s ease-in-out infinite; }
-    @keyframes pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
-
-    #banOverlay { position: fixed; inset: 0; background: #000; z-index: 99999; display: none; align-items: center; justify-content: center; color: #fff; text-align: center; font-family: sans-serif; flex-direction: column; padding: 20px; }
+    #banOverlay { position: fixed; inset: 0; background: #000; z-index: 99999; display: none; align-items: center; justify-content: center; color: #fff; text-align: center; flex-direction: column; padding: 20px; }
     #banOverlay.show { display: flex; }
 
     /* ========================================
-       緊急モードオーバーレイ
+       緊急モード全画面オーバーレイ
        ======================================== */
     #emergencyOverlay {
-      position: fixed; inset: 0; z-index: 2147483000;
-      background: radial-gradient(circle at center, #7f1d1d 0%, #000 90%);
+      position: fixed; inset: 0;
+      z-index: 2147483647;
+      background: #000;
       display: none;
       align-items: center; justify-content: center;
       color: #fff; text-align: center;
       flex-direction: column; padding: 24px;
-      animation: emergencyIn 0.5s ease both;
       user-select: none;
-      cursor: not-allowed;
+      overflow: hidden;
     }
     #emergencyOverlay.show { display: flex; }
-    @keyframes emergencyIn {
-      from { opacity: 0; transform: scale(1.05); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    #emergencyOverlay .em-icon {
-      font-size: 72px; margin-bottom: 16px;
-      animation: emPulse 1.5s ease-in-out infinite;
+    #emergencyOverlay::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle, rgba(220,38,38,0.25) 0%, rgba(0,0,0,1) 70%);
+      animation: emPulse 2s ease-in-out infinite;
     }
     @keyframes emPulse {
-      0%,100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.15); opacity: 0.8; }
+      0%,100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    #emergencyOverlay .em-inner {
+      position: relative; z-index: 2;
+      max-width: 520px;
+      animation: emShake 0.4s ease;
+    }
+    @keyframes emShake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    #emergencyOverlay .em-icon {
+      font-size: 96px;
+      margin-bottom: 12px;
+      animation: emPulseIcon 0.8s ease-in-out infinite;
+    }
+    @keyframes emPulseIcon {
+      0%,100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255,0,0,0.8)); }
+      50% { transform: scale(1.15); filter: drop-shadow(0 0 40px rgba(255,0,0,1)); }
     }
     #emergencyOverlay .em-title {
-      font-size: 32px; font-weight: 900; letter-spacing: 0.15em;
+      font-size: 36px; font-weight: 900;
+      letter-spacing: 0.2em;
+      color: #ef4444;
       margin-bottom: 8px;
-      text-shadow: 0 0 20px rgba(255,0,0,0.8);
-    }
-    #emergencyOverlay .em-subtitle {
-      font-size: 14px; color: #fca5a5; margin-bottom: 24px;
-      line-height: 1.7; max-width: 480px;
-    }
-    #emergencyOverlay .em-info {
-      background: rgba(0,0,0,0.5); border: 1px solid rgba(239,68,68,0.5);
-      border-radius: 12px; padding: 16px 24px;
-      font-size: 13px; color: #fecaca;
-      line-height: 1.8; margin-bottom: 24px;
-      max-width: 480px; width: 100%;
-    }
-    #emergencyOverlay .em-info strong { color: #fff; }
-    #emergencyOverlay .em-blocks {
-      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
-    }
-    #emergencyOverlay .em-blink {
-      animation: emBlink 1.2s infinite;
+      text-shadow: 0 0 30px rgba(239,68,68,1), 0 0 60px rgba(239,68,68,0.5);
+      animation: emBlink 1s infinite;
     }
     @keyframes emBlink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+      0%,100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
+    #emergencyOverlay .em-sub {
+      font-size: 14px; color: #fca5a5;
+      line-height: 1.8; margin-bottom: 20px;
+    }
+    #emergencyOverlay .em-detail {
+      background: rgba(127,29,29,0.4);
+      border: 1px solid rgba(239,68,68,0.6);
+      border-radius: 12px;
+      padding: 16px 20px;
+      font-size: 13px; color: #fecaca;
+      line-height: 2;
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    #emergencyOverlay .em-detail strong { color: #fff; }
 
-    /* 緊急時の自分用バナー（特別アカウント用） */
-    #emergencyBanner {
+    /* 管理者用警告バナー */
+    #emergencyAdminBanner {
       position: fixed; top: 0; left: 0; right: 0;
       z-index: 9998;
       background: linear-gradient(90deg, #7f1d1d, #dc2626, #7f1d1d);
       background-size: 200% 100%;
-      animation: bannerSlide 3s linear infinite;
-      color: #fff; text-align: center;
-      padding: 6px; font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      display: none;
-    }
-    #emergencyBanner.show { display: block; }
-    @keyframes bannerSlide {
-      0% { background-position: 0% 50%; }
-      100% { background-position: 200% 50%; }
-    }
-
-    /* アナウンスバナー */
-    #announcementBanner {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 9997;
-      background: linear-gradient(90deg, #0284c7, #7c3aed, #0284c7);
-      background-size: 200% 100%;
-      animation: bannerSlide 4s linear infinite;
+      animation: bannerSlide 2s linear infinite;
       color: #fff; padding: 10px 16px;
-      font-size: 13px;
-      display: none;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      font-size: 13px; font-weight: 700;
       text-align: center;
-      font-weight: 600;
+      display: none;
+      box-shadow: 0 4px 20px rgba(220,38,38,0.6);
     }
-    #announcementBanner.show { display: block; animation: bannerSlide 4s linear infinite, announceIn 0.4s ease; }
-    @keyframes announceIn {
-      from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+    #emergencyAdminBanner.show { display: block; }
+    @keyframes bannerSlide { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+    /* 管理者パネル（緊急発動者情報と解除ボタン） */
+    #adminEmergencyPanel {
+      position: fixed;
+      top: 60px; left: 50%; transform: translateX(-50%);
+      z-index: 9999;
+      background: linear-gradient(135deg, #1f2937, #111827);
+      border: 2px solid #dc2626;
+      border-radius: 14px;
+      padding: 20px 24px;
+      box-shadow: 0 20px 60px rgba(220,38,38,0.5);
+      color: #fff;
+      max-width: 420px; width: calc(100% - 32px);
+      display: none;
+      animation: panelIn 0.4s cubic-bezier(.34,1.56,.64,1) both;
     }
-    #announcementBanner .ann-close {
-      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      background: rgba(0,0,0,0.2); border: none; color: #fff;
-      font-size: 16px; width: 24px; height: 24px; border-radius: 50%;
-      cursor: pointer;
+    #adminEmergencyPanel.show { display: block; }
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateX(-50%) scale(0.9) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+    }
+    #adminEmergencyPanel .ap-title {
+      font-size: 16px; font-weight: 900;
+      color: #ef4444;
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    #adminEmergencyPanel .ap-trigger {
+      background: rgba(127,29,29,0.4);
+      border: 1px solid rgba(239,68,68,0.5);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    #adminEmergencyPanel .ap-trigger strong { color: #fca5a5; }
+    #adminEmergencyPanel .ap-trigger .ap-email {
+      color: #fff; font-weight: 700;
+      word-break: break-all;
+    }
+    #adminEmergencyPanel .ap-actions {
+      display: flex; gap: 8px; flex-wrap: wrap;
     }
 
     /* 緊急ボタン */
@@ -226,36 +231,15 @@
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(220,38,38,0.4);
       letter-spacing: 0.05em;
-      transition: all 0.2s;
       animation: emergencyBtnPulse 2s infinite;
     }
     .emergency-btn:hover {
       background: linear-gradient(135deg, #ef4444, #b91c1c);
       transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 6px 20px rgba(220,38,38,0.6);
     }
     @keyframes emergencyBtnPulse {
       0%,100% { box-shadow: 0 4px 12px rgba(220,38,38,0.4); }
-      50% { box-shadow: 0 4px 20px rgba(220,38,38,0.8); }
-    }
-
-    .admin-btn {
-      background: linear-gradient(135deg, #7c3aed, #5b21b6);
-      color: #fff;
-      border: 2px solid #4c1d95;
-      border-radius: 10px;
-      padding: 8px 14px;
-      font-size: 12px;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(124,58,237,0.4);
-      letter-spacing: 0.05em;
-      transition: all 0.2s;
-    }
-    .admin-btn:hover {
-      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 6px 20px rgba(124,58,237,0.6);
+      50% { box-shadow: 0 4px 20px rgba(220,38,38,0.9); }
     }
 
     /* ストーリー */
@@ -264,25 +248,23 @@
     .stories-section-unread { display: flex; gap: 12px; flex-shrink: 0; }
     .stories-section-seen { display: flex; gap: 12px; flex-shrink: 0; margin-left: auto; padding-left: 16px; border-left: 1px dashed #e5e7eb; }
     .story-bubble { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; flex-shrink: 0; width: 68px; }
-    .story-ring { width: 62px; height: 62px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); display: flex; align-items: center; justify-content: center; transition: transform 0.25s cubic-bezier(.34,1.56,.64,1); position: relative; }
-    .story-bubble:hover .story-ring { transform: scale(1.06); }
+    .story-ring { width: 62px; height: 62px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); display: flex; align-items: center; justify-content: center; position: relative; }
     .story-ring.seen { background: #d1d5db; }
     .story-ring.mine { background: linear-gradient(45deg, #0284c7, #7c3aed); }
     .story-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #fff; background: #f3f4f6; }
     .story-name { font-size: 11px; color: #374151; max-width: 64px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .story-bubble.seen .story-name { color: #9ca3af; }
-    .story-add { width: 62px; height: 62px; border-radius: 50%; border: 2px dashed #9ca3af; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #6b7280; transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), background 0.2s; }
-    .story-bubble:hover .story-add { transform: scale(1.06); background: #eff6ff; }
+    .story-add { width: 62px; height: 62px; border-radius: 50%; border: 2px dashed #9ca3af; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #6b7280; }
 
-    #storyViewer { position: fixed; inset: 0; z-index: 20000; background: #000; display: none; align-items: center; justify-content: center; flex-direction: column; animation: bodyFade 0.25s ease both; }
+    #storyViewer { position: fixed; inset: 0; z-index: 20000; background: #000; display: none; align-items: center; justify-content: center; }
     #storyViewer.show { display: flex; }
     #storyViewer .story-stage { position: relative; width: 100%; max-width: 420px; height: 100vh; max-height: 780px; background: #111; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-    #storyStageContent { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; user-select: none; }
+    #storyStageContent { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
     #storyStageContent img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    #storyStageContent .story-text-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 40px; font-size: 26px; font-weight: 700; color: #fff; text-align: center; word-break: break-word; line-height: 1.4; }
+    #storyStageContent .story-text-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; padding: 40px; font-size: 26px; font-weight: 700; color: #fff; text-align: center; word-break: break-word; }
     .story-progress-bar { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; gap: 3px; z-index: 5; }
     .story-segment { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 2px; overflow: hidden; }
-    .story-segment > div { height: 100%; width: 0%; background: #fff; transition: width 0.1s linear; }
+    .story-segment > div { height: 100%; width: 0%; background: #fff; }
     .story-header { position: absolute; top: 20px; left: 12px; right: 12px; display: flex; align-items: center; gap: 10px; z-index: 5; color: #fff; }
     .story-header img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; }
     .story-header .story-meta-name { font-size: 13px; font-weight: 700; }
@@ -296,60 +278,39 @@
     .story-footer { position: absolute; bottom: 12px; left: 12px; right: 12px; display: flex; align-items: center; gap: 8px; z-index: 5; }
     .story-footer input { flex: 1; border-radius: 9999px; padding: 10px 16px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.4); color: #fff; font-size: 13px; outline: none; }
     .story-footer input::placeholder { color: rgba(255,255,255,0.6); }
-    .story-footer input:focus { background: rgba(255,255,255,0.15); }
-    .story-like-btn { background: none; border: none; cursor: pointer; font-size: 28px; line-height: 1; transition: transform 0.25s cubic-bezier(.34,1.56,.64,1); color: #fff; }
-    .story-like-btn:hover { transform: scale(1.15); }
-    .story-like-btn.liked { animation: heartPop 0.5s ease; color: #ef4444; }
-    @keyframes heartPop { 0% { transform: scale(1); } 40% { transform: scale(1.5); } 70% { transform: scale(0.9); } 100% { transform: scale(1); } }
-    .story-viewers-info { position: absolute; bottom: 62px; left: 12px; z-index: 5; color: rgba(255,255,255,0.85); font-size: 11px; display: flex; align-items: center; gap: 6px; }
+    .story-like-btn { background: none; border: none; cursor: pointer; font-size: 28px; line-height: 1; color: #fff; }
+    .story-like-btn.liked { color: #ef4444; }
+    .story-viewers-info { position: absolute; bottom: 62px; left: 12px; z-index: 5; color: rgba(255,255,255,0.85); font-size: 11px; }
 
     .info-tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 10px; }
-    .info-tabs button { flex: 1; padding: 8px; background: none; border: none; font-size: 13px; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; }
+    .info-tabs button { flex: 1; padding: 8px; background: none; border: none; font-size: 13px; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; }
     .info-tabs button.active { color: #0284c7; border-bottom-color: #0284c7; font-weight: 700; }
     .info-list { max-height: 320px; overflow-y: auto; }
     .info-list-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-bottom: 1px solid #f3f4f6; }
-    .info-list-item:last-child { border-bottom: none; }
     .info-empty { text-align: center; padding: 24px; color: #9ca3af; font-size: 13px; }
 
     .story-upload-preview { margin-top: 10px; border-radius: 8px; overflow: hidden; max-height: 260px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border: 1px solid #e5e7eb; }
     .story-upload-preview img { max-width: 100%; max-height: 260px; }
 
-    .preset-avatar { width: 56px; height: 56px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; object-fit: cover; background: #f3f4f6; transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), border-color 0.25s; }
-    .preset-avatar:hover { transform: scale(1.12) rotate(4deg); }
-    .preset-avatar.selected { border-color: #0284c7; transform: scale(1.08); box-shadow: 0 4px 12px rgba(2,132,199,0.35); }
+    .preset-avatar { width: 56px; height: 56px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; object-fit: cover; background: #f3f4f6; }
+    .preset-avatar.selected { border-color: #0284c7; }
 
-    .icon-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 12px; color: #374151; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; }
-    .icon-btn:hover { background: #e5e7eb; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
-    .icon-btn:active { transform: translateY(0) scale(0.97); }
+    .icon-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 12px; color: #374151; }
+    .icon-btn:hover { background: #e5e7eb; }
 
-    button { transition: transform 0.15s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s, background 0.2s, opacity 0.2s; }
-    button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
-    button:active { transform: translateY(0) scale(0.96); }
-    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+    button { transition: transform 0.15s, box-shadow 0.2s, background 0.2s, opacity 0.2s; }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
 
-    .chat-item { display: flex; align-items: center; gap: 10px; padding: 12px; border-bottom: 1px solid #e5e7eb; cursor: pointer; transition: background 0.2s, padding-left 0.25s; animation: listIn 0.35s cubic-bezier(.21,1.02,.73,1) both; position: relative; }
-    @keyframes listIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
-    .chat-item:hover { background: #eff6ff; padding-left: 18px; }
-    .chat-item:last-child { border-bottom: none; }
+    .chat-item { display: flex; align-items: center; gap: 10px; padding: 12px; border-bottom: 1px solid #e5e7eb; cursor: pointer; position: relative; }
+    .chat-item:hover { background: #eff6ff; }
     .chat-item.unread { background: #fef9f9; }
-    .chat-item.unread:hover { background: #fef2f2; }
 
-    .unread-dot { position: absolute; top: 8px; left: 40px; width: 12px; height: 12px; border-radius: 50%; background: #ef4444; border: 2px solid #fff; box-shadow: 0 0 0 0 rgba(239,68,68,0.7); animation: unreadPulse 1.8s infinite; z-index: 3; }
-    @keyframes unreadPulse { 0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); } 70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); } 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
+    .unread-dot { position: absolute; top: 8px; left: 40px; width: 12px; height: 12px; border-radius: 50%; background: #ef4444; border: 2px solid #fff; }
+    .unread-count { background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 9999px; }
 
-    .unread-count { background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 9999px; margin-left: 6px; animation: badgeIn 0.3s cubic-bezier(.34,1.56,.64,1) both; box-shadow: 0 2px 6px rgba(239,68,68,0.4); }
-    @keyframes badgeIn { from { transform: scale(0); } to { transform: scale(1); } }
-
-    .member-chip { display: inline-flex; align-items: center; gap: 4px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 9999px; padding: 2px 8px 2px 2px; font-size: 12px; color: #1e40af; margin: 2px; animation: chipIn 0.25s cubic-bezier(.34,1.56,.64,1) both; }
-    @keyframes chipIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+    .member-chip { display: inline-flex; align-items: center; gap: 4px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 9999px; padding: 2px 8px 2px 2px; font-size: 12px; color: #1e40af; margin: 2px; }
     .member-chip img { width: 20px; height: 20px; border-radius: 50%; }
-    .member-chip .remove-x { cursor: pointer; color: #ef4444; font-weight: bold; margin-left: 2px; transition: transform 0.2s; }
-    .member-chip .remove-x:hover { transform: scale(1.3); }
-
-    .view-enter { animation: viewEnter 0.35s cubic-bezier(.21,1.02,.73,1) both; }
-    @keyframes viewEnter { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
-    .view-enter-reverse { animation: viewEnterReverse 0.35s cubic-bezier(.21,1.02,.73,1) both; }
-    @keyframes viewEnterReverse { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+    .member-chip .remove-x { cursor: pointer; color: #ef4444; font-weight: bold; margin-left: 2px; }
 
     .dots-loading::after { content: '...'; display: inline-block; animation: dots 1.4s steps(4, end) infinite; overflow: hidden; vertical-align: bottom; }
     @keyframes dots { 0% { width: 0; } 100% { width: 1.5em; } }
@@ -357,29 +318,34 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans p-4 max-w-3xl mx-auto">
 
-  <!-- 緊急オーバーレイ（最優先） -->
+  <!-- 緊急オーバーレイ -->
   <div id="emergencyOverlay">
-    <div class="em-icon">🚨</div>
-    <div class="em-title">緊急モード発動中</div>
-    <div class="em-subtitle em-blink">現在このサービスは緊急停止しています。<br>管理者による解除をお待ちください。</div>
-    <div class="em-info" id="emergencyInfo"></div>
-    <div class="em-blocks">
-      <div style="font-size:11px;color:#9ca3af;">この画面は管理者のみが解除できます</div>
+    <div class="em-inner">
+      <div class="em-icon">🚨</div>
+      <div class="em-title">緊急停止中</div>
+      <div class="em-sub">
+        現在このサービスは緊急停止しています。<br>
+        管理者による解除をお待ちください。
+      </div>
+      <div class="em-detail" id="emergencyDetail"></div>
     </div>
   </div>
 
-  <!-- 緊急時の自分用バナー（特別アカウント用） -->
-  <div id="emergencyBanner">🚨 緊急モード発動中 - あなたは管理者として操作できます 🚨</div>
+  <!-- 管理者用緊急バナー -->
+  <div id="emergencyAdminBanner">🚨 緊急モード発動中 - あなたは管理者として解除できます 🚨</div>
 
-  <!-- アナウンスバナー -->
-  <div id="announcementBanner">
-    <span id="announcementText"></span>
-    <button class="ann-close" id="announcementClose">✕</button>
+  <!-- 管理者用緊急パネル -->
+  <div id="adminEmergencyPanel">
+    <div class="ap-title">🚨 緊急モード発動中</div>
+    <div class="ap-trigger" id="adminEmergencyTriggerInfo"></div>
+    <div class="ap-actions">
+      <button id="adminClearEmergencyBtn" class="bg-green-600 hover:bg-green-700 text-white text-sm py-2 px-4 rounded font-bold shadow">✅ 緊急解除</button>
+    </div>
   </div>
 
   <div id="bootOverlay">
     <div class="boot-spinner"></div>
-    <div class="boot-text" style="font-size:14px;color:#9ca3af;">アカウントを確認しています...</div>
+    <div style="font-size:14px;color:#9ca3af;">アカウントを確認しています...</div>
   </div>
 
   <div id="banOverlay">
@@ -393,11 +359,11 @@
   <div id="statusBanner" class="bg-red-600 text-white"></div>
 
   <div id="loginView" class="hidden">
-    <div class="bg-white border border-gray-300 rounded-lg shadow p-8 max-w-md mx-auto mt-16 text-center view-enter">
+    <div class="bg-white border border-gray-300 rounded-lg shadow p-8 max-w-md mx-auto mt-16 text-center">
       <h1 class="text-3xl font-bold text-blue-900 mb-2">シクナイチャット</h1>
       <p class="text-sm text-gray-600 mb-6">ご利用にはGoogleアカウントでのログインが必要です。</p>
       <p class="text-sm text-gray-600 mb-6">安全のためです。</p>
-      <button id="googleLoginBtn" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-3 px-6 rounded shadow-sm flex items-center justify-center gap-3 mx-auto transition w-full">
+      <button id="googleLoginBtn" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-3 px-6 rounded shadow-sm flex items-center justify-center gap-3 mx-auto w-full">
         <svg width="20" height="20" viewBox="0 0 48 48">
           <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
           <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
@@ -406,7 +372,6 @@
         </svg>
         Googleでログイン
       </button>
-      <p class="text-xs text-gray-400 mt-4">※ チャットは匿名で表示されます</p>
     </div>
   </div>
 
@@ -415,43 +380,30 @@
       <div class="flex items-center gap-3">
         <span class="avatar-online-wrap">
           <img id="myAvatar" class="avatar" src="" alt="">
-          <span id="myOnlineDot" class="online-dot"></span>
+          <span class="online-dot online"></span>
         </span>
         <div>
           <h1 class="text-2xl font-bold text-blue-900">シクナイチャット</h1>
           <p class="text-xs text-gray-600 flex flex-wrap items-center gap-2">
-            <span id="connDot" class="inline-block w-2 h-2 rounded-full bg-gray-400 transition-colors" style="transition: background 0.4s;"></span>
+            <span id="connDot" class="inline-block w-2 h-2 rounded-full bg-gray-400"></span>
             <span id="connText">接続中...</span>
             <span id="myName" class="font-bold text-blue-800"></span>
           </p>
         </div>
       </div>
       <div class="flex items-center gap-2 flex-wrap">
-        <button id="newChatBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-3 rounded transition shadow font-bold">＋ 新しいチャット</button>
+        <button id="newChatBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-3 rounded font-bold">＋ 新しいチャット</button>
         <button id="profileBtn" class="icon-btn">👤 プロフィール</button>
-        <button id="logoutBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-3 rounded transition shadow">ログアウト</button>
+        <button id="logoutBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-3 rounded">ログアウト</button>
         <button id="emergencyBtn" class="emergency-btn" title="緊急停止">🚨 緊急</button>
       </div>
     </header>
-
-    <!-- 管理者専用パネル -->
-    <div id="adminPanel" class="hidden bg-gradient-to-r from-purple-50 to-red-50 border-2 border-purple-300 rounded-lg p-3 mb-3 shadow-sm">
-      <div class="flex items-center justify-between flex-wrap gap-2">
-        <div class="text-xs font-bold text-purple-900">
-          🛡 管理者パネル <span class="text-gray-500 font-normal">（あなたは管理者です）</span>
-        </div>
-        <div class="flex gap-2 flex-wrap">
-          <button id="announceBtn" class="admin-btn">📢 アナウンス</button>
-          <button id="clearEmergencyBtn" class="hidden bg-green-600 hover:bg-green-700 text-white text-xs py-2 px-3 rounded font-bold shadow">✅ 緊急解除</button>
-        </div>
-      </div>
-    </div>
 
     <div class="bg-white border border-gray-300 rounded-lg shadow-sm mb-3 overflow-hidden">
       <div class="px-3 pt-3 pb-1 flex justify-between items-center border-b">
         <h2 class="text-sm font-bold text-gray-700">✨ ストーリー</h2>
         <div class="flex items-center gap-2">
-          <button id="myArchiveBtn" class="text-xs text-blue-600 hover:text-blue-800 font-semibold">📁 自分のアーカイブ</button>
+          <button id="myArchiveBtn" class="text-xs text-blue-600 font-semibold">📁 自分のアーカイブ</button>
           <span class="text-xs text-gray-400">24時間で消えます</span>
         </div>
       </div>
@@ -465,10 +417,8 @@
 
     <div id="chatListView">
       <div class="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
-        <h2 class="text-md font-bold text-gray-700 p-4 border-b bg-gradient-to-r from-blue-50 to-white">💬 チャット一覧</h2>
-        <div id="chatListContainer">
-          <p class="text-gray-500 text-sm p-4 dots-loading"><span class="loading-spinner"></span> チャットを読み込み中</p>
-        </div>
+        <h2 class="text-md font-bold text-gray-700 p-4 border-b">💬 チャット一覧</h2>
+        <div id="chatListContainer"></div>
       </div>
     </div>
 
@@ -481,23 +431,17 @@
             <p class="text-xs text-gray-500 flex items-center gap-2" id="currentChatMeta"></p>
           </div>
         </div>
-        <button onclick="backToChatList()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded whitespace-nowrap ml-2">← 戻る</button>
+        <button onclick="backToChatList()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded ml-2">← 戻る</button>
       </div>
-      <div id="messagesContainer" class="msg-scroll bg-gray-50 border border-gray-200 rounded p-3 mb-3">
-        <p class="text-gray-500 text-sm dots-loading"><span class="loading-spinner"></span> メッセージを読み込み中</p>
-      </div>
+      <div id="messagesContainer" class="msg-scroll bg-gray-50 border border-gray-200 rounded p-3 mb-3"></div>
       <form id="messageForm" class="bg-white border border-gray-300 rounded p-3 shadow-sm">
         <div class="flex items-end gap-2">
-          <textarea id="messageInput" rows="1" maxlength="1000" placeholder="メッセージを入力... (Enterで送信 / Shift+Enterで改行)"
-            class="flex-1 border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none resize-none transition-all"
-            style="min-height:40px; max-height:120px;"></textarea>
-          <label class="icon-btn cursor-pointer">
-            📎
-            <input type="file" id="messageFileInput" accept="image/*" class="hidden">
-          </label>
-          <button type="submit" id="sendBtn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded text-sm transition">送信</button>
+          <textarea id="messageInput" rows="1" maxlength="1000" placeholder="メッセージを入力..."
+            class="flex-1 border p-2 rounded text-sm outline-none resize-none" style="min-height:40px; max-height:120px;"></textarea>
+          <label class="icon-btn cursor-pointer">📎<input type="file" id="messageFileInput" accept="image/*" class="hidden"></label>
+          <button type="submit" id="sendBtn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded text-sm">送信</button>
         </div>
-        <div class="preview-box hidden mt-2" id="messagePreviewBox">
+        <div class="hidden mt-2" id="messagePreviewBox">
           <img id="messagePreviewImg" style="max-height:120px;border-radius:6px;">
           <div class="text-xs text-gray-500 mt-1" id="messagePreviewInfo"></div>
         </div>
@@ -505,227 +449,122 @@
     </div>
   </div>
 
-  <!-- 新規チャット -->
-  <div id="newChatModal" class="modal-backdrop hidden">
-    <div class="modal-content">
-      <h3 class="text-lg font-bold text-gray-800 mb-3">＋ 新しいチャット</h3>
-      <label class="block text-xs text-gray-600 mb-1">相手のメールアドレスを入力して追加:</label>
-      <div class="flex gap-2 mb-2">
-        <input type="email" id="memberEmailInput" placeholder="example@gmail.com"
-          class="flex-1 border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none">
-        <button id="addMemberBtn" type="button" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-3 rounded text-sm">追加</button>
-      </div>
-      <div id="memberSearchMsg" class="text-xs mb-2"></div>
-      <div id="selectedMembersBox" class="mb-3 min-h-[40px] border border-dashed border-gray-300 rounded p-2">
-        <span class="text-xs text-gray-400">まだ相手が追加されていません</span>
-      </div>
-      <label class="block text-xs text-gray-600 mb-1">グループ名（2人以上のとき任意）:</label>
-      <input type="text" id="groupNameInput" maxlength="30" placeholder="例: プロジェクトA"
-        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none">
-      <div class="flex justify-end gap-2 flex-wrap">
-        <button id="newChatCancelBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
-        <button id="newChatCreateBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-4 rounded font-bold">チャットを開始</button>
-      </div>
+  <!-- モーダル群 -->
+  <div id="newChatModal" class="modal-backdrop hidden"><div class="modal-content">
+    <h3 class="text-lg font-bold mb-3">＋ 新しいチャット</h3>
+    <div class="flex gap-2 mb-2">
+      <input type="email" id="memberEmailInput" placeholder="example@gmail.com" class="flex-1 border p-2 rounded text-sm">
+      <button id="addMemberBtn" type="button" class="bg-blue-800 text-white font-bold py-2 px-3 rounded text-sm">追加</button>
     </div>
-  </div>
+    <div id="memberSearchMsg" class="text-xs mb-2"></div>
+    <div id="selectedMembersBox" class="mb-3 min-h-[40px] border border-dashed border-gray-300 rounded p-2"><span class="text-xs text-gray-400">まだ相手が追加されていません</span></div>
+    <input type="text" id="groupNameInput" maxlength="30" placeholder="グループ名（2人以上のとき任意）" class="w-full border p-2 rounded text-sm mb-3">
+    <div class="flex justify-end gap-2">
+      <button id="newChatCancelBtn" class="bg-gray-500 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
+      <button id="newChatCreateBtn" class="bg-blue-800 text-white text-xs py-1.5 px-4 rounded font-bold">チャットを開始</button>
+    </div>
+  </div></div>
 
-  <!-- ストーリー投稿 -->
-  <div id="storyPostModal" class="modal-backdrop hidden">
-    <div class="modal-content">
-      <h3 class="text-lg font-bold text-gray-800 mb-3">✨ ストーリーを投稿</h3>
-      <label class="block text-xs text-gray-600 mb-1">テキスト（画像なしのとき必須）:</label>
-      <textarea id="storyTextInput" rows="3" maxlength="200" placeholder="今なにしてる？"
-        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none resize-none"></textarea>
-      <label class="block text-xs text-gray-600 mb-1">画像を選択（任意）:</label>
-      <input type="file" id="storyFileInput" accept="image/*" class="w-full border p-2 rounded text-sm mb-2">
-      <div id="storyUploadPreview" class="story-upload-preview hidden"></div>
-      <div id="storyUploadInfo" class="text-xs text-gray-500 mb-3"></div>
-      <div id="storyPostMsg" class="text-xs mb-2"></div>
-      <div class="flex justify-end gap-2 flex-wrap">
-        <button id="storyPostCancelBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
-        <button id="storyPostBtn" class="bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xs py-1.5 px-4 rounded font-bold">投稿する</button>
-      </div>
+  <div id="storyPostModal" class="modal-backdrop hidden"><div class="modal-content">
+    <h3 class="text-lg font-bold mb-3">✨ ストーリーを投稿</h3>
+    <textarea id="storyTextInput" rows="3" maxlength="200" placeholder="今なにしてる？" class="w-full border p-2 rounded text-sm mb-3"></textarea>
+    <input type="file" id="storyFileInput" accept="image/*" class="w-full border p-2 rounded text-sm mb-2">
+    <div id="storyUploadPreview" class="story-upload-preview hidden"></div>
+    <div id="storyUploadInfo" class="text-xs text-gray-500 mb-3"></div>
+    <div id="storyPostMsg" class="text-xs mb-2"></div>
+    <div class="flex justify-end gap-2">
+      <button id="storyPostCancelBtn" class="bg-gray-500 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
+      <button id="storyPostBtn" class="bg-gradient-to-r from-pink-500 to-purple-600 text-white text-xs py-1.5 px-4 rounded font-bold">投稿する</button>
     </div>
-  </div>
+  </div></div>
 
-  <!-- アーカイブ -->
-  <div id="archiveModal" class="modal-backdrop hidden">
-    <div class="modal-content">
-      <h3 class="text-lg font-bold text-gray-800 mb-3">📁 自分のストーリーアーカイブ</h3>
-      <p class="text-xs text-gray-500 mb-3">※ 自分だけが見られます。過去のストーリーは24時間経過後もここに残ります。</p>
-      <div id="archiveList" class="max-h-[60vh] overflow-y-auto"></div>
-      <div class="flex justify-end mt-4">
-        <button id="archiveCloseBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">閉じる</button>
-      </div>
-    </div>
-  </div>
+  <div id="archiveModal" class="modal-backdrop hidden"><div class="modal-content">
+    <h3 class="text-lg font-bold mb-3">📁 自分のストーリーアーカイブ</h3>
+    <div id="archiveList" class="max-h-[60vh] overflow-y-auto"></div>
+    <div class="flex justify-end mt-4"><button id="archiveCloseBtn" class="bg-gray-500 text-white text-xs py-1.5 px-4 rounded">閉じる</button></div>
+  </div></div>
 
-  <!-- ストーリー反応 -->
-  <div id="storyInfoModal" class="modal-backdrop hidden">
-    <div class="modal-content">
-      <h3 class="text-lg font-bold text-gray-800 mb-3">📊 ストーリーの反応</h3>
-      <div class="info-tabs">
-        <button id="tabViewers" class="active">👁 閲覧 (<span id="viewersCount">0</span>)</button>
-        <button id="tabLikers">❤️ いいね (<span id="likersCount">0</span>)</button>
-      </div>
-      <div id="infoListContainer" class="info-list"></div>
-      <div class="flex justify-end mt-4">
-        <button id="infoCloseBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">閉じる</button>
-      </div>
+  <div id="storyInfoModal" class="modal-backdrop hidden"><div class="modal-content">
+    <h3 class="text-lg font-bold mb-3">📊 ストーリーの反応</h3>
+    <div class="info-tabs">
+      <button id="tabViewers" class="active">👁 閲覧 (<span id="viewersCount">0</span>)</button>
+      <button id="tabLikers">❤️ いいね (<span id="likersCount">0</span>)</button>
     </div>
-  </div>
+    <div id="infoListContainer" class="info-list"></div>
+    <div class="flex justify-end mt-4"><button id="infoCloseBtn" class="bg-gray-500 text-white text-xs py-1.5 px-4 rounded">閉じる</button></div>
+  </div></div>
 
-  <!-- メッセージ編集 -->
-  <div id="editMsgModal" class="modal-backdrop hidden">
-    <div class="modal-content">
-      <h3 class="text-lg font-bold text-gray-800 mb-3">✏️ メッセージを編集</h3>
-      <textarea id="editMsgInput" rows="4" maxlength="1000"
-        class="w-full border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none resize-none mb-3"></textarea>
-      <div class="flex justify-end gap-2 flex-wrap">
-        <button id="editMsgCancelBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
-        <button id="editMsgSaveBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-4 rounded font-bold">保存</button>
-      </div>
+  <div id="editMsgModal" class="modal-backdrop hidden"><div class="modal-content">
+    <h3 class="text-lg font-bold mb-3">✏️ メッセージを編集</h3>
+    <textarea id="editMsgInput" rows="4" maxlength="1000" class="w-full border p-2 rounded text-sm mb-3"></textarea>
+    <div class="flex justify-end gap-2">
+      <button id="editMsgCancelBtn" class="bg-gray-500 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
+      <button id="editMsgSaveBtn" class="bg-blue-800 text-white text-xs py-1.5 px-4 rounded font-bold">保存</button>
     </div>
-  </div>
+  </div></div>
 
-  <!-- プロフィール -->
-  <div id="profileModal" class="modal-backdrop hidden">
-    <div class="modal-content">
-      <h3 class="text-lg font-bold text-gray-800 mb-3">👤 プロフィール設定</h3>
-      <div class="text-center mb-4">
-        <img id="profileAvatarPreview" class="avatar-lg mx-auto" src="" alt="">
-        <p class="text-xs text-gray-500 mt-2">アイコンを選択</p>
-        <div id="presetAvatarRow" class="flex flex-wrap justify-center gap-2 mt-2"></div>
-      </div>
-      <label class="block text-xs text-gray-600 mb-1">ニックネーム（最大20文字）:</label>
-      <input type="text" id="nicknameInput" maxlength="20" placeholder="例: 名無しさん"
-        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none">
-      <label class="block text-xs text-gray-600 mb-1">または画像をアップロード:</label>
-      <input type="file" id="avatarFileInput" accept="image/*" class="text-xs text-gray-600 w-full mb-3">
-      <div class="flex justify-end gap-2 flex-wrap">
-        <button id="profileCancelBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
-        <button id="profileSaveBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-4 rounded font-bold">保存</button>
-      </div>
+  <div id="profileModal" class="modal-backdrop hidden"><div class="modal-content">
+    <h3 class="text-lg font-bold mb-3">👤 プロフィール設定</h3>
+    <div class="text-center mb-4">
+      <img id="profileAvatarPreview" class="avatar-lg mx-auto" src="" alt="">
+      <div id="presetAvatarRow" class="flex flex-wrap justify-center gap-2 mt-2"></div>
     </div>
-  </div>
+    <input type="text" id="nicknameInput" maxlength="20" placeholder="ニックネーム" class="w-full border p-2 rounded text-sm mb-3">
+    <input type="file" id="avatarFileInput" accept="image/*" class="text-xs w-full mb-3">
+    <div class="flex justify-end gap-2">
+      <button id="profileCancelBtn" class="bg-gray-500 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
+      <button id="profileSaveBtn" class="bg-blue-800 text-white text-xs py-1.5 px-4 rounded font-bold">保存</button>
+    </div>
+  </div></div>
 
-  <!-- 緊急発動確認モーダル -->
-  <div id="emergencyConfirmModal" class="modal-backdrop hidden">
-    <div class="modal-content" style="border: 3px solid #dc2626;">
-      <h3 class="text-lg font-bold text-red-700 mb-3">🚨 緊急モードを発動しますか？</h3>
-      <p class="text-sm text-gray-700 mb-3 leading-relaxed">
-        この操作は<strong>全ユーザー</strong>の画面を緊急停止します。<br>
-        <span class="text-xs text-gray-500">（ブラウザのセキュリティ上、他のユーザーのタブを物理的に閉じることはできませんが、全画面の警告オーバーレイで操作不能になります）</span>
-      </p>
-      <div class="bg-red-50 border border-red-200 rounded p-3 mb-3 text-xs text-red-800">
-        <strong>発動者:</strong> <span id="emConfirmEmail"></span><br>
-        <strong>日時:</strong> <span id="emConfirmTime"></span>
+  <div id="storyViewer"><div class="story-stage">
+    <div class="story-progress-bar" id="storyProgressBar"></div>
+    <div class="story-header">
+      <img id="storyHeaderAvatar" src="" alt="">
+      <div>
+        <div class="story-meta-name" id="storyHeaderName"></div>
+        <div class="story-meta-time" id="storyHeaderTime"></div>
       </div>
-      <label class="block text-xs text-gray-600 mb-1">理由（任意・全員に表示されます）:</label>
-      <input type="text" id="emergencyReasonInput" maxlength="100" placeholder="例: 荒らし対応のため"
-        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-red-300 outline-none">
-      <div class="flex justify-end gap-2 flex-wrap">
-        <button id="emConfirmCancel" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
-        <button id="emConfirmOk" class="bg-red-600 hover:bg-red-700 text-white text-xs py-1.5 px-4 rounded font-bold">🚨 発動する</button>
+      <div class="story-header-actions">
+        <button class="story-header-btn hidden" id="storyInfoBtn">📊 反応</button>
+        <button class="story-close-btn" id="storyCloseBtn">✕</button>
       </div>
     </div>
-  </div>
-
-  <!-- アナウンス送信モーダル -->
-  <div id="announceModal" class="modal-backdrop hidden">
-    <div class="modal-content" style="border: 3px solid #7c3aed;">
-      <h3 class="text-lg font-bold text-purple-700 mb-3">📢 全体アナウンス</h3>
-      <p class="text-xs text-gray-500 mb-2">全ユーザーの画面上部にアナウンスバナーが表示されます。</p>
-      <label class="block text-xs text-gray-600 mb-1">メッセージ（最大200文字）:</label>
-      <textarea id="announceTextInput" rows="4" maxlength="200" placeholder="例: 本日22時よりメンテナンスを行います"
-        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-purple-300 outline-none resize-none"></textarea>
-      <label class="block text-xs text-gray-600 mb-1">表示時間（秒）:</label>
-      <input type="number" id="announceDurationInput" min="5" max="300" value="30"
-        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-purple-300 outline-none">
-      <div class="flex justify-end gap-2 flex-wrap">
-        <button id="announceCancel" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
-        <button id="announceSend" class="bg-purple-600 hover:bg-purple-700 text-white text-xs py-1.5 px-4 rounded font-bold">📢 送信する</button>
-      </div>
+    <div class="story-nav-left" id="storyNavLeft"></div>
+    <div class="story-nav-right" id="storyNavRight"></div>
+    <div id="storyStageContent"></div>
+    <div class="story-viewers-info" id="storyViewersInfo"></div>
+    <div class="story-footer">
+      <input type="text" id="storyReplyInput" placeholder="返信を送る..." maxlength="300">
+      <button class="story-like-btn" id="storyLikeBtn">🤍</button>
     </div>
-  </div>
-
-  <!-- ストーリービューア -->
-  <div id="storyViewer">
-    <div class="story-stage">
-      <div class="story-progress-bar" id="storyProgressBar"></div>
-      <div class="story-header" id="storyHeader">
-        <span class="avatar-online-wrap">
-          <img id="storyHeaderAvatar" src="" alt="">
-          <span id="storyHeaderOnlineDot" class="online-dot small"></span>
-        </span>
-        <div>
-          <div class="story-meta-name" id="storyHeaderName"></div>
-          <div class="story-meta-time" id="storyHeaderTime"></div>
-        </div>
-        <div class="story-header-actions">
-          <button class="story-header-btn hidden" id="storyInfoBtn">📊 反応を見る</button>
-          <button class="story-close-btn" id="storyCloseBtn">✕</button>
-        </div>
-      </div>
-      <div class="story-nav-left" id="storyNavLeft"></div>
-      <div class="story-nav-right" id="storyNavRight"></div>
-      <div id="storyStageContent"></div>
-      <div class="story-viewers-info" id="storyViewersInfo"></div>
-      <div class="story-footer">
-        <input type="text" id="storyReplyInput" placeholder="返信を送る..." maxlength="300">
-        <button class="story-like-btn" id="storyLikeBtn">🤍</button>
-      </div>
-    </div>
-  </div>
+  </div></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import {
-      getDatabase, ref, push, set, remove, onValue,
-      query, orderByChild, get, update, onDisconnect
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import {
-      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
-      setPersistence, browserLocalPersistence
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, push, set, remove, onValue, query, orderByChild, get, update, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // ========================================
-    // 管理者アカウント
-    // ========================================
-    const ADMIN_EMAILS = [
-      'katou.noel114514@gmail.com',
-      '18107@v.nakijin.ed.jp'
-    ];
-
+    // 管理者メールアドレス（この人たちだけが緊急モードから除外される）
+    const ADMIN_EMAILS = ['katou.noel114514@gmail.com', '18107@v.nakijin.ed.jp'];
     function isAdmin(email) {
       if (!email) return false;
       return ADMIN_EMAILS.includes(email.toLowerCase());
     }
 
-    // ========================================
-    // アバター
-    // ========================================
     function makeAvatarSvg(color, emoji) {
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" r="32" fill="${color}"/>
-        <text x="32" y="42" font-size="32" text-anchor="middle">${emoji}</text>
-      </svg>`;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="${color}"/><text x="32" y="42" font-size="32" text-anchor="middle">${emoji}</text></svg>`;
       return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
     }
-
     const PRESET_AVATARS = [
-      makeAvatarSvg('#0284c7', '😀'), makeAvatarSvg('#16a34a', '😎'),
-      makeAvatarSvg('#dc2626', '🔥'), makeAvatarSvg('#7c3aed', '🌟'),
-      makeAvatarSvg('#d97706', '🍀'), makeAvatarSvg('#db2777', '🌸'),
-      makeAvatarSvg('#0891b2', '🐱'), makeAvatarSvg('#65a30d', '🐶'),
-      makeAvatarSvg('#ea580c', '🦊'), makeAvatarSvg('#475569', '🐼'),
-      makeAvatarSvg('#c026d3', '🎮'), makeAvatarSvg('#0d9488', '☕')
+      makeAvatarSvg('#0284c7', '😀'), makeAvatarSvg('#16a34a', '😎'), makeAvatarSvg('#dc2626', '🔥'),
+      makeAvatarSvg('#7c3aed', '🌟'), makeAvatarSvg('#d97706', '🍀'), makeAvatarSvg('#db2777', '🌸'),
+      makeAvatarSvg('#0891b2', '🐱'), makeAvatarSvg('#65a30d', '🐶'), makeAvatarSvg('#ea580c', '🦊'),
+      makeAvatarSvg('#475569', '🐼'), makeAvatarSvg('#c026d3', '🎮'), makeAvatarSvg('#0d9488', '☕')
     ];
-
     const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af', '👤');
-
-    const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3C/svg%3E";
-    const FAVICON_UNREAD = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='48' cy='16' r='12' fill='%23ef4444' stroke='%23ffffff' stroke-width='3'/%3E%3C/svg%3E";
+    const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E";
+    const FAVICON_UNREAD = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='48' cy='16' r='12' fill='%23ef4444' stroke='%23ffffff' stroke-width='3'/%3E%3C/svg%3E";
     const FAVICON_EMERGENCY = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%23dc2626'/%3E%3Ctext x='32' y='46' font-size='40' text-anchor='middle'%3E%F0%9F%9A%A8%3C/text%3E%3C/svg%3E";
 
     const faviconLink = document.getElementById('faviconLink');
@@ -738,8 +577,7 @@
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const now = audioCtx.currentTime;
         [{ freq: 880, start: 0, dur: 0.12 }, { freq: 1318.5, start: 0.1, dur: 0.18 }].forEach(n => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
+          const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
           osc.type = 'sine'; osc.frequency.value = n.freq;
           gain.gain.setValueAtTime(0, now + n.start);
           gain.gain.linearRampToValueAtTime(0.15, now + n.start + 0.01);
@@ -755,19 +593,17 @@
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const now = audioCtx.currentTime;
-        // サイレン風の3音
         for (let i = 0; i < 3; i++) {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
+          const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
           osc.type = 'sawtooth';
-          const start = now + i * 0.4;
+          const start = now + i * 0.5;
           osc.frequency.setValueAtTime(400, start);
-          osc.frequency.linearRampToValueAtTime(900, start + 0.35);
+          osc.frequency.linearRampToValueAtTime(1000, start + 0.4);
           gain.gain.setValueAtTime(0.001, start);
-          gain.gain.linearRampToValueAtTime(0.15, start + 0.05);
-          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.38);
+          gain.gain.linearRampToValueAtTime(0.2, start + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.45);
           osc.connect(gain); gain.connect(audioCtx.destination);
-          osc.start(start); osc.stop(start + 0.4);
+          osc.start(start); osc.stop(start + 0.5);
         }
       } catch (e) {}
     }
@@ -779,21 +615,16 @@
       projectId: "chat-d04a6",
       storageBucket: "chat-d04a6.firebasestorage.app",
       messagingSenderId: "290611121392",
-      appId: "1:290611121392:web:c45ca30c8099f85bf08635",
-      measurementId: "G-3ZENK6R0JV"
+      appId: "1:290611121392:web:c45ca30c8099f85bf08635"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
-
     setPersistence(auth, browserLocalPersistence).catch(() => {});
 
-    const IMAGE_MAX_WIDTH = 600;
-    const IMAGE_QUALITY = 0.75;
-    const IMAGE_MAX_BASE64_SIZE = 250 * 1024;
-
+    const IMAGE_MAX_WIDTH = 600, IMAGE_QUALITY = 0.75, IMAGE_MAX_BASE64_SIZE = 250 * 1024;
     function fileToBase64Image(file, maxW = IMAGE_MAX_WIDTH, maxSize = IMAGE_MAX_BASE64_SIZE) {
       return new Promise((resolve, reject) => {
         if (!file) { resolve(null); return; }
@@ -824,90 +655,41 @@
       });
     }
 
-    // ========================================
-    // 状態
-    // ========================================
     let currentUser = null;
     let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
     let currentChatId = null;
-    let chatsUnsubscribe = null;
-    let messagesUnsubscribe = null;
-    let profilesUnsubscribe = null;
-    let bansUnsubscribe = null;
-    let readsUnsubscribe = null;
-    let typingUnsubscribe = null;
-    let storiesUnsubscribe = null;
-    let myArchiveUnsubscribe = null;
-    let presenceUnsubscribe = null;
-    let emergencyUnsubscribe = null;
-    let announcementUnsubscribe = null;
-    let roomLatestListeners = {};
+    let chatsUnsubscribe = null, messagesUnsubscribe = null, profilesUnsubscribe = null,
+        bansUnsubscribe = null, readsUnsubscribe = null, typingUnsubscribe = null,
+        storiesUnsubscribe = null, myArchiveUnsubscribe = null, presenceUnsubscribe = null,
+        emergencyUnsubscribe = null, roomLatestListeners = {};
 
-    let chatsCache = {};
-    let messagesCache = [];
-    let profilesCache = {};
-    let bansCache = {};
-    let readsCache = {};
-    let typingCache = {};
-    let presenceCache = {};
+    let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {},
+        readsCache = {}, typingCache = {}, presenceCache = {};
+    let emergencyState = { active: false };
 
-    let emergencyState = { active: false, triggeredBy: '', triggeredByEmail: '', triggeredAt: 0, reason: '' };
-    let currentAnnouncement = null;
+    let storiesCache = {}, mySeenStories = {}, currentStoryUserId = null, currentStoryIndex = 0,
+        currentStoryList = [], currentStoryIsArchive = false, storyTimer = null,
+        storyProgressRAF = null, storyStartTime = 0, storyDuration = 5000, storyRemainingMs = 0,
+        storyPaused = false, storyLikesUnsubscribe = null, currentStoryLikes = {},
+        currentStoryViews = {}, myArchivedStories = {}, pendingStoryFile = null;
 
-    let storiesCache = {};
-    let mySeenStories = {};
-    let currentStoryUserId = null;
-    let currentStoryIndex = 0;
-    let currentStoryList = [];
-    let currentStoryIsArchive = false;
-    let storyTimer = null;
-    let storyProgressRAF = null;
-    let storyStartTime = 0;
-    let storyDuration = 5000;
-    let storyRemainingMs = 0;
-    let storyPaused = false;
-    let storyLikesUnsubscribe = null;
-    let currentStoryLikes = {};
-    let currentStoryViews = {};
-    let myArchivedStories = {};
-    let pendingStoryFile = null;
-
-    let selectedAvatar = DEFAULT_AVATAR;
-    let intentionalSignOut = false;
-    let pendingMembers = [];
-    let editingMsgKey = null;
-    let openMenuKey = null;
-
-    let typingTimeout = null;
-    let isCurrentlyTyping = false;
+    let selectedAvatar = DEFAULT_AVATAR, intentionalSignOut = false, pendingMembers = [],
+        editingMsgKey = null, openMenuKey = null;
+    let typingTimeout = null, isCurrentlyTyping = false;
     const TYPING_TIMEOUT_MS = 3000;
-
-    let myPresenceRef = null;
-    let heartbeatTimer = null;
-    const HEARTBEAT_INTERVAL = 20000;
-    const PRESENCE_STALE_MS = 60000;
+    let myPresenceRef = null, heartbeatTimer = null;
+    const HEARTBEAT_INTERVAL = 20000, PRESENCE_STALE_MS = 60000;
 
     const UNREAD_STORAGE_KEY = 'sikunai_unread_v1';
     const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v1';
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
-    const ANNOUNCE_DISMISS_KEY = 'sikunai_dismissed_announcements_v1';
-
-    function loadJson(key) {
-      try { return JSON.parse(localStorage.getItem(key) || '{}'); }
-      catch (e) { return {}; }
-    }
-    function saveJson(key, obj) {
-      try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {}
-    }
+    function loadJson(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
+    function saveJson(key, obj) { try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {} }
 
     let unreadCounts = loadJson(UNREAD_STORAGE_KEY);
     let lastReadAt = loadJson(LASTREAD_STORAGE_KEY);
     mySeenStories = loadJson(SEEN_STORIES_KEY);
-    let dismissedAnnouncements = loadJson(ANNOUNCE_DISMISS_KEY);
-
-    let chatLatestMsgAt = {};
-    let chatLatestMsgSender = {};
-    let isTabActive = !document.hidden;
+    let chatLatestMsgAt = {}, chatLatestMsgSender = {}, isTabActive = !document.hidden;
 
     const loginView = document.getElementById('loginView');
     const mainView = document.getElementById('mainView');
@@ -923,36 +705,26 @@
     const bootOverlay = document.getElementById('bootOverlay');
     const banOverlay = document.getElementById('banOverlay');
     const emergencyOverlay = document.getElementById('emergencyOverlay');
-    const emergencyInfo = document.getElementById('emergencyInfo');
-    const emergencyBanner = document.getElementById('emergencyBanner');
-    const announcementBanner = document.getElementById('announcementBanner');
-    const announcementText = document.getElementById('announcementText');
-    const adminPanel = document.getElementById('adminPanel');
+    const emergencyDetail = document.getElementById('emergencyDetail');
+    const emergencyAdminBanner = document.getElementById('emergencyAdminBanner');
+    const adminEmergencyPanel = document.getElementById('adminEmergencyPanel');
+    const adminEmergencyTriggerInfo = document.getElementById('adminEmergencyTriggerInfo');
     let bannerTimer = null;
-    let announcementTimer = null;
 
     function escapeHtml(str) {
       if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
-
     function formatContent(str) {
       if (!str) return '';
       const escaped = escapeHtml(str);
-      const urlRegex = /(https?:\/\/[^\s<]+)/g;
-      return escaped.replace(urlRegex, (url) =>
-        `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 underline break-all">${url}</a>`);
+      return escaped.replace(/(https?:\/\/[^\s<]+)/g, (url) => `<a href="${url}" target="_blank" rel="noopener" class="text-blue-600 underline break-all">${url}</a>`);
     }
-
     function formatTime(ts) {
       if (!ts) return '';
-      try {
-        return new Date(ts).toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-      } catch (e) { return ''; }
+      try { return new Date(ts).toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+      catch (e) { return ''; }
     }
-
     function formatRelativeTime(ts) {
       if (!ts) return '';
       const diff = Date.now() - ts;
@@ -963,17 +735,10 @@
       if (h < 24) return `${h}時間前`;
       return formatTime(ts);
     }
-
     function setConnection(online) {
-      if (online) {
-        connDot.className = 'inline-block w-2 h-2 rounded-full bg-green-500';
-        connText.textContent = 'オンライン';
-      } else {
-        connDot.className = 'inline-block w-2 h-2 rounded-full bg-red-500';
-        connText.textContent = 'オフライン';
-      }
+      connDot.className = 'inline-block w-2 h-2 rounded-full ' + (online ? 'bg-green-500' : 'bg-red-500');
+      connText.textContent = online ? 'オンライン' : 'オフライン';
     }
-
     function showBanner(msg, isError = true) {
       statusBanner.textContent = msg;
       statusBanner.className = (isError ? 'bg-red-600' : 'bg-green-600') + ' text-white show';
@@ -995,58 +760,79 @@
         const prevActive = emergencyState.active;
         emergencyState = snap.exists() ? snap.val() : { active: false };
         const nowActive = !!emergencyState.active;
-
-        // 管理者は特別扱い
         const admin = currentUser && isAdmin(currentUser.email);
 
         if (nowActive) {
           if (admin) {
-            // 管理者：バナーだけ表示、オーバーレイは出さない
+            // 管理者：警告バナー + パネル表示、オーバーレイは出さない
             emergencyOverlay.classList.remove('show');
-            emergencyBanner.classList.add('show');
-            document.title = '🚨 緊急モード中 - シクナイチャット';
+            emergencyAdminBanner.classList.add('show');
+            adminEmergencyPanel.classList.add('show');
+            document.title = '🚨 緊急モード中';
+            // 誰が押したか情報を更新
+            const infoHtml = `
+              <div><strong>発動者:</strong> <span class="ap-email">${escapeHtml(emergencyState.triggeredByEmail || '不明')}</span></div>
+              <div><strong>ニックネーム:</strong> ${escapeHtml(emergencyState.triggeredByName || '不明')}</div>
+              <div><strong>時刻:</strong> ${formatTime(emergencyState.triggeredAt)}</div>
+              ${emergencyState.reason ? `<div><strong>理由:</strong> ${escapeHtml(emergencyState.reason)}</div>` : ''}
+            `;
+            adminEmergencyTriggerInfo.innerHTML = infoHtml;
           } else {
             // 一般ユーザー：全画面オーバーレイ
-            emergencyBanner.classList.remove('show');
-            emergencyInfo.innerHTML = `
-              <div style="margin-bottom:8px;">
-                <strong>発動者:</strong> ${escapeHtml(emergencyState.triggeredByEmail || emergencyState.triggeredByName || '不明')}
-              </div>
-              <div style="margin-bottom:8px;">
-                <strong>発動時刻:</strong> ${formatTime(emergencyState.triggeredAt)}
-              </div>
+            emergencyAdminBanner.classList.remove('show');
+            adminEmergencyPanel.classList.remove('show');
+            emergencyDetail.innerHTML = `
+              <div><strong>発動者:</strong> ${escapeHtml(emergencyState.triggeredByEmail || '不明')}</div>
+              <div><strong>時刻:</strong> ${formatTime(emergencyState.triggeredAt)}</div>
               ${emergencyState.reason ? `<div><strong>理由:</strong> ${escapeHtml(emergencyState.reason)}</div>` : ''}
             `;
             emergencyOverlay.classList.add('show');
-            document.body.style.overflow = 'hidden';
-            document.title = '🚨 緊急停止中';
+            document.title = '🚨 緊急停止中 - このサービスは停止しています';
             setFavicon(FAVICON_EMERGENCY);
+            // スクロール禁止
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
             // サイレン
             if (!prevActive) {
               playEmergencySound();
-              // 3回鳴らす
-              setTimeout(playEmergencySound, 1500);
-              setTimeout(playEmergencySound, 3000);
+              setTimeout(playEmergencySound, 1600);
+              setTimeout(playEmergencySound, 3200);
+              // 定期的に鳴らし続ける（緊急解除まで）
+              if (window.__emergencySoundInterval) clearInterval(window.__emergencySoundInterval);
+              window.__emergencySoundInterval = setInterval(() => {
+                if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
+                  playEmergencySound();
+                } else {
+                  clearInterval(window.__emergencySoundInterval);
+                }
+              }, 5000);
             }
-            // タブがアクティブに戻ったらもう一度鳴らす
-            return;
           }
         } else {
           // 解除
           emergencyOverlay.classList.remove('show');
-          emergencyBanner.classList.remove('show');
+          emergencyAdminBanner.classList.remove('show');
+          adminEmergencyPanel.classList.remove('show');
+          document.documentElement.style.overflow = '';
           document.body.style.overflow = '';
           document.title = 'シクナイチャット';
+          if (window.__emergencySoundInterval) {
+            clearInterval(window.__emergencySoundInterval);
+            window.__emergencySoundInterval = null;
+          }
           refreshFavicon();
         }
       }, (err) => {
-        console.warn('緊急状態監視エラー:', err);
+        console.warn('緊急監視エラー:', err);
       });
     }
 
-    async function triggerEmergency(reason) {
-      if (!currentUser || !isAdmin(currentUser.email)) {
-        showBanner('管理者権限が必要です', true);
+    // 誰でも押せる緊急発動（確認なし・即実行）
+    async function triggerEmergency() {
+      if (!currentUser) {
+        // ログインしていなくても発動可能にする場合、匿名ログインが必要
+        // → ここではログイン必須。ログインなしで押したい場合は別途対応必要
+        alert('緊急発動にはログインが必要です。');
         return;
       }
       try {
@@ -1055,21 +841,21 @@
           triggeredBy: currentUser.uid,
           triggeredByEmail: currentUser.email || '',
           triggeredByName: myProfile.nickname || '',
-          triggeredAt: Date.now(),
-          reason: reason || ''
+          triggeredAt: Date.now()
         });
-        showBanner('🚨 緊急モードを発動しました', true);
+        // 発動した本人が管理者なら即座にパネル表示（onValueで反映される）
       } catch (err) {
-        showBanner('発動に失敗: ' + (err.message || ''), true);
+        console.error('緊急発動エラー:', err);
+        showBanner('発動に失敗しました: ' + (err.message || ''), true);
       }
     }
 
+    // 管理者のみ解除可能
     async function clearEmergency() {
       if (!currentUser || !isAdmin(currentUser.email)) {
-        showBanner('管理者権限が必要です', true);
+        showBanner('解除権限がありません', true);
         return;
       }
-      if (!confirm('緊急モードを解除しますか？')) return;
       try {
         await update(ref(db, 'emergency'), {
           active: false,
@@ -1083,99 +869,42 @@
       }
     }
 
-    // ========================================
-    // アナウンス
-    // ========================================
-    function initAnnouncementListener() {
-      if (announcementUnsubscribe) announcementUnsubscribe();
-      const annRef = ref(db, 'announcement');
-      announcementUnsubscribe = onValue(annRef, (snap) => {
-        if (!snap.exists()) return;
-        const ann = snap.val();
-        if (!ann || !ann.text || !ann.createdAt) return;
-        // 既に閉じたものはスキップ
-        if (dismissedAnnouncements[ann.createdAt]) return;
-        // 有効期限チェック
-        if (ann.expiresAt && Date.now() > ann.expiresAt) return;
-        // 新しいアナウンスのみ表示
-        if (currentAnnouncement && currentAnnouncement.createdAt === ann.createdAt) return;
-        currentAnnouncement = ann;
-        showAnnouncement(ann);
-      }, () => {});
-    }
-
-    function showAnnouncement(ann) {
-      announcementText.textContent = ann.text;
-      announcementBanner.classList.add('show');
-      // 通知音
-      playNotificationSound();
-      if (announcementTimer) clearTimeout(announcementTimer);
-      const duration = ann.durationMs || 30000;
-      announcementTimer = setTimeout(() => {
-        announcementBanner.classList.remove('show');
-      }, duration);
-    }
-
-    document.getElementById('announcementClose').addEventListener('click', () => {
-      announcementBanner.classList.remove('show');
-      if (currentAnnouncement) {
-        dismissedAnnouncements[currentAnnouncement.createdAt] = true;
-        saveJson(ANNOUNCE_DISMISS_KEY, dismissedAnnouncements);
+    // タブを閉じようとした時の警告（緊急モード中のみ）
+    window.addEventListener('beforeunload', (e) => {
+      if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
+        e.preventDefault();
+        e.returnValue = '緊急モード中です。このページを離れないでください。';
+        return e.returnValue;
       }
     });
 
-    async function sendAnnouncement(text, durationSec) {
-      if (!currentUser || !isAdmin(currentUser.email)) {
-        showBanner('管理者権限が必要です', true);
-        return;
+    // タブがアクティブになったら再びサイレン
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
+        playEmergencySound();
       }
-      const trimmed = (text || '').trim();
-      if (!trimmed) {
-        showBanner('メッセージを入力してください', true);
-        return;
-      }
-      try {
-        await set(ref(db, 'announcement'), {
-          text: trimmed,
-          createdAt: Date.now(),
-          createdBy: currentUser.uid,
-          createdByEmail: currentUser.email || '',
-          createdByName: myProfile.nickname || '',
-          durationMs: Math.max(5000, Math.min(300000, (durationSec || 30) * 1000)),
-          expiresAt: Date.now() + Math.max(5000, Math.min(300000, (durationSec || 30) * 1000))
-        });
-        showBanner('📢 アナウンスを送信しました', false);
-      } catch (err) {
-        showBanner('送信に失敗: ' + (err.message || ''), true);
-      }
-    }
+    });
 
     // ========================================
     // プレゼンス
     // ========================================
     function initPresenceListener() {
       if (presenceUnsubscribe) presenceUnsubscribe();
-      const presenceRef = ref(db, 'presence');
-      presenceUnsubscribe = onValue(presenceRef, (snap) => {
+      presenceUnsubscribe = onValue(ref(db, 'presence'), (snap) => {
         presenceCache = snap.exists() ? snap.val() : {};
-        if (currentChatId) {
-          renderMessages();
-          updateChatHeaderOnline();
-        }
+        if (currentChatId) { renderMessages(); updateChatHeaderOnline(); }
         renderChatList();
       }, () => {});
     }
-
     function isUserOnline(uid) {
       if (!uid) return false;
       if (currentUser && uid === currentUser.uid) return true;
       const p = presenceCache[uid];
-      if (!p) return false;
-      if (!p.online) return false;
+      if (!p || !p.online) return false;
       if (p.lastChanged && (Date.now() - p.lastChanged) > PRESENCE_STALE_MS) return false;
       return true;
     }
-
     async function setupMyPresence() {
       if (!currentUser) return;
       myPresenceRef = ref(db, `presence/${currentUser.uid}`);
@@ -1189,39 +918,17 @@
         update(myPresenceRef, { online: true, lastChanged: Date.now() }).catch(() => {});
       }, HEARTBEAT_INTERVAL);
     }
-
     async function setMyOffline() {
       if (!currentUser) return;
       if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
-      try {
-        await set(ref(db, `presence/${currentUser.uid}`), { online: false, lastChanged: Date.now() });
-      } catch (e) {}
+      try { await set(ref(db, `presence/${currentUser.uid}`), { online: false, lastChanged: Date.now() }); } catch (e) {}
     }
 
-    function handleVisibilityChange() {
-      isTabActive = !document.hidden;
-      if (!currentUser) return;
-      if (isTabActive) {
-        if (myPresenceRef) {
-          update(myPresenceRef, { online: true, lastChanged: Date.now() }).catch(() => {});
-        }
-        if (currentChatId) markChatAsRead(currentChatId);
-        refreshFavicon();
-        renderChatList();
-      } else {
-        if (myPresenceRef) {
-          update(myPresenceRef, { online: false, lastChanged: Date.now() }).catch(() => {});
-        }
-        refreshFavicon();
-      }
-    }
-
-    function getTotalUnread() {
-      return Object.values(unreadCounts).reduce((a, b) => a + (b || 0), 0);
-    }
-
+    // ========================================
+    // 未読
+    // ========================================
+    function getTotalUnread() { return Object.values(unreadCounts).reduce((a, b) => a + (b || 0), 0); }
     function refreshFavicon() {
-      // 緊急モード中（管理者以外）は緊急アイコン
       if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
         setFavicon(FAVICON_EMERGENCY);
         return;
@@ -1230,7 +937,6 @@
       if (total > 0 && !isTabActive) setFavicon(FAVICON_UNREAD);
       else setFavicon(FAVICON_NORMAL);
     }
-
     function markChatAsRead(chatId) {
       const ts = chatLatestMsgAt[chatId] || 0;
       lastReadAt[chatId] = ts;
@@ -1242,7 +948,6 @@
         set(ref(db, `chatReads/${chatId}/${currentUser.uid}`), Date.now()).catch(() => {});
       }
     }
-
     function handleNewLatest(chatId, data) {
       if (!data) return;
       const lastAt = data.lastMessageAt || 0;
@@ -1251,8 +956,7 @@
       chatLatestMsgAt[chatId] = lastAt;
       chatLatestMsgSender[chatId] = lastSender;
       if (lastAt <= prev) return;
-      if (!currentUser) return;
-      if (lastSender === currentUser.uid) return;
+      if (!currentUser || lastSender === currentUser.uid) return;
       if (chatId === currentChatId && isTabActive) { markChatAsRead(chatId); return; }
       const lastRead = lastReadAt[chatId] || 0;
       if (lastAt > lastRead) {
@@ -1263,7 +967,6 @@
         renderChatList();
       }
     }
-
     function initChatLatestListeners() {
       Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       roomLatestListeners = {};
@@ -1279,17 +982,14 @@
 
     function initReadsListener(chatId) {
       if (readsUnsubscribe) readsUnsubscribe();
-      const r = ref(db, `chatReads/${chatId}`);
-      readsUnsubscribe = onValue(r, (snap) => {
+      readsUnsubscribe = onValue(ref(db, `chatReads/${chatId}`), (snap) => {
         readsCache = snap.exists() ? snap.val() : {};
         renderMessages();
       }, () => {});
     }
-
     function initTypingListener(chatId) {
       if (typingUnsubscribe) typingUnsubscribe();
-      const r = ref(db, `chatTyping/${chatId}`);
-      typingUnsubscribe = onValue(r, (snap) => {
+      typingUnsubscribe = onValue(ref(db, `chatTyping/${chatId}`), (snap) => {
         const now = Date.now();
         const raw = snap.exists() ? snap.val() : {};
         typingCache = {};
@@ -1300,54 +1000,36 @@
         renderTypingIndicator();
       }, () => {});
     }
-
     function renderTypingIndicator() {
       const existing = document.getElementById('typingIndicatorRow');
       if (existing) existing.remove();
       const uids = Object.keys(typingCache);
-      if (uids.length === 0) return;
-      if (!currentChatId) return;
+      if (uids.length === 0 || !currentChatId) return;
       const names = uids.map(uid => getProfileForUid(uid).nickname);
       const label = names.length === 1 ? `${names[0]} が入力中` : `${names.join('、')} が入力中`;
       const row = document.createElement('div');
       row.id = 'typingIndicatorRow';
-      row.style.display = 'flex';
-      row.innerHTML = `
-        <div class="typing-indicator">
-          <span>${escapeHtml(label)}</span>
-          <span class="typing-dots"><span></span><span></span><span></span></span>
-        </div>
-      `;
+      row.innerHTML = `<div class="typing-indicator"><span>${escapeHtml(label)}</span><span class="typing-dots"><span></span><span></span><span></span></span></div>`;
       messagesContainer.appendChild(row);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-
     async function setMyTypingState(isTyping) {
-      if (!currentUser || !currentChatId) return;
-      if (isCurrentlyTyping === isTyping) return;
+      if (!currentUser || !currentChatId || isCurrentlyTyping === isTyping) return;
       isCurrentlyTyping = isTyping;
       try {
         const typingRef = ref(db, `chatTyping/${currentChatId}/${currentUser.uid}`);
-        if (isTyping) {
-          await set(typingRef, { nickname: myProfile.nickname, at: Date.now() });
-          onDisconnect(typingRef).remove();
-        } else {
-          await remove(typingRef);
-        }
+        if (isTyping) { await set(typingRef, { nickname: myProfile.nickname, at: Date.now() }); onDisconnect(typingRef).remove(); }
+        else await remove(typingRef);
       } catch (e) {}
     }
 
     function initProfilesListener() {
       if (profilesUnsubscribe) profilesUnsubscribe();
-      const profilesRef = ref(db, 'chatProfiles');
-      profilesUnsubscribe = onValue(profilesRef, (snap) => {
+      profilesUnsubscribe = onValue(ref(db, 'chatProfiles'), (snap) => {
         profilesCache = snap.exists() ? snap.val() : {};
         if (currentUser && profilesCache[currentUser.uid]) {
           const p = profilesCache[currentUser.uid];
-          myProfile = {
-            nickname: p.nickname || currentUser.displayName || '名無しさん',
-            avatar: p.avatar || currentUser.photoURL || DEFAULT_AVATAR
-          };
+          myProfile = { nickname: p.nickname || currentUser.displayName || '名無しさん', avatar: p.avatar || currentUser.photoURL || DEFAULT_AVATAR };
           updateMyProfileUI();
         }
         if (currentChatId) { renderMessages(); updateChatHeaderOnline(); }
@@ -1355,14 +1037,10 @@
         renderStories();
       }, () => {});
     }
-
     function updateMyProfileUI() {
       myAvatar.src = myProfile.avatar || DEFAULT_AVATAR;
       myName.textContent = myProfile.nickname || '名無しさん';
-      const myDot = document.getElementById('myOnlineDot');
-      if (myDot) myDot.classList.add('online');
     }
-
     function getProfileForUid(uid) {
       if (!uid) return { nickname: '名無しさん', avatar: DEFAULT_AVATAR };
       const p = profilesCache[uid];
@@ -1372,13 +1050,11 @@
 
     function initBansListener() {
       if (bansUnsubscribe) bansUnsubscribe();
-      const bansRef = ref(db, 'bans');
-      bansUnsubscribe = onValue(bansRef, (snap) => {
+      bansUnsubscribe = onValue(ref(db, 'bans'), (snap) => {
         bansCache = snap.exists() ? snap.val() : {};
         if (currentUser && bansCache[currentUser.uid]) executeBan();
       }, () => {});
     }
-
     function executeBan() {
       banOverlay.classList.add('show');
       document.body.style.background = '#000';
@@ -1387,19 +1063,16 @@
     function initChatsListener() {
       if (chatsUnsubscribe) chatsUnsubscribe();
       if (!currentUser) return;
-      const userChatsRef = ref(db, `userChats/${currentUser.uid}`);
-      chatsUnsubscribe = onValue(userChatsRef, (snap) => {
+      chatsUnsubscribe = onValue(ref(db, `userChats/${currentUser.uid}`), (snap) => {
         chatsCache = snap.exists() ? snap.val() : {};
         renderChatList();
         initChatLatestListeners();
       }, () => {});
     }
-
     function getChatOnlineStatus(chat) {
       if (!chat) return { onlineCount: 0, totalOthers: 0 };
       const others = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
-      const onlineCount = others.filter(uid => isUserOnline(uid)).length;
-      return { onlineCount, totalOthers: others.length };
+      return { onlineCount: others.filter(uid => isUserOnline(uid)).length, totalOthers: others.length };
     }
 
     function renderChatList() {
@@ -1407,20 +1080,15 @@
       chatListContainer.innerHTML = '';
       const entries = Object.entries(chatsCache || {});
       if (entries.length === 0) {
-        chatListContainer.innerHTML = `
-          <div class="text-gray-500 text-sm p-6 text-center" style="animation: msgIn 0.4s ease both;">
-            💬 まだチャットがありません。<br>
-            <span class="text-xs text-gray-400">「＋ 新しいチャット」から相手のメールアドレスを追加して始めましょう。</span>
-          </div>`;
+        chatListContainer.innerHTML = '<div class="text-gray-500 text-sm p-6 text-center">💬 まだチャットがありません。<br><span class="text-xs text-gray-400">「＋ 新しいチャット」から始めましょう。</span></div>';
         return;
       }
       entries.sort((a, b) => (b[1].lastMessageAt || b[1].createdAt || 0) - (a[1].lastMessageAt || a[1].createdAt || 0));
-      entries.forEach(([chatId, chat], idx) => {
+      entries.forEach(([chatId, chat]) => {
         const unread = unreadCounts[chatId] || 0;
         const isUnread = unread > 0;
         const item = document.createElement('div');
         item.className = 'chat-item' + (isUnread ? ' unread' : '');
-        item.style.animationDelay = (idx * 0.04) + 's';
         item.onclick = () => openChat(chatId);
         const isGroup = chat.type === 'group';
         let displayName, avatarHtml;
@@ -1431,10 +1099,7 @@
           const avatars = memberUids.slice(0, 3).map(uid => {
             const p = getProfileForUid(uid);
             const online = isUserOnline(uid);
-            return `<span class="avatar-online-wrap">
-              <img class="avatar-sm" src="${escapeHtml(p.avatar)}" alt="" style="border:2px solid #fff;">
-              <span class="online-dot small ${online ? 'online' : ''}"></span>
-            </span>`;
+            return `<span class="avatar-online-wrap"><img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="border:2px solid #fff;"><span class="online-dot small ${online ? 'online' : ''}"></span></span>`;
           }).join('');
           avatarHtml = `<div class="flex -space-x-2">${avatars || `<span class="avatar-online-wrap"><img class="avatar" src="${DEFAULT_AVATAR}"></span>`}</div>`;
         } else {
@@ -1442,44 +1107,27 @@
           const p = getProfileForUid(otherUid);
           displayName = p.nickname;
           const online = isUserOnline(otherUid);
-          avatarHtml = `<span class="avatar-online-wrap">
-            <img class="avatar" src="${escapeHtml(p.avatar)}" alt="">
-            <span class="online-dot ${online ? 'online' : ''}"></span>
-          </span>`;
+          avatarHtml = `<span class="avatar-online-wrap"><img class="avatar" src="${escapeHtml(p.avatar)}"><span class="online-dot ${online ? 'online' : ''}"></span></span>`;
         }
         const unreadDot = isUnread ? `<span class="unread-dot"></span>` : '';
         const unreadBadge = isUnread ? `<span class="unread-count">${unread > 99 ? '99+' : unread}</span>` : '';
         let onlineLabel = '';
         if (isGroup && totalOthers > 0) {
-          onlineLabel = `<span class="online-count ${onlineCount === 0 ? 'offline' : ''}">
-            <span class="online-dot small ${onlineCount > 0 ? 'online' : ''}" style="width:8px;height:8px;border-width:1px;"></span>
-            ${onlineCount}/${totalOthers}
-          </span>`;
+          onlineLabel = `<span class="online-count ${onlineCount === 0 ? 'offline' : ''}"><span class="online-dot small ${onlineCount > 0 ? 'online' : ''}" style="width:8px;height:8px;"></span>${onlineCount}/${totalOthers}</span>`;
         } else if (!isGroup) {
           const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
           const online = isUserOnline(otherUid);
-          onlineLabel = `<span class="online-count ${online ? '' : 'offline'}">
-            <span class="online-dot small ${online ? 'online' : ''}" style="width:8px;height:8px;border-width:1px;"></span>
-            ${online ? 'オンライン' : 'オフライン'}
-          </span>`;
+          onlineLabel = `<span class="online-count ${online ? '' : 'offline'}"><span class="online-dot small ${online ? 'online' : ''}" style="width:8px;height:8px;"></span>${online ? 'オンライン' : 'オフライン'}</span>`;
         }
         item.innerHTML = `
-          <div style="position:relative;">
-            ${avatarHtml}
-            ${unreadDot}
-          </div>
+          <div style="position:relative;">${avatarHtml}${unreadDot}</div>
           <div class="flex-1 min-w-0">
-            <div class="font-bold text-sm text-blue-900 truncate">
-              ${isGroup ? '👥 ' : ''}${escapeHtml(displayName)}
-            </div>
-            <div class="text-xs ${isUnread ? 'text-red-600 font-semibold' : 'text-gray-500'} truncate">
-              ${escapeHtml(chat.lastMessage || 'まだメッセージがありません')}
-            </div>
+            <div class="font-bold text-sm text-blue-900 truncate">${isGroup ? '👥 ' : ''}${escapeHtml(displayName)}</div>
+            <div class="text-xs ${isUnread ? 'text-red-600 font-semibold' : 'text-gray-500'} truncate">${escapeHtml(chat.lastMessage || 'まだメッセージがありません')}</div>
           </div>
           <div class="flex flex-col items-end gap-1">
             <div class="text-xs text-gray-400 whitespace-nowrap">${formatTime(chat.lastMessageAt || chat.createdAt)}</div>
-            ${onlineLabel}
-            ${unreadBadge}
+            ${onlineLabel}${unreadBadge}
           </div>
         `;
         chatListContainer.appendChild(item);
@@ -1491,40 +1139,28 @@
       if (!meta || !currentChatId) return;
       const chat = chatsCache[currentChatId];
       if (!chat) return;
-      const { onlineCount, totalOthers } = getChatOnlineStatus(chat);
+      const { onlineCount } = getChatOnlineStatus(chat);
       const isGroup = chat.type === 'group';
       if (isGroup) {
-        meta.innerHTML = `グループ・${Object.keys(chat.members || {}).length}人 ・
-          <span class="online-count ${onlineCount === 0 ? 'offline' : ''}">
-            <span class="online-dot small ${onlineCount > 0 ? 'online' : ''}" style="width:8px;height:8px;border-width:1px;"></span>
-            ${onlineCount}人オンライン
-          </span>`;
+        meta.innerHTML = `グループ・${Object.keys(chat.members || {}).length}人 ・ <span class="online-count ${onlineCount === 0 ? 'offline' : ''}"><span class="online-dot small ${onlineCount > 0 ? 'online' : ''}" style="width:8px;height:8px;"></span>${onlineCount}人オンライン</span>`;
       } else {
         const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
         const online = isUserOnline(otherUid);
-        meta.innerHTML = `${online ? 'オンライン' : 'オフライン'}
-          <span class="online-dot small ${online ? 'online' : ''}" style="width:8px;height:8px;border-width:1px;"></span>`;
+        meta.innerHTML = `${online ? 'オンライン' : 'オフライン'} <span class="online-dot small ${online ? 'online' : ''}" style="width:8px;height:8px;"></span>`;
       }
       const headerAvatars = document.getElementById('chatHeaderAvatars');
       headerAvatars.innerHTML = '';
       if (isGroup) {
-        const memberUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
-        memberUids.slice(0, 3).forEach(uid => {
+        Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid).slice(0, 3).forEach(uid => {
           const p = getProfileForUid(uid);
           const online = isUserOnline(uid);
-          headerAvatars.innerHTML += `<span class="avatar-online-wrap">
-            <img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="border:2px solid #fff;">
-            <span class="online-dot small ${online ? 'online' : ''}" style="width:9px;height:9px;"></span>
-          </span>`;
+          headerAvatars.innerHTML += `<span class="avatar-online-wrap"><img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="border:2px solid #fff;"><span class="online-dot small ${online ? 'online' : ''}" style="width:9px;height:9px;"></span></span>`;
         });
       } else {
         const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
         const p = getProfileForUid(otherUid);
         const online = isUserOnline(otherUid);
-        headerAvatars.innerHTML = `<span class="avatar-online-wrap">
-          <img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="border:2px solid #fff;">
-          <span class="online-dot small ${online ? 'online' : ''}" style="width:9px;height:9px;"></span>
-        </span>`;
+        headerAvatars.innerHTML = `<span class="avatar-online-wrap"><img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="border:2px solid #fff;"><span class="online-dot small ${online ? 'online' : ''}" style="width:9px;height:9px;"></span></span>`;
       }
     }
 
@@ -1539,32 +1175,23 @@
       clearTimeout(typingTimeout);
       const isGroup = chat.type === 'group';
       let displayName;
-      if (isGroup) {
-        displayName = chat.name || 'グループチャット';
-      } else {
+      if (isGroup) displayName = chat.name || 'グループチャット';
+      else {
         const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
-        const p = getProfileForUid(otherUid);
-        displayName = p.nickname;
+        displayName = getProfileForUid(otherUid).nickname;
       }
       document.getElementById('currentChatName').textContent = displayName;
       updateChatHeaderOnline();
       chatListView.classList.add('hidden');
       chatView.classList.remove('hidden');
-      chatView.classList.remove('view-enter');
-      void chatView.offsetWidth;
-      chatView.classList.add('view-enter');
       renderChatList();
       loadMessages(chatId);
     }
-
     window.backToChatList = function() {
       setMyTypingState(false);
       currentChatId = null;
       chatView.classList.add('hidden');
       chatListView.classList.remove('hidden');
-      chatListView.classList.remove('view-enter-reverse');
-      void chatListView.offsetWidth;
-      chatListView.classList.add('view-enter-reverse');
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
       if (readsUnsubscribe) { readsUnsubscribe(); readsUnsubscribe = null; }
       if (typingUnsubscribe) { typingUnsubscribe(); typingUnsubscribe = null; }
@@ -1575,97 +1202,71 @@
 
     function loadMessages(chatId) {
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
-      messagesContainer.innerHTML = '<p class="text-gray-500 text-sm dots-loading"><span class="loading-spinner"></span> 読み込み中</p>';
-      const msgsRef = ref(db, `chatMessages/${chatId}`);
-      const q = query(msgsRef, orderByChild('createdAt'));
+      messagesContainer.innerHTML = '<p class="text-gray-500 text-sm p-3 dots-loading"><span class="loading-spinner"></span> 読み込み中</p>';
+      const q = query(ref(db, `chatMessages/${chatId}`), orderByChild('createdAt'));
       messagesUnsubscribe = onValue(q, (snapshot) => {
         setConnection(true);
         messagesCache = [];
         if (snapshot.exists()) {
-          snapshot.forEach((child) => {
-            messagesCache.push({ key: child.key, ...child.val() });
-          });
+          snapshot.forEach((child) => messagesCache.push({ key: child.key, ...child.val() }));
           messagesCache.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
         }
         renderMessages();
         if (currentChatId === chatId && isTabActive) markChatAsRead(chatId);
       }, () => {
         setConnection(false);
-        messagesContainer.innerHTML = '<p class="text-red-500 text-sm">読み込みに失敗しました。</p>';
+        messagesContainer.innerHTML = '<p class="text-red-500 text-sm p-3">読み込みに失敗しました。</p>';
       });
     }
 
     function isMessageReadByOthers(msg) {
-      if (!currentUser) return false;
-      if (msg.authorUid !== currentUser.uid) return false;
+      if (!currentUser || msg.authorUid !== currentUser.uid) return false;
       const chat = chatsCache[currentChatId];
       if (!chat) return false;
       const memberUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
       if (memberUids.length === 0) return false;
       const msgAt = msg.createdAt || 0;
-      if (chat.type === 'direct') {
-        const otherUid = memberUids[0];
-        return (readsCache[otherUid] || 0) >= msgAt;
-      } else {
-        return memberUids.every(uid => (readsCache[uid] || 0) >= msgAt);
-      }
+      if (chat.type === 'direct') return (readsCache[memberUids[0]] || 0) >= msgAt;
+      return memberUids.every(uid => (readsCache[uid] || 0) >= msgAt);
     }
 
     function renderMessages() {
       messagesContainer.innerHTML = '';
       closeAllMenus();
       if (messagesCache.length === 0) {
-        messagesContainer.innerHTML = '<p class="text-gray-400 text-sm text-center py-8" style="animation: msgIn 0.4s ease both;">まだメッセージがありません。最初のメッセージを送ってみましょう！</p>';
+        messagesContainer.innerHTML = '<p class="text-gray-400 text-sm text-center py-8">まだメッセージがありません。</p>';
         renderTypingIndicator();
         return;
       }
       const frag = document.createDocumentFragment();
-      messagesCache.forEach((msg, idx) => {
+      messagesCache.forEach((msg) => {
         const isMine = currentUser && msg.authorUid === currentUser.uid;
         const profile = getProfileForUid(msg.authorUid);
         const senderOnline = isUserOnline(msg.authorUid);
         const row = document.createElement('div');
         row.className = 'msg-row' + (isMine ? ' mine' : '');
-        row.style.animationDelay = Math.min(idx * 0.025, 0.5) + 's';
         row.dataset.msgKey = msg.key;
         let fileHtml = '';
         if (msg.file && msg.file.dataUrl) {
-          fileHtml = `<div class="msg-file"><a href="${msg.file.dataUrl}" target="_blank" rel="noopener">
-            <img src="${msg.file.dataUrl}" alt="${escapeHtml(msg.file.name || '')}" loading="lazy">
-          </a></div>`;
+          fileHtml = `<div class="msg-file"><a href="${msg.file.dataUrl}" target="_blank" rel="noopener"><img src="${msg.file.dataUrl}" loading="lazy"></a></div>`;
         }
         let storyContextHtml = '';
         if (msg.storyReplyTo && msg.storyReplyTo.previewType) {
           const s = msg.storyReplyTo;
-          let thumb = '';
-          if (s.previewType === 'image' && s.previewDataUrl) thumb = `<img src="${s.previewDataUrl}" alt="">`;
-          else thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(45deg,#f09433,#bc1888);"></div>`;
+          const thumb = (s.previewType === 'image' && s.previewDataUrl)
+            ? `<img src="${s.previewDataUrl}">`
+            : `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(45deg,#f09433,#bc1888);"></div>`;
           storyContextHtml = `<div class="story-reply-context">${thumb}<div><strong>ストーリーに返信</strong><br>${escapeHtml(s.previewText || '')}</div></div>`;
         }
-        const menuBtnHtml = isMine ? `<button class="msg-menu-btn" data-key="${msg.key}" title="メニュー">⋯</button>` : '';
+        const menuBtnHtml = isMine ? `<button class="msg-menu-btn" data-key="${msg.key}">⋯</button>` : '';
         const editedHtml = msg.edited ? '<span class="edited-label">(編集済み)</span>' : '';
-        let readHtml = '';
-        if (isMine && isMessageReadByOthers(msg)) {
-          readHtml = `<div class="read-receipt" style="justify-content: flex-end;">✓ 既読</div>`;
-        }
-        const avatarHtml = `<span class="avatar-online-wrap">
-          <img class="avatar" src="${escapeHtml(profile.avatar)}" alt="">
-          <span class="online-dot ${senderOnline ? 'online' : ''}"></span>
-        </span>`;
+        const readHtml = (isMine && isMessageReadByOthers(msg)) ? `<div class="read-receipt" style="justify-content: flex-end;">✓ 既読</div>` : '';
         row.innerHTML = `
-          ${avatarHtml}
+          <span class="avatar-online-wrap"><img class="avatar" src="${escapeHtml(profile.avatar)}"><span class="online-dot ${senderOnline ? 'online' : ''}"></span></span>
           <div style="max-width: 75%; position: relative;">
             ${menuBtnHtml}
-            <div class="msg-meta ${isMine ? 'text-right' : ''}">
-              <span class="name">${escapeHtml(profile.nickname)}</span>
-              <span class="time">${formatTime(msg.createdAt)}</span>
-              ${editedHtml}
-            </div>
-            <div class="msg-bubble" data-key="${msg.key}">
-              ${storyContextHtml}
-              ${msg.content ? `<div class="msg-content">${formatContent(msg.content)}</div>` : ''}
-              ${fileHtml}
-            </div>
+            <div class="msg-meta ${isMine ? 'text-right' : ''}"><span class="name">${escapeHtml(profile.nickname)}</span><span class="time">${formatTime(msg.createdAt)}</span>${editedHtml}</div>
+            <div class="msg-bubble">${storyContextHtml}${msg.content ? `<div class="msg-content">${formatContent(msg.content)}</div>` : ''}${fileHtml}</div>
             ${readHtml}
           </div>
         `;
@@ -1684,58 +1285,42 @@
       renderTypingIndicator();
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-
     function outsideClickHandler(e) {
       if (!e.target.closest('.msg-menu-popup') && !e.target.closest('.msg-menu-btn')) closeAllMenus();
     }
-
     function closeAllMenus() {
       messagesContainer.querySelectorAll('.msg-menu-popup').forEach(el => el.remove());
       messagesContainer.querySelectorAll('.msg-menu-btn.open').forEach(el => el.classList.remove('open'));
       openMenuKey = null;
     }
-
     function openMenu(btn, key) {
       closeAllMenus();
       openMenuKey = key;
       btn.classList.add('open');
       const popup = document.createElement('div');
       popup.className = 'msg-menu-popup';
-      popup.innerHTML = `
-        <button class="edit-action">✏️ 編集</button>
-        <button class="danger delete-action">🗑️ 取り消し</button>
-      `;
+      popup.innerHTML = `<button class="edit-action">✏️ 編集</button><button class="danger delete-action">🗑️ 取り消し</button>`;
       btn.parentElement.appendChild(popup);
-      popup.querySelector('.edit-action').addEventListener('click', (e) => {
-        e.stopPropagation(); closeAllMenus(); openEditModal(key);
-      });
+      popup.querySelector('.edit-action').addEventListener('click', (e) => { e.stopPropagation(); closeAllMenus(); openEditModal(key); });
       popup.querySelector('.delete-action').addEventListener('click', async (e) => {
         e.stopPropagation(); closeAllMenus();
         if (!confirm('このメッセージを取り消しますか？')) return;
-        try {
-          await remove(ref(db, `chatMessages/${currentChatId}/${key}`));
-          showBanner('メッセージを取り消しました', false);
-        } catch (err) { showBanner('取り消しに失敗しました', true); }
+        try { await remove(ref(db, `chatMessages/${currentChatId}/${key}`)); showBanner('メッセージを取り消しました', false); }
+        catch (err) { showBanner('取り消しに失敗しました', true); }
       });
     }
 
     const editMsgModal = document.getElementById('editMsgModal');
     const editMsgInput = document.getElementById('editMsgInput');
-
     function openEditModal(key) {
       const msg = messagesCache.find(m => m.key === key);
       if (!msg) return;
       editingMsgKey = key;
       editMsgInput.value = msg.content || '';
       editMsgModal.classList.remove('hidden');
-      setTimeout(() => editMsgInput.focus(), 100);
     }
-    document.getElementById('editMsgCancelBtn').addEventListener('click', () => {
-      editMsgModal.classList.add('hidden'); editingMsgKey = null;
-    });
-    editMsgModal.addEventListener('click', (e) => {
-      if (e.target.id === 'editMsgModal') { editMsgModal.classList.add('hidden'); editingMsgKey = null; }
-    });
+    document.getElementById('editMsgCancelBtn').addEventListener('click', () => { editMsgModal.classList.add('hidden'); editingMsgKey = null; });
+    editMsgModal.addEventListener('click', (e) => { if (e.target.id === 'editMsgModal') { editMsgModal.classList.add('hidden'); editingMsgKey = null; } });
     document.getElementById('editMsgSaveBtn').addEventListener('click', async () => {
       if (!editingMsgKey || !currentChatId) return;
       const newContent = editMsgInput.value.trim();
@@ -1743,12 +1328,10 @@
       if (!msg) return;
       if (!newContent && !(msg.file && msg.file.dataUrl)) { alert('メッセージを入力してください。'); return; }
       try {
-        await update(ref(db, `chatMessages/${currentChatId}/${editingMsgKey}`), {
-          content: newContent, edited: true, editedAt: Date.now()
-        });
+        await update(ref(db, `chatMessages/${currentChatId}/${editingMsgKey}`), { content: newContent, edited: true, editedAt: Date.now() });
         editMsgModal.classList.add('hidden'); editingMsgKey = null;
         showBanner('メッセージを編集しました', false);
-      } catch (err) { showBanner('編集に失敗しました: ' + (err.message || ''), true); }
+      } catch (err) { showBanner('編集に失敗しました', true); }
     });
 
     const messageInput = document.getElementById('messageInput');
@@ -1761,11 +1344,8 @@
       messageInput.style.height = 'auto';
       messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
       const hasText = messageInput.value.trim().length > 0;
-      if (hasText) {
-        setMyTypingState(true);
-        clearTimeout(typingTimeout);
-        typingTimeout = setTimeout(() => setMyTypingState(false), TYPING_TIMEOUT_MS);
-      } else { clearTimeout(typingTimeout); setMyTypingState(false); }
+      if (hasText) { setMyTypingState(true); clearTimeout(typingTimeout); typingTimeout = setTimeout(() => setMyTypingState(false), TYPING_TIMEOUT_MS); }
+      else { clearTimeout(typingTimeout); setMyTypingState(false); }
     });
     messageInput.addEventListener('blur', () => { clearTimeout(typingTimeout); setMyTypingState(false); });
     messageInput.addEventListener('keydown', (e) => {
@@ -1783,16 +1363,11 @@
         messagePreviewImg.src = r.dataUrl;
         messagePreviewInfo.textContent = `${f.name}（${r.width}×${r.height}）`;
         messagePreviewBox.classList.remove('hidden');
-      } catch (err) {
-        alert(err.message);
-        messageFileInput.value = '';
-        messagePreviewBox.classList.add('hidden');
-      }
+      } catch (err) { alert(err.message); messageFileInput.value = ''; messagePreviewBox.classList.add('hidden'); }
     });
 
     async function sendMessage({ content, file, storyReplyTo }) {
-      if (!currentUser) { alert('ログインが必要です。'); return false; }
-      if (!currentChatId) return false;
+      if (!currentUser || !currentChatId) return false;
       if (bansCache[currentUser.uid]) { executeBan(); return false; }
       if (!content && !file) return false;
       const sendBtn = document.getElementById('sendBtn');
@@ -1800,36 +1375,24 @@
       try {
         let fileData = null;
         if (file) fileData = await fileToBase64Image(file);
-        const msgData = {
-          content: content || '', file: fileData,
-          authorUid: currentUser.uid, authorName: myProfile.nickname,
-          authorAvatar: myProfile.avatar, createdAt: Date.now()
-        };
+        const msgData = { content: content || '', file: fileData, authorUid: currentUser.uid, authorName: myProfile.nickname, authorAvatar: myProfile.avatar, createdAt: Date.now() };
         if (storyReplyTo) msgData.storyReplyTo = storyReplyTo;
-        const msgsRef = ref(db, `chatMessages/${currentChatId}`);
-        const newRef = push(msgsRef);
+        const newRef = push(ref(db, `chatMessages/${currentChatId}`));
         await set(newRef, msgData);
         const chat = chatsCache[currentChatId];
         const memberUids = Object.keys(chat.members || {});
         const lastMsgLabel = content || (fileData ? '📷 画像' : '');
-        const updateData = {
-          lastMessage: lastMsgLabel, lastMessageAt: Date.now(), lastSenderUid: currentUser.uid
-        };
         const updates = {};
         memberUids.forEach(uid => {
-          updates[`userChats/${uid}/${currentChatId}/lastMessage`] = updateData.lastMessage;
-          updates[`userChats/${uid}/${currentChatId}/lastMessageAt`] = updateData.lastMessageAt;
-          updates[`userChats/${uid}/${currentChatId}/lastSenderUid`] = updateData.lastSenderUid;
+          updates[`userChats/${uid}/${currentChatId}/lastMessage`] = lastMsgLabel;
+          updates[`userChats/${uid}/${currentChatId}/lastMessageAt`] = Date.now();
+          updates[`userChats/${uid}/${currentChatId}/lastSenderUid`] = currentUser.uid;
         });
         await update(ref(db), updates);
         markChatAsRead(currentChatId);
         return true;
-      } catch (err) {
-        showBanner('送信失敗: ' + (err.message || ''), true);
-        return false;
-      } finally {
-        if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '送信'; }
-      }
+      } catch (err) { showBanner('送信失敗: ' + (err.message || ''), true); return false; }
+      finally { if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = '送信'; } }
     }
 
     document.getElementById('messageForm').addEventListener('submit', async (e) => {
@@ -1839,15 +1402,13 @@
       if (!content && !file) return;
       const ok = await sendMessage({ content, file });
       if (ok) {
-        clearTimeout(typingTimeout);
-        setMyTypingState(false);
-        messageInput.value = '';
-        messageInput.style.height = 'auto';
-        messageFileInput.value = '';
-        messagePreviewBox.classList.add('hidden');
+        clearTimeout(typingTimeout); setMyTypingState(false);
+        messageInput.value = ''; messageInput.style.height = 'auto';
+        messageFileInput.value = ''; messagePreviewBox.classList.add('hidden');
       }
     });
 
+    // 新規チャット
     const newChatModal = document.getElementById('newChatModal');
     const memberEmailInput = document.getElementById('memberEmailInput');
     const memberSearchMsg = document.getElementById('memberSearchMsg');
@@ -1862,9 +1423,7 @@
       newChatModal.classList.remove('hidden');
     });
     document.getElementById('newChatCancelBtn').addEventListener('click', () => newChatModal.classList.add('hidden'));
-    newChatModal.addEventListener('click', (e) => {
-      if (e.target.id === 'newChatModal') newChatModal.classList.add('hidden');
-    });
+    newChatModal.addEventListener('click', (e) => { if (e.target.id === 'newChatModal') newChatModal.classList.add('hidden'); });
 
     function renderSelectedMembers() {
       if (pendingMembers.length === 0) {
@@ -1875,14 +1434,11 @@
       pendingMembers.forEach((m, idx) => {
         const chip = document.createElement('span');
         chip.className = 'member-chip';
-        chip.innerHTML = `<img src="${escapeHtml(m.avatar)}" alt="">${escapeHtml(m.nickname)}<span class="remove-x" data-idx="${idx}">×</span>`;
-        chip.querySelector('.remove-x').addEventListener('click', () => {
-          pendingMembers.splice(idx, 1); renderSelectedMembers();
-        });
+        chip.innerHTML = `<img src="${escapeHtml(m.avatar)}">${escapeHtml(m.nickname)}<span class="remove-x" data-idx="${idx}">×</span>`;
+        chip.querySelector('.remove-x').addEventListener('click', () => { pendingMembers.splice(idx, 1); renderSelectedMembers(); });
         selectedMembersBox.appendChild(chip);
       });
     }
-
     document.getElementById('addMemberBtn').addEventListener('click', async () => {
       const email = memberEmailInput.value.trim().toLowerCase();
       memberSearchMsg.textContent = '';
@@ -1899,21 +1455,14 @@
           if (p.email && p.email.toLowerCase() === email) { found = { uid, ...p }; break; }
         }
         if (!found) { memberSearchMsg.innerHTML = '<span class="text-red-500">該当するユーザーが見つかりませんでした。</span>'; return; }
-        pendingMembers.push({
-          uid: found.uid, nickname: found.nickname || '名無しさん',
-          avatar: found.avatar || DEFAULT_AVATAR, email: found.email
-        });
+        pendingMembers.push({ uid: found.uid, nickname: found.nickname || '名無しさん', avatar: found.avatar || DEFAULT_AVATAR, email: found.email });
         memberEmailInput.value = '';
         memberSearchMsg.innerHTML = '<span class="text-green-600">✓ 追加しました。</span>';
         renderSelectedMembers();
-      } catch (err) {
-        memberSearchMsg.innerHTML = '<span class="text-red-500">検索に失敗しました。</span>';
-      }
+      } catch (err) { memberSearchMsg.innerHTML = '<span class="text-red-500">検索に失敗しました。</span>'; }
     });
     memberEmailInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
-        e.preventDefault(); document.getElementById('addMemberBtn').click();
-      }
+      if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); document.getElementById('addMemberBtn').click(); }
     });
 
     document.getElementById('newChatCreateBtn').addEventListener('click', async () => {
@@ -1930,36 +1479,23 @@
         if (existingChatId) { newChatModal.classList.add('hidden'); openChat(existingChatId); return; }
       }
       try {
-        const chatsRef = ref(db, 'chatMessages');
-        const newChatRef = push(chatsRef);
+        const newChatRef = push(ref(db, 'chatMessages'));
         const chatId = newChatRef.key;
-        const chatData = {
-          type: isGroup ? 'group' : 'direct',
-          name: isGroup ? (groupName || 'グループチャット') : '',
-          members: members, createdAt: Date.now(),
-          createdBy: currentUser.uid, lastMessage: '', lastMessageAt: Date.now()
-        };
+        const chatData = { type: isGroup ? 'group' : 'direct', name: isGroup ? (groupName || 'グループチャット') : '', members, createdAt: Date.now(), createdBy: currentUser.uid, lastMessage: '', lastMessageAt: Date.now() };
         await set(ref(db, `chatMeta/${chatId}`), chatData);
         const updates = {};
-        Object.keys(members).forEach(uid => {
-          updates[`userChats/${uid}/${chatId}`] = {
-            type: chatData.type, name: chatData.name, members: members,
-            createdAt: chatData.createdAt, lastMessage: '', lastMessageAt: chatData.lastMessageAt
-          };
-        });
+        Object.keys(members).forEach(uid => { updates[`userChats/${uid}/${chatId}`] = { ...chatData }; });
         await update(ref(db), updates);
         newChatModal.classList.add('hidden');
         showBanner('チャットを作成しました', false);
         setTimeout(() => openChat(chatId), 300);
       } catch (err) { showBanner('作成失敗: ' + (err.message || ''), true); }
     });
-
     async function findExistingDirectChat(partnerUid) {
       try {
         const snap = await get(ref(db, `userChats/${currentUser.uid}`));
         if (!snap.exists()) return null;
-        const chats = snap.val();
-        for (const [chatId, chat] of Object.entries(chats)) {
+        for (const [chatId, chat] of Object.entries(snap.val())) {
           if (chat.type !== 'direct') continue;
           const memberUids = Object.keys(chat.members || {});
           if (memberUids.length === 2 && memberUids.includes(currentUser.uid) && memberUids.includes(partnerUid)) return chatId;
@@ -1968,15 +1504,11 @@
       } catch (e) { return null; }
     }
 
-    // ========================================
-    // ストーリー
-    // ========================================
+    // ストーリー（簡略版）
     const STORY_TTL = 24 * 60 * 60 * 1000;
-
     function initStoriesListener() {
       if (storiesUnsubscribe) storiesUnsubscribe();
-      const storiesRef = ref(db, 'stories');
-      storiesUnsubscribe = onValue(storiesRef, (snap) => {
+      storiesUnsubscribe = onValue(ref(db, 'stories'), (snap) => {
         const now = Date.now();
         const raw = snap.exists() ? snap.val() : {};
         storiesCache = {};
@@ -1985,72 +1517,39 @@
           const valid = {};
           Object.entries(userStories).forEach(([sid, s]) => {
             if (!s || !s.createdAt) return;
-            if ((now - s.createdAt) < STORY_TTL) {
-              valid[sid] = s;
-            } else {
-              if (uid === currentUser.uid) {
-                set(ref(db, `storyArchive/${uid}/${sid}`), s).then(() => {
-                  remove(ref(db, `stories/${uid}/${sid}`)).catch(() => {});
-                }).catch(() => {
-                  remove(ref(db, `stories/${uid}/${sid}`)).catch(() => {});
-                });
-              } else {
-                remove(ref(db, `stories/${uid}/${sid}`)).catch(() => {});
-              }
-            }
+            if ((now - s.createdAt) < STORY_TTL) valid[sid] = s;
+            else remove(ref(db, `stories/${uid}/${sid}`)).catch(() => {});
           });
           if (Object.keys(valid).length > 0) storiesCache[uid] = valid;
         });
         renderStories();
       }, () => {});
     }
-
     function initMyArchiveListener() {
       if (myArchiveUnsubscribe) myArchiveUnsubscribe();
       if (!currentUser) return;
-      const r = ref(db, `storyArchive/${currentUser.uid}`);
-      myArchiveUnsubscribe = onValue(r, (snap) => {
+      myArchiveUnsubscribe = onValue(ref(db, `storyArchive/${currentUser.uid}`), (snap) => {
         myArchivedStories = snap.exists() ? snap.val() : {};
-        if (!document.getElementById('archiveModal').classList.contains('hidden')) renderArchive();
       }, () => {});
     }
-
     function renderStories() {
       const strip = document.getElementById('storiesStrip');
       strip.querySelectorAll('.story-bubble:not(#storyAddBtn)').forEach(el => el.remove());
       if (!currentUser) return;
       const otherUids = Object.keys(storiesCache || {}).filter(uid => uid !== currentUser.uid);
-      const unreadUids = [];
-      const seenUids = [];
+      const unreadUids = [], seenUids = [];
       otherUids.forEach(uid => {
-        const userStories = storiesCache[uid];
-        const storyList = Object.entries(userStories).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-        const hasUnseen = storyList.some(s => !mySeenStories[s.id]);
-        if (hasUnseen) unreadUids.push(uid);
+        const list = Object.entries(storiesCache[uid]).map(([sid, s]) => ({ id: sid, ...s }));
+        if (list.some(s => !mySeenStories[s.id])) unreadUids.push(uid);
         else seenUids.push(uid);
       });
-      const sortByLatest = (arr) => arr.sort((a, b) => {
-        const aLatest = Math.max(...Object.values(storiesCache[a]).map(s => s.createdAt || 0));
-        const bLatest = Math.max(...Object.values(storiesCache[b]).map(s => s.createdAt || 0));
-        return bLatest - aLatest;
-      });
-      sortByLatest(unreadUids);
-      sortByLatest(seenUids);
       const unreadSection = document.createElement('div');
       unreadSection.className = 'stories-section-unread';
       if (storiesCache[currentUser.uid]) {
-        const profile = getProfileForUid(currentUser.uid);
-        const userStories = storiesCache[currentUser.uid];
-        const storyList = Object.entries(userStories).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-        const allSeen = storyList.every(s => mySeenStories[s.id]);
+        const p = getProfileForUid(currentUser.uid);
         const bubble = document.createElement('div');
-        bubble.className = 'story-bubble' + (allSeen ? ' seen' : '');
-        bubble.innerHTML = `
-          <div class="story-ring mine ${allSeen ? 'seen' : ''}">
-            <img src="${escapeHtml(profile.avatar)}" alt="">
-          </div>
-          <span class="story-name">あなた</span>
-        `;
+        bubble.className = 'story-bubble';
+        bubble.innerHTML = `<div class="story-ring mine"><img src="${escapeHtml(p.avatar)}"></div><span class="story-name">あなた</span>`;
         bubble.addEventListener('click', () => openStoryViewer(currentUser.uid));
         unreadSection.appendChild(bubble);
       }
@@ -2063,660 +1562,209 @@
         strip.appendChild(seenSection);
       }
     }
-
     function buildStoryBubble(uid, seen) {
-      const profile = getProfileForUid(uid);
-      const online = isUserOnline(uid);
+      const p = getProfileForUid(uid);
       const bubble = document.createElement('div');
       bubble.className = 'story-bubble' + (seen ? ' seen' : '');
-      bubble.innerHTML = `
-        <div class="story-ring ${seen ? 'seen' : ''}">
-          <span class="avatar-online-wrap" style="width:100%;height:100%;">
-            <img src="${escapeHtml(profile.avatar)}" alt="">
-            <span class="online-dot small ${online ? 'online' : ''}"></span>
-          </span>
-        </div>
-        <span class="story-name">${escapeHtml(profile.nickname)}</span>
-      `;
+      bubble.innerHTML = `<div class="story-ring ${seen ? 'seen' : ''}"><img src="${escapeHtml(p.avatar)}"></div><span class="story-name">${escapeHtml(p.nickname)}</span>`;
       bubble.addEventListener('click', () => openStoryViewer(uid));
       return bubble;
     }
 
-    const storyPostModal = document.getElementById('storyPostModal');
-    const storyTextInput = document.getElementById('storyTextInput');
-    const storyFileInput = document.getElementById('storyFileInput');
-    const storyUploadPreview = document.getElementById('storyUploadPreview');
-    const storyUploadInfo = document.getElementById('storyUploadInfo');
-    const storyPostMsg = document.getElementById('storyPostMsg');
-
     document.getElementById('storyAddBtn').addEventListener('click', () => {
-      storyTextInput.value = '';
-      storyFileInput.value = '';
+      document.getElementById('storyTextInput').value = '';
+      document.getElementById('storyFileInput').value = '';
       pendingStoryFile = null;
-      storyUploadPreview.classList.add('hidden');
-      storyUploadPreview.innerHTML = '';
-      storyUploadInfo.textContent = '';
-      storyPostMsg.textContent = '';
-      storyPostModal.classList.remove('hidden');
+      document.getElementById('storyUploadPreview').classList.add('hidden');
+      document.getElementById('storyUploadPreview').innerHTML = '';
+      document.getElementById('storyUploadInfo').textContent = '';
+      document.getElementById('storyPostMsg').textContent = '';
+      document.getElementById('storyPostModal').classList.remove('hidden');
     });
-
-    document.getElementById('storyPostCancelBtn').addEventListener('click', () => storyPostModal.classList.add('hidden'));
-    storyPostModal.addEventListener('click', (e) => {
-      if (e.target.id === 'storyPostModal') storyPostModal.classList.add('hidden');
-    });
-
-    storyFileInput.addEventListener('change', async () => {
-      const f = storyFileInput.files[0];
-      if (!f) {
-        pendingStoryFile = null;
-        storyUploadPreview.classList.add('hidden');
-        storyUploadPreview.innerHTML = '';
-        storyUploadInfo.textContent = '';
-        return;
-      }
-      storyPostMsg.textContent = '';
-      storyUploadPreview.classList.remove('hidden');
-      storyUploadPreview.innerHTML = '<div class="text-xs text-gray-500 p-4"><span class="loading-spinner"></span> 処理中...</div>';
-      storyUploadInfo.textContent = '';
+    document.getElementById('storyPostCancelBtn').addEventListener('click', () => document.getElementById('storyPostModal').classList.add('hidden'));
+    document.getElementById('storyFileInput').addEventListener('change', async () => {
+      const f = document.getElementById('storyFileInput').files[0];
+      const preview = document.getElementById('storyUploadPreview');
+      if (!f) { pendingStoryFile = null; preview.classList.add('hidden'); return; }
+      preview.classList.remove('hidden');
+      preview.innerHTML = '<div class="text-xs text-gray-500 p-4"><span class="loading-spinner"></span> 処理中...</div>';
       try {
         const r = await fileToBase64Image(f, 720, 400 * 1024);
         pendingStoryFile = r;
-        storyUploadPreview.innerHTML = '';
-        const i = document.createElement('img');
-        i.src = r.dataUrl;
-        storyUploadPreview.appendChild(i);
-        storyUploadInfo.textContent = `${f.name}（${r.width}×${r.height}）`;
-      } catch (err) {
-        pendingStoryFile = null;
-        storyUploadPreview.innerHTML = '';
-        storyUploadPreview.classList.add('hidden');
-        storyPostMsg.innerHTML = `<span class="text-red-500">${escapeHtml(err.message)}</span>`;
-      }
+        preview.innerHTML = `<img src="${r.dataUrl}">`;
+        document.getElementById('storyUploadInfo').textContent = `${f.name}（${r.width}×${r.height}）`;
+      } catch (err) { pendingStoryFile = null; preview.classList.add('hidden'); document.getElementById('storyPostMsg').innerHTML = `<span class="text-red-500">${escapeHtml(err.message)}</span>`; }
     });
-
     document.getElementById('storyPostBtn').addEventListener('click', async () => {
       if (!currentUser) return;
-      const text = storyTextInput.value.trim();
-      if (!text && !pendingStoryFile) {
-        storyPostMsg.innerHTML = '<span class="text-red-500">テキストか画像を選択してください。</span>';
-        return;
-      }
-      storyPostMsg.innerHTML = '<span class="text-gray-500 dots-loading">投稿中</span>';
+      const text = document.getElementById('storyTextInput').value.trim();
+      if (!text && !pendingStoryFile) { document.getElementById('storyPostMsg').innerHTML = '<span class="text-red-500">テキストか画像を選択してください。</span>'; return; }
       try {
-        const storyData = {
-          type: pendingStoryFile ? 'image' : 'text',
-          content: text, file: pendingStoryFile || null,
-          authorUid: currentUser.uid, authorName: myProfile.nickname,
-          authorAvatar: myProfile.avatar, createdAt: Date.now()
-        };
+        const storyData = { type: pendingStoryFile ? 'image' : 'text', content: text, file: pendingStoryFile || null, authorUid: currentUser.uid, authorName: myProfile.nickname, authorAvatar: myProfile.avatar, createdAt: Date.now() };
         const newRef = push(ref(db, `stories/${currentUser.uid}`));
         await set(newRef, storyData);
-        storyPostModal.classList.add('hidden');
+        document.getElementById('storyPostModal').classList.add('hidden');
         showBanner('ストーリーを投稿しました', false);
-      } catch (err) {
-        storyPostMsg.innerHTML = `<span class="text-red-500">投稿失敗: ${escapeHtml(err.message)}</span>`;
-      }
+      } catch (err) { document.getElementById('storyPostMsg').innerHTML = `<span class="text-red-500">投稿失敗</span>`; }
     });
 
     const storyViewer = document.getElementById('storyViewer');
     const storyStageContent = document.getElementById('storyStageContent');
     const storyProgressBar = document.getElementById('storyProgressBar');
-    const storyHeaderAvatar = document.getElementById('storyHeaderAvatar');
-    const storyHeaderOnlineDot = document.getElementById('storyHeaderOnlineDot');
-    const storyHeaderName = document.getElementById('storyHeaderName');
-    const storyHeaderTime = document.getElementById('storyHeaderTime');
-    const storyLikeBtn = document.getElementById('storyLikeBtn');
-    const storyReplyInput = document.getElementById('storyReplyInput');
-    const storyViewersInfo = document.getElementById('storyViewersInfo');
-    const storyInfoBtn = document.getElementById('storyInfoBtn');
-
     function openStoryViewer(uid, options = {}) {
-      const { archiveMode = false } = options;
-      const source = archiveMode ? myArchivedStories : storiesCache[uid];
+      const source = options.archiveMode ? myArchivedStories : storiesCache[uid];
       if (!source) return;
       currentStoryUserId = uid;
-      currentStoryIsArchive = archiveMode;
+      currentStoryIsArchive = !!options.archiveMode;
       currentStoryList = Object.entries(source).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
       currentStoryIndex = 0;
-      if (!archiveMode && uid !== currentUser.uid) {
-        const firstUnseenIdx = currentStoryList.findIndex(s => !mySeenStories[s.id]);
-        if (firstUnseenIdx >= 0) currentStoryIndex = firstUnseenIdx;
+      if (!options.archiveMode && uid !== currentUser.uid) {
+        const idx = currentStoryList.findIndex(s => !mySeenStories[s.id]);
+        if (idx >= 0) currentStoryIndex = idx;
       }
       storyViewer.classList.add('show');
       document.body.style.overflow = 'hidden';
       showCurrentStory();
     }
-
     function closeStoryViewer() {
       storyViewer.classList.remove('show');
-      document.body.style.overflow = '';
-      clearTimeout(storyTimer);
-      cancelAnimationFrame(storyProgressRAF);
+      document.body.style.overflow = emergencyState.active && !isAdmin(currentUser?.email) ? 'hidden' : '';
+      clearTimeout(storyTimer); cancelAnimationFrame(storyProgressRAF);
       if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
       storyStageContent.innerHTML = '';
-      currentStoryUserId = null;
-      currentStoryList = [];
-      currentStoryIndex = 0;
-      currentStoryIsArchive = false;
-      storyPaused = false;
+      currentStoryUserId = null; currentStoryList = []; currentStoryIndex = 0;
       renderStories();
     }
-
     document.getElementById('storyCloseBtn').addEventListener('click', closeStoryViewer);
     document.getElementById('storyNavLeft').addEventListener('click', () => prevStory());
     document.getElementById('storyNavRight').addEventListener('click', () => nextStory());
-
     function showCurrentStory() {
-      clearTimeout(storyTimer);
-      cancelAnimationFrame(storyProgressRAF);
-      storyStageContent.innerHTML = '';
-      storyPaused = false;
+      clearTimeout(storyTimer); cancelAnimationFrame(storyProgressRAF);
+      storyStageContent.innerHTML = ''; storyPaused = false;
       if (currentStoryIndex < 0 || currentStoryIndex >= currentStoryList.length) { closeStoryViewer(); return; }
       const story = currentStoryList[currentStoryIndex];
-      const profile = getProfileForUid(story.authorUid || currentStoryUserId);
-      storyHeaderAvatar.src = profile.avatar;
-      storyHeaderName.textContent = profile.nickname;
-      storyHeaderTime.textContent = formatRelativeTime(story.createdAt);
-      const online = isUserOnline(story.authorUid || currentStoryUserId);
-      if (online) storyHeaderOnlineDot.classList.add('online');
-      else storyHeaderOnlineDot.classList.remove('online');
-      if (currentStoryUserId === currentUser.uid) storyInfoBtn.classList.remove('hidden');
-      else storyInfoBtn.classList.add('hidden');
+      const p = getProfileForUid(story.authorUid || currentStoryUserId);
+      document.getElementById('storyHeaderAvatar').src = p.avatar;
+      document.getElementById('storyHeaderName').textContent = p.nickname;
+      document.getElementById('storyHeaderTime').textContent = formatRelativeTime(story.createdAt);
+      document.getElementById('storyInfoBtn').classList.toggle('hidden', currentStoryUserId !== currentUser.uid);
       storyProgressBar.innerHTML = '';
       currentStoryList.forEach((_, i) => {
-        const seg = document.createElement('div');
-        seg.className = 'story-segment';
+        const seg = document.createElement('div'); seg.className = 'story-segment';
         const inner = document.createElement('div');
         if (i < currentStoryIndex) inner.style.width = '100%';
-        seg.appendChild(inner);
-        storyProgressBar.appendChild(seg);
+        seg.appendChild(inner); storyProgressBar.appendChild(seg);
       });
-      let duration = 5000;
-      if (story.type === 'image' && story.file && story.file.dataUrl) {
-        const img = document.createElement('img');
-        img.src = story.file.dataUrl;
-        storyStageContent.appendChild(img);
+      if (story.type === 'image' && story.file) {
+        const img = document.createElement('img'); img.src = story.file.dataUrl; storyStageContent.appendChild(img);
       } else {
-        const d = document.createElement('div');
-        d.className = 'story-text-content';
+        const d = document.createElement('div'); d.className = 'story-text-content';
         d.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-        d.textContent = story.content || '';
-        storyStageContent.appendChild(d);
-      }
-      if (story.content && story.type !== 'text') {
-        const overlay = document.createElement('div');
-        overlay.style.cssText = 'position:absolute;bottom:100px;left:20px;right:20px;color:#fff;font-size:18px;font-weight:700;text-shadow:0 2px 8px rgba(0,0,0,0.8);text-align:center;word-break:break-word;z-index:4;pointer-events:none;';
-        overlay.textContent = story.content;
-        storyStageContent.appendChild(overlay);
+        d.textContent = story.content || ''; storyStageContent.appendChild(d);
       }
       if (currentStoryUserId !== currentUser.uid && !currentStoryIsArchive) {
         mySeenStories[story.id] = Date.now();
         saveJson(SEEN_STORIES_KEY, mySeenStories);
         set(ref(db, `storyViews/${story.id}/${currentUser.uid}`), Date.now()).catch(() => {});
       }
-      if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
-      const likesRef = ref(db, `storyLikes/${story.id}`);
-      storyLikesUnsubscribe = onValue(likesRef, (snap) => {
-        currentStoryLikes = snap.exists() ? snap.val() : {};
-        updateStoryLikeBtn(story.id);
-      }, () => {});
-      if (currentStoryUserId === currentUser.uid) {
-        get(ref(db, `storyViews/${story.id}`)).then(snap => {
-          currentStoryViews = snap.exists() ? snap.val() : {};
-          updateStoryViewersInfo(story.id);
-        }).catch(() => {
-          currentStoryViews = {};
-          updateStoryViewersInfo(story.id);
-        });
-      } else {
-        currentStoryViews = {};
-        updateStoryViewersInfo(story.id);
-      }
-      startStoryTimer(duration);
+      startStoryTimer(5000);
     }
-
     function startStoryTimer(duration) {
-      storyDuration = duration;
-      storyStartTime = Date.now();
-      storyRemainingMs = duration;
-      storyPaused = false;
+      storyDuration = duration; storyStartTime = Date.now(); storyRemainingMs = duration; storyPaused = false;
       const segs = storyProgressBar.querySelectorAll('.story-segment > div');
-      const currentSeg = segs[currentStoryIndex];
-      if (currentSeg) currentSeg.style.width = '0%';
+      const seg = segs[currentStoryIndex];
       function tick() {
         if (storyPaused) { storyProgressRAF = requestAnimationFrame(tick); return; }
         const elapsed = Date.now() - storyStartTime;
         const pct = Math.min(elapsed / storyDuration * 100, 100);
-        if (currentSeg) currentSeg.style.width = pct + '%';
+        if (seg) seg.style.width = pct + '%';
         if (pct < 100) storyProgressRAF = requestAnimationFrame(tick);
         else nextStory();
       }
       storyProgressRAF = requestAnimationFrame(tick);
     }
-
-    function pauseStory() {
-      if (storyPaused) return;
-      storyPaused = true;
-      storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime));
-    }
-
-    function resumeStory() {
-      if (!storyPaused) return;
-      storyPaused = false;
-      storyStartTime = Date.now() - (storyDuration - storyRemainingMs);
-    }
-
+    function pauseStory() { if (storyPaused) return; storyPaused = true; storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime)); }
+    function resumeStory() { if (!storyPaused) return; storyPaused = false; storyStartTime = Date.now() - (storyDuration - storyRemainingMs); }
     function nextStory() {
-      if (currentStoryIndex + 1 < currentStoryList.length) {
-        currentStoryIndex++;
-        showCurrentStory();
-      } else {
-        if (currentStoryIsArchive) { closeStoryViewer(); return; }
-        const uids = Object.keys(storiesCache || {}).sort((a, b) => {
-          if (a === currentUser.uid) return -1;
-          if (b === currentUser.uid) return 1;
-          const aLatest = Math.max(...Object.values(storiesCache[a]).map(s => s.createdAt || 0));
-          const bLatest = Math.max(...Object.values(storiesCache[b]).map(s => s.createdAt || 0));
-          return bLatest - aLatest;
-        });
-        const idx = uids.indexOf(currentStoryUserId);
-        if (idx >= 0 && idx + 1 < uids.length) {
-          closeStoryViewer();
-          setTimeout(() => openStoryViewer(uids[idx + 1]), 100);
-        } else closeStoryViewer();
-      }
+      if (currentStoryIndex + 1 < currentStoryList.length) { currentStoryIndex++; showCurrentStory(); }
+      else closeStoryViewer();
     }
-
     function prevStory() {
-      if (currentStoryIndex > 0) {
-        currentStoryIndex--;
-        showCurrentStory();
-      } else {
-        if (currentStoryIsArchive) return;
-        const uids = Object.keys(storiesCache || {}).sort((a, b) => {
-          if (a === currentUser.uid) return -1;
-          if (b === currentUser.uid) return 1;
-          const aLatest = Math.max(...Object.values(storiesCache[a]).map(s => s.createdAt || 0));
-          const bLatest = Math.max(...Object.values(storiesCache[b]).map(s => s.createdAt || 0));
-          return bLatest - aLatest;
-        });
-        const idx = uids.indexOf(currentStoryUserId);
-        if (idx > 0) {
-          closeStoryViewer();
-          setTimeout(() => openStoryViewer(uids[idx - 1]), 100);
-        }
-      }
+      if (currentStoryIndex > 0) { currentStoryIndex--; showCurrentStory(); }
     }
-
-    function updateStoryLikeBtn(storyId) {
+    document.getElementById('storyReplyInput').addEventListener('focus', pauseStory);
+    document.getElementById('storyReplyInput').addEventListener('blur', resumeStory);
+    document.getElementById('storyLikeBtn').addEventListener('click', async () => {
+      if (!currentUser || currentStoryUserId === currentUser.uid) return;
+      const story = currentStoryList[currentStoryIndex]; if (!story) return;
       const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
-      storyLikeBtn.textContent = liked ? '❤️' : '🤍';
-      if (liked) storyLikeBtn.classList.add('liked');
-      else storyLikeBtn.classList.remove('liked');
-      if (currentStoryUserId === currentUser.uid) {
-        storyLikeBtn.style.opacity = '0.4';
-        storyLikeBtn.style.pointerEvents = 'none';
-      } else {
-        storyLikeBtn.style.opacity = '';
-        storyLikeBtn.style.pointerEvents = '';
-      }
-    }
-
-    function updateStoryViewersInfo(storyId) {
-      const isMine = currentStoryUserId === currentUser.uid;
-      if (!isMine) { storyViewersInfo.textContent = ''; return; }
-      const viewCount = Object.keys(currentStoryViews || {}).length;
-      const likeCount = Object.keys(currentStoryLikes || {}).length;
-      storyViewersInfo.innerHTML = `👁 ${viewCount}　❤️ ${likeCount}`;
-    }
-
-    storyReplyInput.addEventListener('focus', () => pauseStory());
-    storyReplyInput.addEventListener('blur', () => resumeStory());
-
-    storyLikeBtn.addEventListener('click', async () => {
-      if (!currentUser || !currentStoryList[currentStoryIndex]) return;
-      if (currentStoryUserId === currentUser.uid) return;
-      const story = currentStoryList[currentStoryIndex];
-      const likeRef = ref(db, `storyLikes/${story.id}/${currentUser.uid}`);
-      const currentlyLiked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
-      try {
-        if (currentlyLiked) await remove(likeRef);
-        else await set(likeRef, Date.now());
-      } catch (e) {}
+      try { if (liked) await remove(ref(db, `storyLikes/${story.id}/${currentUser.uid}`)); else await set(ref(db, `storyLikes/${story.id}/${currentUser.uid}`), Date.now()); } catch (e) {}
     });
 
-    storyReplyInput.addEventListener('keydown', async (e) => {
-      if (e.key !== 'Enter') return;
-      if (e.isComposing || e.keyCode === 229) return;
-      e.preventDefault();
-      const text = storyReplyInput.value.trim();
-      if (!text) return;
-      if (currentStoryUserId === currentUser.uid) { showBanner('自分のストーリーには返信できません', true); return; }
-      const story = currentStoryList[currentStoryIndex];
-      if (!story) return;
-      let chatId = await findExistingDirectChat(currentStoryUserId);
-      if (!chatId) {
-        try {
-          const chatsRef = ref(db, 'chatMessages');
-          const newChatRef = push(chatsRef);
-          chatId = newChatRef.key;
-          const members = {};
-          members[currentUser.uid] = true;
-          members[currentStoryUserId] = true;
-          const chatData = {
-            type: 'direct', name: '', members: members,
-            createdAt: Date.now(), createdBy: currentUser.uid,
-            lastMessage: '', lastMessageAt: Date.now()
-          };
-          await set(ref(db, `chatMeta/${chatId}`), chatData);
-          const updates = {};
-          Object.keys(members).forEach(uid => {
-            updates[`userChats/${uid}/${chatId}`] = {
-              type: 'direct', name: '', members: members,
-              createdAt: chatData.createdAt, lastMessage: '', lastMessageAt: chatData.lastMessageAt
-            };
-          });
-          await update(ref(db), updates);
-        } catch (e) { showBanner('返信の送信に失敗しました', true); return; }
-      }
-      let previewType = 'text', previewDataUrl = '', previewText = story.content || '';
-      if (story.type === 'image' && story.file && story.file.dataUrl) {
-        previewType = 'image'; previewDataUrl = story.file.dataUrl;
-        if (!previewText) previewText = '📷 画像';
-      } else if (!previewText) previewText = '（テキストなし）';
-      const prevChatId = currentChatId;
-      currentChatId = chatId;
-      const ok = await sendMessage({
-        content: text, file: null,
-        storyReplyTo: {
-          storyId: story.id, authorUid: story.authorUid,
-          previewType: previewType, previewDataUrl: previewDataUrl,
-          previewText: previewText.slice(0, 60)
-        }
-      });
-      currentChatId = prevChatId;
-      if (ok) {
-        storyReplyInput.value = '';
-        showBanner('ストーリーに返信しました', false);
-        resumeStory();
-      } else showBanner('返信の送信に失敗しました', true);
-    });
-
-    const storyInfoModal = document.getElementById('storyInfoModal');
-    const infoListContainer = document.getElementById('infoListContainer');
-    const viewersCountEl = document.getElementById('viewersCount');
-    const likersCountEl = document.getElementById('likersCount');
-    const tabViewers = document.getElementById('tabViewers');
-    const tabLikers = document.getElementById('tabLikers');
-    let currentInfoTab = 'viewers';
-
-    storyInfoBtn.addEventListener('click', () => {
-      const story = currentStoryList[currentStoryIndex];
-      if (!story) return;
-      if (currentStoryUserId !== currentUser.uid) return;
-      pauseStory();
-      currentInfoTab = 'viewers';
-      updateInfoTabs();
-      refreshStoryInfo(story.id);
-      storyInfoModal.classList.remove('hidden');
-    });
-
-    document.getElementById('infoCloseBtn').addEventListener('click', () => {
-      storyInfoModal.classList.add('hidden');
-      resumeStory();
-    });
-    storyInfoModal.addEventListener('click', (e) => {
-      if (e.target.id === 'storyInfoModal') {
-        storyInfoModal.classList.add('hidden');
-        resumeStory();
-      }
-    });
-
-    tabViewers.addEventListener('click', () => { currentInfoTab = 'viewers'; updateInfoTabs(); refreshStoryInfo(currentStoryList[currentStoryIndex].id); });
-    tabLikers.addEventListener('click', () => { currentInfoTab = 'likers'; updateInfoTabs(); refreshStoryInfo(currentStoryList[currentStoryIndex].id); });
-
-    function updateInfoTabs() {
-      if (currentInfoTab === 'viewers') {
-        tabViewers.classList.add('active'); tabLikers.classList.remove('active');
-      } else {
-        tabLikers.classList.add('active'); tabViewers.classList.remove('active');
-      }
-    }
-
-    async function refreshStoryInfo(storyId) {
-      infoListContainer.innerHTML = '<div class="info-empty"><span class="loading-spinner"></span> 読み込み中...</div>';
-      try {
-        const [viewsSnap, likesSnap] = await Promise.all([
-          get(ref(db, `storyViews/${storyId}`)),
-          get(ref(db, `storyLikes/${storyId}`))
-        ]);
-        const views = viewsSnap.exists() ? viewsSnap.val() : {};
-        const likes = likesSnap.exists() ? likesSnap.val() : {};
-        viewersCountEl.textContent = Object.keys(views).length;
-        likersCountEl.textContent = Object.keys(likes).length;
-        renderInfoList(currentInfoTab, views, likes);
-      } catch (e) {
-        infoListContainer.innerHTML = '<div class="info-empty">読み込みに失敗しました。</div>';
-      }
-    }
-
-    function renderInfoList(tab, views, likes) {
-      const data = tab === 'viewers' ? views : likes;
-      const entries = Object.entries(data || {});
-      if (entries.length === 0) {
-        infoListContainer.innerHTML = `<div class="info-empty">${tab === 'viewers' ? 'まだ誰も閲覧していません。' : 'まだいいねがありません。'}</div>`;
-        return;
-      }
-      entries.sort((a, b) => (b[1] || 0) - (a[1] || 0));
-      infoListContainer.innerHTML = '';
-      entries.forEach(([uid, ts]) => {
-        const p = getProfileForUid(uid);
-        const online = isUserOnline(uid);
-        const item = document.createElement('div');
-        item.className = 'info-list-item';
-        const heart = tab === 'likers' ? '<span style="margin-left:auto;color:#ef4444;font-size:16px;">❤️</span>' : '';
-        item.innerHTML = `
-          <span class="avatar-online-wrap">
-            <img src="${escapeHtml(p.avatar)}" class="avatar-sm" alt="">
-            <span class="online-dot small ${online ? 'online' : ''}" style="width:10px;height:10px;"></span>
-          </span>
-          <div style="flex:1;min-width:0;">
-            <div style="font-weight:700;font-size:13px;color:#1e40af;" class="truncate">${escapeHtml(p.nickname)}</div>
-            <div style="font-size:11px;color:#9ca3af;">${formatRelativeTime(ts)}${online ? ' ・ <span style="color:#16a34a;">オンライン</span>' : ''}</div>
-          </div>
-          ${heart}
-        `;
-        infoListContainer.appendChild(item);
-      });
-    }
-
-    const archiveModal = document.getElementById('archiveModal');
-    const archiveList = document.getElementById('archiveList');
-
-    document.getElementById('myArchiveBtn').addEventListener('click', () => {
-      renderArchive();
-      archiveModal.classList.remove('hidden');
-    });
-    document.getElementById('archiveCloseBtn').addEventListener('click', () => archiveModal.classList.add('hidden'));
-    archiveModal.addEventListener('click', (e) => {
-      if (e.target.id === 'archiveModal') archiveModal.classList.add('hidden');
-    });
-
-    function renderArchive() {
-      archiveList.innerHTML = '';
-      const entries = Object.entries(myArchivedStories || {}).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-      if (entries.length === 0) {
-        archiveList.innerHTML = '<div class="text-center text-gray-400 text-sm py-6">過去のストーリーはありません。</div>';
-        return;
-      }
-      entries.forEach(s => {
-        const item = document.createElement('div');
-        item.className = 'info-list-item';
-        item.style.cursor = 'pointer';
-        let thumb = '';
-        if (s.type === 'image' && s.file && s.file.dataUrl) {
-          thumb = `<img src="${s.file.dataUrl}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;">`;
-        } else {
-          thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;"></div>`;
-        }
-        item.innerHTML = `
-          ${thumb}
-          <div style="flex:1;min-width:0;">
-            <div style="font-size:12px;color:#374151;" class="truncate">${escapeHtml(s.content || (s.type === 'image' ? '📷 画像' : '（テキストなし）'))}</div>
-            <div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div>
-          </div>
-          <span style="font-size:11px;color:#0284c7;">見る →</span>
-        `;
-        item.addEventListener('click', () => {
-          archiveModal.classList.add('hidden');
-          openStoryViewer(currentUser.uid, { archiveMode: true });
-        });
-        archiveList.appendChild(item);
-      });
-    }
-
-    // ========================================
     // プロフィール
-    // ========================================
     const profileModal = document.getElementById('profileModal');
-    const profileAvatarPreview = document.getElementById('profileAvatarPreview');
-    const presetAvatarRow = document.getElementById('presetAvatarRow');
-    const nicknameInput = document.getElementById('nicknameInput');
-    const avatarFileInput = document.getElementById('avatarFileInput');
-
-    function buildPresetAvatars() {
-      presetAvatarRow.innerHTML = '';
-      PRESET_AVATARS.forEach((url) => {
+    document.getElementById('profileBtn').addEventListener('click', () => {
+      document.getElementById('nicknameInput').value = myProfile.nickname || '';
+      selectedAvatar = myProfile.avatar || DEFAULT_AVATAR;
+      document.getElementById('profileAvatarPreview').src = selectedAvatar;
+      const row = document.getElementById('presetAvatarRow');
+      row.innerHTML = '';
+      PRESET_AVATARS.forEach(url => {
         const img = document.createElement('img');
         img.className = 'preset-avatar' + (url === selectedAvatar ? ' selected' : '');
         img.src = url;
         img.addEventListener('click', () => {
           selectedAvatar = url;
-          profileAvatarPreview.src = url;
-          presetAvatarRow.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected'));
+          document.getElementById('profileAvatarPreview').src = url;
+          row.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected'));
           img.classList.add('selected');
         });
-        presetAvatarRow.appendChild(img);
+        row.appendChild(img);
       });
-    }
-
-    document.getElementById('profileBtn').addEventListener('click', () => {
-      nicknameInput.value = myProfile.nickname || '';
-      selectedAvatar = myProfile.avatar || DEFAULT_AVATAR;
-      profileAvatarPreview.src = selectedAvatar;
-      avatarFileInput.value = '';
-      buildPresetAvatars();
       profileModal.classList.remove('hidden');
     });
     document.getElementById('profileCancelBtn').addEventListener('click', () => profileModal.classList.add('hidden'));
-    profileModal.addEventListener('click', (e) => {
-      if (e.target.id === 'profileModal') profileModal.classList.add('hidden');
-    });
-    avatarFileInput.addEventListener('change', async () => {
-      const f = avatarFileInput.files[0];
-      if (!f) return;
-      try {
-        const r = await fileToBase64Image(f, 200, 60 * 1024);
-        selectedAvatar = r.dataUrl;
-        profileAvatarPreview.src = r.dataUrl;
-        presetAvatarRow.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected'));
-      } catch (err) { alert(err.message); avatarFileInput.value = ''; }
-    });
     document.getElementById('profileSaveBtn').addEventListener('click', async () => {
-      if (!currentUser) return;
-      const nickname = nicknameInput.value.trim();
+      const nickname = document.getElementById('nicknameInput').value.trim();
       if (!nickname) { alert('ニックネームを入力してください。'); return; }
-      if (nickname.length > 20) { alert('ニックネームは20文字以内です。'); return; }
       try {
-        await set(ref(db, `chatProfiles/${currentUser.uid}`), {
-          nickname: nickname, avatar: selectedAvatar,
-          email: currentUser.email || '', updatedAt: Date.now()
-        });
+        await set(ref(db, `chatProfiles/${currentUser.uid}`), { nickname, avatar: selectedAvatar, email: currentUser.email || '', updatedAt: Date.now() });
         myProfile = { nickname, avatar: selectedAvatar };
         updateMyProfileUI();
         profileModal.classList.add('hidden');
-        showBanner('プロフィールを保存しました', false);
-      } catch (err) { showBanner('保存失敗: ' + (err.message || ''), true); }
+        showBanner('保存しました', false);
+      } catch (err) { showBanner('保存失敗', true); }
     });
 
     // ========================================
-    // 緊急ボタン & 管理者操作
+    // 緊急ボタン（誰でも即発動）
     // ========================================
-    const emergencyConfirmModal = document.getElementById('emergencyConfirmModal');
-
     document.getElementById('emergencyBtn').addEventListener('click', () => {
-      if (!currentUser) return;
-      const email = (currentUser.email || '').toLowerCase();
-      document.getElementById('emConfirmEmail').textContent = currentUser.email || '不明';
-      document.getElementById('emConfirmTime').textContent = formatTime(Date.now());
-      document.getElementById('emergencyReasonInput').value = '';
-      if (isAdmin(email)) {
-        // 管理者：即発動モーダル
-        emergencyConfirmModal.classList.remove('hidden');
-      } else {
-        // 非管理者：発動すると記録されるが、実際には発動できない旨を伝える
-        if (confirm('あなたは管理者ではありません。緊急ボタンを押すと管理者に通報されます。押しますか？')) {
-          // 通報としてログに残す
-          const reportRef = push(ref(db, 'emergencyReports'));
-          set(reportRef, {
-            reportedBy: currentUser.uid,
-            reportedByEmail: currentUser.email || '',
-            reportedByName: myProfile.nickname || '',
-            reportedAt: Date.now()
-          }).then(() => {
-            showBanner('管理者に通報しました', false);
-          }).catch(() => {
-            showBanner('通報に失敗しました', true);
-          });
-        }
-      }
+      if (!currentUser) { alert('ログインが必要です。'); return; }
+      // 即実行（確認ダイアログなし）
+      triggerEmergency();
     });
 
-    document.getElementById('emConfirmCancel').addEventListener('click', () => emergencyConfirmModal.classList.add('hidden'));
-    emergencyConfirmModal.addEventListener('click', (e) => {
-      if (e.target.id === 'emergencyConfirmModal') emergencyConfirmModal.classList.add('hidden');
-    });
-    document.getElementById('emConfirmOk').addEventListener('click', async () => {
-      const reason = document.getElementById('emergencyReasonInput').value.trim();
-      emergencyConfirmModal.classList.add('hidden');
-      await triggerEmergency(reason);
-    });
+    document.getElementById('adminClearEmergencyBtn').addEventListener('click', clearEmergency);
 
-    document.getElementById('clearEmergencyBtn').addEventListener('click', clearEmergency);
-
-    // アナウンス
-    const announceModal = document.getElementById('announceModal');
-    document.getElementById('announceBtn').addEventListener('click', () => {
-      document.getElementById('announceTextInput').value = '';
-      document.getElementById('announceDurationInput').value = 30;
-      announceModal.classList.remove('hidden');
-    });
-    document.getElementById('announceCancel').addEventListener('click', () => announceModal.classList.add('hidden'));
-    announceModal.addEventListener('click', (e) => {
-      if (e.target.id === 'announceModal') announceModal.classList.add('hidden');
-    });
-    document.getElementById('announceSend').addEventListener('click', async () => {
-      const text = document.getElementById('announceTextInput').value.trim();
-      const dur = parseInt(document.getElementById('announceDurationInput').value) || 30;
-      if (!text) { alert('メッセージを入力してください。'); return; }
-      announceModal.classList.add('hidden');
-      await sendAnnouncement(text, dur);
-    });
-
-    // ========================================
     // 認証
-    // ========================================
     document.getElementById('googleLoginBtn').addEventListener('click', async () => {
       try { await signInWithPopup(auth, provider); }
-      catch (err) {
-        if (err.code !== 'auth/popup-closed-by-user') alert('ログインに失敗しました: ' + (err.message || ''));
-      }
+      catch (err) { if (err.code !== 'auth/popup-closed-by-user') alert('ログイン失敗: ' + err.message); }
     });
-
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      intentionalSignOut = true;
+      try { await setMyTypingState(false); await setMyOffline(); } catch (e) {}
+      [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
+       readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
+       presenceUnsubscribe, emergencyUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+      Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
+      try { await signOut(auth); } catch (e) {}
+      location.reload();
+    });
     document.getElementById('switchAccountBtn').addEventListener('click', async () => {
       intentionalSignOut = true;
-      try { await setMyOffline(); } catch (e) {}
-      try { await signOut(auth); } catch (e) {}
+      try { await setMyOffline(); await signOut(auth); } catch (e) {}
       banOverlay.classList.remove('show');
       document.body.style.background = '';
       loginView.classList.remove('hidden');
@@ -2725,47 +1773,13 @@
       setTimeout(() => { intentionalSignOut = false; }, 500);
     });
 
-    window.doLogout = async function() {
-      intentionalSignOut = true;
-      try { await setMyTypingState(false); } catch (e) {}
-      try { await setMyOffline(); } catch (e) {}
-      if (chatsUnsubscribe) chatsUnsubscribe();
-      if (messagesUnsubscribe) messagesUnsubscribe();
-      if (profilesUnsubscribe) profilesUnsubscribe();
-      if (bansUnsubscribe) bansUnsubscribe();
-      if (readsUnsubscribe) readsUnsubscribe();
-      if (typingUnsubscribe) typingUnsubscribe();
-      if (storiesUnsubscribe) storiesUnsubscribe();
-      if (myArchiveUnsubscribe) myArchiveUnsubscribe();
-      if (presenceUnsubscribe) presenceUnsubscribe();
-      if (emergencyUnsubscribe) emergencyUnsubscribe();
-      if (announcementUnsubscribe) announcementUnsubscribe();
-      if (storyLikesUnsubscribe) storyLikesUnsubscribe();
-      Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
-      roomLatestListeners = {};
-      try { await signOut(auth); } catch (e) {}
-      loginView.classList.remove('hidden');
-      mainView.classList.add('hidden');
-      bootOverlay.classList.add('hidden');
-      setTimeout(() => { intentionalSignOut = false; }, 500);
-    };
-
-    document.getElementById('logoutBtn').addEventListener('click', doLogout);
-
     onAuthStateChanged(auth, async (user) => {
       bootOverlay.classList.add('hidden');
       if (intentionalSignOut) return;
       currentUser = user;
-      if (!user) {
-        loginView.classList.remove('hidden');
-        mainView.classList.add('hidden');
-        return;
-      }
+      if (!user) { loginView.classList.remove('hidden'); mainView.classList.add('hidden'); return; }
       loginView.classList.add('hidden');
       mainView.classList.remove('hidden');
-      mainView.classList.remove('view-enter');
-      void mainView.offsetWidth;
-      mainView.classList.add('view-enter');
       setConnection(navigator.onLine);
       refreshFavicon();
 
@@ -2779,105 +1793,33 @@
         const profileSnap = await get(ref(db, `chatProfiles/${user.uid}`));
         if (profileSnap.exists()) {
           const p = profileSnap.val();
-          myProfile = {
-            nickname: p.nickname || user.displayName || '名無しさん',
-            avatar: p.avatar || user.photoURL || DEFAULT_AVATAR
-          };
-          if (!p.email && user.email) {
-            await update(ref(db, `chatProfiles/${user.uid}`), { email: user.email });
-          }
+          myProfile = { nickname: p.nickname || user.displayName || '名無しさん', avatar: p.avatar || user.photoURL || DEFAULT_AVATAR };
+          if (!p.email && user.email) await update(ref(db, `chatProfiles/${user.uid}`), { email: user.email });
         } else {
           myProfile = { nickname: user.displayName || '名無しさん', avatar: user.photoURL || DEFAULT_AVATAR };
-          await set(ref(db, `chatProfiles/${user.uid}`), {
-            nickname: myProfile.nickname, avatar: myProfile.avatar,
-            email: user.email || '', createdAt: Date.now(), updatedAt: Date.now()
-          });
+          await set(ref(db, `chatProfiles/${user.uid}`), { nickname: myProfile.nickname, avatar: myProfile.avatar, email: user.email || '', createdAt: Date.now(), updatedAt: Date.now() });
         }
-      } catch (e) {
-        myProfile = { nickname: user.displayName || '名無しさん', avatar: user.photoURL || DEFAULT_AVATAR };
-      }
+      } catch (e) { myProfile = { nickname: user.displayName || '名無しさん', avatar: user.photoURL || DEFAULT_AVATAR }; }
 
       updateMyProfileUI();
-
-      // 管理者パネル表示
-      if (isAdmin(user.email)) {
-        adminPanel.classList.remove('hidden');
-      } else {
-        adminPanel.classList.add('hidden');
-      }
-
       initProfilesListener();
       initBansListener();
       initChatsListener();
       initStoriesListener();
       initMyArchiveListener();
       initPresenceListener();
-      initEmergencyListener();
-      initAnnouncementListener();
+      initEmergencyListener();  // ← これが緊急状態を監視
       setupMyPresence();
-    });
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', () => {
-      if (document.hidden) return;
-      handleVisibilityChange();
-      // 緊急モード中で管理者以外なら再びサイレン
-      if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
-        playEmergencySound();
-      }
-    });
-    window.addEventListener('blur', () => {
-      if (currentUser && myPresenceRef) {
-        update(myPresenceRef, { online: false, lastChanged: Date.now() }).catch(() => {});
-      }
-    });
-
-    // 緊急オーバーレイは絶対に閉じられないようにする
-    emergencyOverlay.addEventListener('click', (e) => { e.stopPropagation(); e.preventDefault(); });
-    emergencyOverlay.addEventListener('contextmenu', (e) => { e.preventDefault(); });
-    document.addEventListener('keydown', (e) => {
-      if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
-        // Escキーなどで閉じられないように
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          e.stopPropagation();
-          playEmergencySound();
-        }
-      }
-    }, true);
-
-    ['click', 'keydown', 'touchstart'].forEach(evt => {
-      window.addEventListener(evt, () => {
-        if (!audioCtx) {
-          try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
-        }
-        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-      }, { once: true });
-    });
-
-    document.addEventListener('contextmenu', (e) => {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-      e.preventDefault();
     });
 
     window.addEventListener('online', () => setConnection(true));
     window.addEventListener('offline', () => setConnection(false));
-
-    window.addEventListener('beforeunload', () => {
-      try { setMyTypingState(false); } catch (e) {}
-      if (chatsUnsubscribe) chatsUnsubscribe();
-      if (messagesUnsubscribe) messagesUnsubscribe();
-      if (profilesUnsubscribe) profilesUnsubscribe();
-      if (bansUnsubscribe) bansUnsubscribe();
-      if (readsUnsubscribe) readsUnsubscribe();
-      if (typingUnsubscribe) typingUnsubscribe();
-      if (storiesUnsubscribe) storiesUnsubscribe();
-      if (myArchiveUnsubscribe) myArchiveUnsubscribe();
-      if (presenceUnsubscribe) presenceUnsubscribe();
-      if (emergencyUnsubscribe) emergencyUnsubscribe();
-      if (announcementUnsubscribe) announcementUnsubscribe();
-      if (storyLikesUnsubscribe) storyLikesUnsubscribe();
-      Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
+    document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return; e.preventDefault(); });
+    ['click', 'keydown', 'touchstart'].forEach(evt => {
+      window.addEventListener(evt, () => {
+        if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      }, { once: true });
     });
   </script>
 </body>
