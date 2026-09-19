@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>シクナイCT</title>
+  <title>シクナイチャット</title>
   <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -27,6 +27,51 @@
     .avatar:hover { transform: scale(1.08); box-shadow: 0 4px 10px rgba(2,132,199,0.25); }
     .avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e5e7eb; background: #f3f4f6; }
     .avatar-lg { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0284c7; background: #f3f4f6; }
+
+    /* オンライン状態のドット */
+    .online-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #9ca3af;
+      border: 2px solid #fff;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+    .online-dot.online { background: #22c55e; box-shadow: 0 0 0 0 rgba(34,197,94,0.5); animation: onlinePulse 2s infinite; }
+    @keyframes onlinePulse {
+      0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+      70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+
+    /* アバターと重ねるドット */
+    .avatar-online-wrap {
+      position: relative;
+      display: inline-flex;
+      flex-shrink: 0;
+    }
+    .avatar-online-wrap .online-dot {
+      position: absolute;
+      right: -1px;
+      bottom: -1px;
+      width: 13px; height: 13px;
+      border: 2px solid #fff;
+    }
+    .avatar-online-wrap .online-dot.small {
+      width: 10px; height: 10px;
+    }
+
+    /* オンライン人数を表示するバッジ */
+    .online-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      color: #16a34a;
+      font-weight: 600;
+    }
+    .online-count.offline { color: #9ca3af; }
 
     .msg-bubble {
       background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 14px;
@@ -236,7 +281,10 @@
   <div id="mainView" class="hidden">
     <header class="border-b-2 border-blue-800 pb-2 mb-4 flex justify-between items-center flex-wrap gap-2">
       <div class="flex items-center gap-3">
-        <img id="myAvatar" class="avatar" src="" alt="">
+        <span class="avatar-online-wrap">
+          <img id="myAvatar" class="avatar" src="" alt="">
+          <span id="myOnlineDot" class="online-dot"></span>
+        </span>
         <div>
           <h1 class="text-2xl font-bold text-blue-900">シクナイチャット</h1>
           <p class="text-xs text-gray-600 flex flex-wrap items-center gap-2">
@@ -248,14 +296,14 @@
       </div>
       <div class="flex items-center gap-2 flex-wrap">
         <button id="newChatBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-3 rounded transition shadow font-bold">＋ 新しいチャット</button>
-        <button id="profileBtn" class="icon-btn">プロフィール</button>
+        <button id="profileBtn" class="icon-btn">👤 プロフィール</button>
         <button id="logoutBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-3 rounded transition shadow">ログアウト</button>
       </div>
     </header>
 
     <div class="bg-white border border-gray-300 rounded-lg shadow-sm mb-3 overflow-hidden">
       <div class="px-3 pt-3 pb-1 flex justify-between items-center border-b">
-        <h2 class="text-sm font-bold text-gray-700">ストーリー</h2>
+        <h2 class="text-sm font-bold text-gray-700">✨ ストーリー</h2>
         <div class="flex items-center gap-2">
           <button id="myArchiveBtn" class="text-xs text-blue-600 hover:text-blue-800 font-semibold">📁 自分のアーカイブ</button>
           <span class="text-xs text-gray-400">24時間で消えます</span>
@@ -284,7 +332,7 @@
           <div id="chatHeaderAvatars" class="flex -space-x-2"></div>
           <div class="min-w-0">
             <h2 id="currentChatName" class="text-lg font-bold text-blue-900 truncate"></h2>
-            <p class="text-xs text-gray-500" id="currentChatMeta"></p>
+            <p class="text-xs text-gray-500 flex items-center gap-2" id="currentChatMeta"></p>
           </div>
         </div>
         <button onclick="backToChatList()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded whitespace-nowrap ml-2">← 戻る</button>
@@ -336,7 +384,7 @@
 
   <div id="storyPostModal" class="modal-backdrop hidden">
     <div class="modal-content">
-      <h3 class="text-lg font-bold text-gray-800 mb-3">ストーリーを投稿</h3>
+      <h3 class="text-lg font-bold text-gray-800 mb-3">✨ ストーリーを投稿</h3>
       <label class="block text-xs text-gray-600 mb-1">テキスト（画像なしのとき必須）:</label>
       <textarea id="storyTextInput" rows="3" maxlength="200" placeholder="今なにしてる？"
         class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none resize-none"></textarea>
@@ -413,7 +461,10 @@
     <div class="story-stage">
       <div class="story-progress-bar" id="storyProgressBar"></div>
       <div class="story-header" id="storyHeader">
-        <img id="storyHeaderAvatar" src="" alt="">
+        <span class="avatar-online-wrap">
+          <img id="storyHeaderAvatar" src="" alt="">
+          <span id="storyHeaderOnlineDot" class="online-dot small"></span>
+        </span>
         <div>
           <div class="story-meta-name" id="storyHeaderName"></div>
           <div class="story-meta-time" id="storyHeaderTime"></div>
@@ -446,7 +497,7 @@
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     // ========================================
-    // アバター（最初に定義）
+    // アバター
     // ========================================
     function makeAvatarSvg(color, emoji) {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -482,8 +533,7 @@
         [{ freq: 880, start: 0, dur: 0.12 }, { freq: 1318.5, start: 0.1, dur: 0.18 }].forEach(n => {
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.value = n.freq;
+          osc.type = 'sine'; osc.frequency.value = n.freq;
           gain.gain.setValueAtTime(0, now + n.start);
           gain.gain.linearRampToValueAtTime(0.15, now + n.start + 0.01);
           gain.gain.exponentialRampToValueAtTime(0.001, now + n.start + n.dur);
@@ -512,7 +562,7 @@
     setPersistence(auth, browserLocalPersistence).catch(() => {});
 
     // ========================================
-    // 画像処理（動画なし）
+    // 画像処理
     // ========================================
     const IMAGE_MAX_WIDTH = 600;
     const IMAGE_QUALITY = 0.75;
@@ -521,10 +571,7 @@
     function fileToBase64Image(file, maxW = IMAGE_MAX_WIDTH, maxSize = IMAGE_MAX_BASE64_SIZE) {
       return new Promise((resolve, reject) => {
         if (!file) { resolve(null); return; }
-        if (!file.type.startsWith('image/')) {
-          reject(new Error('画像ファイルを選択してください'));
-          return;
-        }
+        if (!file.type.startsWith('image/')) { reject(new Error('画像ファイルを選択してください')); return; }
         const reader = new FileReader();
         reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
         reader.onload = (e) => {
@@ -565,6 +612,7 @@
     let typingUnsubscribe = null;
     let storiesUnsubscribe = null;
     let myArchiveUnsubscribe = null;
+    let presenceUnsubscribe = null;
     let roomLatestListeners = {};
 
     let chatsCache = {};
@@ -573,6 +621,9 @@
     let bansCache = {};
     let readsCache = {};
     let typingCache = {};
+
+    // オンライン状態：{ uid: { online: true, lastChanged: ts } }
+    let presenceCache = {};
 
     let storiesCache = {};
     let mySeenStories = {};
@@ -601,6 +652,12 @@
     let typingTimeout = null;
     let isCurrentlyTyping = false;
     const TYPING_TIMEOUT_MS = 3000;
+
+    // プレゼンス関連
+    let myPresenceRef = null;
+    let heartbeatTimer = null;
+    const HEARTBEAT_INTERVAL = 20000; // 20秒ごとに更新
+    const PRESENCE_STALE_MS = 60000;  // 60秒以上更新なければオフライン扱い
 
     const UNREAD_STORAGE_KEY = 'sikunai_unread_v1';
     const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v1';
@@ -689,6 +746,79 @@
         statusBanner.style.transform = 'translateY(-100%)';
         statusBanner.style.opacity = '0';
       }, 3000);
+    }
+
+    // ========================================
+    // プレゼンス（オンライン状態）
+    // ========================================
+    function initPresenceListener() {
+      if (presenceUnsubscribe) presenceUnsubscribe();
+      const presenceRef = ref(db, 'presence');
+      presenceUnsubscribe = onValue(presenceRef, (snap) => {
+        presenceCache = snap.exists() ? snap.val() : {};
+        // 全UI更新
+        if (currentChatId) {
+          renderMessages();
+          updateChatHeaderOnline();
+        }
+        renderChatList();
+      }, () => {});
+    }
+
+    function isUserOnline(uid) {
+      if (!uid) return false;
+      if (currentUser && uid === currentUser.uid) return true;
+      const p = presenceCache[uid];
+      if (!p) return false;
+      if (!p.online) return false;
+      // 最終更新が古すぎる場合はオフライン扱い（タブ閉じ等の取りこぼし対策）
+      if (p.lastChanged && (Date.now() - p.lastChanged) > PRESENCE_STALE_MS) return false;
+      return true;
+    }
+
+    async function setupMyPresence() {
+      if (!currentUser) return;
+      myPresenceRef = ref(db, `presence/${currentUser.uid}`);
+      try {
+        await set(myPresenceRef, { online: true, lastChanged: Date.now() });
+        // タブを閉じた/落ちた時にオフライン化
+        onDisconnect(myPresenceRef).set({ online: false, lastChanged: Date.now() });
+      } catch (e) {}
+      // ハートビート
+      if (heartbeatTimer) clearInterval(heartbeatTimer);
+      heartbeatTimer = setInterval(() => {
+        if (!currentUser || !myPresenceRef) return;
+        update(myPresenceRef, { online: true, lastChanged: Date.now() }).catch(() => {});
+      }, HEARTBEAT_INTERVAL);
+    }
+
+    async function setMyOffline() {
+      if (!currentUser) return;
+      if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
+      try {
+        await set(ref(db, `presence/${currentUser.uid}`), { online: false, lastChanged: Date.now() });
+      } catch (e) {}
+    }
+
+    // タブの表示/非表示でオンライン状態を切替
+    function handleVisibilityChange() {
+      isTabActive = !document.hidden;
+      if (!currentUser) return;
+      if (isTabActive) {
+        // タブがアクティブになった → オンライン
+        if (myPresenceRef) {
+          update(myPresenceRef, { online: true, lastChanged: Date.now() }).catch(() => {});
+        }
+        if (currentChatId) markChatAsRead(currentChatId);
+        refreshFavicon();
+        renderChatList();
+      } else {
+        // タブが非アクティブ → オフライン扱い（タブは開いているけど見ていない）
+        if (myPresenceRef) {
+          update(myPresenceRef, { online: false, lastChanged: Date.now() }).catch(() => {});
+        }
+        refreshFavicon();
+      }
     }
 
     function getTotalUnread() {
@@ -820,7 +950,7 @@
           };
           updateMyProfileUI();
         }
-        if (currentChatId) renderMessages();
+        if (currentChatId) { renderMessages(); updateChatHeaderOnline(); }
         renderChatList();
         renderStories();
       }, () => {});
@@ -829,6 +959,9 @@
     function updateMyProfileUI() {
       myAvatar.src = myProfile.avatar || DEFAULT_AVATAR;
       myName.textContent = myProfile.nickname || '名無しさん';
+      // 自分は常にオンライン
+      const myDot = document.getElementById('myOnlineDot');
+      if (myDot) myDot.classList.add('online');
     }
 
     function getProfileForUid(uid) {
@@ -863,6 +996,14 @@
       }, () => {});
     }
 
+    // 個々のチャットについて「相手が1人以上オンラインか」を判定
+    function getChatOnlineStatus(chat) {
+      if (!chat) return { onlineCount: 0, totalOthers: 0 };
+      const others = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
+      const onlineCount = others.filter(uid => isUserOnline(uid)).length;
+      return { onlineCount, totalOthers: others.length };
+    }
+
     function renderChatList() {
       if (!chatListContainer) return;
       chatListContainer.innerHTML = '';
@@ -885,22 +1026,52 @@
         item.onclick = () => openChat(chatId);
         const isGroup = chat.type === 'group';
         let displayName, avatarHtml;
+
+        const { onlineCount, totalOthers } = getChatOnlineStatus(chat);
+
         if (isGroup) {
           displayName = chat.name || 'グループチャット';
           const memberUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
           const avatars = memberUids.slice(0, 3).map(uid => {
             const p = getProfileForUid(uid);
-            return `<img class="avatar-sm" src="${escapeHtml(p.avatar)}" alt="">`;
+            const online = isUserOnline(uid);
+            return `<span class="avatar-online-wrap">
+              <img class="avatar-sm" src="${escapeHtml(p.avatar)}" alt="" style="border:2px solid #fff;">
+              <span class="online-dot small ${online ? 'online' : ''}"></span>
+            </span>`;
           }).join('');
-          avatarHtml = `<div class="flex -space-x-2">${avatars || '<img class="avatar" src="' + DEFAULT_AVATAR + '">'}</div>`;
+          avatarHtml = `<div class="flex -space-x-2">${avatars || `<span class="avatar-online-wrap"><img class="avatar" src="${DEFAULT_AVATAR}"></span>`}</div>`;
         } else {
           const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
           const p = getProfileForUid(otherUid);
           displayName = p.nickname;
-          avatarHtml = `<img class="avatar" src="${escapeHtml(p.avatar)}" alt="">`;
+          const online = isUserOnline(otherUid);
+          avatarHtml = `<span class="avatar-online-wrap">
+            <img class="avatar" src="${escapeHtml(p.avatar)}" alt="">
+            <span class="online-dot ${online ? 'online' : ''}"></span>
+          </span>`;
         }
+
         const unreadDot = isUnread ? `<span class="unread-dot"></span>` : '';
         const unreadBadge = isUnread ? `<span class="unread-count">${unread > 99 ? '99+' : unread}</span>` : '';
+
+        // グループ用に「〇人オンライン」バッジ
+        let onlineLabel = '';
+        if (isGroup && totalOthers > 0) {
+          onlineLabel = `<span class="online-count ${onlineCount === 0 ? 'offline' : ''}">
+            <span class="online-dot small ${onlineCount > 0 ? 'online' : ''}" style="width:8px;height:8px;border-width:1px;"></span>
+            ${onlineCount}/${totalOthers}
+          </span>`;
+        } else if (!isGroup) {
+          // 個人チャットはテキストで「オンライン中」or「オフライン」
+          const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
+          const online = isUserOnline(otherUid);
+          onlineLabel = `<span class="online-count ${online ? '' : 'offline'}">
+            <span class="online-dot small ${online ? 'online' : ''}" style="width:8px;height:8px;border-width:1px;"></span>
+            ${online ? 'オンライン' : 'オフライン'}
+          </span>`;
+        }
+
         item.innerHTML = `
           <div style="position:relative;">
             ${avatarHtml}
@@ -916,11 +1087,55 @@
           </div>
           <div class="flex flex-col items-end gap-1">
             <div class="text-xs text-gray-400 whitespace-nowrap">${formatTime(chat.lastMessageAt || chat.createdAt)}</div>
+            ${onlineLabel}
             ${unreadBadge}
           </div>
         `;
         chatListContainer.appendChild(item);
       });
+    }
+
+    function updateChatHeaderOnline() {
+      const meta = document.getElementById('currentChatMeta');
+      if (!meta || !currentChatId) return;
+      const chat = chatsCache[currentChatId];
+      if (!chat) return;
+      const { onlineCount, totalOthers } = getChatOnlineStatus(chat);
+      const isGroup = chat.type === 'group';
+      if (isGroup) {
+        meta.innerHTML = `グループ・${Object.keys(chat.members || {}).length}人 ・
+          <span class="online-count ${onlineCount === 0 ? 'offline' : ''}">
+            <span class="online-dot small ${onlineCount > 0 ? 'online' : ''}" style="width:8px;height:8px;border-width:1px;"></span>
+            ${onlineCount}人オンライン
+          </span>`;
+      } else {
+        const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
+        const online = isUserOnline(otherUid);
+        meta.innerHTML = `${online ? 'オンライン' : 'オフライン'}
+          <span class="online-dot small ${online ? 'online' : ''}" style="width:8px;height:8px;border-width:1px;"></span>`;
+      }
+      // ヘッダーのアバターも更新
+      const headerAvatars = document.getElementById('chatHeaderAvatars');
+      headerAvatars.innerHTML = '';
+      if (isGroup) {
+        const memberUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
+        memberUids.slice(0, 3).forEach(uid => {
+          const p = getProfileForUid(uid);
+          const online = isUserOnline(uid);
+          headerAvatars.innerHTML += `<span class="avatar-online-wrap">
+            <img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="border:2px solid #fff;">
+            <span class="online-dot small ${online ? 'online' : ''}" style="width:9px;height:9px;"></span>
+          </span>`;
+        });
+      } else {
+        const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
+        const p = getProfileForUid(otherUid);
+        const online = isUserOnline(otherUid);
+        headerAvatars.innerHTML = `<span class="avatar-online-wrap">
+          <img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="border:2px solid #fff;">
+          <span class="online-dot small ${online ? 'online' : ''}" style="width:9px;height:9px;"></span>
+        </span>`;
+      }
     }
 
     function openChat(chatId) {
@@ -934,24 +1149,15 @@
       clearTimeout(typingTimeout);
       const isGroup = chat.type === 'group';
       let displayName;
-      const headerAvatars = document.getElementById('chatHeaderAvatars');
-      headerAvatars.innerHTML = '';
       if (isGroup) {
         displayName = chat.name || 'グループチャット';
-        const memberUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
-        memberUids.slice(0, 3).forEach(uid => {
-          const p = getProfileForUid(uid);
-          headerAvatars.innerHTML += `<img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="border:2px solid #fff;">`;
-        });
-        document.getElementById('currentChatMeta').textContent = `グループ・${Object.keys(chat.members || {}).length}人`;
       } else {
         const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
         const p = getProfileForUid(otherUid);
         displayName = p.nickname;
-        headerAvatars.innerHTML = `<img class="avatar-sm" src="${escapeHtml(p.avatar)}">`;
-        document.getElementById('currentChatMeta').textContent = '個人チャット';
       }
       document.getElementById('currentChatName').textContent = displayName;
+      updateChatHeaderOnline();
       chatListView.classList.add('hidden');
       chatView.classList.remove('hidden');
       chatView.classList.remove('view-enter');
@@ -1027,6 +1233,7 @@
       messagesCache.forEach((msg, idx) => {
         const isMine = currentUser && msg.authorUid === currentUser.uid;
         const profile = getProfileForUid(msg.authorUid);
+        const senderOnline = isUserOnline(msg.authorUid);
         const row = document.createElement('div');
         row.className = 'msg-row' + (isMine ? ' mine' : '');
         row.style.animationDelay = Math.min(idx * 0.025, 0.5) + 's';
@@ -1051,10 +1258,15 @@
         if (isMine && isMessageReadByOthers(msg)) {
           readHtml = `<div class="read-receipt" style="justify-content: flex-end;">✓ 既読</div>`;
         }
-        row.innerHTML = `
+        // 送信者のアバターにオンラインドット
+        const avatarHtml = `<span class="avatar-online-wrap">
           <img class="avatar" src="${escapeHtml(profile.avatar)}" alt="">
+          <span class="online-dot ${senderOnline ? 'online' : ''}"></span>
+        </span>`;
+        row.innerHTML = `
+          ${avatarHtml}
           <div style="max-width: 75%; position: relative;">
-            ${menuBtnHtml}
+            ${menuBtnBtn(menuBtnHtml)}
             <div class="msg-meta ${isMine ? 'text-right' : ''}">
               <span class="name">${escapeHtml(profile.nickname)}</span>
               <span class="time">${formatTime(msg.createdAt)}</span>
@@ -1083,6 +1295,8 @@
       renderTypingIndicator();
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
+
+    function menuBtnBtn(html) { return html; }
 
     function outsideClickHandler(e) {
       if (!e.target.closest('.msg-menu-popup') && !e.target.closest('.msg-menu-btn')) closeAllMenus();
@@ -1368,7 +1582,7 @@
     }
 
     // ========================================
-    // ストーリー（画像・テキストのみ）
+    // ストーリー
     // ========================================
     const STORY_TTL = 24 * 60 * 60 * 1000;
 
@@ -1472,11 +1686,15 @@
 
     function buildStoryBubble(uid, seen) {
       const profile = getProfileForUid(uid);
+      const online = isUserOnline(uid);
       const bubble = document.createElement('div');
       bubble.className = 'story-bubble' + (seen ? ' seen' : '');
       bubble.innerHTML = `
         <div class="story-ring ${seen ? 'seen' : ''}">
-          <img src="${escapeHtml(profile.avatar)}" alt="">
+          <span class="avatar-online-wrap" style="width:100%;height:100%;">
+            <img src="${escapeHtml(profile.avatar)}" alt="">
+            <span class="online-dot small ${online ? 'online' : ''}"></span>
+          </span>
         </div>
         <span class="story-name">${escapeHtml(profile.nickname)}</span>
       `;
@@ -1564,6 +1782,7 @@
     const storyStageContent = document.getElementById('storyStageContent');
     const storyProgressBar = document.getElementById('storyProgressBar');
     const storyHeaderAvatar = document.getElementById('storyHeaderAvatar');
+    const storyHeaderOnlineDot = document.getElementById('storyHeaderOnlineDot');
     const storyHeaderName = document.getElementById('storyHeaderName');
     const storyHeaderTime = document.getElementById('storyHeaderTime');
     const storyLikeBtn = document.getElementById('storyLikeBtn');
@@ -1575,17 +1794,14 @@
       const { archiveMode = false } = options;
       const source = archiveMode ? myArchivedStories : storiesCache[uid];
       if (!source) return;
-
       currentStoryUserId = uid;
       currentStoryIsArchive = archiveMode;
       currentStoryList = Object.entries(source).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
       currentStoryIndex = 0;
-
       if (!archiveMode && uid !== currentUser.uid) {
         const firstUnseenIdx = currentStoryList.findIndex(s => !mySeenStories[s.id]);
         if (firstUnseenIdx >= 0) currentStoryIndex = firstUnseenIdx;
       }
-
       storyViewer.classList.add('show');
       document.body.style.overflow = 'hidden';
       showCurrentStory();
@@ -1615,18 +1831,16 @@
       cancelAnimationFrame(storyProgressRAF);
       storyStageContent.innerHTML = '';
       storyPaused = false;
-
-      if (currentStoryIndex < 0 || currentStoryIndex >= currentStoryList.length) {
-        closeStoryViewer();
-        return;
-      }
-
+      if (currentStoryIndex < 0 || currentStoryIndex >= currentStoryList.length) { closeStoryViewer(); return; }
       const story = currentStoryList[currentStoryIndex];
       const profile = getProfileForUid(story.authorUid || currentStoryUserId);
-
       storyHeaderAvatar.src = profile.avatar;
       storyHeaderName.textContent = profile.nickname;
       storyHeaderTime.textContent = formatRelativeTime(story.createdAt);
+      // オンラインドット
+      const online = isUserOnline(story.authorUid || currentStoryUserId);
+      if (online) storyHeaderOnlineDot.classList.add('online');
+      else storyHeaderOnlineDot.classList.remove('online');
 
       if (currentStoryUserId === currentUser.uid) storyInfoBtn.classList.remove('hidden');
       else storyInfoBtn.classList.add('hidden');
@@ -1698,12 +1912,8 @@
       const segs = storyProgressBar.querySelectorAll('.story-segment > div');
       const currentSeg = segs[currentStoryIndex];
       if (currentSeg) currentSeg.style.width = '0%';
-
       function tick() {
-        if (storyPaused) {
-          storyProgressRAF = requestAnimationFrame(tick);
-          return;
-        }
+        if (storyPaused) { storyProgressRAF = requestAnimationFrame(tick); return; }
         const elapsed = Date.now() - storyStartTime;
         const pct = Math.min(elapsed / storyDuration * 100, 100);
         if (currentSeg) currentSeg.style.width = pct + '%';
@@ -1810,10 +2020,7 @@
       e.preventDefault();
       const text = storyReplyInput.value.trim();
       if (!text) return;
-      if (currentStoryUserId === currentUser.uid) {
-        showBanner('自分のストーリーには返信できません', true);
-        return;
-      }
+      if (currentStoryUserId === currentUser.uid) { showBanner('自分のストーリーには返信できません', true); return; }
       const story = currentStoryList[currentStoryIndex];
       if (!story) return;
       let chatId = await findExistingDirectChat(currentStoryUserId);
@@ -1934,14 +2141,18 @@
       infoListContainer.innerHTML = '';
       entries.forEach(([uid, ts]) => {
         const p = getProfileForUid(uid);
+        const online = isUserOnline(uid);
         const item = document.createElement('div');
         item.className = 'info-list-item';
         const heart = tab === 'likers' ? '<span style="margin-left:auto;color:#ef4444;font-size:16px;">❤️</span>' : '';
         item.innerHTML = `
-          <img src="${escapeHtml(p.avatar)}" class="avatar-sm" alt="">
+          <span class="avatar-online-wrap">
+            <img src="${escapeHtml(p.avatar)}" class="avatar-sm" alt="">
+            <span class="online-dot small ${online ? 'online' : ''}" style="width:10px;height:10px;"></span>
+          </span>
           <div style="flex:1;min-width:0;">
             <div style="font-weight:700;font-size:13px;color:#1e40af;" class="truncate">${escapeHtml(p.nickname)}</div>
-            <div style="font-size:11px;color:#9ca3af;">${formatRelativeTime(ts)}</div>
+            <div style="font-size:11px;color:#9ca3af;">${formatRelativeTime(ts)}${online ? ' ・ <span style="color:#16a34a;">オンライン</span>' : ''}</div>
           </div>
           ${heart}
         `;
@@ -2064,6 +2275,7 @@
 
     document.getElementById('switchAccountBtn').addEventListener('click', async () => {
       intentionalSignOut = true;
+      try { await setMyOffline(); } catch (e) {}
       try { await signOut(auth); } catch (e) {}
       banOverlay.classList.remove('show');
       document.body.style.background = '';
@@ -2076,6 +2288,7 @@
     window.doLogout = async function() {
       intentionalSignOut = true;
       try { await setMyTypingState(false); } catch (e) {}
+      try { await setMyOffline(); } catch (e) {}
       if (chatsUnsubscribe) chatsUnsubscribe();
       if (messagesUnsubscribe) messagesUnsubscribe();
       if (profilesUnsubscribe) profilesUnsubscribe();
@@ -2084,6 +2297,7 @@
       if (typingUnsubscribe) typingUnsubscribe();
       if (storiesUnsubscribe) storiesUnsubscribe();
       if (myArchiveUnsubscribe) myArchiveUnsubscribe();
+      if (presenceUnsubscribe) presenceUnsubscribe();
       if (storyLikesUnsubscribe) storyLikesUnsubscribe();
       Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       roomLatestListeners = {};
@@ -2147,21 +2361,22 @@
       initChatsListener();
       initStoriesListener();
       initMyArchiveListener();
+      initPresenceListener();
+      setupMyPresence();
     });
 
-    document.addEventListener('visibilitychange', () => {
-      isTabActive = !document.hidden;
-      if (isTabActive) {
-        if (currentChatId) markChatAsRead(currentChatId);
-        refreshFavicon(); renderChatList();
-      } else refreshFavicon();
-    });
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     window.addEventListener('focus', () => {
-      isTabActive = true;
-      if (currentChatId) markChatAsRead(currentChatId);
-      refreshFavicon(); renderChatList();
+      if (document.hidden) return;
+      handleVisibilityChange();
     });
-    window.addEventListener('blur', () => { isTabActive = false; refreshFavicon(); });
+    window.addEventListener('blur', () => {
+      // blur時はタブが非アクティブになっていなくても一旦オフライン扱いにする
+      // （他ウィンドウを見ている間は「離席中」扱い）
+      if (currentUser && myPresenceRef) {
+        update(myPresenceRef, { online: false, lastChanged: Date.now() }).catch(() => {});
+      }
+    });
 
     ['click', 'keydown', 'touchstart'].forEach(evt => {
       window.addEventListener(evt, () => {
@@ -2180,6 +2395,7 @@
     window.addEventListener('online', () => setConnection(true));
     window.addEventListener('offline', () => setConnection(false));
 
+    // ページ離脱時にオフライン化（同期的にsendBeacon風に書けないので、onDisconnectに任せる）
     window.addEventListener('beforeunload', () => {
       try { setMyTypingState(false); } catch (e) {}
       if (chatsUnsubscribe) chatsUnsubscribe();
@@ -2190,6 +2406,7 @@
       if (typingUnsubscribe) typingUnsubscribe();
       if (storiesUnsubscribe) storiesUnsubscribe();
       if (myArchiveUnsubscribe) myArchiveUnsubscribe();
+      if (presenceUnsubscribe) presenceUnsubscribe();
       if (storyLikesUnsubscribe) storyLikesUnsubscribe();
       Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
     });
