@@ -265,16 +265,17 @@
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     // ========================================
-    // ★ Firebase設定（自分のプロジェクトに置き換えてください）
+    // ★ Firebase設定（chat-d04a6 プロジェクト）
     // ========================================
     const firebaseConfig = {
-      apiKey: "AIzaSyBCoiJAnVWIOH9csEPlDyWJgfj6sSlNO2o",
-      authDomain: "chaneler-52b95.firebaseapp.com",
-      projectId: "chaneler-52b95",
-      databaseURL: "https://chaneler-52b95-default-rtdb.firebaseio.com",
-      storageBucket: "chaneler-52b95.firebasestorage.app",
-      messagingSenderId: "538510918184",
-      appId: "1:538510918184:web:58232aa80922ff00b92b1d"
+      apiKey: "AIzaSyAexiMqMGTzd1r9IzHb4_aQomhPf-DCB6U",
+      authDomain: "chat-d04a6.firebaseapp.com",
+      databaseURL: "https://chat-d04a6-default-rtdb.firebaseio.com",
+      projectId: "chat-d04a6",
+      storageBucket: "chat-d04a6.firebasestorage.app",
+      messagingSenderId: "290611121392",
+      appId: "1:290611121392:web:c45ca30c8099f85bf08635",
+      measurementId: "G-3ZENK6R0JV"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -450,10 +451,6 @@
       }, 3500);
     }
 
-    function getUidKey(uid) {
-      return uid ? uid : null;
-    }
-
     // ========================================
     // プロフィール監視
     // ========================================
@@ -520,12 +517,56 @@
     function initRoomsListener() {
       if (roomsUnsubscribe) roomsUnsubscribe();
       const roomsRef = ref(db, 'chatRooms');
+
+      console.log('🔌 ルーム読み込み開始...');
+
+      const timeoutId = setTimeout(() => {
+        if (roomsContainer.querySelector('.loading-spinner')) {
+          console.error('⏱️ ルーム読み込みタイムアウト');
+          roomsContainer.innerHTML = `
+            <div class="text-red-600 text-sm bg-red-50 border border-red-200 rounded p-3">
+              ⚠️ ルームの読み込みがタイムアウトしました。<br>
+              以下を確認してください：<br>
+              ・Firebase Realtime Database のルールが <code>auth != null</code> になっているか<br>
+              ・ネットワーク接続<br>
+              <button onclick="location.reload()" class="mt-2 bg-red-600 text-white px-3 py-1 rounded text-xs">再読み込み</button>
+            </div>`;
+          setConnection(false);
+        }
+      }, 5000);
+
       roomsUnsubscribe = onValue(roomsRef, (snap) => {
+        clearTimeout(timeoutId);
+        console.log('✅ ルーム取得成功:', snap.exists() ? Object.keys(snap.val()).length + '件' : '0件（空）');
+
         roomsCache = snap.exists() ? snap.val() : {};
         setConnection(true);
         renderRooms();
       }, (err) => {
-        console.error('ルーム監視エラー:', err);
+        clearTimeout(timeoutId);
+        console.error('❌ ルーム監視エラー:', err);
+
+        let hint = '';
+        if (err.code === 'PERMISSION_DENIED' || (err.message && err.message.includes('permission'))) {
+          hint = `
+            <div class="mt-2 text-xs text-left">
+              <strong>Firebase Console で以下を確認：</strong><br>
+              Realtime Database → ルール タブ → 以下を貼り付け：<br>
+              <pre class="bg-white border rounded p-2 mt-1 overflow-auto text-[10px]">{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}</pre>
+            </div>`;
+        }
+
+        roomsContainer.innerHTML = `
+          <div class="text-red-600 text-sm bg-red-50 border border-red-200 rounded p-3">
+            ⚠️ ルームの読み込みに失敗しました。<br>
+            <span class="text-xs">${escapeHtml(err.message || err.code || '不明なエラー')}</span>
+            ${hint}
+          </div>`;
         setConnection(false);
       });
     }
@@ -535,7 +576,11 @@
       const entries = Object.entries(roomsCache || {});
 
       if (entries.length === 0) {
-        roomsContainer.innerHTML = '<p class="text-gray-400 text-sm">まだルームがありません。新しく作成してください。</p>';
+        roomsContainer.innerHTML = `
+          <div class="text-gray-500 text-sm bg-white border border-gray-300 rounded p-6 text-center">
+            💬 まだルームがありません。<br>
+            <span class="text-xs text-gray-400">上のフォームから最初のルームを作成してください。</span>
+          </div>`;
         return;
       }
 
@@ -901,7 +946,6 @@
             avatar: p.avatar || user.photoURL || DEFAULT_AVATAR
           };
         } else {
-          // 初回ログイン → 自動作成
           myProfile = {
             nickname: user.displayName || '名無しさん',
             avatar: user.photoURL || DEFAULT_AVATAR
