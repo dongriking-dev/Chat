@@ -28,7 +28,7 @@
     .avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e5e7eb; background: #f3f4f6; }
     .avatar-lg { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0284c7; background: #f3f4f6; }
 
-    .online-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #9ca3af; border: 2px solid #fff; transition: background 0.3s; flex-shrink: 0; }
+    .online-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #9ca3af; border: 2px solid #fff; flex-shrink: 0; }
     .online-dot.online { background: #22c55e; }
     .avatar-online-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
     .avatar-online-wrap .online-dot { position: absolute; right: -1px; bottom: -1px; width: 13px; height: 13px; border: 2px solid #fff; }
@@ -73,6 +73,34 @@
     #statusBanner { position: fixed; top: 0; left: 0; right: 0; z-index: 9999; text-align: center; padding: 8px; font-size: 12px; transition: transform 0.35s, opacity 0.35s; transform: translateY(-100%); opacity: 0; }
     #statusBanner.show { transform: translateY(0); opacity: 1; }
 
+    /* アナウンスバナー */
+    #announcementBanner {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 9997;
+      background: linear-gradient(90deg, #0284c7, #7c3aed, #0284c7);
+      background-size: 200% 100%;
+      animation: bannerSlide 4s linear infinite;
+      color: #fff; padding: 12px 44px 12px 16px;
+      font-size: 14px;
+      display: none;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    #announcementBanner.show { display: block; animation: bannerSlide 4s linear infinite, announceIn 0.4s ease; }
+    @keyframes bannerSlide { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+    @keyframes announceIn {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    #announcementBanner .ann-close {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: rgba(0,0,0,0.25); border: none; color: #fff;
+      font-size: 16px; width: 26px; height: 26px; border-radius: 50%;
+      cursor: pointer; line-height: 1;
+    }
+
     .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 10000; padding: 16px; }
     .modal-backdrop.hidden { display: none; }
     .modal-content { background: #fff; border-radius: 12px; padding: 20px; max-width: 520px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; animation: modalIn 0.3s cubic-bezier(.34,1.56,.64,1) both; }
@@ -85,7 +113,7 @@
     #banOverlay.show { display: flex; }
 
     /* ========================================
-       緊急モード全画面オーバーレイ
+       緊急モード全画面オーバーレイ（音なし）
        ======================================== */
     #emergencyOverlay {
       position: fixed; inset: 0;
@@ -102,8 +130,8 @@
     #emergencyOverlay::before {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(circle, rgba(220,38,38,0.25) 0%, rgba(0,0,0,1) 70%);
-      animation: emPulse 2s ease-in-out infinite;
+      background: radial-gradient(circle, rgba(220,38,38,0.2) 0%, rgba(0,0,0,1) 70%);
+      animation: emPulse 2.5s ease-in-out infinite;
     }
     @keyframes emPulse {
       0%,100% { opacity: 0.6; }
@@ -112,23 +140,10 @@
     #emergencyOverlay .em-inner {
       position: relative; z-index: 2;
       max-width: 520px;
-      animation: emShake 0.4s ease;
-    }
-    @keyframes emShake {
-      0%,100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); }
-      40% { transform: translateX(6px); }
-      60% { transform: translateX(-4px); }
-      80% { transform: translateX(4px); }
     }
     #emergencyOverlay .em-icon {
       font-size: 96px;
       margin-bottom: 12px;
-      animation: emPulseIcon 0.8s ease-in-out infinite;
-    }
-    @keyframes emPulseIcon {
-      0%,100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(255,0,0,0.8)); }
-      50% { transform: scale(1.15); filter: drop-shadow(0 0 40px rgba(255,0,0,1)); }
     }
     #emergencyOverlay .em-title {
       font-size: 36px; font-weight: 900;
@@ -158,7 +173,7 @@
     }
     #emergencyOverlay .em-detail strong { color: #fff; }
 
-    /* 管理者用警告バナー */
+    /* 管理者用緊急バナー（音は鳴らさない） */
     #emergencyAdminBanner {
       position: fixed; top: 0; left: 0; right: 0;
       z-index: 9998;
@@ -172,9 +187,8 @@
       box-shadow: 0 4px 20px rgba(220,38,38,0.6);
     }
     #emergencyAdminBanner.show { display: block; }
-    @keyframes bannerSlide { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 
-    /* 管理者パネル（緊急発動者情報と解除ボタン） */
+    /* 管理者用緊急パネル */
     #adminEmergencyPanel {
       position: fixed;
       top: 60px; left: 50%; transform: translateX(-50%);
@@ -187,19 +201,13 @@
       color: #fff;
       max-width: 420px; width: calc(100% - 32px);
       display: none;
-      animation: panelIn 0.4s cubic-bezier(.34,1.56,.64,1) both;
     }
     #adminEmergencyPanel.show { display: block; }
-    @keyframes panelIn {
-      from { opacity: 0; transform: translateX(-50%) scale(0.9) translateY(-20px); }
-      to { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
-    }
     #adminEmergencyPanel .ap-title {
       font-size: 16px; font-weight: 900;
       color: #ef4444;
       letter-spacing: 0.1em;
       margin-bottom: 12px;
-      display: flex; align-items: center; gap: 8px;
     }
     #adminEmergencyPanel .ap-trigger {
       background: rgba(127,29,29,0.4);
@@ -211,15 +219,9 @@
       line-height: 1.7;
     }
     #adminEmergencyPanel .ap-trigger strong { color: #fca5a5; }
-    #adminEmergencyPanel .ap-trigger .ap-email {
-      color: #fff; font-weight: 700;
-      word-break: break-all;
-    }
-    #adminEmergencyPanel .ap-actions {
-      display: flex; gap: 8px; flex-wrap: wrap;
-    }
+    #adminEmergencyPanel .ap-trigger .ap-email { color: #fff; font-weight: 700; word-break: break-all; }
+    #adminEmergencyPanel .ap-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    /* 緊急ボタン */
     .emergency-btn {
       background: linear-gradient(135deg, #dc2626, #991b1b);
       color: #fff;
@@ -231,16 +233,21 @@
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(220,38,38,0.4);
       letter-spacing: 0.05em;
-      animation: emergencyBtnPulse 2s infinite;
     }
-    .emergency-btn:hover {
-      background: linear-gradient(135deg, #ef4444, #b91c1c);
-      transform: translateY(-2px) scale(1.03);
+    .emergency-btn:hover { background: linear-gradient(135deg, #ef4444, #b91c1c); transform: translateY(-2px); }
+
+    .admin-btn {
+      background: linear-gradient(135deg, #7c3aed, #5b21b6);
+      color: #fff;
+      border: 2px solid #4c1d95;
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(124,58,237,0.4);
     }
-    @keyframes emergencyBtnPulse {
-      0%,100% { box-shadow: 0 4px 12px rgba(220,38,38,0.4); }
-      50% { box-shadow: 0 4px 20px rgba(220,38,38,0.9); }
-    }
+    .admin-btn:hover { background: linear-gradient(135deg, #8b5cf6, #6d28d9); transform: translateY(-2px); }
 
     /* ストーリー */
     .stories-strip { display: flex; gap: 12px; overflow-x: auto; padding: 12px 4px; scrollbar-width: none; }
@@ -343,6 +350,12 @@
     </div>
   </div>
 
+  <!-- アナウンスバナー -->
+  <div id="announcementBanner">
+    <span id="announcementText"></span>
+    <button class="ann-close" id="announcementClose">✕</button>
+  </div>
+
   <div id="bootOverlay">
     <div class="boot-spinner"></div>
     <div style="font-size:14px;color:#9ca3af;">アカウントを確認しています...</div>
@@ -362,7 +375,6 @@
     <div class="bg-white border border-gray-300 rounded-lg shadow p-8 max-w-md mx-auto mt-16 text-center">
       <h1 class="text-3xl font-bold text-blue-900 mb-2">シクナイチャット</h1>
       <p class="text-sm text-gray-600 mb-6">ご利用にはGoogleアカウントでのログインが必要です。</p>
-      <p class="text-sm text-gray-600 mb-6">安全のためです。</p>
       <button id="googleLoginBtn" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-3 px-6 rounded shadow-sm flex items-center justify-center gap-3 mx-auto w-full">
         <svg width="20" height="20" viewBox="0 0 48 48">
           <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
@@ -372,6 +384,7 @@
         </svg>
         Googleでログイン
       </button>
+      <p class="text-xs text-gray-400 mt-4">※ チャットは匿名で表示されます</p>
     </div>
   </div>
 
@@ -398,6 +411,18 @@
         <button id="emergencyBtn" class="emergency-btn" title="緊急停止">🚨 緊急</button>
       </div>
     </header>
+
+    <!-- 管理者専用パネル -->
+    <div id="adminPanel" class="hidden bg-gradient-to-r from-purple-50 to-red-50 border-2 border-purple-300 rounded-lg p-3 mb-3 shadow-sm">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <div class="text-xs font-bold text-purple-900">
+          🛡 管理者パネル <span class="text-gray-500 font-normal">（あなたは管理者です）</span>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <button id="announceBtn" class="admin-btn">📢 アナウンス</button>
+        </div>
+      </div>
+    </div>
 
     <div class="bg-white border border-gray-300 rounded-lg shadow-sm mb-3 overflow-hidden">
       <div class="px-3 pt-3 pb-1 flex justify-between items-center border-b">
@@ -517,6 +542,21 @@
     </div>
   </div></div>
 
+  <!-- アナウンスモーダル -->
+  <div id="announceModal" class="modal-backdrop hidden"><div class="modal-content" style="border: 3px solid #7c3aed;">
+    <h3 class="text-lg font-bold text-purple-700 mb-3">📢 全体アナウンス</h3>
+    <p class="text-xs text-gray-500 mb-2">全ユーザーの画面上部にアナウンスバナーが表示されます。</p>
+    <label class="block text-xs text-gray-600 mb-1">メッセージ（最大200文字）:</label>
+    <textarea id="announceTextInput" rows="4" maxlength="200" placeholder="例: 本日22時よりメンテナンスを行います"
+      class="w-full border p-2 rounded text-sm mb-3 resize-none"></textarea>
+    <label class="block text-xs text-gray-600 mb-1">表示時間（秒）:</label>
+    <input type="number" id="announceDurationInput" min="5" max="300" value="30" class="w-full border p-2 rounded text-sm mb-3">
+    <div class="flex justify-end gap-2">
+      <button id="announceCancel" class="bg-gray-500 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
+      <button id="announceSend" class="bg-purple-600 text-white text-xs py-1.5 px-4 rounded font-bold">📢 送信する</button>
+    </div>
+  </div></div>
+
   <div id="storyViewer"><div class="story-stage">
     <div class="story-progress-bar" id="storyProgressBar"></div>
     <div class="story-header">
@@ -545,7 +585,7 @@
     import { getDatabase, ref, push, set, remove, onValue, query, orderByChild, get, update, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // 管理者メールアドレス（この人たちだけが緊急モードから除外される）
+    // 管理者メールアドレス
     const ADMIN_EMAILS = ['katou.noel114514@gmail.com', '18107@v.nakijin.ed.jp'];
     function isAdmin(email) {
       if (!email) return false;
@@ -587,26 +627,7 @@
         });
       } catch (e) {}
     }
-
-    function playEmergencySound() {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const now = audioCtx.currentTime;
-        for (let i = 0; i < 3; i++) {
-          const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-          osc.type = 'sawtooth';
-          const start = now + i * 0.5;
-          osc.frequency.setValueAtTime(400, start);
-          osc.frequency.linearRampToValueAtTime(1000, start + 0.4);
-          gain.gain.setValueAtTime(0.001, start);
-          gain.gain.linearRampToValueAtTime(0.2, start + 0.05);
-          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.45);
-          osc.connect(gain); gain.connect(audioCtx.destination);
-          osc.start(start); osc.stop(start + 0.5);
-        }
-      } catch (e) {}
-    }
+    // 緊急時の音は鳴らさない（関数自体を削除）
 
     const firebaseConfig = {
       apiKey: "AIzaSyAexiMqMGTzd1r9IzHb4_aQomhPf-DCB6U",
@@ -661,11 +682,12 @@
     let chatsUnsubscribe = null, messagesUnsubscribe = null, profilesUnsubscribe = null,
         bansUnsubscribe = null, readsUnsubscribe = null, typingUnsubscribe = null,
         storiesUnsubscribe = null, myArchiveUnsubscribe = null, presenceUnsubscribe = null,
-        emergencyUnsubscribe = null, roomLatestListeners = {};
+        emergencyUnsubscribe = null, announcementUnsubscribe = null, roomLatestListeners = {};
 
     let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {},
         readsCache = {}, typingCache = {}, presenceCache = {};
     let emergencyState = { active: false };
+    let currentAnnouncement = null;
 
     let storiesCache = {}, mySeenStories = {}, currentStoryUserId = null, currentStoryIndex = 0,
         currentStoryList = [], currentStoryIsArchive = false, storyTimer = null,
@@ -683,12 +705,14 @@
     const UNREAD_STORAGE_KEY = 'sikunai_unread_v1';
     const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v1';
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
+    const ANNOUNCE_DISMISS_KEY = 'sikunai_dismissed_announcements_v1';
     function loadJson(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
     function saveJson(key, obj) { try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {} }
 
     let unreadCounts = loadJson(UNREAD_STORAGE_KEY);
     let lastReadAt = loadJson(LASTREAD_STORAGE_KEY);
     mySeenStories = loadJson(SEEN_STORIES_KEY);
+    let dismissedAnnouncements = loadJson(ANNOUNCE_DISMISS_KEY);
     let chatLatestMsgAt = {}, chatLatestMsgSender = {}, isTabActive = !document.hidden;
 
     const loginView = document.getElementById('loginView');
@@ -709,7 +733,11 @@
     const emergencyAdminBanner = document.getElementById('emergencyAdminBanner');
     const adminEmergencyPanel = document.getElementById('adminEmergencyPanel');
     const adminEmergencyTriggerInfo = document.getElementById('adminEmergencyTriggerInfo');
+    const adminPanel = document.getElementById('adminPanel');
+    const announcementBanner = document.getElementById('announcementBanner');
+    const announcementText = document.getElementById('announcementText');
     let bannerTimer = null;
+    let announcementTimer = null;
 
     function escapeHtml(str) {
       if (!str) return '';
@@ -751,62 +779,42 @@
     }
 
     // ========================================
-    // 緊急モード
+    // 緊急モード（音なし）
     // ========================================
     function initEmergencyListener() {
       if (emergencyUnsubscribe) emergencyUnsubscribe();
       const emRef = ref(db, 'emergency');
       emergencyUnsubscribe = onValue(emRef, (snap) => {
-        const prevActive = emergencyState.active;
         emergencyState = snap.exists() ? snap.val() : { active: false };
         const nowActive = !!emergencyState.active;
         const admin = currentUser && isAdmin(currentUser.email);
 
         if (nowActive) {
           if (admin) {
-            // 管理者：警告バナー + パネル表示、オーバーレイは出さない
+            // 管理者：警告バナー + パネル表示
             emergencyOverlay.classList.remove('show');
             emergencyAdminBanner.classList.add('show');
             adminEmergencyPanel.classList.add('show');
             document.title = '🚨 緊急モード中';
-            // 誰が押したか情報を更新
-            const infoHtml = `
+            adminEmergencyTriggerInfo.innerHTML = `
               <div><strong>発動者:</strong> <span class="ap-email">${escapeHtml(emergencyState.triggeredByEmail || '不明')}</span></div>
               <div><strong>ニックネーム:</strong> ${escapeHtml(emergencyState.triggeredByName || '不明')}</div>
               <div><strong>時刻:</strong> ${formatTime(emergencyState.triggeredAt)}</div>
-              ${emergencyState.reason ? `<div><strong>理由:</strong> ${escapeHtml(emergencyState.reason)}</div>` : ''}
             `;
-            adminEmergencyTriggerInfo.innerHTML = infoHtml;
           } else {
-            // 一般ユーザー：全画面オーバーレイ
+            // 一般ユーザー：全画面オーバーレイ（音なし）
             emergencyAdminBanner.classList.remove('show');
             adminEmergencyPanel.classList.remove('show');
             emergencyDetail.innerHTML = `
               <div><strong>発動者:</strong> ${escapeHtml(emergencyState.triggeredByEmail || '不明')}</div>
               <div><strong>時刻:</strong> ${formatTime(emergencyState.triggeredAt)}</div>
-              ${emergencyState.reason ? `<div><strong>理由:</strong> ${escapeHtml(emergencyState.reason)}</div>` : ''}
             `;
             emergencyOverlay.classList.add('show');
-            document.title = '🚨 緊急停止中 - このサービスは停止しています';
+            document.title = '🚨 緊急停止中';
             setFavicon(FAVICON_EMERGENCY);
-            // スクロール禁止
             document.documentElement.style.overflow = 'hidden';
             document.body.style.overflow = 'hidden';
-            // サイレン
-            if (!prevActive) {
-              playEmergencySound();
-              setTimeout(playEmergencySound, 1600);
-              setTimeout(playEmergencySound, 3200);
-              // 定期的に鳴らし続ける（緊急解除まで）
-              if (window.__emergencySoundInterval) clearInterval(window.__emergencySoundInterval);
-              window.__emergencySoundInterval = setInterval(() => {
-                if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
-                  playEmergencySound();
-                } else {
-                  clearInterval(window.__emergencySoundInterval);
-                }
-              }, 5000);
-            }
+            // 音は鳴らさない
           }
         } else {
           // 解除
@@ -816,10 +824,6 @@
           document.documentElement.style.overflow = '';
           document.body.style.overflow = '';
           document.title = 'シクナイチャット';
-          if (window.__emergencySoundInterval) {
-            clearInterval(window.__emergencySoundInterval);
-            window.__emergencySoundInterval = null;
-          }
           refreshFavicon();
         }
       }, (err) => {
@@ -827,14 +831,8 @@
       });
     }
 
-    // 誰でも押せる緊急発動（確認なし・即実行）
     async function triggerEmergency() {
-      if (!currentUser) {
-        // ログインしていなくても発動可能にする場合、匿名ログインが必要
-        // → ここではログイン必須。ログインなしで押したい場合は別途対応必要
-        alert('緊急発動にはログインが必要です。');
-        return;
-      }
+      if (!currentUser) { alert('緊急発動にはログインが必要です。'); return; }
       try {
         await set(ref(db, 'emergency'), {
           active: true,
@@ -843,14 +841,12 @@
           triggeredByName: myProfile.nickname || '',
           triggeredAt: Date.now()
         });
-        // 発動した本人が管理者なら即座にパネル表示（onValueで反映される）
       } catch (err) {
         console.error('緊急発動エラー:', err);
         showBanner('発動に失敗しました: ' + (err.message || ''), true);
       }
     }
 
-    // 管理者のみ解除可能
     async function clearEmergency() {
       if (!currentUser || !isAdmin(currentUser.email)) {
         showBanner('解除権限がありません', true);
@@ -869,7 +865,7 @@
       }
     }
 
-    // タブを閉じようとした時の警告（緊急モード中のみ）
+    // タブを閉じようとした時の警告（緊急モード中の非管理者）
     window.addEventListener('beforeunload', (e) => {
       if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
         e.preventDefault();
@@ -878,13 +874,64 @@
       }
     });
 
-    // タブがアクティブになったら再びサイレン
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) return;
-      if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
-        playEmergencySound();
+    // ========================================
+    // アナウンス
+    // ========================================
+    function initAnnouncementListener() {
+      if (announcementUnsubscribe) announcementUnsubscribe();
+      announcementUnsubscribe = onValue(ref(db, 'announcement'), (snap) => {
+        if (!snap.exists()) return;
+        const ann = snap.val();
+        if (!ann || !ann.text || !ann.createdAt) return;
+        if (dismissedAnnouncements[ann.createdAt]) return;
+        if (ann.expiresAt && Date.now() > ann.expiresAt) return;
+        if (currentAnnouncement && currentAnnouncement.createdAt === ann.createdAt) return;
+        currentAnnouncement = ann;
+        showAnnouncement(ann);
+      }, () => {});
+    }
+
+    function showAnnouncement(ann) {
+      announcementText.textContent = ann.text;
+      announcementBanner.classList.add('show');
+      playNotificationSound();
+      if (announcementTimer) clearTimeout(announcementTimer);
+      const duration = ann.durationMs || 30000;
+      announcementTimer = setTimeout(() => {
+        announcementBanner.classList.remove('show');
+      }, duration);
+    }
+
+    document.getElementById('announcementClose').addEventListener('click', () => {
+      announcementBanner.classList.remove('show');
+      if (currentAnnouncement) {
+        dismissedAnnouncements[currentAnnouncement.createdAt] = true;
+        saveJson(ANNOUNCE_DISMISS_KEY, dismissedAnnouncements);
       }
     });
+
+    async function sendAnnouncement(text, durationSec) {
+      if (!currentUser || !isAdmin(currentUser.email)) {
+        showBanner('管理者権限が必要です', true);
+        return;
+      }
+      const trimmed = (text || '').trim();
+      if (!trimmed) { showBanner('メッセージを入力してください', true); return; }
+      try {
+        await set(ref(db, 'announcement'), {
+          text: trimmed,
+          createdAt: Date.now(),
+          createdBy: currentUser.uid,
+          createdByEmail: currentUser.email || '',
+          createdByName: myProfile.nickname || '',
+          durationMs: Math.max(5000, Math.min(300000, (durationSec || 30) * 1000)),
+          expiresAt: Date.now() + Math.max(5000, Math.min(300000, (durationSec || 30) * 1000))
+        });
+        showBanner('📢 アナウンスを送信しました', false);
+      } catch (err) {
+        showBanner('送信に失敗: ' + (err.message || ''), true);
+      }
+    }
 
     // ========================================
     // プレゼンス
@@ -1628,7 +1675,7 @@
     }
     function closeStoryViewer() {
       storyViewer.classList.remove('show');
-      document.body.style.overflow = emergencyState.active && !isAdmin(currentUser?.email) ? 'hidden' : '';
+      document.body.style.overflow = (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) ? 'hidden' : '';
       clearTimeout(storyTimer); cancelAnimationFrame(storyProgressRAF);
       if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
       storyStageContent.innerHTML = '';
@@ -1736,16 +1783,29 @@
       } catch (err) { showBanner('保存失敗', true); }
     });
 
-    // ========================================
-    // 緊急ボタン（誰でも即発動）
-    // ========================================
+    // 緊急ボタン（誰でも即発動・音なし）
     document.getElementById('emergencyBtn').addEventListener('click', () => {
       if (!currentUser) { alert('ログインが必要です。'); return; }
-      // 即実行（確認ダイアログなし）
       triggerEmergency();
     });
-
     document.getElementById('adminClearEmergencyBtn').addEventListener('click', clearEmergency);
+
+    // アナウンス（管理者のみ）
+    const announceModal = document.getElementById('announceModal');
+    document.getElementById('announceBtn').addEventListener('click', () => {
+      document.getElementById('announceTextInput').value = '';
+      document.getElementById('announceDurationInput').value = 30;
+      announceModal.classList.remove('hidden');
+    });
+    document.getElementById('announceCancel').addEventListener('click', () => announceModal.classList.add('hidden'));
+    announceModal.addEventListener('click', (e) => { if (e.target.id === 'announceModal') announceModal.classList.add('hidden'); });
+    document.getElementById('announceSend').addEventListener('click', async () => {
+      const text = document.getElementById('announceTextInput').value.trim();
+      const dur = parseInt(document.getElementById('announceDurationInput').value) || 30;
+      if (!text) { alert('メッセージを入力してください。'); return; }
+      announceModal.classList.add('hidden');
+      await sendAnnouncement(text, dur);
+    });
 
     // 認証
     document.getElementById('googleLoginBtn').addEventListener('click', async () => {
@@ -1757,7 +1817,7 @@
       try { await setMyTypingState(false); await setMyOffline(); } catch (e) {}
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
-       presenceUnsubscribe, emergencyUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       try { await signOut(auth); } catch (e) {}
       location.reload();
@@ -1802,13 +1862,22 @@
       } catch (e) { myProfile = { nickname: user.displayName || '名無しさん', avatar: user.photoURL || DEFAULT_AVATAR }; }
 
       updateMyProfileUI();
+
+      // 管理者パネル表示制御
+      if (isAdmin(user.email)) {
+        adminPanel.classList.remove('hidden');
+      } else {
+        adminPanel.classList.add('hidden');
+      }
+
       initProfilesListener();
       initBansListener();
       initChatsListener();
       initStoriesListener();
       initMyArchiveListener();
       initPresenceListener();
-      initEmergencyListener();  // ← これが緊急状態を監視
+      initEmergencyListener();
+      initAnnouncementListener();
       setupMyPresence();
     });
 
