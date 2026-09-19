@@ -34,45 +34,22 @@
     .msg-meta .name { font-weight: 700; color: #1e40af; }
     .msg-meta .time { margin-left: 6px; }
     .msg-content { font-size: 14px; color: #111827; white-space: pre-wrap; }
-    .msg-file img, .msg-file video { max-height: 240px; max-width: 100%; border-radius: 8px; margin-top: 6px; border: 1px solid #e5e7eb; }
+    .msg-file img { max-height: 240px; max-width: 100%; border-radius: 8px; margin-top: 6px; border: 1px solid #e5e7eb; }
     .msg-file a { font-size: 12px; color: #2563eb; text-decoration: underline; word-break: break-all; }
 
     /* リアクション */
     .msg-reactions { display: flex; gap: 3px; margin-top: 4px; flex-wrap: wrap; }
     .msg-reactions.mine { justify-content: flex-end; }
-    .reaction-pill {
-      display: inline-flex; align-items: center; gap: 3px;
-      background: #fff; border: 1px solid #e5e7eb;
-      border-radius: 9999px; padding: 2px 6px;
-      font-size: 12px; cursor: pointer;
-      transition: transform 0.2s, background 0.2s;
-      animation: reactionPop 0.35s cubic-bezier(.34,1.56,.64,1) both;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
+    .reaction-pill { display: inline-flex; align-items: center; gap: 3px; background: #fff; border: 1px solid #e5e7eb; border-radius: 9999px; padding: 2px 6px; font-size: 12px; cursor: pointer; transition: transform 0.2s, background 0.2s; animation: reactionPop 0.35s cubic-bezier(.34,1.56,.64,1) both; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
     @keyframes reactionPop { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     .reaction-pill:hover { transform: scale(1.1); background: #eff6ff; }
     .reaction-pill.mine { background: #dbeafe; border-color: #93c5fd; }
     .reaction-pill .reaction-count { font-size: 10px; color: #6b7280; font-weight: 600; }
-
-    /* リアクションピッカー */
-    .reaction-picker {
-      position: absolute;
-      top: -46px;
-      background: #fff; border: 1px solid #e5e7eb;
-      border-radius: 9999px; padding: 6px 8px;
-      display: flex; gap: 4px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-      animation: pickerIn 0.2s cubic-bezier(.34,1.56,.64,1) both;
-      z-index: 100;
-    }
+    .reaction-picker { position: absolute; top: -46px; background: #fff; border: 1px solid #e5e7eb; border-radius: 9999px; padding: 6px 8px; display: flex; gap: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); animation: pickerIn 0.2s cubic-bezier(.34,1.56,.64,1) both; z-index: 100; }
     .msg-row.mine .reaction-picker { right: 0; }
     .msg-row:not(.mine) .reaction-picker { left: 0; }
     @keyframes pickerIn { from { opacity: 0; transform: translateY(8px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
-    .reaction-picker button {
-      background: none; border: none; font-size: 22px;
-      cursor: pointer; padding: 2px 4px; line-height: 1;
-      transition: transform 0.15s;
-    }
+    .reaction-picker button { background: none; border: none; font-size: 22px; cursor: pointer; padding: 2px 4px; line-height: 1; transition: transform 0.15s; }
     .reaction-picker button:hover { transform: scale(1.3) translateY(-2px); }
 
     .story-reply-context { background: #f3f4f6; border-radius: 8px; padding: 6px 8px; margin-bottom: 6px; font-size: 11px; color: #6b7280; display: flex; align-items: center; gap: 6px; border-left: 3px solid #0284c7; }
@@ -162,9 +139,7 @@
     .dots-loading::after { content: '...'; display: inline-block; animation: dots 1.4s steps(4, end) infinite; overflow: hidden; vertical-align: bottom; }
     @keyframes dots { 0% { width: 0; } 100% { width: 1.5em; } }
 
-    /* ========================================
-       ストーリー
-       ======================================== */
+    /* ストーリー */
     .stories-strip { display: flex; gap: 12px; overflow-x: auto; padding: 12px 4px; scrollbar-width: none; }
     .stories-strip::-webkit-scrollbar { display: none; }
     .stories-section-unread { display: flex; gap: 12px; flex-shrink: 0; }
@@ -189,9 +164,8 @@
     #storyViewer.show { display: flex; }
     #storyViewer .story-stage { position: relative; width: 100%; max-width: 420px; height: 100vh; max-height: 780px; background: #111; overflow: hidden; display: flex; align-items: center; justify-content: center; }
     #storyStageContent { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; user-select: none; position: relative; }
-    #storyStageContent img, #storyStageContent video { max-width: 100%; max-height: 100%; object-fit: contain; }
+    #storyStageContent img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-    /* Instagram風のテキストストーリー */
     #storyStageContent .story-text-content {
       width: 100%; height: 100%;
       display: flex; align-items: center; justify-content: center;
@@ -204,26 +178,6 @@
       line-height: 1.25;
       letter-spacing: -0.02em;
       text-shadow: 0 4px 20px rgba(0,0,0,0.35);
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
-    }
-
-    /* 画像・動画の上のInstagram風テキストオーバーレイ */
-    .ig-text-overlay {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 85%;
-      color: #fff;
-      font-size: 34px;
-      font-weight: 800;
-      text-align: center;
-      line-height: 1.25;
-      letter-spacing: -0.02em;
-      text-shadow: 0 3px 16px rgba(0,0,0,0.75), 0 0 30px rgba(0,0,0,0.4);
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
-      word-break: break-word;
-      pointer-events: none;
-      z-index: 4;
     }
 
     .story-progress-bar { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; gap: 3px; z-index: 5; }
@@ -247,7 +201,6 @@
     .story-like-btn:hover { transform: scale(1.15); }
     .story-like-btn.liked { animation: heartPop 0.5s ease; color: #ef4444; }
     @keyframes heartPop { 0% { transform: scale(1); } 40% { transform: scale(1.5); } 70% { transform: scale(0.9); } 100% { transform: scale(1); } }
-
     .story-viewers-info { position: absolute; bottom: 62px; left: 12px; z-index: 5; color: rgba(255,255,255,0.85); font-size: 11px; display: flex; align-items: center; gap: 6px; }
 
     .info-tabs { display: flex; border-bottom: 1px solid #e5e7eb; margin-bottom: 10px; }
@@ -258,48 +211,182 @@
     .info-list-item:last-child { border-bottom: none; }
     .info-empty { text-align: center; padding: 24px; color: #9ca3af; font-size: 13px; }
 
-    .story-upload-preview { margin-top: 10px; border-radius: 8px; overflow: hidden; max-height: 260px; display: flex; align-items: center; justify-content: center; background: #f3f4f6; border: 1px solid #e5e7eb; }
-    .story-upload-preview img, .story-upload-preview video { max-width: 100%; max-height: 260px; }
-
-    /* メディア選択ボタン */
+    /* メディア選択 */
     .media-pick-row { display: flex; gap: 8px; margin-bottom: 8px; }
-    .media-pick-btn {
-      flex: 1; padding: 10px 12px;
-      background: #f3f4f6; border: 1px solid #d1d5db;
-      border-radius: 8px; cursor: pointer;
-      font-size: 12px; color: #374151;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-      font-weight: 600;
-    }
+    .media-pick-btn { flex: 1; padding: 10px 12px; background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; cursor: pointer; font-size: 12px; color: #374151; display: flex; align-items: center; justify-content: center; gap: 6px; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; font-weight: 600; }
     .media-pick-btn:hover { background: #e5e7eb; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
     .media-pick-btn:active { transform: translateY(0) scale(0.97); }
 
-    /* 親しい友達モーダル */
+    /* 親しい友達 */
     .cf-list-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-bottom: 1px solid #f3f4f6; }
     .cf-list-item:last-child { border-bottom: none; }
     .cf-list-item .cf-remove { margin-left: auto; cursor: pointer; color: #ef4444; font-size: 16px; padding: 4px 8px; border-radius: 6px; transition: background 0.2s; }
     .cf-list-item .cf-remove:hover { background: #fef2f2; }
 
-    /* トグルスイッチ */
-    .toggle-switch {
-      display: inline-flex; align-items: center; gap: 6px;
-      cursor: pointer; user-select: none;
-    }
+    .toggle-switch { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
     .toggle-switch input { display: none; }
-    .toggle-track {
-      width: 38px; height: 22px; background: #d1d5db;
-      border-radius: 9999px; position: relative;
-      transition: background 0.25s;
-    }
-    .toggle-track::after {
-      content: ''; position: absolute; top: 2px; left: 2px;
-      width: 18px; height: 18px; border-radius: 50%;
-      background: #fff; transition: transform 0.25s;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-    }
+    .toggle-track { width: 38px; height: 22px; background: #d1d5db; border-radius: 9999px; position: relative; transition: background 0.25s; }
+    .toggle-track::after { content: ''; position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.25s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
     .toggle-switch input:checked + .toggle-track { background: #10b981; }
     .toggle-switch input:checked + .toggle-track::after { transform: translateX(16px); }
+
+    /* ========================================
+       ストーリー画像エディタ
+       ======================================== */
+    #storyEditor {
+      position: fixed; inset: 0; background: #000;
+      z-index: 21000; display: none;
+      flex-direction: column;
+      animation: bodyFade 0.25s ease both;
+    }
+    #storyEditor.show { display: flex; }
+
+    #storyEditor .editor-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; background: #111; color: #fff;
+      border-bottom: 1px solid #333;
+      flex-shrink: 0;
+    }
+    #storyEditor .editor-topbar button {
+      background: none; border: none; color: #fff; font-size: 14px;
+      cursor: pointer; padding: 8px 12px; border-radius: 8px;
+      transition: background 0.2s;
+    }
+    #storyEditor .editor-topbar button:hover { background: #333; }
+    #storyEditor .editor-topbar .editor-done-btn {
+      background: #0284c7; font-weight: 700;
+    }
+    #storyEditor .editor-topbar .editor-done-btn:hover { background: #0369a1; }
+
+    .editor-canvas-wrap {
+      flex: 1; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      background: #1a1a1a;
+      min-height: 0;
+    }
+    .editor-canvas {
+      position: relative; max-width: 100%; max-height: 100%;
+      background: #000;
+      touch-action: none;
+    }
+    .editor-canvas img.editor-bg {
+      display: block; max-width: 100%; max-height: 100%;
+      width: auto; height: auto;
+      pointer-events: none;
+    }
+    .editor-text-overlay {
+      position: absolute;
+      left: 0; top: 0;
+      cursor: move;
+      user-select: none;
+      white-space: nowrap;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: outline 0.15s;
+      transform-origin: center center;
+    }
+    .editor-text-overlay.selected {
+      outline: 2px dashed #38bdf8;
+      outline-offset: 2px;
+    }
+    .editor-text-overlay .editor-text-content {
+      display: block;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      white-space: pre-wrap;
+      word-break: break-word;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+
+    /* ツールバー */
+    .editor-toolbar {
+      background: #111; border-top: 1px solid #333;
+      color: #fff; flex-shrink: 0;
+      max-height: 45vh; overflow-y: auto;
+      padding: 8px 12px 12px;
+    }
+    .editor-toolbar-tabs {
+      display: flex; gap: 4px; margin-bottom: 8px;
+      border-bottom: 1px solid #333; padding-bottom: 8px;
+    }
+    .editor-toolbar-tabs button {
+      flex: 1; background: #222; border: 1px solid #333;
+      color: #9ca3af; padding: 8px; border-radius: 8px;
+      font-size: 12px; cursor: pointer; font-weight: 600;
+      transition: background 0.2s, color 0.2s;
+    }
+    .editor-toolbar-tabs button.active {
+      background: #0284c7; color: #fff; border-color: #0284c7;
+    }
+    .editor-panel { display: none; }
+    .editor-panel.active { display: block; }
+
+    .editor-row { margin-bottom: 10px; }
+    .editor-row-label { font-size: 11px; color: #9ca3af; margin-bottom: 4px; display: block; }
+
+    .editor-font-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;
+    }
+    .editor-font-btn {
+      background: #222; border: 1px solid #333;
+      color: #fff; padding: 8px 10px; border-radius: 8px;
+      font-size: 13px; cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      text-align: center;
+    }
+    .editor-font-btn:hover { background: #2a2a2a; }
+    .editor-font-btn.active { background: #0284c7; border-color: #0284c7; }
+
+    .editor-color-row {
+      display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
+    }
+    .editor-color-swatch {
+      width: 32px; height: 32px; border-radius: 50%;
+      cursor: pointer; border: 2px solid #333;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .editor-color-swatch:hover { transform: scale(1.15); }
+    .editor-color-swatch.active { border-color: #38bdf8; transform: scale(1.1); }
+    .editor-color-picker {
+      width: 36px; height: 32px; border-radius: 8px;
+      border: 2px solid #333; cursor: pointer;
+      padding: 0; background: none;
+    }
+
+    .editor-slider-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .editor-slider-row input[type="range"] {
+      flex: 1; accent-color: #0284c7;
+    }
+    .editor-slider-value {
+      min-width: 44px; text-align: right;
+      font-size: 11px; color: #9ca3af;
+    }
+
+    .editor-text-input {
+      width: 100%; background: #222;
+      border: 1px solid #333; color: #fff;
+      padding: 10px; border-radius: 8px;
+      font-size: 14px; outline: none;
+      resize: none;
+    }
+    .editor-text-input:focus { border-color: #0284c7; }
+
+    .editor-actions-row {
+      display: flex; gap: 8px; margin-top: 8px;
+    }
+    .editor-actions-row button {
+      flex: 1; padding: 10px; border-radius: 8px;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      border: none;
+    }
+    .editor-add-btn { background: #0284c7; color: #fff; }
+    .editor-add-btn:hover { background: #0369a1; }
+    .editor-delete-btn { background: #7f1d1d; color: #fff; }
+    .editor-delete-btn:hover { background: #991b1b; }
+    .editor-delete-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans p-4 max-w-3xl mx-auto">
@@ -404,7 +491,7 @@
             style="min-height:40px; max-height:120px;"></textarea>
           <label class="icon-btn cursor-pointer">
             📎
-            <input type="file" id="messageFileInput" accept="image/*,video/*" class="hidden">
+            <input type="file" id="messageFileInput" accept="image/*" class="hidden">
           </label>
           <button type="submit" id="sendBtn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded text-sm transition">送信</button>
         </div>
@@ -444,23 +531,20 @@
   <div id="storyPostModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <h3 class="text-lg font-bold text-gray-800 mb-3">✨ ストーリーを投稿</h3>
-
-      <label class="block text-xs text-gray-600 mb-1">テキスト（画像・動画なしのとき必須）:</label>
+      <label class="block text-xs text-gray-600 mb-1">テキストのみのストーリー（任意）:</label>
       <textarea id="storyTextInput" rows="3" maxlength="200" placeholder="今なにしてる？"
         class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none resize-none"></textarea>
 
-      <label class="block text-xs text-gray-600 mb-1">画像・動画を選択（任意）:</label>
+      <label class="block text-xs text-gray-600 mb-1">画像を選んで文字を載せる（任意）:</label>
       <div class="media-pick-row">
         <button type="button" class="media-pick-btn" id="pickPhotoLibraryBtn">🖼 写真ライブラリ</button>
         <button type="button" class="media-pick-btn" id="pickFileBtn">📁 ファイルから選ぶ</button>
       </div>
-      <input type="file" id="storyPhotoInput" accept="image/*,video/*" class="hidden">
-      <input type="file" id="storyFileInput" accept="image/*,video/*" class="hidden">
+      <input type="file" id="storyPhotoInput" accept="image/*" class="hidden">
+      <input type="file" id="storyFileInput" accept="image/*" class="hidden">
 
-      <div id="storyUploadPreview" class="story-upload-preview hidden"></div>
       <div id="storyUploadInfo" class="text-xs text-gray-500 mb-3"></div>
 
-      <!-- 親しい友達のみに公開 -->
       <label class="toggle-switch mb-3 block">
         <input type="checkbox" id="storyCloseFriendsToggle">
         <span class="toggle-track"></span>
@@ -477,12 +561,11 @@
     </div>
   </div>
 
-  <!-- 親しい友達リスト管理 -->
+  <!-- 親しい友達 -->
   <div id="closeFriendsModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <h3 class="text-lg font-bold text-gray-800 mb-2">💚 親しい友達リスト</h3>
       <p class="text-xs text-gray-500 mb-3">ここに追加した人だけが「親しい友達」ストーリーを見られます。</p>
-
       <label class="block text-xs text-gray-600 mb-1">相手のメールアドレスで追加:</label>
       <div class="flex gap-2 mb-2">
         <input type="email" id="cfEmailInput" placeholder="example@gmail.com"
@@ -490,12 +573,10 @@
         <button id="cfAddBtn" type="button" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded text-sm">追加</button>
       </div>
       <div id="cfSearchMsg" class="text-xs mb-3"></div>
-
       <div class="text-xs font-bold text-gray-600 mb-1">現在の親しい友達:</div>
       <div id="cfListContainer" class="border border-gray-200 rounded mb-3" style="max-height:260px;overflow-y:auto;">
         <div class="info-empty">まだ登録されていません。</div>
       </div>
-
       <div class="flex justify-end gap-2 flex-wrap">
         <button id="cfCloseBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">閉じる</button>
       </div>
@@ -506,7 +587,7 @@
   <div id="archiveModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <h3 class="text-lg font-bold text-gray-800 mb-3">📁 自分のストーリーアーカイブ</h3>
-      <p class="text-xs text-gray-500 mb-3">※ 自分だけが見られます。過去のストーリーは24時間経過後もここに残ります。</p>
+      <p class="text-xs text-gray-500 mb-3">※ 自分だけが見られます。</p>
       <div id="archiveList" class="max-h-[60vh] overflow-y-auto"></div>
       <div class="flex justify-end mt-4">
         <button id="archiveCloseBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">閉じる</button>
@@ -589,6 +670,78 @@
     </div>
   </div>
 
+  <!-- ストーリー画像エディタ -->
+  <div id="storyEditor">
+    <div class="editor-topbar">
+      <button id="editorCancelBtn">✕ キャンセル</button>
+      <span id="editorTitle" style="font-size:13px;color:#9ca3af;">画像に文字を載せる</span>
+      <button id="editorDoneBtn" class="editor-done-btn">✓ 完了</button>
+    </div>
+
+    <div class="editor-canvas-wrap">
+      <div class="editor-canvas" id="editorCanvas">
+        <img class="editor-bg" id="editorBgImage" src="" alt="">
+      </div>
+    </div>
+
+    <div class="editor-toolbar">
+      <div class="editor-toolbar-tabs">
+        <button id="tabText" class="active">📝 テキスト</button>
+        <button id="tabFont">🔤 フォント</button>
+        <button id="tabColor">🎨 色</button>
+        <button id="tabSize">📏 サイズ・向き</button>
+      </div>
+
+      <!-- テキストパネル -->
+      <div class="editor-panel active" id="panelText">
+        <div class="editor-row">
+          <label class="editor-row-label">文字を入力:</label>
+          <textarea id="editorTextInput" class="editor-text-input" rows="2" placeholder="ここに文字を入力..." maxlength="200"></textarea>
+        </div>
+        <div class="editor-actions-row">
+          <button type="button" class="editor-add-btn" id="editorAddTextBtn">＋ 追加</button>
+          <button type="button" class="editor-delete-btn" id="editorDeleteTextBtn" disabled>🗑 削除</button>
+        </div>
+      </div>
+
+      <!-- フォントパネル -->
+      <div class="editor-panel" id="panelFont">
+        <div class="editor-row">
+          <label class="editor-row-label">フォント:</label>
+          <div class="editor-font-grid" id="editorFontGrid"></div>
+        </div>
+      </div>
+
+      <!-- 色パネル -->
+      <div class="editor-panel" id="panelColor">
+        <div class="editor-row">
+          <label class="editor-row-label">色を選択:</label>
+          <div class="editor-color-row" id="editorColorRow"></div>
+        </div>
+        <div class="editor-row">
+          <label class="editor-row-label">カスタムカラー:</label>
+          <input type="color" id="editorCustomColor" class="editor-color-picker" value="#ffffff">
+        </div>
+      </div>
+
+      <!-- サイズ・向きパネル -->
+      <div class="editor-panel" id="panelSize">
+        <div class="editor-row">
+          <label class="editor-row-label">大きさ: <span id="sizeValueLabel" class="editor-slider-value">48px</span></label>
+          <div class="editor-slider-row">
+            <input type="range" id="editorSizeSlider" min="12" max="120" value="48">
+          </div>
+        </div>
+        <div class="editor-row">
+          <label class="editor-row-label">向き: <span id="rotateValueLabel" class="editor-slider-value">0°</span></label>
+          <div class="editor-slider-row">
+            <input type="range" id="editorRotateSlider" min="-180" max="180" value="0">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import {
@@ -610,7 +763,6 @@
       </svg>`;
       return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
     }
-
     const PRESET_AVATARS = [
       makeAvatarSvg('#0284c7', '😀'), makeAvatarSvg('#16a34a', '😎'),
       makeAvatarSvg('#dc2626', '🔥'), makeAvatarSvg('#7c3aed', '🌟'),
@@ -619,7 +771,6 @@
       makeAvatarSvg('#ea580c', '🦊'), makeAvatarSvg('#475569', '🐼'),
       makeAvatarSvg('#c026d3', '🎮'), makeAvatarSvg('#0d9488', '☕')
     ];
-
     const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af', '👤');
 
     const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3C/svg%3E";
@@ -672,13 +823,11 @@
     setPersistence(auth, browserLocalPersistence).catch(() => {});
 
     // ========================================
-    // 画像・動画
+    // 画像処理（動画なし）
     // ========================================
-    const IMAGE_MAX_WIDTH = 600;
+    const IMAGE_MAX_WIDTH = 720;
     const IMAGE_QUALITY = 0.75;
-    const IMAGE_MAX_BASE64_SIZE = 250 * 1024;
-    const VIDEO_MAX_BASE64_SIZE = 700 * 1024;
-    const VIDEO_MAX_DURATION = 60;
+    const IMAGE_MAX_BASE64_SIZE = 400 * 1024;
 
     function fileToBase64Image(file, maxW = IMAGE_MAX_WIDTH, maxSize = IMAGE_MAX_BASE64_SIZE) {
       return new Promise((resolve, reject) => {
@@ -710,31 +859,6 @@
       });
     }
 
-    function fileToBase64Video(file, maxSize = VIDEO_MAX_BASE64_SIZE) {
-      return new Promise((resolve, reject) => {
-        if (!file) { resolve(null); return; }
-        if (!file.type.startsWith('video/')) { reject(new Error('動画ファイルを選択してください')); return; }
-        const videoEl = document.createElement('video');
-        videoEl.preload = 'metadata'; videoEl.muted = true;
-        const tmpUrl = URL.createObjectURL(file);
-        videoEl.onloadedmetadata = () => {
-          URL.revokeObjectURL(tmpUrl);
-          const dur = videoEl.duration;
-          if (dur > VIDEO_MAX_DURATION) { reject(new Error(`動画は${VIDEO_MAX_DURATION}秒以内にしてください（現在: ${Math.round(dur)}秒）`)); return; }
-          const reader = new FileReader();
-          reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
-          reader.onload = (e) => {
-            const dataUrl = e.target.result;
-            if (dataUrl.length > maxSize) { reject(new Error('動画が大きすぎます。短くしてください。')); return; }
-            resolve({ dataUrl, name: file.name, type: file.type, duration: dur, size: dataUrl.length });
-          };
-          reader.readAsDataURL(file);
-        };
-        videoEl.onerror = () => { URL.revokeObjectURL(tmpUrl); reject(new Error('動画の読み込みに失敗しました')); };
-        videoEl.src = tmpUrl;
-      });
-    }
-
     // ========================================
     // 状態
     // ========================================
@@ -759,7 +883,7 @@
     let bansCache = {};
     let readsCache = {};
     let typingCache = {};
-    let reactionsCache = {}; // { messageKey: { uid: emoji } }
+    let reactionsCache = {};
 
     let storiesCache = {};
     let mySeenStories = {};
@@ -778,10 +902,10 @@
     let currentStoryViews = {};
 
     let myArchivedStories = {};
-    let myCloseFriends = {}; // { uid: true }
+    let myCloseFriends = {};
 
-    let pendingStoryFile = null;
-    let pendingStoryFileOrigin = '';
+    // ストーリー投稿：pendingStoryFile はエディタで作成された合成画像
+    let pendingStoryData = null; // { dataUrl, width, height }
 
     let selectedAvatar = DEFAULT_AVATAR;
     let intentionalSignOut = false;
@@ -789,6 +913,12 @@
     let editingMsgKey = null;
     let openMenuKey = null;
     let openReactionPickerMsgKey = null;
+
+    // エディタの状態
+    let editorBgData = null; // { dataUrl, width, height }
+    let editorTexts = []; // [{ id, text, x, y, font, color, size, rotation }]
+    let editorSelectedId = null;
+    let editorDragState = null;
 
     let typingTimeout = null;
     let isCurrentlyTyping = false;
@@ -799,8 +929,7 @@
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
 
     function loadJson(key) {
-      try { return JSON.parse(localStorage.getItem(key) || '{}'); }
-      catch (e) { return {}; }
+      try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; }
     }
     function saveJson(key, obj) {
       try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {}
@@ -837,6 +966,10 @@
       return String(str)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+    function escapeAttr(str) {
+      if (!str) return '';
+      return String(str).replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
     function formatContent(str) {
       if (!str) return '';
@@ -930,10 +1063,6 @@
         roomLatestListeners[chatId] = unsub;
       });
     }
-
-    // ========================================
-    // 既読・入力中・リアクション
-    // ========================================
     function initReadsListener(chatId) {
       if (readsUnsubscribe) readsUnsubscribe();
       const r = ref(db, `chatReads/${chatId}`);
@@ -997,9 +1126,6 @@
       } catch (e) {}
     }
 
-    // ========================================
-    // プロフィール・BAN
-    // ========================================
     function initProfilesListener() {
       if (profilesUnsubscribe) profilesUnsubscribe();
       const profilesRef = ref(db, 'chatProfiles');
@@ -1042,9 +1168,6 @@
       document.body.style.background = '#000';
     }
 
-    // ========================================
-    // チャット一覧
-    // ========================================
     function initChatsListener() {
       if (chatsUnsubscribe) chatsUnsubscribe();
       if (!currentUser) return;
@@ -1206,17 +1329,12 @@
       return memberUids.every(uid => (readsCache[uid] || 0) >= msgAt);
     }
 
-    // メッセージのリアクション集計
     function getReactionsForMessage(msgKey) {
       const r = reactionsCache[msgKey] || {};
-      // emojiごとに集計
       const counts = {};
-      Object.values(r).forEach(emoji => {
-        counts[emoji] = (counts[emoji] || 0) + 1;
-      });
+      Object.values(r).forEach(emoji => { counts[emoji] = (counts[emoji] || 0) + 1; });
       return counts;
     }
-
     function getMyReaction(msgKey) {
       const r = reactionsCache[msgKey] || {};
       return r[currentUser.uid] || null;
@@ -1243,23 +1361,17 @@
 
         let fileHtml = '';
         if (msg.file && msg.file.dataUrl) {
-          const isVideo = msg.file.type && msg.file.type.startsWith('video/');
-          if (isVideo) {
-            fileHtml = `<div class="msg-file"><video src="${msg.file.dataUrl}" controls playsinline></video></div>`;
-          } else {
-            fileHtml = `<div class="msg-file"><a href="${msg.file.dataUrl}" target="_blank" rel="noopener">
-              <img src="${msg.file.dataUrl}" alt="${escapeHtml(msg.file.name || '')}" loading="lazy">
-            </a></div>`;
-          }
+          fileHtml = `<div class="msg-file"><a href="${msg.file.dataUrl}" target="_blank" rel="noopener">
+            <img src="${msg.file.dataUrl}" alt="${escapeHtml(msg.file.name || '')}" loading="lazy">
+          </a></div>`;
         }
 
         let storyContextHtml = '';
         if (msg.storyReplyTo && msg.storyReplyTo.previewType) {
           const s = msg.storyReplyTo;
           let thumb = '';
-          if ((s.previewType === 'image' || s.previewType === 'video') && s.previewDataUrl) {
-            thumb = `<img src="${s.previewDataUrl}" alt="">`;
-          } else thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(45deg,#f09433,#bc1888);"></div>`;
+          if (s.previewType === 'image' && s.previewDataUrl) thumb = `<img src="${s.previewDataUrl}" alt="">`;
+          else thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(45deg,#f09433,#bc1888);"></div>`;
           storyContextHtml = `<div class="story-reply-context">${thumb}<div><strong>ストーリーに返信</strong><br>${escapeHtml(s.previewText || '')}</div></div>`;
         }
 
@@ -1270,7 +1382,6 @@
           readHtml = `<div class="read-receipt" style="justify-content: flex-end;">✓ 既読</div>`;
         }
 
-        // リアクション表示
         const counts = getReactionsForMessage(msg.key);
         const myReaction = getMyReaction(msg.key);
         let reactionsHtml = '';
@@ -1305,7 +1416,6 @@
       });
       messagesContainer.appendChild(frag);
 
-      // メニュー
       messagesContainer.querySelectorAll('.msg-menu-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -1315,17 +1425,13 @@
         });
       });
 
-      // リアクションピルクリック → 自分のリアクションをトグル
       messagesContainer.querySelectorAll('.reaction-pill').forEach(pill => {
         pill.addEventListener('click', async (e) => {
           e.stopPropagation();
-          const emoji = pill.dataset.emoji;
-          const msgKey = pill.dataset.msgkey;
-          await toggleReaction(msgKey, emoji);
+          await toggleReaction(pill.dataset.msgkey, pill.dataset.emoji);
         });
       });
 
-      // メッセージバブルにダブルクリックでリアクションピッカー表示
       messagesContainer.querySelectorAll('.msg-bubble').forEach(bubble => {
         bubble.addEventListener('dblclick', (e) => {
           e.stopPropagation();
@@ -1333,12 +1439,10 @@
           if (openReactionPickerMsgKey === key) closeReactionPicker();
           else openReactionPicker(bubble, key);
         });
-        // 長押し（モバイル）
         let pressTimer = null;
-        bubble.addEventListener('touchstart', (e) => {
+        bubble.addEventListener('touchstart', () => {
           pressTimer = setTimeout(() => {
-            const key = bubble.dataset.key;
-            openReactionPicker(bubble, key);
+            openReactionPicker(bubble, bubble.dataset.key);
           }, 500);
         }, { passive: true });
         bubble.addEventListener('touchend', () => { clearTimeout(pressTimer); });
@@ -1365,43 +1469,32 @@
           closeReactionPicker();
         });
       });
-      // anchorElの親（.msg-bubble の親div）に追加
-      const parent = anchorEl.parentElement;
-      parent.appendChild(picker);
+      anchorEl.parentElement.appendChild(picker);
     }
-
     function closeReactionPicker() {
       const el = document.getElementById('reactionPickerEl');
       if (el) el.remove();
       openReactionPickerMsgKey = null;
     }
-
     async function toggleReaction(msgKey, emoji) {
       if (!currentUser || !currentChatId) return;
       const myCurrent = getMyReaction(msgKey);
       const refPath = `chatReactions/${currentChatId}/${msgKey}/${currentUser.uid}`;
       try {
-        if (myCurrent === emoji) {
-          await remove(ref(db, refPath));
-        } else {
-          await set(ref(db, refPath), emoji);
-        }
-      } catch (e) {
-        console.error('リアクション失敗:', e);
-      }
+        if (myCurrent === emoji) await remove(ref(db, refPath));
+        else await set(ref(db, refPath), emoji);
+      } catch (e) {}
     }
 
     function outsideClickHandler(e) {
       if (!e.target.closest('.msg-menu-popup') && !e.target.closest('.msg-menu-btn')) closeAllMenus();
       if (!e.target.closest('.reaction-picker') && !e.target.closest('.msg-bubble')) closeReactionPicker();
     }
-
     function closeAllMenus() {
       messagesContainer.querySelectorAll('.msg-menu-popup').forEach(el => el.remove());
       messagesContainer.querySelectorAll('.msg-menu-btn.open').forEach(el => el.classList.remove('open'));
       openMenuKey = null;
     }
-
     function openMenu(btn, key) {
       closeAllMenus();
       openMenuKey = key;
@@ -1415,8 +1508,7 @@
       `;
       btn.parentElement.appendChild(popup);
       popup.querySelector('.react-action').addEventListener('click', (e) => {
-        e.stopPropagation();
-        closeAllMenus();
+        e.stopPropagation(); closeAllMenus();
         const bubble = btn.parentElement.querySelector('.msg-bubble');
         if (bubble) openReactionPicker(bubble, key);
       });
@@ -1428,7 +1520,6 @@
         if (!confirm('このメッセージを取り消しますか？')) return;
         try {
           await remove(ref(db, `chatMessages/${currentChatId}/${key}`));
-          // リアクションも削除
           remove(ref(db, `chatReactions/${currentChatId}/${key}`)).catch(() => {});
           showBanner('メッセージを取り消しました', false);
         } catch (err) { showBanner('取り消しに失敗しました', true); }
@@ -1497,18 +1588,10 @@
       const f = messageFileInput.files[0];
       if (!f) { messagePreviewBox.classList.add('hidden'); return; }
       try {
-        let r;
-        if (f.type.startsWith('video/')) {
-          r = await fileToBase64Video(f);
-          messagePreviewImg.src = '';
-          messagePreviewImg.style.display = 'none';
-          messagePreviewInfo.textContent = `${f.name}（動画 ${Math.round(r.duration)}秒）`;
-        } else {
-          r = await fileToBase64Image(f);
-          messagePreviewImg.style.display = '';
-          messagePreviewImg.src = r.dataUrl;
-          messagePreviewInfo.textContent = `${f.name}（${r.width}×${r.height}）`;
-        }
+        const r = await fileToBase64Image(f, 600, 250 * 1024);
+        messagePreviewImg.src = r.dataUrl;
+        messagePreviewImg.style.display = '';
+        messagePreviewInfo.textContent = `${f.name}（${r.width}×${r.height}）`;
         messagePreviewBox.classList.remove('hidden');
       } catch (err) {
         alert(err.message);
@@ -1526,10 +1609,7 @@
       if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = '送信中...'; }
       try {
         let fileData = null;
-        if (file) {
-          fileData = file.type && file.type.startsWith('video/')
-            ? await fileToBase64Video(file) : await fileToBase64Image(file);
-        }
+        if (file) fileData = await fileToBase64Image(file, 600, 250 * 1024);
         const msgData = {
           content: content || '', file: fileData,
           authorUid: currentUser.uid, authorName: myProfile.nickname,
@@ -1541,7 +1621,7 @@
         await set(newRef, msgData);
         const chat = chatsCache[currentChatId];
         const memberUids = Object.keys(chat.members || {});
-        const lastMsgLabel = content || (fileData ? (fileData.type && fileData.type.startsWith('video/') ? '🎥 動画' : '📷 画像') : '');
+        const lastMsgLabel = content || (fileData ? '📷 画像' : '');
         const updateData = { lastMessage: lastMsgLabel, lastMessageAt: Date.now(), lastSenderUid: currentUser.uid };
         const updates = {};
         memberUids.forEach(uid => {
@@ -1709,7 +1789,6 @@
         if (!document.getElementById('closeFriendsModal').classList.contains('hidden')) renderCloseFriendsList();
       }, () => {});
     }
-
     const closeFriendsModal = document.getElementById('closeFriendsModal');
     document.getElementById('closeFriendsBtn').addEventListener('click', () => {
       renderCloseFriendsList();
@@ -1719,7 +1798,6 @@
     closeFriendsModal.addEventListener('click', (e) => {
       if (e.target.id === 'closeFriendsModal') closeFriendsModal.classList.add('hidden');
     });
-
     function renderCloseFriendsList() {
       const container = document.getElementById('cfListContainer');
       container.innerHTML = '';
@@ -1746,7 +1824,6 @@
         container.appendChild(item);
       });
     }
-
     document.getElementById('cfAddBtn').addEventListener('click', async () => {
       const email = document.getElementById('cfEmailInput').value.trim().toLowerCase();
       const cfSearchMsg = document.getElementById('cfSearchMsg');
@@ -1794,18 +1871,9 @@
           Object.entries(userStories).forEach(([sid, s]) => {
             if (!s || !s.createdAt) return;
             if ((now - s.createdAt) < STORY_TTL) {
-              // 親しい友達限定の場合、自分が対象かチェック
-              if (s.closeFriendsOnly && uid !== currentUser.uid) {
-                // 相手の親しい友達リストに自分が入っているかは非同期取得が必要
-                // → ここではとりあえず通し、表示時にチェックする
-                valid[sid] = s;
-              } else {
-                valid[sid] = s;
-              }
+              valid[sid] = s;
             } else {
-              // 期限切れ
               if (uid === currentUser.uid) {
-                // 自分のもの → アーカイブにコピーしてから削除
                 set(ref(db, `storyArchive/${uid}/${sid}`), s).then(() => {
                   remove(ref(db, `stories/${uid}/${sid}`)).catch(() => {});
                 }).catch(() => {
@@ -1821,7 +1889,6 @@
         renderStories();
       }, () => {});
     }
-
     function initMyArchiveListener() {
       if (myArchiveUnsubscribe) myArchiveUnsubscribe();
       if (!currentUser) return;
@@ -1831,20 +1898,14 @@
         if (!document.getElementById('archiveModal').classList.contains('hidden')) renderArchive();
       }, () => {});
     }
-
-    // 親しい友達限定ストーリーをフィルタ
     async function filterStoriesForMe(uid) {
       const userStories = storiesCache[uid];
       if (!userStories) return null;
       const result = {};
       for (const [sid, s] of Object.entries(userStories)) {
-        if (!s.closeFriendsOnly) {
-          result[sid] = s;
-        } else if (uid === currentUser.uid) {
-          // 自分自身は全部見られる
-          result[sid] = s;
-        } else {
-          // 相手の親しい友達リストに自分が含まれているか確認
+        if (!s.closeFriendsOnly) result[sid] = s;
+        else if (uid === currentUser.uid) result[sid] = s;
+        else {
           try {
             const cfSnap = await get(ref(db, `closeFriends/${uid}/${currentUser.uid}`));
             if (cfSnap.exists()) result[sid] = s;
@@ -1853,45 +1914,35 @@
       }
       return Object.keys(result).length > 0 ? result : null;
     }
-
     async function renderStories() {
       const strip = document.getElementById('storiesStrip');
       strip.querySelectorAll('.story-bubble:not(#storyAddBtn)').forEach(el => el.remove());
       if (!currentUser) return;
-
       const otherUids = Object.keys(storiesCache || {}).filter(uid => uid !== currentUser.uid);
       const unreadUids = [];
       const seenUids = [];
-
       for (const uid of otherUids) {
         const filtered = await filterStoriesForMe(uid);
         if (!filtered) continue;
-        const storyList = Object.entries(filtered)
-          .map(([sid, s]) => ({ id: sid, ...s }))
-          .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        const storyList = Object.entries(filtered).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
         const hasUnseen = storyList.some(s => !mySeenStories[s.id]);
         if (hasUnseen) unreadUids.push(uid);
         else seenUids.push(uid);
       }
-
       const sortByLatest = (arr) => arr.sort((a, b) => {
         const aLatest = Math.max(...Object.values(storiesCache[a]).map(s => s.createdAt || 0));
         const bLatest = Math.max(...Object.values(storiesCache[b]).map(s => s.createdAt || 0));
         return bLatest - aLatest;
       });
-      sortByLatest(unreadUids);
-      sortByLatest(seenUids);
+      sortByLatest(unreadUids); sortByLatest(seenUids);
 
       const unreadSection = document.createElement('div');
       unreadSection.className = 'stories-section-unread';
 
-      // 自分のストーリー
       if (storiesCache[currentUser.uid]) {
         const profile = getProfileForUid(currentUser.uid);
         const userStories = storiesCache[currentUser.uid];
-        const storyList = Object.entries(userStories)
-          .map(([sid, s]) => ({ id: sid, ...s }))
-          .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        const storyList = Object.entries(userStories).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
         const allSeen = storyList.every(s => mySeenStories[s.id]);
         const hasCF = storyList.some(s => s.closeFriendsOnly);
         const bubble = document.createElement('div');
@@ -1906,14 +1957,11 @@
         bubble.addEventListener('click', () => openStoryViewer(currentUser.uid));
         unreadSection.appendChild(bubble);
       }
-
       for (const uid of unreadUids) {
         const bubble = await buildStoryBubble(uid, false);
         if (bubble) unreadSection.appendChild(bubble);
       }
-
       strip.appendChild(unreadSection);
-
       if (seenUids.length > 0) {
         const seenSection = document.createElement('div');
         seenSection.className = 'stories-section-seen';
@@ -1924,7 +1972,6 @@
         strip.appendChild(seenSection);
       }
     }
-
     async function buildStoryBubble(uid, seen) {
       const filtered = await filterStoriesForMe(uid);
       if (!filtered) return null;
@@ -1943,9 +1990,9 @@
       return bubble;
     }
 
+    // ストーリー投稿
     const storyPostModal = document.getElementById('storyPostModal');
     const storyTextInput = document.getElementById('storyTextInput');
-    const storyUploadPreview = document.getElementById('storyUploadPreview');
     const storyUploadInfo = document.getElementById('storyUploadInfo');
     const storyPostMsg = document.getElementById('storyPostMsg');
     const storyCloseFriendsToggle = document.getElementById('storyCloseFriendsToggle');
@@ -1957,17 +2004,13 @@
       storyTextInput.value = '';
       storyPhotoInput.value = '';
       storyFileInput.value = '';
-      pendingStoryFile = null;
-      pendingStoryFileOrigin = '';
-      storyUploadPreview.classList.add('hidden');
-      storyUploadPreview.innerHTML = '';
+      pendingStoryData = null;
       storyUploadInfo.textContent = '';
       storyPostMsg.textContent = '';
       storyCloseFriendsToggle.checked = false;
       cfHelpText.style.display = 'none';
       storyPostModal.classList.remove('hidden');
     });
-
     storyCloseFriendsToggle.addEventListener('change', () => {
       cfHelpText.style.display = storyCloseFriendsToggle.checked ? 'block' : 'none';
     });
@@ -1976,13 +2019,10 @@
       renderCloseFriendsList();
       closeFriendsModal.classList.remove('hidden');
     });
-
     document.getElementById('storyPostCancelBtn').addEventListener('click', () => storyPostModal.classList.add('hidden'));
     storyPostModal.addEventListener('click', (e) => {
       if (e.target.id === 'storyPostModal') storyPostModal.classList.add('hidden');
     });
-
-    // 写真ライブラリ／ファイルから選ぶ
     document.getElementById('pickPhotoLibraryBtn').addEventListener('click', () => storyPhotoInput.click());
     document.getElementById('pickFileBtn').addEventListener('click', () => storyFileInput.click());
 
@@ -1991,34 +2031,14 @@
         const f = inputEl.files[0];
         if (!f) return;
         storyPostMsg.textContent = '';
-        storyUploadPreview.classList.remove('hidden');
-        storyUploadPreview.innerHTML = '<div class="text-xs text-gray-500 p-4"><span class="loading-spinner"></span> 処理中...</div>';
-        storyUploadInfo.textContent = '';
+        storyUploadInfo.textContent = '読み込み中...';
         try {
-          if (f.type.startsWith('video/')) {
-            const r = await fileToBase64Video(f);
-            pendingStoryFile = { ...r, isVideo: true };
-            pendingStoryFileOrigin = originLabel;
-            storyUploadPreview.innerHTML = '';
-            const v = document.createElement('video');
-            v.src = r.dataUrl; v.controls = true; v.muted = true; v.playsInline = true;
-            storyUploadPreview.appendChild(v);
-            storyUploadInfo.textContent = `${f.name}（動画 ${Math.round(r.duration)}秒・${originLabel}）`;
-          } else {
-            const r = await fileToBase64Image(f, 720, 400 * 1024);
-            pendingStoryFile = { ...r, isVideo: false };
-            pendingStoryFileOrigin = originLabel;
-            storyUploadPreview.innerHTML = '';
-            const i = document.createElement('img');
-            i.src = r.dataUrl;
-            storyUploadPreview.appendChild(i);
-            storyUploadInfo.textContent = `${f.name}（${r.width}×${r.height}・${originLabel}）`;
-          }
+          const r = await fileToBase64Image(f, 900, 450 * 1024);
+          // 画像エディタを開く
+          storyPostModal.classList.add('hidden');
+          openStoryEditor(r, originLabel);
         } catch (err) {
-          pendingStoryFile = null;
-          pendingStoryFileOrigin = '';
-          storyUploadPreview.innerHTML = '';
-          storyUploadPreview.classList.add('hidden');
+          storyUploadInfo.textContent = '';
           storyPostMsg.innerHTML = `<span class="text-red-500">${escapeHtml(err.message)}</span>`;
         }
       };
@@ -2029,8 +2049,8 @@
     document.getElementById('storyPostBtn').addEventListener('click', async () => {
       if (!currentUser) return;
       const text = storyTextInput.value.trim();
-      if (!text && !pendingStoryFile) {
-        storyPostMsg.innerHTML = '<span class="text-red-500">テキストか画像・動画を選択してください。</span>';
+      if (!text && !pendingStoryData) {
+        storyPostMsg.innerHTML = '<span class="text-red-500">テキストか画像を選択してください。</span>';
         return;
       }
       const isCFOnly = storyCloseFriendsToggle.checked;
@@ -2041,8 +2061,9 @@
       storyPostMsg.innerHTML = '<span class="text-gray-500 dots-loading">投稿中</span>';
       try {
         const storyData = {
-          type: pendingStoryFile ? (pendingStoryFile.isVideo ? 'video' : 'image') : 'text',
-          content: text, file: pendingStoryFile || null,
+          type: pendingStoryData ? 'image' : 'text',
+          content: text,
+          file: pendingStoryData ? { dataUrl: pendingStoryData.dataUrl, type: 'image/jpeg', width: pendingStoryData.width, height: pendingStoryData.height } : null,
           authorUid: currentUser.uid, authorName: myProfile.nickname,
           authorAvatar: myProfile.avatar, createdAt: Date.now(),
           closeFriendsOnly: isCFOnly
@@ -2050,13 +2071,389 @@
         const newRef = push(ref(db, `stories/${currentUser.uid}`));
         await set(newRef, storyData);
         storyPostModal.classList.add('hidden');
+        pendingStoryData = null;
         showBanner(isCFOnly ? '親しい友達にストーリーを投稿しました' : 'ストーリーを投稿しました', false);
       } catch (err) {
         storyPostMsg.innerHTML = `<span class="text-red-500">投稿失敗: ${escapeHtml(err.message)}</span>`;
       }
     });
 
+    // ========================================
+    // ストーリー画像エディタ
+    // ========================================
+    const FONT_OPTIONS = [
+      { id: 'sans', name: 'Sans', family: '-apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif' },
+      { id: 'serif', name: 'Serif', family: 'Georgia, "Times New Roman", "Hiragino Mincho ProN", "Yu Mincho", serif' },
+      { id: 'rounded', name: 'Rounded', family: '"Hiragino Maru Gothic ProN", "Yu Gothic", "MS PGothic", sans-serif' },
+      { id: 'mono', name: 'Mono', family: '"SF Mono", "Menlo", "Consolas", "Courier New", monospace' },
+      { id: 'cursive', name: 'Cursive', family: '"Snell Roundhand", "Apple Chancery", cursive' }
+    ];
+    const COLOR_OPTIONS = [
+      '#ffffff', '#000000', '#ef4444', '#f97316', '#facc15',
+      '#22c55e', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899'
+    ];
+
+    const storyEditor = document.getElementById('storyEditor');
+    const editorCanvas = document.getElementById('editorCanvas');
+    const editorBgImage = document.getElementById('editorBgImage');
+    const editorTextInput = document.getElementById('editorTextInput');
+    const editorAddTextBtn = document.getElementById('editorAddTextBtn');
+    const editorDeleteTextBtn = document.getElementById('editorDeleteTextBtn');
+    const editorFontGrid = document.getElementById('editorFontGrid');
+    const editorColorRow = document.getElementById('editorColorRow');
+    const editorCustomColor = document.getElementById('editorCustomColor');
+    const editorSizeSlider = document.getElementById('editorSizeSlider');
+    const editorRotateSlider = document.getElementById('editorRotateSlider');
+    const sizeValueLabel = document.getElementById('sizeValueLabel');
+    const rotateValueLabel = document.getElementById('rotateValueLabel');
+
+    function openStoryEditor(imageData, originLabel) {
+      editorBgData = imageData;
+      editorTexts = [];
+      editorSelectedId = null;
+
+      // 背景画像を表示
+      editorBgImage.src = imageData.dataUrl;
+      // キャンバスサイズを画像に合わせる（表示はCSSで縮小）
+      editorCanvas.style.width = '100%';
+      editorCanvas.style.maxWidth = '100%';
+
+      // スライダー・カラー初期化
+      editorSizeSlider.value = 48;
+      editorRotateSlider.value = 0;
+      sizeValueLabel.textContent = '48px';
+      rotateValueLabel.textContent = '0°';
+      editorCustomColor.value = '#ffffff';
+      editorTextInput.value = '';
+      editorDeleteTextBtn.disabled = true;
+
+      // フォント選択肢構築
+      editorFontGrid.innerHTML = '';
+      FONT_OPTIONS.forEach((f, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'editor-font-btn' + (i === 0 ? ' active' : '');
+        btn.textContent = f.name;
+        btn.style.fontFamily = f.family;
+        btn.dataset.fontId = f.id;
+        btn.addEventListener('click', () => {
+          editorFontGrid.querySelectorAll('.editor-font-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          applyToSelected({ font: f.id });
+        });
+        editorFontGrid.appendChild(btn);
+      });
+
+      // カラーパレット構築
+      editorColorRow.innerHTML = '';
+      COLOR_OPTIONS.forEach((c, i) => {
+        const sw = document.createElement('div');
+        sw.className = 'editor-color-swatch' + (i === 0 ? ' active' : '');
+        sw.style.background = c;
+        sw.dataset.color = c;
+        sw.addEventListener('click', () => {
+          editorColorRow.querySelectorAll('.editor-color-swatch').forEach(el => el.classList.remove('active'));
+          sw.classList.add('active');
+          editorCustomColor.value = c;
+          applyToSelected({ color: c });
+        });
+        editorColorRow.appendChild(sw);
+      });
+
+      // タブ初期化
+      switchEditorTab('text');
+
+      storyEditor.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeStoryEditor() {
+      storyEditor.classList.remove('show');
+      document.body.style.overflow = '';
+      // 再表示用にストーリー投稿モーダルを開く
+      storyPostModal.classList.remove('hidden');
+      storyUploadInfo.textContent = '';
+    }
+
+    document.getElementById('editorCancelBtn').addEventListener('click', closeStoryEditor);
+
+    document.getElementById('editorDoneBtn').addEventListener('click', () => {
+      // 合成画像を生成
+      composeStoryImage().then(data => {
+        pendingStoryData = data;
+        storyUploadInfo.textContent = `画像に ${editorTexts.length} 個の文字を追加しました`;
+        closeStoryEditor();
+      }).catch(err => {
+        alert('合成に失敗しました: ' + err.message);
+      });
+    });
+
+    function switchEditorTab(tabName) {
+      document.querySelectorAll('.editor-toolbar-tabs button').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.editor-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
+      document.getElementById('panel' + tabName.charAt(0).toUpperCase() + tabName.slice(1)).classList.add('active');
+    }
+    document.getElementById('tabText').addEventListener('click', () => switchEditorTab('text'));
+    document.getElementById('tabFont').addEventListener('click', () => switchEditorTab('font'));
+    document.getElementById('tabColor').addEventListener('click', () => switchEditorTab('color'));
+    document.getElementById('tabSize').addEventListener('click', () => switchEditorTab('size'));
+
+    editorAddTextBtn.addEventListener('click', () => {
+      const text = editorTextInput.value.trim();
+      if (!text) { alert('文字を入力してください。'); return; }
+      // キャンバスの中央付近に追加
+      const rect = editorBgImage.getBoundingClientRect();
+      const canvasRect = editorCanvas.getBoundingClientRect();
+      // 画像はキャンバスと同じ位置
+      const defaultX = 20;
+      const defaultY = 30 + editorTexts.length * 10;
+
+      const newText = {
+        id: 'txt_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+        text: text,
+        xPercent: 15,       // 画像に対する％
+        yPercent: 20 + editorTexts.length * 15,
+        font: 'sans',
+        color: '#ffffff',
+        size: 48,           // 画像の実ピクセルに対する値
+        rotation: 0
+      };
+      editorTexts.push(newText);
+      editorSelectedId = newText.id;
+      editorTextInput.value = '';
+      renderEditorTexts();
+
+      // スライダーを新規テキストに合わせる
+      editorSizeSlider.value = newText.size;
+      sizeValueLabel.textContent = newText.size + 'px';
+      editorRotateSlider.value = 0;
+      rotateValueLabel.textContent = '0°';
+      editorCustomColor.value = newText.color;
+      editorColorRow.querySelectorAll('.editor-color-swatch').forEach(el => el.classList.remove('active'));
+      const defaultSwatch = editorColorRow.querySelector('[data-color="#ffffff"]');
+      if (defaultSwatch) defaultSwatch.classList.add('active');
+      editorFontGrid.querySelectorAll('.editor-font-btn').forEach(b => b.classList.remove('active'));
+      const sansBtn = editorFontGrid.querySelector('[data-font-id="sans"]');
+      if (sansBtn) sansBtn.classList.add('active');
+    });
+
+    editorDeleteTextBtn.addEventListener('click', () => {
+      if (!editorSelectedId) return;
+      editorTexts = editorTexts.filter(t => t.id !== editorSelectedId);
+      editorSelectedId = null;
+      editorDeleteTextBtn.disabled = true;
+      renderEditorTexts();
+    });
+
+    function renderEditorTexts() {
+      // 既存の overlay を削除
+      editorCanvas.querySelectorAll('.editor-text-overlay').forEach(el => el.remove());
+      // 再描画
+      editorTexts.forEach(t => {
+        const overlay = document.createElement('div');
+        overlay.className = 'editor-text-overlay' + (t.id === editorSelectedId ? ' selected' : '');
+        overlay.dataset.id = t.id;
+        const fontFamily = FONT_OPTIONS.find(f => f.id === t.font)?.family || FONT_OPTIONS[0].family;
+        overlay.innerHTML = `<span class="editor-text-content" style="
+          font-family: ${fontFamily};
+          color: ${t.color};
+          font-size: ${t.size}px;
+          transform: rotate(${t.rotation}deg);
+          display: block;
+        ">${escapeHtml(t.text).replace(/\n/g, '<br>')}</span>`;
+        // 位置（％指定）
+        overlay.style.left = t.xPercent + '%';
+        overlay.style.top = t.yPercent + '%';
+        overlay.style.position = 'absolute';
+        // ドラッグイベント
+        overlay.addEventListener('mousedown', (e) => startDrag(e, t.id));
+        overlay.addEventListener('touchstart', (e) => startDrag(e, t.id), { passive: false });
+        overlay.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectEditorText(t.id);
+        });
+        editorCanvas.appendChild(overlay);
+      });
+    }
+
+    function selectEditorText(id) {
+      editorSelectedId = id;
+      const t = editorTexts.find(x => x.id === id);
+      if (!t) return;
+      editorTextInput.value = t.text;
+      editorSizeSlider.value = t.size;
+      sizeValueLabel.textContent = t.size + 'px';
+      editorRotateSlider.value = t.rotation;
+      rotateValueLabel.textContent = t.rotation + '°';
+      editorCustomColor.value = t.color;
+      // 色スウォッチ
+      editorColorRow.querySelectorAll('.editor-color-swatch').forEach(el => {
+        el.classList.toggle('active', el.dataset.color === t.color);
+      });
+      // フォント
+      editorFontGrid.querySelectorAll('.editor-font-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.fontId === t.font);
+      });
+      editorDeleteTextBtn.disabled = false;
+      // 再描画（選択状態を反映）
+      renderEditorTexts();
+    }
+
+    function startDrag(e, id) {
+      e.preventDefault();
+      e.stopPropagation();
+      selectEditorText(id);
+      const rect = editorCanvas.getBoundingClientRect();
+      const t = editorTexts.find(x => x.id === id);
+      if (!t) return;
+      const overlay = editorCanvas.querySelector(`[data-id="${id}"]`);
+      if (!overlay) return;
+      const overlayRect = overlay.getBoundingClientRect();
+      const startX = (e.touches ? e.touches[0].clientX : e.clientX);
+      const startY = (e.touches ? e.touches[0].clientY : e.clientY);
+      const offsetX = startX - overlayRect.left;
+      const offsetY = startY - overlayRect.top;
+      const initialXPercent = t.xPercent;
+      const initialYPercent = t.yPercent;
+
+      editorDragState = { id, startX, startY, offsetX, offsetY, initialXPercent, initialYPercent, rect, canvasRect: rect };
+
+      const moveHandler = (ev) => {
+        if (!editorDragState) return;
+        ev.preventDefault();
+        const cx = (ev.touches ? ev.touches[0].clientX : ev.clientX);
+        const cy = (ev.touches ? ev.touches[0].clientY : ev.clientY);
+        const dxPx = cx - editorDragState.startX;
+        const dyPx = cy - editorDragState.startY;
+        const dxPct = (dxPx / editorDragState.canvasRect.width) * 100;
+        const dyPct = (dyPx / editorDragState.canvasRect.height) * 100;
+        t.xPercent = Math.max(-20, Math.min(100, editorDragState.initialXPercent + dxPct));
+        t.yPercent = Math.max(-20, Math.min(100, editorDragState.initialYPercent + dyPct));
+        const ov = editorCanvas.querySelector(`[data-id="${id}"]`);
+        if (ov) {
+          ov.style.left = t.xPercent + '%';
+          ov.style.top = t.yPercent + '%';
+        }
+      };
+      const upHandler = () => {
+        editorDragState = null;
+        document.removeEventListener('mousemove', moveHandler);
+        document.removeEventListener('mouseup', upHandler);
+        document.removeEventListener('touchmove', moveHandler);
+        document.removeEventListener('touchend', upHandler);
+      };
+      document.addEventListener('mousemove', moveHandler);
+      document.addEventListener('mouseup', upHandler);
+      document.addEventListener('touchmove', moveHandler, { passive: false });
+      document.addEventListener('touchend', upHandler);
+    }
+
+    function applyToSelected(patch) {
+      if (!editorSelectedId) {
+        alert('先に文字を追加するか、既存の文字を選択してください。');
+        return;
+      }
+      const t = editorTexts.find(x => x.id === editorSelectedId);
+      if (!t) return;
+      Object.assign(t, patch);
+      renderEditorTexts();
+    }
+
+    editorCustomColor.addEventListener('input', () => {
+      if (!editorSelectedId) return;
+      applyToSelected({ color: editorCustomColor.value });
+      editorColorRow.querySelectorAll('.editor-color-swatch').forEach(el => el.classList.remove('active'));
+    });
+
+    editorSizeSlider.addEventListener('input', () => {
+      sizeValueLabel.textContent = editorSizeSlider.value + 'px';
+      if (editorSelectedId) {
+        const t = editorTexts.find(x => x.id === editorSelectedId);
+        if (t) {
+          t.size = parseInt(editorSizeSlider.value, 10);
+          renderEditorTexts();
+        }
+      }
+    });
+    editorRotateSlider.addEventListener('input', () => {
+      rotateValueLabel.textContent = editorRotateSlider.value + '°';
+      if (editorSelectedId) {
+        const t = editorTexts.find(x => x.id === editorSelectedId);
+        if (t) {
+          t.rotation = parseInt(editorRotateSlider.value, 10);
+          renderEditorTexts();
+        }
+      }
+    });
+    // テキスト入力中に既存テキストを変更する場合
+    editorTextInput.addEventListener('input', () => {
+      if (editorSelectedId) {
+        const t = editorTexts.find(x => x.id === editorSelectedId);
+        if (t) {
+          t.text = editorTextInput.value;
+          renderEditorTexts();
+        }
+      }
+    });
+
+    // 画像座標を合成する
+    async function composeStoryImage() {
+      if (!editorBgData) throw new Error('画像がありません');
+      const img = new Image();
+      img.src = editorBgData.dataUrl;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+      const canvas = document.createElement('canvas');
+      // 保存時に長辺1000pxに縮小してサイズを抑える
+      const maxW = 900;
+      let w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+
+      // 各テキストを描画
+      editorTexts.forEach(t => {
+        ctx.save();
+        // 位置（%）をpxに変換
+        const cx = (t.xPercent / 100) * w;
+        const cy = (t.yPercent / 100) * h;
+        ctx.translate(cx, cy);
+        ctx.rotate((t.rotation || 0) * Math.PI / 180);
+        const fontFamily = FONT_OPTIONS.find(f => f.id === t.font)?.family || FONT_OPTIONS[0].family;
+        // サイズも比率を合わせる
+        const fontSize = Math.max(12, Math.round(t.size * (w / editorCanvas.getBoundingClientRect().width)));
+        ctx.font = `800 ${fontSize}px ${fontFamily}`;
+        ctx.fillStyle = t.color;
+        ctx.textBaseline = 'top';
+        ctx.shadowColor = 'rgba(0,0,0,0.6)';
+        ctx.shadowBlur = 8;
+        ctx.shadowOffsetY = 2;
+        // 複数行対応
+        const lines = t.text.split('\n');
+        const lineHeight = fontSize * 1.15;
+        lines.forEach((line, i) => {
+          ctx.fillText(line, 0, i * lineHeight);
+        });
+        ctx.restore();
+      });
+
+      let quality = 0.8;
+      let dataUrl = canvas.toDataURL('image/jpeg', quality);
+      while (dataUrl.length > 400 * 1024 && quality > 0.4) {
+        quality -= 0.1;
+        dataUrl = canvas.toDataURL('image/jpeg', quality);
+      }
+      return { dataUrl, width: w, height: h };
+    }
+
+    // ========================================
     // ストーリービューア
+    // ========================================
     const storyViewer = document.getElementById('storyViewer');
     const storyStageContent = document.getElementById('storyStageContent');
     const storyProgressBar = document.getElementById('storyProgressBar');
@@ -2072,24 +2469,18 @@
       const { archiveMode = false } = options;
       const source = archiveMode ? myArchivedStories : (uid === currentUser.uid ? storiesCache[uid] : await filterStoriesForMe(uid));
       if (!source) return;
-
       currentStoryUserId = uid;
       currentStoryIsArchive = archiveMode;
-      currentStoryList = Object.entries(source)
-        .map(([sid, s]) => ({ id: sid, ...s }))
-        .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+      currentStoryList = Object.entries(source).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
       currentStoryIndex = 0;
-
       if (!archiveMode && uid !== currentUser.uid) {
         const firstUnseenIdx = currentStoryList.findIndex(s => !mySeenStories[s.id]);
         if (firstUnseenIdx >= 0) currentStoryIndex = firstUnseenIdx;
       }
-
       storyViewer.classList.add('show');
       document.body.style.overflow = 'hidden';
       showCurrentStory();
     }
-
     function closeStoryViewer() {
       storyViewer.classList.remove('show');
       document.body.style.overflow = '';
@@ -2104,7 +2495,6 @@
       storyPaused = false;
       renderStories();
     }
-
     document.getElementById('storyCloseBtn').addEventListener('click', closeStoryViewer);
     document.getElementById('storyNavLeft').addEventListener('click', () => prevStory());
     document.getElementById('storyNavRight').addEventListener('click', () => nextStory());
@@ -2114,24 +2504,14 @@
       cancelAnimationFrame(storyProgressRAF);
       storyStageContent.innerHTML = '';
       storyPaused = false;
-
-      if (currentStoryIndex < 0 || currentStoryIndex >= currentStoryList.length) {
-        closeStoryViewer();
-        return;
-      }
-
+      if (currentStoryIndex < 0 || currentStoryIndex >= currentStoryList.length) { closeStoryViewer(); return; }
       const story = currentStoryList[currentStoryIndex];
       const profile = getProfileForUid(story.authorUid || currentStoryUserId);
-
       storyHeaderAvatar.src = profile.avatar;
       storyHeaderName.textContent = profile.nickname + (story.closeFriendsOnly ? ' 💚' : '');
       storyHeaderTime.textContent = formatRelativeTime(story.createdAt);
-
-      if (currentStoryUserId === currentUser.uid) {
-        storyInfoBtn.classList.remove('hidden');
-      } else {
-        storyInfoBtn.classList.add('hidden');
-      }
+      if (currentStoryUserId === currentUser.uid) storyInfoBtn.classList.remove('hidden');
+      else storyInfoBtn.classList.add('hidden');
 
       storyProgressBar.innerHTML = '';
       currentStoryList.forEach((_, i) => {
@@ -2148,19 +2528,13 @@
         const img = document.createElement('img');
         img.src = story.file.dataUrl;
         storyStageContent.appendChild(img);
-      } else if (story.type === 'video' && story.file && story.file.dataUrl) {
-        const v = document.createElement('video');
-        v.src = story.file.dataUrl;
-        v.autoplay = true; v.playsInline = true;
-        v.style.maxWidth = '100%'; v.style.maxHeight = '100%';
-        v.addEventListener('loadedmetadata', () => {
-          duration = Math.min((v.duration || 5) * 1000, 60000);
-          startStoryTimer(duration);
-        });
-        setTimeout(() => { if (duration === 5000) startStoryTimer(duration); }, 500);
-        storyStageContent.appendChild(v);
+        if (story.content) {
+          const overlay = document.createElement('div');
+          overlay.className = 'ig-text-overlay';
+          overlay.textContent = story.content;
+          storyStageContent.appendChild(overlay);
+        }
       } else {
-        // Instagram風テキストストーリー
         const d = document.createElement('div');
         d.className = 'story-text-content';
         d.style.background = 'linear-gradient(135deg, #833ab4 0%, #fd1d1d 50%, #fcb045 100%)';
@@ -2168,27 +2542,17 @@
         storyStageContent.appendChild(d);
       }
 
-      // 画像・動画の上のテキストオーバーレイ（Instagram風）
-      if (story.content && story.type !== 'text') {
-        const overlay = document.createElement('div');
-        overlay.className = 'ig-text-overlay';
-        overlay.textContent = story.content;
-        storyStageContent.appendChild(overlay);
-      }
-
       if (currentStoryUserId !== currentUser.uid && !currentStoryIsArchive) {
         mySeenStories[story.id] = Date.now();
         saveJson(SEEN_STORIES_KEY, mySeenStories);
         set(ref(db, `storyViews/${story.id}/${currentUser.uid}`), Date.now()).catch(() => {});
       }
-
       if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
       const likesRef = ref(db, `storyLikes/${story.id}`);
       storyLikesUnsubscribe = onValue(likesRef, (snap) => {
         currentStoryLikes = snap.exists() ? snap.val() : {};
         updateStoryLikeBtn(story.id);
       }, () => {});
-
       if (currentStoryUserId === currentUser.uid) {
         get(ref(db, `storyViews/${story.id}`)).then(snap => {
           currentStoryViews = snap.exists() ? snap.val() : {};
@@ -2201,10 +2565,7 @@
         currentStoryViews = {};
         updateStoryViewersInfo(story.id);
       }
-
-      if (story.type !== 'video') {
-        startStoryTimer(duration);
-      }
+      startStoryTimer(duration);
     }
 
     function startStoryTimer(duration) {
@@ -2215,7 +2576,6 @@
       const segs = storyProgressBar.querySelectorAll('.story-segment > div');
       const currentSeg = segs[currentStoryIndex];
       if (currentSeg) currentSeg.style.width = '0%';
-
       function tick() {
         if (storyPaused) {
           storyProgressRAF = requestAnimationFrame(tick);
@@ -2224,29 +2584,21 @@
         const elapsed = Date.now() - storyStartTime;
         const pct = Math.min(elapsed / storyDuration * 100, 100);
         if (currentSeg) currentSeg.style.width = pct + '%';
-        if (pct < 100) {
-          storyProgressRAF = requestAnimationFrame(tick);
-        } else nextStory();
+        if (pct < 100) storyProgressRAF = requestAnimationFrame(tick);
+        else nextStory();
       }
       storyProgressRAF = requestAnimationFrame(tick);
     }
-
     function pauseStory() {
       if (storyPaused) return;
       storyPaused = true;
       storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime));
-      const v = storyStageContent.querySelector('video');
-      if (v) v.pause();
     }
-
     function resumeStory() {
       if (!storyPaused) return;
       storyPaused = false;
       storyStartTime = Date.now() - (storyDuration - storyRemainingMs);
-      const v = storyStageContent.querySelector('video');
-      if (v) v.play().catch(() => {});
     }
-
     function nextStory() {
       if (currentStoryIndex + 1 < currentStoryList.length) {
         currentStoryIndex++;
@@ -2267,7 +2619,6 @@
         } else closeStoryViewer();
       }
     }
-
     function prevStory() {
       if (currentStoryIndex > 0) {
         currentStoryIndex--;
@@ -2288,7 +2639,6 @@
         }
       }
     }
-
     function updateStoryLikeBtn(storyId) {
       const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
       storyLikeBtn.textContent = liked ? '❤️' : '🤍';
@@ -2302,7 +2652,6 @@
         storyLikeBtn.style.pointerEvents = '';
       }
     }
-
     function updateStoryViewersInfo(storyId) {
       const isMine = currentStoryUserId === currentUser.uid;
       if (!isMine) { storyViewersInfo.textContent = ''; return; }
@@ -2310,10 +2659,8 @@
       const likeCount = Object.keys(currentStoryLikes || {}).length;
       storyViewersInfo.innerHTML = `👁 ${viewCount}　❤️ ${likeCount}`;
     }
-
     storyReplyInput.addEventListener('focus', () => pauseStory());
     storyReplyInput.addEventListener('blur', () => resumeStory());
-
     storyLikeBtn.addEventListener('click', async () => {
       if (!currentUser || !currentStoryList[currentStoryIndex]) return;
       if (currentStoryUserId === currentUser.uid) return;
@@ -2325,7 +2672,6 @@
         else await set(likeRef, Date.now());
       } catch (e) {}
     });
-
     storyReplyInput.addEventListener('keydown', async (e) => {
       if (e.key !== 'Enter') return;
       if (e.isComposing || e.keyCode === 229) return;
@@ -2364,11 +2710,7 @@
       if (story.type === 'image' && story.file && story.file.dataUrl) {
         previewType = 'image'; previewDataUrl = story.file.dataUrl;
         if (!previewText) previewText = '📷 画像';
-      } else if (story.type === 'video' && story.file && story.file.dataUrl) {
-        previewType = 'video'; previewDataUrl = story.file.dataUrl;
-        if (!previewText) previewText = '🎥 動画';
       } else if (!previewText) previewText = '（テキストなし）';
-
       const prevChatId = currentChatId;
       currentChatId = chatId;
       const ok = await sendMessage({
@@ -2395,7 +2737,6 @@
     const tabViewers = document.getElementById('tabViewers');
     const tabLikers = document.getElementById('tabLikers');
     let currentInfoTab = 'viewers';
-
     storyInfoBtn.addEventListener('click', () => {
       const story = currentStoryList[currentStoryIndex];
       if (!story) return;
@@ -2480,9 +2821,7 @@
     });
     function renderArchive() {
       archiveList.innerHTML = '';
-      const entries = Object.entries(myArchivedStories || {})
-        .map(([sid, s]) => ({ id: sid, ...s }))
-        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      const entries = Object.entries(myArchivedStories || {}).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       if (entries.length === 0) {
         archiveList.innerHTML = '<div class="text-center text-gray-400 text-sm py-6">過去のストーリーはありません。</div>';
         return;
@@ -2494,15 +2833,13 @@
         let thumb = '';
         if (s.type === 'image' && s.file && s.file.dataUrl) {
           thumb = `<img src="${s.file.dataUrl}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;">`;
-        } else if (s.type === 'video' && s.file && s.file.dataUrl) {
-          thumb = `<video src="${s.file.dataUrl}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;" muted></video>`;
         } else {
           thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#833ab4,#fd1d1d);flex-shrink:0;"></div>`;
         }
         item.innerHTML = `
           ${thumb}
           <div style="flex:1;min-width:0;">
-            <div style="font-size:12px;color:#374151;" class="truncate">${escapeHtml(s.content || (s.type === 'video' ? '🎥 動画' : s.type === 'image' ? '📷 画像' : '（テキストなし）'))}</div>
+            <div style="font-size:12px;color:#374151;" class="truncate">${escapeHtml(s.content || (s.type === 'image' ? '📷 画像' : '（テキストなし）'))}</div>
             <div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}${s.closeFriendsOnly ? ' 💚' : ''}</div>
           </div>
           <span style="font-size:11px;color:#0284c7;">見る →</span>
@@ -2632,13 +2969,11 @@
       mainView.classList.add('view-enter');
       setConnection(navigator.onLine);
       refreshFavicon();
-
       try {
         const bansSnap = await get(ref(db, 'bans'));
         bansCache = bansSnap.exists() ? bansSnap.val() : {};
         if (bansCache[user.uid]) { executeBan(); return; }
       } catch (e) {}
-
       try {
         const profileSnap = await get(ref(db, `chatProfiles/${user.uid}`));
         if (profileSnap.exists()) {
@@ -2660,7 +2995,6 @@
       } catch (e) {
         myProfile = { nickname: user.displayName || '名無しさん', avatar: user.photoURL || DEFAULT_AVATAR };
       }
-
       updateMyProfileUI();
       initProfilesListener();
       initBansListener();
