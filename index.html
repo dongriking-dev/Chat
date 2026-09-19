@@ -7,20 +7,39 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    .msg-scroll { max-height: 60vh; overflow-y: auto; scrollbar-width: thin; }
+    * { -webkit-tap-highlight-color: transparent; }
+
+    body {
+      -webkit-user-select: none; user-select: none;
+      animation: bodyFade 0.4s ease;
+    }
+    @keyframes bodyFade { from { opacity: 0; } to { opacity: 1; } }
+    input, textarea, [contenteditable="true"] {
+      -webkit-user-select: text; user-select: text;
+    }
+
+    /* ============ スクロール ============ */
+    .msg-scroll { max-height: 60vh; overflow-y: auto; scrollbar-width: thin; scroll-behavior: smooth; }
     .msg-scroll::-webkit-scrollbar { width: 8px; }
     .msg-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .msg-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* ============ スピナー ============ */
     .loading-spinner {
       display: inline-block; width: 1rem; height: 1rem;
-      border: 2px solid #f3f3f3; border-top: 2px solid #0284c7;
-      border-radius: 50%; animation: spin 1s linear infinite;
+      border: 2px solid #e5e7eb; border-top: 2px solid #0284c7;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* ============ アバター ============ */
     .avatar {
       width: 40px; height: 40px; border-radius: 50%;
       object-fit: cover; flex-shrink: 0;
       border: 2px solid #e5e7eb; background: #f3f4f6;
+      transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), box-shadow 0.25s;
     }
+    .avatar:hover { transform: scale(1.08); box-shadow: 0 4px 10px rgba(2,132,199,0.25); }
     .avatar-sm {
       width: 28px; height: 28px; border-radius: 50%;
       object-fit: cover; flex-shrink: 0;
@@ -29,51 +48,147 @@
     .avatar-lg {
       width: 96px; height: 96px; border-radius: 50%;
       object-fit: cover; border: 3px solid #0284c7; background: #f3f4f6;
+      transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
     }
+    .avatar-lg:hover { transform: scale(1.05) rotate(-2deg); }
+
+    /* ============ メッセージ ============ */
     .msg-bubble {
       background: #fff; border: 1px solid #e5e7eb;
       border-radius: 12px; padding: 10px 14px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
       word-break: break-word;
+      position: relative;
+      transition: box-shadow 0.25s, transform 0.25s;
     }
-    .msg-mine .msg-bubble { background: #dbeafe; border-color: #93c5fd; }
-    .msg-row { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start; }
+    .msg-bubble:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .msg-mine .msg-bubble {
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+      border-color: #93c5fd;
+    }
+    .msg-row {
+      display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start;
+      animation: msgIn 0.35s cubic-bezier(.21,1.02,.73,1) both;
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
     .msg-row.mine { flex-direction: row-reverse; }
+    .msg-row.mine .msg-bubble { animation: msgInMine 0.35s cubic-bezier(.21,1.02,.73,1) both; }
+    @keyframes msgInMine {
+      from { opacity: 0; transform: translateY(12px) scale(0.97) translateX(8px); }
+      to   { opacity: 1; transform: translateY(0) scale(1) translateX(0); }
+    }
     .msg-meta { font-size: 11px; color: #6b7280; margin-bottom: 2px; }
     .msg-meta .name { font-weight: 700; color: #1e40af; }
     .msg-meta .time { margin-left: 6px; }
     .msg-content { font-size: 14px; color: #111827; white-space: pre-wrap; }
-    .msg-file img { max-height: 240px; max-width: 100%; border-radius: 8px; margin-top: 6px; border: 1px solid #e5e7eb; }
-    .msg-file a { font-size: 12px; color: #2563eb; text-decoration: underline; word-break: break-all; }
-    .delete-msg-btn {
-      font-size: 10px; color: #ef4444; background: #fef2f2;
-      border: 1px solid #fecaca; border-radius: 4px;
-      padding: 2px 6px; cursor: pointer; margin-top: 4px;
+    .msg-file img {
+      max-height: 240px; max-width: 100%; border-radius: 8px; margin-top: 6px;
+      border: 1px solid #e5e7eb; transition: transform 0.3s;
     }
-    .delete-msg-btn:hover { background: #fee2e2; }
+    .msg-file img:hover { transform: scale(1.02); }
+    .msg-file a { font-size: 12px; color: #2563eb; text-decoration: underline; word-break: break-all; }
+
+    /* 編集済みラベル */
+    .edited-label {
+      font-size: 10px; color: #9ca3af; margin-left: 6px; font-style: italic;
+    }
+
+    /* ============ 「…」メニューボタン ============ */
+    .msg-menu-btn {
+      position: absolute;
+      top: 6px;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 0.2s, transform 0.2s, background 0.2s;
+      z-index: 5;
+    }
+    .msg-row.mine .msg-menu-btn { left: -32px; }
+    .msg-row:not(.mine) .msg-menu-btn { right: -32px; }
+    .msg-row:hover .msg-menu-btn,
+    .msg-menu-btn.open { opacity: 1; transform: scale(1); }
+    .msg-menu-btn:hover { background: #eff6ff; color: #1e40af; }
+
+    /* メニュー本体 */
+    .msg-menu-popup {
+      position: absolute;
+      top: 32px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      min-width: 120px;
+      z-index: 20;
+      overflow: hidden;
+      animation: menuIn 0.18s cubic-bezier(.21,1.02,.73,1) both;
+      transform-origin: top;
+    }
+    .msg-row.mine .msg-menu-popup { left: -32px; }
+    .msg-row:not(.mine) .msg-menu-popup { right: -32px; }
+    @keyframes menuIn {
+      from { opacity: 0; transform: scale(0.85) translateY(-6px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .msg-menu-popup button {
+      display: block; width: 100%; text-align: left;
+      padding: 8px 14px; font-size: 13px; background: none;
+      border: none; cursor: pointer; color: #374151;
+      transition: background 0.15s;
+    }
+    .msg-menu-popup button:hover { background: #f3f4f6; }
+    .msg-menu-popup button.danger { color: #ef4444; }
+    .msg-menu-popup button.danger:hover { background: #fef2f2; }
+
+    /* ============ ステータスバナー ============ */
     #statusBanner {
       position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
-      text-align: center; padding: 6px; font-size: 12px;
-      transition: transform 0.3s; transform: translateY(-100%);
+      text-align: center; padding: 8px; font-size: 12px;
+      transition: transform 0.35s cubic-bezier(.21,1.02,.73,1), opacity 0.35s;
+      transform: translateY(-100%);
+      opacity: 0;
     }
-    #statusBanner.show { transform: translateY(0); }
+    #statusBanner.show { transform: translateY(0); opacity: 1; }
+
+    /* ============ モーダル ============ */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(0,0,0,0.55);
       display: flex; align-items: center; justify-content: center;
       z-index: 10000; padding: 16px;
+      animation: backdropIn 0.25s ease both;
+      backdrop-filter: blur(2px);
     }
     .modal-backdrop.hidden { display: none; }
+    @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
     .modal-content {
-      background: #fff; border-radius: 8px; padding: 20px;
-      max-width: 520px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      background: #fff; border-radius: 12px; padding: 20px;
+      max-width: 520px; width: 100%; box-shadow: 0 20px 50px rgba(0,0,0,0.3);
       max-height: 90vh; overflow-y: auto;
+      animation: modalIn 0.3s cubic-bezier(.34,1.56,.64,1) both;
     }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.9) translateY(20px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* ============ オーバーレイ ============ */
     #bootOverlay {
       position: fixed; inset: 0; background: #111827;
       z-index: 99997; display: flex;
       align-items: center; justify-content: center;
       color: #fff; font-family: sans-serif;
       flex-direction: column; gap: 16px;
+      animation: bodyFade 0.3s ease;
     }
     #bootOverlay.hidden { display: none; }
     #bootOverlay .boot-spinner {
@@ -83,57 +198,116 @@
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
+    #bootOverlay .boot-text { animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+
     #banOverlay {
       position: fixed; inset: 0; background: #000;
       z-index: 99999; display: none;
       align-items: center; justify-content: center;
       color: #fff; text-align: center; font-family: sans-serif;
       flex-direction: column; padding: 20px;
+      animation: backdropIn 0.4s ease;
     }
     #banOverlay.show { display: flex; }
+
+    /* ============ プリセットアバター ============ */
     .preset-avatar {
       width: 56px; height: 56px; border-radius: 50%;
       cursor: pointer; border: 3px solid transparent;
       object-fit: cover; background: #f3f4f6;
+      transition: transform 0.25s cubic-bezier(.34,1.56,.64,1), border-color 0.25s;
     }
-    .preset-avatar.selected { border-color: #0284c7; }
+    .preset-avatar:hover { transform: scale(1.12) rotate(4deg); }
+    .preset-avatar.selected {
+      border-color: #0284c7;
+      transform: scale(1.08);
+      box-shadow: 0 4px 12px rgba(2,132,199,0.35);
+    }
+
+    /* ============ ボタン ============ */
     .icon-btn {
       background: #f3f4f6; border: 1px solid #d1d5db;
       border-radius: 8px; padding: 6px 10px; cursor: pointer;
       font-size: 12px; color: #374151;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
     }
-    .icon-btn:hover { background: #e5e7eb; }
+    .icon-btn:hover { background: #e5e7eb; transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    .icon-btn:active { transform: translateY(0) scale(0.97); }
+
+    button {
+      transition: transform 0.15s cubic-bezier(.34,1.56,.64,1),
+                  box-shadow 0.2s, background 0.2s, opacity 0.2s;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    button:active { transform: translateY(0) scale(0.96); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ============ チャット一覧 ============ */
     .chat-item {
       display: flex; align-items: center; gap: 10px;
       padding: 12px; border-bottom: 1px solid #e5e7eb;
       cursor: pointer;
+      transition: background 0.2s, padding-left 0.25s;
+      animation: listIn 0.35s cubic-bezier(.21,1.02,.73,1) both;
     }
-    .chat-item:hover { background: #eff6ff; }
+    @keyframes listIn {
+      from { opacity: 0; transform: translateX(-12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .chat-item:hover { background: #eff6ff; padding-left: 18px; }
     .chat-item:last-child { border-bottom: none; }
+
+    /* ============ メンバーチップ ============ */
     .member-chip {
       display: inline-flex; align-items: center; gap: 4px;
       background: #eff6ff; border: 1px solid #bfdbfe;
       border-radius: 9999px; padding: 2px 8px 2px 2px;
       font-size: 12px; color: #1e40af; margin: 2px;
+      animation: chipIn 0.25s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes chipIn {
+      from { opacity: 0; transform: scale(0.7); }
+      to   { opacity: 1; transform: scale(1); }
     }
     .member-chip img { width: 20px; height: 20px; border-radius: 50%; }
     .member-chip .remove-x {
       cursor: pointer; color: #ef4444; font-weight: bold; margin-left: 2px;
+      transition: transform 0.2s;
     }
-    .search-result-item {
-      display: flex; align-items: center; gap: 8px;
-      padding: 8px; border: 1px solid #e5e7eb;
-      border-radius: 6px; margin-top: 6px; background: #fff;
+    .member-chip .remove-x:hover { transform: scale(1.3); }
+
+    /* ============ ビュー切替 ============ */
+    .view-enter { animation: viewEnter 0.35s cubic-bezier(.21,1.02,.73,1) both; }
+    @keyframes viewEnter {
+      from { opacity: 0; transform: translateX(16px); }
+      to   { opacity: 1; transform: translateX(0); }
     }
-    body { -webkit-user-select: none; user-select: none; }
-    input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
+    .view-enter-reverse { animation: viewEnterReverse 0.35s cubic-bezier(.21,1.02,.73,1) both; }
+    @keyframes viewEnterReverse {
+      from { opacity: 0; transform: translateX(-16px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ============ タイピングインジケータ風ドット ============ */
+    .dots-loading::after {
+      content: '...';
+      display: inline-block;
+      animation: dots 1.4s steps(4, end) infinite;
+      overflow: hidden;
+      vertical-align: bottom;
+    }
+    @keyframes dots {
+      0% { width: 0; }
+      100% { width: 1.5em; }
+    }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans p-4 max-w-3xl mx-auto">
 
   <div id="bootOverlay">
     <div class="boot-spinner"></div>
-    <div style="font-size:14px;color:#9ca3af;">アカウントを確認しています...</div>
+    <div class="boot-text" style="font-size:14px;color:#9ca3af;">アカウントを確認しています...</div>
   </div>
 
   <div id="banOverlay">
@@ -148,7 +322,7 @@
 
   <!-- ログイン画面 -->
   <div id="loginView" class="hidden">
-    <div class="bg-white border border-gray-300 rounded-lg shadow p-8 max-w-md mx-auto mt-16 text-center">
+    <div class="bg-white border border-gray-300 rounded-lg shadow p-8 max-w-md mx-auto mt-16 text-center view-enter">
       <h1 class="text-3xl font-bold text-blue-900 mb-2">シクナイチャット</h1>
       <p class="text-sm text-gray-600 mb-6">ご利用にはGoogleアカウントでのログインが必要です。</p>
       <p class="text-sm text-gray-600 mb-6">安全のためです。</p>
@@ -174,7 +348,7 @@
         <div>
           <h1 class="text-2xl font-bold text-blue-900">シクナイチャット</h1>
           <p class="text-xs text-gray-600 flex flex-wrap items-center gap-2">
-            <span id="connDot" class="inline-block w-2 h-2 rounded-full bg-gray-400"></span>
+            <span id="connDot" class="inline-block w-2 h-2 rounded-full bg-gray-400 transition-colors" style="transition: background 0.4s;"></span>
             <span id="connText">接続中...</span>
             <span id="myName" class="font-bold text-blue-800"></span>
           </p>
@@ -189,10 +363,10 @@
 
     <!-- チャット一覧 -->
     <div id="chatListView">
-      <div class="bg-white border border-gray-300 rounded-lg shadow-sm">
-        <h2 class="text-md font-bold text-gray-700 p-4 border-b">💬 チャット一覧</h2>
+      <div class="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
+        <h2 class="text-md font-bold text-gray-700 p-4 border-b bg-gradient-to-r from-blue-50 to-white">💬 チャット一覧</h2>
         <div id="chatListContainer">
-          <p class="text-gray-500 text-sm p-4"><span class="loading-spinner"></span> チャットを読み込み中...</p>
+          <p class="text-gray-500 text-sm p-4 dots-loading"><span class="loading-spinner"></span> チャットを読み込み中</p>
         </div>
       </div>
     </div>
@@ -210,12 +384,12 @@
         <button onclick="backToChatList()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded whitespace-nowrap ml-2">← 戻る</button>
       </div>
       <div id="messagesContainer" class="msg-scroll bg-gray-50 border border-gray-200 rounded p-3 mb-3">
-        <p class="text-gray-500 text-sm"><span class="loading-spinner"></span> メッセージを読み込み中...</p>
+        <p class="text-gray-500 text-sm dots-loading"><span class="loading-spinner"></span> メッセージを読み込み中</p>
       </div>
       <form id="messageForm" class="bg-white border border-gray-300 rounded p-3 shadow-sm">
         <div class="flex items-end gap-2">
-          <textarea id="messageInput" rows="1" maxlength="1000" placeholder="メッセージを入力..."
-            class="flex-1 border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none resize-none"
+          <textarea id="messageInput" rows="1" maxlength="1000" placeholder="メッセージを入力... (Enterで送信 / Shift+Enterで改行)"
+            class="flex-1 border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none resize-none transition-all"
             style="min-height:40px; max-height:120px;"></textarea>
           <label class="icon-btn cursor-pointer">
             📎
@@ -239,7 +413,7 @@
       <label class="block text-xs text-gray-600 mb-1">相手のメールアドレスを入力して追加:</label>
       <div class="flex gap-2 mb-2">
         <input type="email" id="memberEmailInput" placeholder="example@gmail.com"
-          class="flex-1 border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none">
+          class="flex-1 border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none transition-all">
         <button id="addMemberBtn" type="button" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-3 rounded text-sm">追加</button>
       </div>
       <div id="memberSearchMsg" class="text-xs mb-2"></div>
@@ -250,11 +424,24 @@
 
       <label class="block text-xs text-gray-600 mb-1">グループ名（2人以上のとき任意）:</label>
       <input type="text" id="groupNameInput" maxlength="30" placeholder="例: プロジェクトA"
-        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none">
+        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none transition-all">
 
       <div class="flex justify-end gap-2 flex-wrap">
         <button id="newChatCancelBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
         <button id="newChatCreateBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-4 rounded font-bold">チャットを開始</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- メッセージ編集モーダル -->
+  <div id="editMsgModal" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <h3 class="text-lg font-bold text-gray-800 mb-3">✏️ メッセージを編集</h3>
+      <textarea id="editMsgInput" rows="4" maxlength="1000"
+        class="w-full border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none resize-none mb-3"></textarea>
+      <div class="flex justify-end gap-2 flex-wrap">
+        <button id="editMsgCancelBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
+        <button id="editMsgSaveBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-4 rounded font-bold">保存</button>
       </div>
     </div>
   </div>
@@ -270,7 +457,7 @@
       </div>
       <label class="block text-xs text-gray-600 mb-1">ニックネーム（最大20文字）:</label>
       <input type="text" id="nicknameInput" maxlength="20" placeholder="例: 名無しさん"
-        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none">
+        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none transition-all">
       <label class="block text-xs text-gray-600 mb-1">または画像をアップロード:</label>
       <input type="file" id="avatarFileInput" accept="image/*" class="text-xs text-gray-600 w-full mb-3">
       <div class="flex justify-end gap-2 flex-wrap">
@@ -403,8 +590,9 @@
     let selectedAvatar = DEFAULT_AVATAR;
     let intentionalSignOut = false;
 
-    // 新規チャット作成用
-    let pendingMembers = []; // {uid, nickname, avatar, email}
+    let pendingMembers = [];
+    let editingMsgKey = null;
+    let openMenuKey = null;
 
     // ========================================
     // DOM
@@ -465,11 +653,12 @@
     function showBanner(msg, isError = true) {
       statusBanner.textContent = msg;
       statusBanner.className = (isError ? 'bg-red-600' : 'bg-green-600') + ' text-white show';
-      statusBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;padding:6px;font-size:12px;transform:translateY(0);';
+      statusBanner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;text-align:center;padding:8px;font-size:12px;transform:translateY(0);opacity:1;';
       clearTimeout(bannerTimer);
       bannerTimer = setTimeout(() => {
         statusBanner.style.transform = 'translateY(-100%)';
-      }, 3500);
+        statusBanner.style.opacity = '0';
+      }, 3000);
     }
 
     // ========================================
@@ -560,7 +749,7 @@
 
       if (entries.length === 0) {
         chatListContainer.innerHTML = `
-          <div class="text-gray-500 text-sm p-6 text-center">
+          <div class="text-gray-500 text-sm p-6 text-center" style="animation: msgIn 0.4s ease both;">
             💬 まだチャットがありません。<br>
             <span class="text-xs text-gray-400">「＋ 新しいチャット」から相手のメールアドレスを追加して始めましょう。</span>
           </div>`;
@@ -569,12 +758,12 @@
 
       entries.sort((a, b) => (b[1].lastMessageAt || b[1].createdAt || 0) - (a[1].lastMessageAt || a[1].createdAt || 0));
 
-      entries.forEach(([chatId, chat]) => {
+      entries.forEach(([chatId, chat], idx) => {
         const item = document.createElement('div');
         item.className = 'chat-item';
+        item.style.animationDelay = (idx * 0.04) + 's';
         item.onclick = () => openChat(chatId);
 
-        // 相手orグループの表示名
         const isGroup = chat.type === 'group';
         let displayName;
         let avatarHtml;
@@ -642,6 +831,10 @@
 
       chatListView.classList.add('hidden');
       chatView.classList.remove('hidden');
+      chatView.classList.remove('view-enter');
+      void chatView.offsetWidth;
+      chatView.classList.add('view-enter');
+
       loadMessages(chatId);
     }
 
@@ -649,13 +842,17 @@
       currentChatId = null;
       chatView.classList.add('hidden');
       chatListView.classList.remove('hidden');
+      chatListView.classList.remove('view-enter-reverse');
+      void chatListView.offsetWidth;
+      chatListView.classList.add('view-enter-reverse');
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
       messagesCache = [];
+      closeAllMenus();
     };
 
     function loadMessages(chatId) {
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
-      messagesContainer.innerHTML = '<p class="text-gray-500 text-sm"><span class="loading-spinner"></span> 読み込み中...</p>';
+      messagesContainer.innerHTML = '<p class="text-gray-500 text-sm dots-loading"><span class="loading-spinner"></span> 読み込み中</p>';
 
       const msgsRef = ref(db, `chatMessages/${chatId}`);
       const q = query(msgsRef, orderByChild('createdAt'));
@@ -679,18 +876,23 @@
 
     function renderMessages() {
       messagesContainer.innerHTML = '';
+      closeAllMenus();
+
       if (messagesCache.length === 0) {
-        messagesContainer.innerHTML = '<p class="text-gray-400 text-sm text-center py-8">まだメッセージがありません。最初のメッセージを送ってみましょう！</p>';
+        messagesContainer.innerHTML = '<p class="text-gray-400 text-sm text-center py-8" style="animation: msgIn 0.4s ease both;">まだメッセージがありません。最初のメッセージを送ってみましょう！</p>';
         return;
       }
 
       const frag = document.createDocumentFragment();
-      messagesCache.forEach((msg) => {
+      messagesCache.forEach((msg, idx) => {
         const isMine = currentUser && msg.authorUid === currentUser.uid;
         const profile = getProfileForUid(msg.authorUid);
 
         const row = document.createElement('div');
         row.className = 'msg-row' + (isMine ? ' mine' : '');
+        // 既存メッセージはアニメ遅延を小さく（大量時は最初の20件だけ）
+        row.style.animationDelay = Math.min(idx * 0.025, 0.5) + 's';
+        row.dataset.msgKey = msg.key;
 
         const fileHtml = msg.file && msg.file.dataUrl
           ? `<div class="msg-file"><a href="${msg.file.dataUrl}" target="_blank" rel="noopener">
@@ -698,17 +900,24 @@
              </a></div>`
           : '';
 
+        const menuBtnHtml = isMine
+          ? `<button class="msg-menu-btn" data-key="${msg.key}" title="メニュー">⋯</button>`
+          : '';
+
+        const editedHtml = msg.edited ? '<span class="edited-label">(編集済み)</span>' : '';
+
         row.innerHTML = `
           <img class="avatar" src="${escapeHtml(profile.avatar)}" alt="">
-          <div style="max-width: 75%;">
+          <div style="max-width: 75%; position: relative;">
+            ${menuBtnHtml}
             <div class="msg-meta ${isMine ? 'text-right' : ''}">
               <span class="name">${escapeHtml(profile.nickname)}</span>
               <span class="time">${formatTime(msg.createdAt)}</span>
+              ${editedHtml}
             </div>
-            <div class="msg-bubble">
+            <div class="msg-bubble" data-key="${msg.key}">
               ${msg.content ? `<div class="msg-content">${formatContent(msg.content)}</div>` : ''}
               ${fileHtml}
-              ${isMine ? `<button class="delete-msg-btn" data-key="${msg.key}">取り消し</button>` : ''}
             </div>
           </div>
         `;
@@ -716,22 +925,120 @@
       });
       messagesContainer.appendChild(frag);
 
-      messagesContainer.querySelectorAll('.delete-msg-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
+      // メニューボタンにイベント
+      messagesContainer.querySelectorAll('.msg-menu-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
           const key = btn.dataset.key;
-          if (!confirm('このメッセージを取り消しますか？')) return;
-          try {
-            await remove(ref(db, `chatMessages/${currentChatId}/${key}`));
-            showBanner('メッセージを取り消しました', false);
-          } catch (err) {
-            console.error('取り消しエラー:', err);
-            showBanner('取り消しに失敗しました', true);
+          if (openMenuKey === key) {
+            closeAllMenus();
+          } else {
+            openMenu(btn, key);
           }
         });
       });
 
+      // メニュー外クリックで閉じる
+      document.addEventListener('click', outsideClickHandler);
+
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
+
+    function outsideClickHandler(e) {
+      if (!e.target.closest('.msg-menu-popup') && !e.target.closest('.msg-menu-btn')) {
+        closeAllMenus();
+      }
+    }
+
+    function closeAllMenus() {
+      messagesContainer.querySelectorAll('.msg-menu-popup').forEach(el => el.remove());
+      messagesContainer.querySelectorAll('.msg-menu-btn.open').forEach(el => el.classList.remove('open'));
+      openMenuKey = null;
+    }
+
+    function openMenu(btn, key) {
+      closeAllMenus();
+      openMenuKey = key;
+      btn.classList.add('open');
+
+      const popup = document.createElement('div');
+      popup.className = 'msg-menu-popup';
+      popup.innerHTML = `
+        <button class="edit-action">✏️ 編集</button>
+        <button class="danger delete-action">🗑️ 取り消し</button>
+      `;
+      btn.parentElement.appendChild(popup);
+
+      popup.querySelector('.edit-action').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllMenus();
+        openEditModal(key);
+      });
+      popup.querySelector('.delete-action').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        closeAllMenus();
+        if (!confirm('このメッセージを取り消しますか？')) return;
+        try {
+          await remove(ref(db, `chatMessages/${currentChatId}/${key}`));
+          showBanner('メッセージを取り消しました', false);
+        } catch (err) {
+          console.error('取り消しエラー:', err);
+          showBanner('取り消しに失敗しました', true);
+        }
+      });
+    }
+
+    // ========================================
+    // メッセージ編集
+    // ========================================
+    const editMsgModal = document.getElementById('editMsgModal');
+    const editMsgInput = document.getElementById('editMsgInput');
+
+    function openEditModal(key) {
+      const msg = messagesCache.find(m => m.key === key);
+      if (!msg) return;
+      editingMsgKey = key;
+      editMsgInput.value = msg.content || '';
+      editMsgModal.classList.remove('hidden');
+      setTimeout(() => editMsgInput.focus(), 100);
+    }
+
+    document.getElementById('editMsgCancelBtn').addEventListener('click', () => {
+      editMsgModal.classList.add('hidden');
+      editingMsgKey = null;
+    });
+
+    editMsgModal.addEventListener('click', (e) => {
+      if (e.target.id === 'editMsgModal') {
+        editMsgModal.classList.add('hidden');
+        editingMsgKey = null;
+      }
+    });
+
+    document.getElementById('editMsgSaveBtn').addEventListener('click', async () => {
+      if (!editingMsgKey || !currentChatId) return;
+      const newContent = editMsgInput.value.trim();
+      const msg = messagesCache.find(m => m.key === editingMsgKey);
+      if (!msg) return;
+      if (!newContent && !(msg.file && msg.file.dataUrl)) {
+        alert('メッセージを入力してください。');
+        return;
+      }
+
+      try {
+        await update(ref(db, `chatMessages/${currentChatId}/${editingMsgKey}`), {
+          content: newContent,
+          edited: true,
+          editedAt: Date.now()
+        });
+        editMsgModal.classList.add('hidden');
+        editingMsgKey = null;
+        showBanner('メッセージを編集しました', false);
+      } catch (err) {
+        console.error('編集エラー:', err);
+        showBanner('編集に失敗しました: ' + (err.message || ''), true);
+      }
+    });
 
     // ========================================
     // メッセージ送信
@@ -747,11 +1054,21 @@
       messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
     });
 
+    // ★ Enterの挙動：変換中は改行、変換確定後のEnterで送信
     messageInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        document.getElementById('messageForm').requestSubmit();
+      if (e.key !== 'Enter') return;
+
+      // Shift+Enter は常に改行
+      if (e.shiftKey) return;
+
+      // IME変換中（isComposing）なら何もしない → 改行も送信もしない
+      if (e.isComposing || e.keyCode === 229) {
+        return;
       }
+
+      // ここまで来たら変換確定後のEnter → 送信
+      e.preventDefault();
+      document.getElementById('messageForm').requestSubmit();
     });
 
     messageFileInput.addEventListener('change', async () => {
@@ -800,7 +1117,6 @@
         const newRef = push(msgsRef);
         await set(newRef, msgData);
 
-        // チャット一覧の最終メッセージ更新（全参加者分）
         const chat = chatsCache[currentChatId];
         const memberUids = Object.keys(chat.members || {});
         const updateData = {
@@ -893,7 +1209,7 @@
         return;
       }
 
-      memberSearchMsg.innerHTML = '<span class="text-gray-500"><span class="loading-spinner"></span> 検索中...</span>';
+      memberSearchMsg.innerHTML = '<span class="text-gray-500 dots-loading">検索中</span>';
 
       try {
         const snap = await get(ref(db, 'chatProfiles'));
@@ -920,7 +1236,7 @@
           email: found.email
         });
         memberEmailInput.value = '';
-        memberSearchMsg.innerHTML = '<span class="text-green-600">追加しました。</span>';
+        memberSearchMsg.innerHTML = '<span class="text-green-600">✓ 追加しました。</span>';
         renderSelectedMembers();
       } catch (err) {
         console.error('検索エラー:', err);
@@ -929,7 +1245,7 @@
     });
 
     memberEmailInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
         e.preventDefault();
         document.getElementById('addMemberBtn').click();
       }
@@ -945,12 +1261,10 @@
       const isGroup = pendingMembers.length >= 2;
       const groupName = document.getElementById('groupNameInput').value.trim();
 
-      // メンバー構成（自分＋相手）
       const members = {};
       members[currentUser.uid] = true;
       pendingMembers.forEach(m => { members[m.uid] = true; });
 
-      // 個人チャット（1対1）の場合、既存チャットがあるかチェック
       if (!isGroup) {
         const partnerUid = pendingMembers[0].uid;
         const existingChatId = await findExistingDirectChat(partnerUid);
@@ -963,7 +1277,7 @@
 
       try {
         const chatsRef = ref(db, 'chatMessages');
-        const newChatRef = push(chatsRef); // チャットID生成
+        const newChatRef = push(chatsRef);
         const chatId = newChatRef.key;
 
         const chatData = {
@@ -976,10 +1290,8 @@
           lastMessageAt: Date.now()
         };
 
-        // chatMeta に保存
         await set(ref(db, `chatMeta/${chatId}`), chatData);
 
-        // 各ユーザーの userChats に登録
         const updates = {};
         Object.keys(members).forEach(uid => {
           updates[`userChats/${uid}/${chatId}`] = {
@@ -995,7 +1307,6 @@
 
         newChatModal.classList.add('hidden');
         showBanner('チャットを作成しました', false);
-        // 少し待ってから開く（リスナー反映待ち）
         setTimeout(() => openChat(chatId), 300);
       } catch (err) {
         console.error('チャット作成エラー:', err);
@@ -1004,7 +1315,6 @@
     });
 
     async function findExistingDirectChat(partnerUid) {
-      // すでに同じ相手との1対1チャットがあるか探す
       try {
         const snap = await get(ref(db, `userChats/${currentUser.uid}`));
         if (!snap.exists()) return null;
@@ -1159,7 +1469,6 @@
         return;
       }
 
-      // BANチェック
       try {
         const bansSnap = await get(ref(db, 'bans'));
         bansCache = bansSnap.exists() ? bansSnap.val() : {};
@@ -1171,7 +1480,6 @@
         console.warn('BANチェックエラー:', e.message);
       }
 
-      // プロフィール取得（初回は自動作成）
       try {
         const profileSnap = await get(ref(db, `chatProfiles/${user.uid}`));
         if (profileSnap.exists()) {
@@ -1207,6 +1515,9 @@
       updateMyProfileUI();
       loginView.classList.add('hidden');
       mainView.classList.remove('hidden');
+      mainView.classList.remove('view-enter');
+      void mainView.offsetWidth;
+      mainView.classList.add('view-enter');
       bootOverlay.classList.add('hidden');
       setConnection(navigator.onLine);
 
@@ -1215,7 +1526,6 @@
       initChatsListener();
     });
 
-    // 右クリック・ドラッグ防止
     document.addEventListener('contextmenu', (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       e.preventDefault();
