@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>シクナイチャット</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3C/svg%3E">
+  <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * { -webkit-tap-highlight-color: transparent; }
@@ -18,13 +18,11 @@
       -webkit-user-select: text; user-select: text;
     }
 
-    /* ============ スクロール ============ */
     .msg-scroll { max-height: 60vh; overflow-y: auto; scrollbar-width: thin; scroll-behavior: smooth; }
     .msg-scroll::-webkit-scrollbar { width: 8px; }
     .msg-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     .msg-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-    /* ============ スピナー ============ */
     .loading-spinner {
       display: inline-block; width: 1rem; height: 1rem;
       border: 2px solid #e5e7eb; border-top: 2px solid #0284c7;
@@ -32,7 +30,6 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* ============ アバター ============ */
     .avatar {
       width: 40px; height: 40px; border-radius: 50%;
       object-fit: cover; flex-shrink: 0;
@@ -52,7 +49,6 @@
     }
     .avatar-lg:hover { transform: scale(1.05) rotate(-2deg); }
 
-    /* ============ メッセージ ============ */
     .msg-bubble {
       background: #fff; border: 1px solid #e5e7eb;
       border-radius: 12px; padding: 10px 14px;
@@ -91,12 +87,8 @@
     .msg-file img:hover { transform: scale(1.02); }
     .msg-file a { font-size: 12px; color: #2563eb; text-decoration: underline; word-break: break-all; }
 
-    /* 編集済みラベル */
-    .edited-label {
-      font-size: 10px; color: #9ca3af; margin-left: 6px; font-style: italic;
-    }
+    .edited-label { font-size: 10px; color: #9ca3af; margin-left: 6px; font-style: italic; }
 
-    /* ============ 「…」メニューボタン ============ */
     .msg-menu-btn {
       position: absolute;
       top: 6px;
@@ -120,7 +112,6 @@
     .msg-menu-btn.open { opacity: 1; transform: scale(1); }
     .msg-menu-btn:hover { background: #eff6ff; color: #1e40af; }
 
-    /* メニュー本体 */
     .msg-menu-popup {
       position: absolute;
       top: 32px;
@@ -150,7 +141,6 @@
     .msg-menu-popup button.danger { color: #ef4444; }
     .msg-menu-popup button.danger:hover { background: #fef2f2; }
 
-    /* ============ ステータスバナー ============ */
     #statusBanner {
       position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
       text-align: center; padding: 8px; font-size: 12px;
@@ -160,7 +150,6 @@
     }
     #statusBanner.show { transform: translateY(0); opacity: 1; }
 
-    /* ============ モーダル ============ */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(0,0,0,0.55);
       display: flex; align-items: center; justify-content: center;
@@ -181,7 +170,6 @@
       to   { opacity: 1; transform: scale(1) translateY(0); }
     }
 
-    /* ============ オーバーレイ ============ */
     #bootOverlay {
       position: fixed; inset: 0; background: #111827;
       z-index: 99997; display: flex;
@@ -211,7 +199,6 @@
     }
     #banOverlay.show { display: flex; }
 
-    /* ============ プリセットアバター ============ */
     .preset-avatar {
       width: 56px; height: 56px; border-radius: 50%;
       cursor: pointer; border: 3px solid transparent;
@@ -225,7 +212,6 @@
       box-shadow: 0 4px 12px rgba(2,132,199,0.35);
     }
 
-    /* ============ ボタン ============ */
     .icon-btn {
       background: #f3f4f6; border: 1px solid #d1d5db;
       border-radius: 8px; padding: 6px 10px; cursor: pointer;
@@ -243,13 +229,13 @@
     button:active { transform: translateY(0) scale(0.96); }
     button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
 
-    /* ============ チャット一覧 ============ */
     .chat-item {
       display: flex; align-items: center; gap: 10px;
       padding: 12px; border-bottom: 1px solid #e5e7eb;
       cursor: pointer;
       transition: background 0.2s, padding-left 0.25s;
       animation: listIn 0.35s cubic-bezier(.21,1.02,.73,1) both;
+      position: relative;
     }
     @keyframes listIn {
       from { opacity: 0; transform: translateX(-12px); }
@@ -257,8 +243,42 @@
     }
     .chat-item:hover { background: #eff6ff; padding-left: 18px; }
     .chat-item:last-child { border-bottom: none; }
+    .chat-item.unread { background: #fef9f9; }
+    .chat-item.unread:hover { background: #fef2f2; }
 
-    /* ============ メンバーチップ ============ */
+    /* 未読ドット（アバター右下の赤丸） */
+    .unread-dot {
+      position: absolute;
+      top: 8px;
+      left: 40px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: #ef4444;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 0 rgba(239,68,68,0.7);
+      animation: unreadPulse 1.8s infinite;
+      z-index: 3;
+    }
+    @keyframes unreadPulse {
+      0% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); }
+      70% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+      100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+    }
+
+    /* 未読件数バッジ（右側） */
+    .unread-count {
+      background: #ef4444; color: #fff;
+      font-size: 11px; font-weight: 700;
+      padding: 2px 7px; border-radius: 9999px;
+      margin-left: 6px;
+      animation: badgeIn 0.3s cubic-bezier(.34,1.56,.64,1) both;
+      box-shadow: 0 2px 6px rgba(239,68,68,0.4);
+    }
+    @keyframes badgeIn {
+      from { transform: scale(0); }
+      to   { transform: scale(1); }
+    }
+
     .member-chip {
       display: inline-flex; align-items: center; gap: 4px;
       background: #eff6ff; border: 1px solid #bfdbfe;
@@ -277,7 +297,6 @@
     }
     .member-chip .remove-x:hover { transform: scale(1.3); }
 
-    /* ============ ビュー切替 ============ */
     .view-enter { animation: viewEnter 0.35s cubic-bezier(.21,1.02,.73,1) both; }
     @keyframes viewEnter {
       from { opacity: 0; transform: translateX(16px); }
@@ -289,7 +308,6 @@
       to   { opacity: 1; transform: translateX(0); }
     }
 
-    /* ============ タイピングインジケータ風ドット ============ */
     .dots-loading::after {
       content: '...';
       display: inline-block;
@@ -320,7 +338,6 @@
 
   <div id="statusBanner" class="bg-red-600 text-white"></div>
 
-  <!-- ログイン画面 -->
   <div id="loginView" class="hidden">
     <div class="bg-white border border-gray-300 rounded-lg shadow p-8 max-w-md mx-auto mt-16 text-center view-enter">
       <h1 class="text-3xl font-bold text-blue-900 mb-2">シクナイチャット</h1>
@@ -340,7 +357,6 @@
     </div>
   </div>
 
-  <!-- メイン画面 -->
   <div id="mainView" class="hidden">
     <header class="border-b-2 border-blue-800 pb-2 mb-4 flex justify-between items-center flex-wrap gap-2">
       <div class="flex items-center gap-3">
@@ -361,7 +377,6 @@
       </div>
     </header>
 
-    <!-- チャット一覧 -->
     <div id="chatListView">
       <div class="bg-white border border-gray-300 rounded-lg shadow-sm overflow-hidden">
         <h2 class="text-md font-bold text-gray-700 p-4 border-b bg-gradient-to-r from-blue-50 to-white">💬 チャット一覧</h2>
@@ -371,7 +386,6 @@
       </div>
     </div>
 
-    <!-- チャット画面 -->
     <div id="chatView" class="hidden">
       <div class="bg-white p-3 border border-gray-300 rounded mb-3 shadow-sm flex justify-between items-center">
         <div class="flex items-center gap-2 min-w-0">
@@ -405,11 +419,9 @@
     </div>
   </div>
 
-  <!-- 新規チャット作成モーダル -->
   <div id="newChatModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <h3 class="text-lg font-bold text-gray-800 mb-3">＋ 新しいチャット</h3>
-
       <label class="block text-xs text-gray-600 mb-1">相手のメールアドレスを入力して追加:</label>
       <div class="flex gap-2 mb-2">
         <input type="email" id="memberEmailInput" placeholder="example@gmail.com"
@@ -417,15 +429,12 @@
         <button id="addMemberBtn" type="button" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-3 rounded text-sm">追加</button>
       </div>
       <div id="memberSearchMsg" class="text-xs mb-2"></div>
-
       <div id="selectedMembersBox" class="mb-3 min-h-[40px] border border-dashed border-gray-300 rounded p-2">
         <span class="text-xs text-gray-400">まだ相手が追加されていません</span>
       </div>
-
       <label class="block text-xs text-gray-600 mb-1">グループ名（2人以上のとき任意）:</label>
       <input type="text" id="groupNameInput" maxlength="30" placeholder="例: プロジェクトA"
         class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none transition-all">
-
       <div class="flex justify-end gap-2 flex-wrap">
         <button id="newChatCancelBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
         <button id="newChatCreateBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-4 rounded font-bold">チャットを開始</button>
@@ -433,7 +442,6 @@
     </div>
   </div>
 
-  <!-- メッセージ編集モーダル -->
   <div id="editMsgModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <h3 class="text-lg font-bold text-gray-800 mb-3">✏️ メッセージを編集</h3>
@@ -446,7 +454,6 @@
     </div>
   </div>
 
-  <!-- プロフィールモーダル -->
   <div id="profileModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <h3 class="text-lg font-bold text-gray-800 mb-3">👤 プロフィール設定</h3>
@@ -499,77 +506,80 @@
     });
 
     // ========================================
-    // プリセットアバター
+    // アイコン（通常 / 通知あり）
     // ========================================
-    function makeAvatarSvg(color, emoji) {
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" r="32" fill="${color}"/>
-        <text x="32" y="42" font-size="32" text-anchor="middle">${emoji}</text>
-      </svg>`;
-      return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
+    const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3C/svg%3E";
+    const FAVICON_UNREAD = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='48' cy='16' r='12' fill='%23ef4444' stroke='%23ffffff' stroke-width='3'/%3E%3C/svg%3E";
+
+    const faviconLink = document.getElementById('faviconLink');
+
+    function setFavicon(url) {
+      faviconLink.href = url;
     }
 
-    const PRESET_AVATARS = [
-      makeAvatarSvg('#0284c7', '😀'), makeAvatarSvg('#16a34a', '😎'),
-      makeAvatarSvg('#dc2626', '🔥'), makeAvatarSvg('#7c3aed', '🌟'),
-      makeAvatarSvg('#d97706', '🍀'), makeAvatarSvg('#db2777', '🌸'),
-      makeAvatarSvg('#0891b2', '🐱'), makeAvatarSvg('#65a30d', '🐶'),
-      makeAvatarSvg('#ea580c', '🦊'), makeAvatarSvg('#475569', '🐼'),
-      makeAvatarSvg('#c026d3', '🎮'), makeAvatarSvg('#0d9488', '☕')
-    ];
-
-    const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af', '👤');
-
     // ========================================
-    // 画像圧縮
+    // 通知音（Web Audio API）
     // ========================================
-    const IMAGE_MAX_WIDTH = 400;
-    const IMAGE_QUALITY = 0.75;
-    const IMAGE_MAX_BASE64_SIZE = 100 * 1024;
-
-    function fileToBase64Image(file, maxW = IMAGE_MAX_WIDTH, maxSize = IMAGE_MAX_BASE64_SIZE) {
-      return new Promise((resolve, reject) => {
-        if (!file) { resolve(null); return; }
-        if (!file.type.startsWith('image/')) {
-          reject(new Error('画像ファイルを選択してください'));
-          return;
+    let audioCtx = null;
+    function playNotificationSound() {
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error('ファイルの読み込みに失敗しました'));
-        reader.onload = (e) => {
-          const img = new Image();
-          img.onerror = () => reject(new Error('画像の読み込みに失敗しました'));
-          img.onload = () => {
-            let { width, height } = img;
-            if (width > maxW) {
-              height = Math.round(height * (maxW / width));
-              width = maxW;
-            }
-            const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-            let quality = IMAGE_QUALITY;
-            let dataUrl = canvas.toDataURL('image/jpeg', quality);
-            while (dataUrl.length > maxSize && quality > 0.3) {
-              quality -= 0.1;
-              dataUrl = canvas.toDataURL('image/jpeg', quality);
-            }
-            if (dataUrl.length > maxSize) {
-              reject(new Error('画像が大きすぎます'));
-              return;
-            }
-            resolve({
-              dataUrl, name: file.name, type: 'image/jpeg',
-              width, height, size: dataUrl.length
-            });
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const now = audioCtx.currentTime;
+
+        // 「ピコン」 2音
+        const notes = [
+          { freq: 880, start: 0, dur: 0.12 },
+          { freq: 1318.5, start: 0.1, dur: 0.18 }
+        ];
+
+        notes.forEach(n => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = n.freq;
+          gain.gain.setValueAtTime(0, now + n.start);
+          gain.gain.linearRampToValueAtTime(0.15, now + n.start + 0.01);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + n.start + n.dur);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now + n.start);
+          osc.stop(now + n.start + n.dur + 0.05);
+        });
+      } catch (e) {
+        console.warn('通知音再生失敗:', e);
+      }
     }
+
+    // ========================================
+    // 未読管理
+    // ========================================
+    // unreadCounts: { chatId: number }
+    // lastReadAt: { chatId: timestamp }
+    const UNREAD_STORAGE_KEY = 'sikunai_unread_v1';
+    const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v1';
+
+    function loadJson(key) {
+      try { return JSON.parse(localStorage.getItem(key) || '{}'); }
+      catch (e) { return {}; }
+    }
+    function saveJson(key, obj) {
+      try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {}
+    }
+
+    let unreadCounts = loadJson(UNREAD_STORAGE_KEY); // { chatId: count }
+    let lastReadAt = loadJson(LASTREAD_STORAGE_KEY); // { chatId: timestamp }
+
+    // チャットごとの最新メッセージ時刻（onValueで更新）
+    let chatLatestMsgAt = {};   // { chatId: timestamp }
+    let chatLatestMsgSender = {}; // { chatId: uid }
+
+    // タブの可視状態
+    let isTabActive = !document.hidden;
 
     // ========================================
     // 状態管理
@@ -581,6 +591,7 @@
     let messagesUnsubscribe = null;
     let profilesUnsubscribe = null;
     let bansUnsubscribe = null;
+    let roomLatestListeners = {}; // chatId => unsubscribe
 
     let chatsCache = {};
     let messagesCache = [];
@@ -662,6 +673,87 @@
     }
 
     // ========================================
+    // 未読関連ロジック
+    // ========================================
+    function getTotalUnread() {
+      return Object.values(unreadCounts).reduce((a, b) => a + (b || 0), 0);
+    }
+
+    function refreshFavicon() {
+      const total = getTotalUnread();
+      if (total > 0 && !isTabActive) {
+        setFavicon(FAVICON_UNREAD);
+      } else {
+        setFavicon(FAVICON_NORMAL);
+      }
+    }
+
+    function markChatAsRead(chatId) {
+      const ts = chatLatestMsgAt[chatId] || 0;
+      lastReadAt[chatId] = ts;
+      delete unreadCounts[chatId];
+      saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+      saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
+      refreshFavicon();
+    }
+
+    // 新着メッセージを検知して未読数を増やす
+    function handleNewLatest(chatId, data) {
+      if (!data) return;
+      const lastAt = data.lastMessageAt || 0;
+      const lastSender = data.lastSenderUid || '';
+
+      const prev = chatLatestMsgAt[chatId] || 0;
+      chatLatestMsgAt[chatId] = lastAt;
+      chatLatestMsgSender[chatId] = lastSender;
+
+      if (lastAt <= prev) return; // 古い or 同じ
+      if (!currentUser) return;
+      if (lastSender === currentUser.uid) {
+        // 自分が送ったメッセージ → 未読にはしない
+        return;
+      }
+
+      // 現在開いているチャット & タブアクティブ → 既読扱い
+      if (chatId === currentChatId && isTabActive) {
+        markChatAsRead(chatId);
+        return;
+      }
+
+      const lastRead = lastReadAt[chatId] || 0;
+      if (lastAt > lastRead) {
+        unreadCounts[chatId] = (unreadCounts[chatId] || 0) + 1;
+        saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+
+        // タブが非アクティブなら通知音 + favicon変更
+        if (!isTabActive) {
+          playNotificationSound();
+        }
+        refreshFavicon();
+        renderChatList();
+      }
+    }
+
+    // 各チャットの lastMessageAt を監視
+    function initChatLatestListeners() {
+      // 既存リスナーをクリア
+      Object.values(roomLatestListeners).forEach(fn => {
+        try { fn(); } catch (e) {}
+      });
+      roomLatestListeners = {};
+
+      Object.keys(chatsCache || {}).forEach(chatId => {
+        // userChats配下の lastMessageAt を監視
+        const r = ref(db, `userChats/${currentUser.uid}/${chatId}`);
+        const unsub = onValue(r, (snap) => {
+          if (!snap.exists()) return;
+          handleNewLatest(chatId, snap.val());
+        });
+        roomLatestListeners[chatId] = unsub;
+      });
+    }
+
+    // ========================================
     // プロフィール監視
     // ========================================
     function initProfilesListener() {
@@ -732,6 +824,7 @@
       chatsUnsubscribe = onValue(userChatsRef, (snap) => {
         chatsCache = snap.exists() ? snap.val() : {};
         renderChatList();
+        initChatLatestListeners();
       }, (err) => {
         console.error('チャット一覧監視エラー:', err);
         chatListContainer.innerHTML = `
@@ -759,8 +852,11 @@
       entries.sort((a, b) => (b[1].lastMessageAt || b[1].createdAt || 0) - (a[1].lastMessageAt || a[1].createdAt || 0));
 
       entries.forEach(([chatId, chat], idx) => {
+        const unread = unreadCounts[chatId] || 0;
+        const isUnread = unread > 0;
+
         const item = document.createElement('div');
-        item.className = 'chat-item';
+        item.className = 'chat-item' + (isUnread ? ' unread' : '');
         item.style.animationDelay = (idx * 0.04) + 's';
         item.onclick = () => openChat(chatId);
 
@@ -783,15 +879,28 @@
           avatarHtml = `<img class="avatar" src="${escapeHtml(p.avatar)}" alt="">`;
         }
 
+        const unreadDot = isUnread ? `<span class="unread-dot"></span>` : '';
+        const unreadBadge = isUnread
+          ? `<span class="unread-count">${unread > 99 ? '99+' : unread}</span>`
+          : '';
+
         item.innerHTML = `
-          ${avatarHtml}
+          <div style="position:relative;">
+            ${avatarHtml}
+            ${unreadDot}
+          </div>
           <div class="flex-1 min-w-0">
             <div class="font-bold text-sm text-blue-900 truncate">
               ${isGroup ? '👥 ' : ''}${escapeHtml(displayName)}
             </div>
-            <div class="text-xs text-gray-500 truncate">${escapeHtml(chat.lastMessage || 'まだメッセージがありません')}</div>
+            <div class="text-xs ${isUnread ? 'text-red-600 font-semibold' : 'text-gray-500'} truncate">
+              ${escapeHtml(chat.lastMessage || 'まだメッセージがありません')}
+            </div>
           </div>
-          <div class="text-xs text-gray-400 whitespace-nowrap">${formatTime(chat.lastMessageAt || chat.createdAt)}</div>
+          <div class="flex flex-col items-end gap-1">
+            <div class="text-xs text-gray-400 whitespace-nowrap">${formatTime(chat.lastMessageAt || chat.createdAt)}</div>
+            ${unreadBadge}
+          </div>
         `;
         chatListContainer.appendChild(item);
       });
@@ -804,6 +913,9 @@
       currentChatId = chatId;
       const chat = chatsCache[chatId];
       if (!chat) return;
+
+      // 開いた時点で既読化
+      markChatAsRead(chatId);
 
       const isGroup = chat.type === 'group';
       let displayName;
@@ -835,6 +947,7 @@
       void chatView.offsetWidth;
       chatView.classList.add('view-enter');
 
+      renderChatList();
       loadMessages(chatId);
     }
 
@@ -848,6 +961,7 @@
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
       messagesCache = [];
       closeAllMenus();
+      renderChatList();
     };
 
     function loadMessages(chatId) {
@@ -867,6 +981,10 @@
           messagesCache.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
         }
         renderMessages();
+        // 新着が来たが自分がこのチャットを見ている → 既読化
+        if (currentChatId === chatId && isTabActive) {
+          markChatAsRead(chatId);
+        }
       }, (err) => {
         console.error('メッセージ監視エラー:', err);
         setConnection(false);
@@ -890,7 +1008,6 @@
 
         const row = document.createElement('div');
         row.className = 'msg-row' + (isMine ? ' mine' : '');
-        // 既存メッセージはアニメ遅延を小さく（大量時は最初の20件だけ）
         row.style.animationDelay = Math.min(idx * 0.025, 0.5) + 's';
         row.dataset.msgKey = msg.key;
 
@@ -925,7 +1042,6 @@
       });
       messagesContainer.appendChild(frag);
 
-      // メニューボタンにイベント
       messagesContainer.querySelectorAll('.msg-menu-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -938,7 +1054,6 @@
         });
       });
 
-      // メニュー外クリックで閉じる
       document.addEventListener('click', outsideClickHandler);
 
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -1054,19 +1169,10 @@
       messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
     });
 
-    // ★ Enterの挙動：変換中は改行、変換確定後のEnterで送信
     messageInput.addEventListener('keydown', (e) => {
       if (e.key !== 'Enter') return;
-
-      // Shift+Enter は常に改行
       if (e.shiftKey) return;
-
-      // IME変換中（isComposing）なら何もしない → 改行も送信もしない
-      if (e.isComposing || e.keyCode === 229) {
-        return;
-      }
-
-      // ここまで来たら変換確定後のEnter → 送信
+      if (e.isComposing || e.keyCode === 229) return;
       e.preventDefault();
       document.getElementById('messageForm').requestSubmit();
     });
@@ -1131,6 +1237,9 @@
           updates[`userChats/${uid}/${currentChatId}/lastSenderUid`] = updateData.lastSenderUid;
         });
         await update(ref(db), updates);
+
+        // 自分が送ったメッセージは既読扱い（自分側の未読が残らないように）
+        markChatAsRead(currentChatId);
 
         messageInput.value = '';
         messageInput.style.height = 'auto';
@@ -1445,6 +1554,8 @@
       if (messagesUnsubscribe) messagesUnsubscribe();
       if (profilesUnsubscribe) profilesUnsubscribe();
       if (bansUnsubscribe) bansUnsubscribe();
+      Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
+      roomLatestListeners = {};
       try { await signOut(auth); } catch (e) {}
       loginView.classList.remove('hidden');
       mainView.classList.add('hidden');
@@ -1521,9 +1632,58 @@
       bootOverlay.classList.add('hidden');
       setConnection(navigator.onLine);
 
+      // 初期favicon
+      refreshFavicon();
+
       initProfilesListener();
       initBansListener();
       initChatsListener();
+    });
+
+    // ========================================
+    // タブの可視状態監視
+    // ========================================
+    document.addEventListener('visibilitychange', () => {
+      isTabActive = !document.hidden;
+
+      if (isTabActive) {
+        // タブがアクティブになった → 開いているチャットを既読化 & favicon戻す
+        if (currentChatId) {
+          markChatAsRead(currentChatId);
+        }
+        // 全未読を消すかどうかは仕様次第。ここでは開いているチャットのみ既読化。
+        refreshFavicon();
+        renderChatList();
+      } else {
+        // タブが非アクティブになった
+        refreshFavicon();
+      }
+    });
+
+    // フォーカス/ブラーでもアクティブ判定（visibilitychangeが効かないブラウザ向け）
+    window.addEventListener('focus', () => {
+      isTabActive = true;
+      if (currentChatId) markChatAsRead(currentChatId);
+      refreshFavicon();
+      renderChatList();
+    });
+    window.addEventListener('blur', () => {
+      isTabActive = false;
+      refreshFavicon();
+    });
+
+    // AudioContext を最初のユーザー操作で有効化
+    ['click', 'keydown', 'touchstart'].forEach(evt => {
+      window.addEventListener(evt, () => {
+        if (!audioCtx) {
+          try {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          } catch (e) {}
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      }, { once: true });
     });
 
     document.addEventListener('contextmenu', (e) => {
@@ -1539,6 +1699,7 @@
       if (messagesUnsubscribe) messagesUnsubscribe();
       if (profilesUnsubscribe) profilesUnsubscribe();
       if (bansUnsubscribe) bansUnsubscribe();
+      Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
     });
   </script>
 </body>
