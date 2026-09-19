@@ -21,6 +21,11 @@
       object-fit: cover; flex-shrink: 0;
       border: 2px solid #e5e7eb; background: #f3f4f6;
     }
+    .avatar-sm {
+      width: 28px; height: 28px; border-radius: 50%;
+      object-fit: cover; flex-shrink: 0;
+      border: 2px solid #e5e7eb; background: #f3f4f6;
+    }
     .avatar-lg {
       width: 96px; height: 96px; border-radius: 50%;
       object-fit: cover; border: 3px solid #0284c7; background: #f3f4f6;
@@ -98,12 +103,28 @@
       font-size: 12px; color: #374151;
     }
     .icon-btn:hover { background: #e5e7eb; }
-    .user-item {
+    .chat-item {
       display: flex; align-items: center; gap: 10px;
-      padding: 10px; border-bottom: 1px solid #e5e7eb;
+      padding: 12px; border-bottom: 1px solid #e5e7eb;
       cursor: pointer;
     }
-    .user-item:hover { background: #eff6ff; }
+    .chat-item:hover { background: #eff6ff; }
+    .chat-item:last-child { border-bottom: none; }
+    .member-chip {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: #eff6ff; border: 1px solid #bfdbfe;
+      border-radius: 9999px; padding: 2px 8px 2px 2px;
+      font-size: 12px; color: #1e40af; margin: 2px;
+    }
+    .member-chip img { width: 20px; height: 20px; border-radius: 50%; }
+    .member-chip .remove-x {
+      cursor: pointer; color: #ef4444; font-weight: bold; margin-left: 2px;
+    }
+    .search-result-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px; border: 1px solid #e5e7eb;
+      border-radius: 6px; margin-top: 6px; background: #fff;
+    }
     body { -webkit-user-select: none; user-select: none; }
     input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
   </style>
@@ -160,57 +181,33 @@
         </div>
       </div>
       <div class="flex items-center gap-2 flex-wrap">
+        <button id="newChatBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-3 rounded transition shadow font-bold">＋ 新しいチャット</button>
         <button id="profileBtn" class="icon-btn">👤 プロフィール</button>
         <button id="logoutBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-3 rounded transition shadow">ログアウト</button>
       </div>
     </header>
 
-    <!-- タブ切替 -->
-    <div class="flex gap-2 mb-3">
-      <button id="tabRooms" class="flex-1 py-2 rounded font-bold text-sm bg-blue-800 text-white">💬 ルーム</button>
-      <button id="tabDm" class="flex-1 py-2 rounded font-bold text-sm bg-gray-200 text-gray-700">✉️ ダイレクトメッセージ</button>
-    </div>
-
-    <!-- チャットルーム一覧 -->
-    <div id="roomListView">
-      <div class="bg-white border border-gray-300 rounded-lg p-4 mb-4 shadow-sm">
-        <h2 class="text-md font-bold text-gray-700 mb-2">💬 チャットルーム</h2>
-        <div class="flex gap-2">
-          <input type="text" id="newRoomName" maxlength="30" placeholder="新しいルーム名を入力"
-            class="flex-1 border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none">
-          <button id="createRoomBtn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded text-sm transition">作成</button>
+    <!-- チャット一覧 -->
+    <div id="chatListView">
+      <div class="bg-white border border-gray-300 rounded-lg shadow-sm">
+        <h2 class="text-md font-bold text-gray-700 p-4 border-b">💬 チャット一覧</h2>
+        <div id="chatListContainer">
+          <p class="text-gray-500 text-sm p-4"><span class="loading-spinner"></span> チャットを読み込み中...</p>
         </div>
       </div>
-      <div id="roomsContainer" class="space-y-2">
-        <p class="text-gray-500 text-sm"><span class="loading-spinner"></span> ルームを読み込み中...</p>
-      </div>
     </div>
 
-    <!-- DM一覧 -->
-    <div id="dmListView" class="hidden">
-      <div class="bg-white border border-gray-300 rounded-lg p-4 mb-4 shadow-sm">
-        <h2 class="text-md font-bold text-gray-700 mb-2">✉️ メールアドレスで相手を検索</h2>
-        <div class="flex gap-2">
-          <input type="email" id="dmSearchInput" placeholder="相手のメールアドレスを入力"
-            class="flex-1 border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none">
-          <button id="dmSearchBtn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded text-sm transition">検索</button>
-        </div>
-        <div id="dmSearchResult" class="mt-2"></div>
-      </div>
-      <div class="bg-white border border-gray-300 rounded-lg p-4 shadow-sm">
-        <h2 class="text-md font-bold text-gray-700 mb-2">📨 メッセージ一覧</h2>
-        <div id="dmConversations"></div>
-      </div>
-    </div>
-
-    <!-- チャット画面（ルーム・DM共通） -->
+    <!-- チャット画面 -->
     <div id="chatView" class="hidden">
       <div class="bg-white p-3 border border-gray-300 rounded mb-3 shadow-sm flex justify-between items-center">
-        <div>
-          <h2 id="currentRoomName" class="text-lg font-bold text-blue-900"></h2>
-          <p class="text-xs text-gray-500" id="currentRoomMeta"></p>
+        <div class="flex items-center gap-2 min-w-0">
+          <div id="chatHeaderAvatars" class="flex -space-x-2"></div>
+          <div class="min-w-0">
+            <h2 id="currentChatName" class="text-lg font-bold text-blue-900 truncate"></h2>
+            <p class="text-xs text-gray-500" id="currentChatMeta"></p>
+          </div>
         </div>
-        <button onclick="backToRooms()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded">← 戻る</button>
+        <button onclick="backToChatList()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded whitespace-nowrap ml-2">← 戻る</button>
       </div>
       <div id="messagesContainer" class="msg-scroll bg-gray-50 border border-gray-200 rounded p-3 mb-3">
         <p class="text-gray-500 text-sm"><span class="loading-spinner"></span> メッセージを読み込み中...</p>
@@ -231,6 +228,34 @@
           <div class="text-xs text-gray-500 mt-1" id="messagePreviewInfo"></div>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- 新規チャット作成モーダル -->
+  <div id="newChatModal" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <h3 class="text-lg font-bold text-gray-800 mb-3">＋ 新しいチャット</h3>
+
+      <label class="block text-xs text-gray-600 mb-1">相手のメールアドレスを入力して追加:</label>
+      <div class="flex gap-2 mb-2">
+        <input type="email" id="memberEmailInput" placeholder="example@gmail.com"
+          class="flex-1 border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none">
+        <button id="addMemberBtn" type="button" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-3 rounded text-sm">追加</button>
+      </div>
+      <div id="memberSearchMsg" class="text-xs mb-2"></div>
+
+      <div id="selectedMembersBox" class="mb-3 min-h-[40px] border border-dashed border-gray-300 rounded p-2">
+        <span class="text-xs text-gray-400">まだ相手が追加されていません</span>
+      </div>
+
+      <label class="block text-xs text-gray-600 mb-1">グループ名（2人以上のとき任意）:</label>
+      <input type="text" id="groupNameInput" maxlength="30" placeholder="例: プロジェクトA"
+        class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none">
+
+      <div class="flex justify-end gap-2 flex-wrap">
+        <button id="newChatCancelBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
+        <button id="newChatCreateBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-4 rounded font-bold">チャットを開始</button>
+      </div>
     </div>
   </div>
 
@@ -364,33 +389,31 @@
     // ========================================
     let currentUser = null;
     let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
-    let currentRoomId = null;
-    let currentChatType = 'room'; // 'room' or 'dm'
-    let currentDmPartnerUid = null;
-    let roomsUnsubscribe = null;
+    let currentChatId = null;
+    let chatsUnsubscribe = null;
     let messagesUnsubscribe = null;
     let profilesUnsubscribe = null;
     let bansUnsubscribe = null;
-    let dmConversationsUnsubscribe = null;
 
-    let roomsCache = {};
+    let chatsCache = {};
     let messagesCache = [];
     let profilesCache = {};
     let bansCache = {};
-    let dmConversationsCache = {};
 
     let selectedAvatar = DEFAULT_AVATAR;
     let intentionalSignOut = false;
+
+    // 新規チャット作成用
+    let pendingMembers = []; // {uid, nickname, avatar, email}
 
     // ========================================
     // DOM
     // ========================================
     const loginView = document.getElementById('loginView');
     const mainView = document.getElementById('mainView');
-    const roomListView = document.getElementById('roomListView');
-    const dmListView = document.getElementById('dmListView');
+    const chatListView = document.getElementById('chatListView');
     const chatView = document.getElementById('chatView');
-    const roomsContainer = document.getElementById('roomsContainer');
+    const chatListContainer = document.getElementById('chatListContainer');
     const messagesContainer = document.getElementById('messagesContainer');
     const connDot = document.getElementById('connDot');
     const connText = document.getElementById('connText');
@@ -449,11 +472,6 @@
       }, 3500);
     }
 
-    // DMチャットID生成（UIDをソートして連結）
-    function getDmChatId(uid1, uid2) {
-      return [uid1, uid2].sort().join('_');
-    }
-
     // ========================================
     // プロフィール監視
     // ========================================
@@ -470,7 +488,8 @@
           };
           updateMyProfileUI();
         }
-        if (currentRoomId) renderMessages();
+        if (currentChatId) renderMessages();
+        renderChatList();
       }, (err) => {
         console.error('プロフィール監視エラー:', err);
       });
@@ -515,239 +534,130 @@
     }
 
     // ========================================
-    // ルーム管理
+    // チャット一覧
     // ========================================
-    function initRoomsListener() {
-      if (roomsUnsubscribe) roomsUnsubscribe();
-      const roomsRef = ref(db, 'chatRooms');
-
-      const timeoutId = setTimeout(() => {
-        if (roomsContainer.querySelector('.loading-spinner')) {
-          roomsContainer.innerHTML = `
-            <div class="text-red-600 text-sm bg-red-50 border border-red-200 rounded p-3">
-              ⚠️ ルームの読み込みがタイムアウトしました。<br>
-              <button onclick="location.reload()" class="mt-2 bg-red-600 text-white px-3 py-1 rounded text-xs">再読み込み</button>
-            </div>`;
-          setConnection(false);
-        }
-      }, 5000);
-
-      roomsUnsubscribe = onValue(roomsRef, (snap) => {
-        clearTimeout(timeoutId);
-        roomsCache = snap.exists() ? snap.val() : {};
-        setConnection(true);
-        renderRooms();
+    function initChatsListener() {
+      if (chatsUnsubscribe) chatsUnsubscribe();
+      if (!currentUser) return;
+      const userChatsRef = ref(db, `userChats/${currentUser.uid}`);
+      chatsUnsubscribe = onValue(userChatsRef, (snap) => {
+        chatsCache = snap.exists() ? snap.val() : {};
+        renderChatList();
       }, (err) => {
-        clearTimeout(timeoutId);
-        console.error('❌ ルーム監視エラー:', err);
-        roomsContainer.innerHTML = `
-          <div class="text-red-600 text-sm bg-red-50 border border-red-200 rounded p-3">
-            ⚠️ ルームの読み込みに失敗しました。<br>
+        console.error('チャット一覧監視エラー:', err);
+        chatListContainer.innerHTML = `
+          <div class="text-red-600 text-sm bg-red-50 border border-red-200 rounded p-3 m-4">
+            ⚠️ チャット一覧の読み込みに失敗しました。<br>
             <span class="text-xs">${escapeHtml(err.message || err.code || '不明なエラー')}</span>
           </div>`;
-        setConnection(false);
       });
     }
 
-    function renderRooms() {
-      roomsContainer.innerHTML = '';
-      const entries = Object.entries(roomsCache || {});
+    function renderChatList() {
+      if (!chatListContainer) return;
+      chatListContainer.innerHTML = '';
+      const entries = Object.entries(chatsCache || {});
 
       if (entries.length === 0) {
-        roomsContainer.innerHTML = `
-          <div class="text-gray-500 text-sm bg-white border border-gray-300 rounded p-6 text-center">
-            💬 まだルームがありません。<br>
-            <span class="text-xs text-gray-400">上のフォームから最初のルームを作成してください。</span>
+        chatListContainer.innerHTML = `
+          <div class="text-gray-500 text-sm p-6 text-center">
+            💬 まだチャットがありません。<br>
+            <span class="text-xs text-gray-400">「＋ 新しいチャット」から相手のメールアドレスを追加して始めましょう。</span>
           </div>`;
         return;
       }
 
-      entries.sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
+      entries.sort((a, b) => (b[1].lastMessageAt || b[1].createdAt || 0) - (a[1].lastMessageAt || a[1].createdAt || 0));
 
-      entries.forEach(([key, room]) => {
+      entries.forEach(([chatId, chat]) => {
         const item = document.createElement('div');
-        item.className = 'bg-white p-4 border border-gray-300 rounded hover:bg-blue-50 cursor-pointer transition flex justify-between items-center shadow-sm';
-        item.onclick = () => openRoom(key, room.name);
+        item.className = 'chat-item';
+        item.onclick = () => openChat(chatId);
 
-        const date = room.createdAt ? formatTime(room.createdAt) : '';
+        // 相手orグループの表示名
+        const isGroup = chat.type === 'group';
+        let displayName;
+        let avatarHtml;
+
+        if (isGroup) {
+          displayName = chat.name || 'グループチャット';
+          const memberUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
+          const avatars = memberUids.slice(0, 3).map(uid => {
+            const p = getProfileForUid(uid);
+            return `<img class="avatar-sm" src="${escapeHtml(p.avatar)}" alt="">`;
+          }).join('');
+          avatarHtml = `<div class="flex -space-x-2">${avatars || '<img class="avatar" src="' + DEFAULT_AVATAR + '">'}</div>`;
+        } else {
+          const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
+          const p = getProfileForUid(otherUid);
+          displayName = p.nickname;
+          avatarHtml = `<img class="avatar" src="${escapeHtml(p.avatar)}" alt="">`;
+        }
 
         item.innerHTML = `
+          ${avatarHtml}
           <div class="flex-1 min-w-0">
-            <div class="font-bold text-blue-900 break-words">💬 ${escapeHtml(room.name || '無題のルーム')}</div>
-            <div class="text-xs text-gray-500 mt-1">作成: ${date} ／ 作成者: ${escapeHtml(room.createdByName || '不明')}</div>
-          </div>
-          <span class="text-xs bg-blue-200 text-blue-800 px-2 py-1 rounded-full ml-2 whitespace-nowrap">開く</span>
-        `;
-        roomsContainer.appendChild(item);
-      });
-    }
-
-    document.getElementById('createRoomBtn').addEventListener('click', async () => {
-      if (!currentUser) return;
-      const input = document.getElementById('newRoomName');
-      const name = input.value.trim();
-      if (!name) { alert('ルーム名を入力してください。'); return; }
-
-      try {
-        const roomsRef = ref(db, 'chatRooms');
-        const newRef = push(roomsRef);
-        await set(newRef, {
-          name: name,
-          createdAt: Date.now(),
-          createdBy: currentUser.uid,
-          createdByName: myProfile.nickname
-        });
-        input.value = '';
-        showBanner('ルームを作成しました', false);
-      } catch (err) {
-        console.error('ルーム作成エラー:', err);
-        showBanner('作成失敗: ' + (err.code || err.message), true);
-      }
-    });
-
-    // ========================================
-    // DM関連
-    // ========================================
-    function initDmConversationsListener() {
-      if (dmConversationsUnsubscribe) dmConversationsUnsubscribe();
-      if (!currentUser) return;
-      const dmRef = ref(db, `dmConversations/${currentUser.uid}`);
-      dmConversationsUnsubscribe = onValue(dmRef, (snap) => {
-        dmConversationsCache = snap.exists() ? snap.val() : {};
-        renderDmConversations();
-      }, (err) => {
-        console.error('DM会話監視エラー:', err);
-      });
-    }
-
-    function renderDmConversations() {
-      const container = document.getElementById('dmConversations');
-      container.innerHTML = '';
-      const entries = Object.entries(dmConversationsCache || {});
-      if (entries.length === 0) {
-        container.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">まだDMはありません。上の検索から相手を探しましょう。</p>';
-        return;
-      }
-      entries.sort((a, b) => (b[1].lastMessageAt || 0) - (a[1].lastMessageAt || 0));
-      entries.forEach(([partnerUid, conv]) => {
-        const profile = getProfileForUid(partnerUid);
-        const item = document.createElement('div');
-        item.className = 'user-item';
-        item.innerHTML = `
-          <img class="avatar" src="${escapeHtml(profile.avatar)}" alt="">
-          <div class="flex-1 min-w-0">
-            <div class="font-bold text-sm text-blue-900">${escapeHtml(profile.nickname)}</div>
-            <div class="text-xs text-gray-500 truncate">${escapeHtml(conv.lastMessage || '')}</div>
-          </div>
-          <div class="text-xs text-gray-400 whitespace-nowrap">${formatTime(conv.lastMessageAt)}</div>
-        `;
-        item.onclick = () => openDmChat(partnerUid);
-        container.appendChild(item);
-      });
-    }
-
-    document.getElementById('dmSearchBtn').addEventListener('click', async () => {
-      const email = document.getElementById('dmSearchInput').value.trim().toLowerCase();
-      const resultDiv = document.getElementById('dmSearchResult');
-      if (!email) { resultDiv.innerHTML = '<p class="text-xs text-red-500">メールアドレスを入力してください。</p>'; return; }
-
-      resultDiv.innerHTML = '<p class="text-xs text-gray-500"><span class="loading-spinner"></span> 検索中...</p>';
-
-      try {
-        const profilesRef = ref(db, 'chatProfiles');
-        const snap = await get(profilesRef);
-        if (!snap.exists()) {
-          resultDiv.innerHTML = '<p class="text-xs text-red-500">ユーザーが見つかりません。</p>';
-          return;
-        }
-        const profiles = snap.val();
-        let found = null;
-        for (const [uid, p] of Object.entries(profiles)) {
-          if (p.email && p.email.toLowerCase() === email && uid !== currentUser.uid) {
-            found = { uid, ...p };
-            break;
-          }
-        }
-        if (!found) {
-          resultDiv.innerHTML = '<p class="text-xs text-red-500">該当するユーザーが見つかりませんでした。</p>';
-          return;
-        }
-        resultDiv.innerHTML = `
-          <div class="user-item border rounded mt-2">
-            <img class="avatar" src="${escapeHtml(found.avatar || DEFAULT_AVATAR)}" alt="">
-            <div class="flex-1">
-              <div class="font-bold text-sm text-blue-900">${escapeHtml(found.nickname || '名無しさん')}</div>
-              <div class="text-xs text-gray-500">${escapeHtml(found.email)}</div>
+            <div class="font-bold text-sm text-blue-900 truncate">
+              ${isGroup ? '👥 ' : ''}${escapeHtml(displayName)}
             </div>
-            <button class="bg-blue-800 text-white text-xs px-3 py-1 rounded start-dm-btn" data-uid="${found.uid}">DMを開始</button>
+            <div class="text-xs text-gray-500 truncate">${escapeHtml(chat.lastMessage || 'まだメッセージがありません')}</div>
           </div>
+          <div class="text-xs text-gray-400 whitespace-nowrap">${formatTime(chat.lastMessageAt || chat.createdAt)}</div>
         `;
-        resultDiv.querySelector('.start-dm-btn').addEventListener('click', () => {
-          openDmChat(found.uid);
+        chatListContainer.appendChild(item);
+      });
+    }
+
+    // ========================================
+    // チャット画面
+    // ========================================
+    function openChat(chatId) {
+      currentChatId = chatId;
+      const chat = chatsCache[chatId];
+      if (!chat) return;
+
+      const isGroup = chat.type === 'group';
+      let displayName;
+      const headerAvatars = document.getElementById('chatHeaderAvatars');
+      headerAvatars.innerHTML = '';
+
+      if (isGroup) {
+        displayName = chat.name || 'グループチャット';
+        const memberUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
+        memberUids.slice(0, 3).forEach(uid => {
+          const p = getProfileForUid(uid);
+          headerAvatars.innerHTML += `<img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="border:2px solid #fff;">`;
         });
-      } catch (err) {
-        console.error('検索エラー:', err);
-        resultDiv.innerHTML = '<p class="text-xs text-red-500">検索に失敗しました。</p>';
+        document.getElementById('currentChatMeta').textContent =
+          `グループ・${Object.keys(chat.members || {}).length}人`;
+      } else {
+        const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
+        const p = getProfileForUid(otherUid);
+        displayName = p.nickname;
+        headerAvatars.innerHTML = `<img class="avatar-sm" src="${escapeHtml(p.avatar)}">`;
+        document.getElementById('currentChatMeta').textContent = '個人チャット';
       }
-    });
 
-    // ========================================
-    // チャット画面（ルーム・DM共通）
-    // ========================================
-    function openRoom(roomId, roomName) {
-      currentChatType = 'room';
-      currentDmPartnerUid = null;
-      currentRoomId = roomId;
-      document.getElementById('currentRoomName').textContent = '💬 ' + roomName;
-      document.getElementById('currentRoomMeta').textContent = 'リアルタイム同期中';
-      roomListView.classList.add('hidden');
-      dmListView.classList.add('hidden');
+      document.getElementById('currentChatName').textContent = displayName;
+
+      chatListView.classList.add('hidden');
       chatView.classList.remove('hidden');
-      loadMessages(roomId, 'room');
+      loadMessages(chatId);
     }
 
-    function openDmChat(partnerUid) {
-      currentChatType = 'dm';
-      currentDmPartnerUid = partnerUid;
-      const dmId = getDmChatId(currentUser.uid, partnerUid);
-      currentRoomId = dmId;
-      const profile = getProfileForUid(partnerUid);
-      document.getElementById('currentRoomName').textContent = '✉️ ' + profile.nickname;
-      document.getElementById('currentRoomMeta').textContent = 'ダイレクトメッセージ';
-      roomListView.classList.add('hidden');
-      dmListView.classList.add('hidden');
-      chatView.classList.remove('hidden');
-      loadMessages(dmId, 'dm');
-    }
-
-    window.backToRooms = function() {
-      currentRoomId = null;
-      currentChatType = 'room';
-      currentDmPartnerUid = null;
+    window.backToChatList = function() {
+      currentChatId = null;
       chatView.classList.add('hidden');
+      chatListView.classList.remove('hidden');
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
       messagesCache = [];
-      // 現在のタブに応じて戻る
-      const activeTab = document.querySelector('#tabRooms.bg-blue-800') ? 'rooms' : 'dm';
-      if (activeTab === 'rooms') {
-        roomListView.classList.remove('hidden');
-        dmListView.classList.add('hidden');
-      } else {
-        roomListView.classList.add('hidden');
-        dmListView.classList.remove('hidden');
-      }
     };
 
-    function loadMessages(chatId, type) {
+    function loadMessages(chatId) {
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
       messagesContainer.innerHTML = '<p class="text-gray-500 text-sm"><span class="loading-spinner"></span> 読み込み中...</p>';
 
-      let msgsRef;
-      if (type === 'room') {
-        msgsRef = ref(db, `chatMessages/${chatId}`);
-      } else {
-        msgsRef = ref(db, `dmMessages/${chatId}`);
-      }
+      const msgsRef = ref(db, `chatMessages/${chatId}`);
       const q = query(msgsRef, orderByChild('createdAt'));
 
       messagesUnsubscribe = onValue(q, (snapshot) => {
@@ -806,20 +716,12 @@
       });
       messagesContainer.appendChild(frag);
 
-      // 取り消しボタンにイベント
       messagesContainer.querySelectorAll('.delete-msg-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const key = btn.dataset.key;
           if (!confirm('このメッセージを取り消しますか？')) return;
           try {
-            let path;
-            if (currentChatType === 'room') {
-              path = `chatMessages/${currentRoomId}/${key}`;
-            } else {
-              path = `dmMessages/${currentRoomId}/${key}`;
-            }
-            await remove(ref(db, path));
-            // DMの会話一覧の最終メッセージ更新は省略（必要なら再取得）
+            await remove(ref(db, `chatMessages/${currentChatId}/${key}`));
             showBanner('メッセージを取り消しました', false);
           } catch (err) {
             console.error('取り消しエラー:', err);
@@ -870,7 +772,7 @@
     document.getElementById('messageForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!currentUser) { alert('ログインが必要です。'); return; }
-      if (!currentRoomId) return;
+      if (!currentChatId) return;
       if (bansCache[currentUser.uid]) { executeBan(); return; }
 
       const content = messageInput.value.trim();
@@ -894,27 +796,25 @@
           createdAt: Date.now()
         };
 
-        if (currentChatType === 'room') {
-          const msgsRef = ref(db, `chatMessages/${currentRoomId}`);
-          const newRef = push(msgsRef);
-          await set(newRef, msgData);
-        } else {
-          // DM
-          const dmId = currentRoomId;
-          const msgsRef = ref(db, `dmMessages/${dmId}`);
-          const newRef = push(msgsRef);
-          await set(newRef, msgData);
+        const msgsRef = ref(db, `chatMessages/${currentChatId}`);
+        const newRef = push(msgsRef);
+        await set(newRef, msgData);
 
-          // 会話一覧更新（双方のユーザーノード）
-          const partnerUid = currentDmPartnerUid;
-          const updateData = {
-            lastMessage: content || '📷 画像',
-            lastMessageAt: Date.now(),
-            lastSenderUid: currentUser.uid
-          };
-          await update(ref(db, `dmConversations/${currentUser.uid}/${partnerUid}`), updateData);
-          await update(ref(db, `dmConversations/${partnerUid}/${currentUser.uid}`), updateData);
-        }
+        // チャット一覧の最終メッセージ更新（全参加者分）
+        const chat = chatsCache[currentChatId];
+        const memberUids = Object.keys(chat.members || {});
+        const updateData = {
+          lastMessage: content || '📷 画像',
+          lastMessageAt: Date.now(),
+          lastSenderUid: currentUser.uid
+        };
+        const updates = {};
+        memberUids.forEach(uid => {
+          updates[`userChats/${uid}/${currentChatId}/lastMessage`] = updateData.lastMessage;
+          updates[`userChats/${uid}/${currentChatId}/lastMessageAt`] = updateData.lastMessageAt;
+          updates[`userChats/${uid}/${currentChatId}/lastSenderUid`] = updateData.lastSenderUid;
+        });
+        await update(ref(db), updates);
 
         messageInput.value = '';
         messageInput.style.height = 'auto';
@@ -931,24 +831,199 @@
     });
 
     // ========================================
-    // タブ切替
+    // 新規チャット作成
     // ========================================
-    document.getElementById('tabRooms').addEventListener('click', () => {
-      document.getElementById('tabRooms').className = 'flex-1 py-2 rounded font-bold text-sm bg-blue-800 text-white';
-      document.getElementById('tabDm').className = 'flex-1 py-2 rounded font-bold text-sm bg-gray-200 text-gray-700';
-      roomListView.classList.remove('hidden');
-      dmListView.classList.add('hidden');
-      chatView.classList.add('hidden');
+    const newChatModal = document.getElementById('newChatModal');
+    const memberEmailInput = document.getElementById('memberEmailInput');
+    const memberSearchMsg = document.getElementById('memberSearchMsg');
+    const selectedMembersBox = document.getElementById('selectedMembersBox');
+
+    document.getElementById('newChatBtn').addEventListener('click', () => {
+      pendingMembers = [];
+      memberEmailInput.value = '';
+      document.getElementById('groupNameInput').value = '';
+      memberSearchMsg.textContent = '';
+      renderSelectedMembers();
+      newChatModal.classList.remove('hidden');
     });
 
-    document.getElementById('tabDm').addEventListener('click', () => {
-      document.getElementById('tabDm').className = 'flex-1 py-2 rounded font-bold text-sm bg-blue-800 text-white';
-      document.getElementById('tabRooms').className = 'flex-1 py-2 rounded font-bold text-sm bg-gray-200 text-gray-700';
-      roomListView.classList.add('hidden');
-      dmListView.classList.remove('hidden');
-      chatView.classList.add('hidden');
-      initDmConversationsListener();
+    document.getElementById('newChatCancelBtn').addEventListener('click', () => {
+      newChatModal.classList.add('hidden');
     });
+
+    newChatModal.addEventListener('click', (e) => {
+      if (e.target.id === 'newChatModal') newChatModal.classList.add('hidden');
+    });
+
+    function renderSelectedMembers() {
+      if (pendingMembers.length === 0) {
+        selectedMembersBox.innerHTML = '<span class="text-xs text-gray-400">まだ相手が追加されていません</span>';
+        return;
+      }
+      selectedMembersBox.innerHTML = '';
+      pendingMembers.forEach((m, idx) => {
+        const chip = document.createElement('span');
+        chip.className = 'member-chip';
+        chip.innerHTML = `
+          <img src="${escapeHtml(m.avatar)}" alt="">
+          ${escapeHtml(m.nickname)}
+          <span class="remove-x" data-idx="${idx}">×</span>
+        `;
+        chip.querySelector('.remove-x').addEventListener('click', () => {
+          pendingMembers.splice(idx, 1);
+          renderSelectedMembers();
+        });
+        selectedMembersBox.appendChild(chip);
+      });
+    }
+
+    document.getElementById('addMemberBtn').addEventListener('click', async () => {
+      const email = memberEmailInput.value.trim().toLowerCase();
+      memberSearchMsg.textContent = '';
+      if (!email) {
+        memberSearchMsg.innerHTML = '<span class="text-red-500">メールアドレスを入力してください。</span>';
+        return;
+      }
+      if (email === (currentUser.email || '').toLowerCase()) {
+        memberSearchMsg.innerHTML = '<span class="text-red-500">自分自身は追加できません。</span>';
+        return;
+      }
+      if (pendingMembers.some(m => (m.email || '').toLowerCase() === email)) {
+        memberSearchMsg.innerHTML = '<span class="text-red-500">すでに追加されています。</span>';
+        return;
+      }
+
+      memberSearchMsg.innerHTML = '<span class="text-gray-500"><span class="loading-spinner"></span> 検索中...</span>';
+
+      try {
+        const snap = await get(ref(db, 'chatProfiles'));
+        if (!snap.exists()) {
+          memberSearchMsg.innerHTML = '<span class="text-red-500">ユーザーが見つかりません。</span>';
+          return;
+        }
+        const profiles = snap.val();
+        let found = null;
+        for (const [uid, p] of Object.entries(profiles)) {
+          if (p.email && p.email.toLowerCase() === email) {
+            found = { uid, ...p };
+            break;
+          }
+        }
+        if (!found) {
+          memberSearchMsg.innerHTML = '<span class="text-red-500">該当するユーザーが見つかりませんでした。</span>';
+          return;
+        }
+        pendingMembers.push({
+          uid: found.uid,
+          nickname: found.nickname || '名無しさん',
+          avatar: found.avatar || DEFAULT_AVATAR,
+          email: found.email
+        });
+        memberEmailInput.value = '';
+        memberSearchMsg.innerHTML = '<span class="text-green-600">追加しました。</span>';
+        renderSelectedMembers();
+      } catch (err) {
+        console.error('検索エラー:', err);
+        memberSearchMsg.innerHTML = '<span class="text-red-500">検索に失敗しました。</span>';
+      }
+    });
+
+    memberEmailInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        document.getElementById('addMemberBtn').click();
+      }
+    });
+
+    document.getElementById('newChatCreateBtn').addEventListener('click', async () => {
+      if (!currentUser) return;
+      if (pendingMembers.length === 0) {
+        alert('相手を1人以上追加してください。');
+        return;
+      }
+
+      const isGroup = pendingMembers.length >= 2;
+      const groupName = document.getElementById('groupNameInput').value.trim();
+
+      // メンバー構成（自分＋相手）
+      const members = {};
+      members[currentUser.uid] = true;
+      pendingMembers.forEach(m => { members[m.uid] = true; });
+
+      // 個人チャット（1対1）の場合、既存チャットがあるかチェック
+      if (!isGroup) {
+        const partnerUid = pendingMembers[0].uid;
+        const existingChatId = await findExistingDirectChat(partnerUid);
+        if (existingChatId) {
+          newChatModal.classList.add('hidden');
+          openChat(existingChatId);
+          return;
+        }
+      }
+
+      try {
+        const chatsRef = ref(db, 'chatMessages');
+        const newChatRef = push(chatsRef); // チャットID生成
+        const chatId = newChatRef.key;
+
+        const chatData = {
+          type: isGroup ? 'group' : 'direct',
+          name: isGroup ? (groupName || 'グループチャット') : '',
+          members: members,
+          createdAt: Date.now(),
+          createdBy: currentUser.uid,
+          lastMessage: '',
+          lastMessageAt: Date.now()
+        };
+
+        // chatMeta に保存
+        await set(ref(db, `chatMeta/${chatId}`), chatData);
+
+        // 各ユーザーの userChats に登録
+        const updates = {};
+        Object.keys(members).forEach(uid => {
+          updates[`userChats/${uid}/${chatId}`] = {
+            type: chatData.type,
+            name: chatData.name,
+            members: members,
+            createdAt: chatData.createdAt,
+            lastMessage: '',
+            lastMessageAt: chatData.lastMessageAt
+          };
+        });
+        await update(ref(db), updates);
+
+        newChatModal.classList.add('hidden');
+        showBanner('チャットを作成しました', false);
+        // 少し待ってから開く（リスナー反映待ち）
+        setTimeout(() => openChat(chatId), 300);
+      } catch (err) {
+        console.error('チャット作成エラー:', err);
+        showBanner('作成失敗: ' + (err.message || ''), true);
+      }
+    });
+
+    async function findExistingDirectChat(partnerUid) {
+      // すでに同じ相手との1対1チャットがあるか探す
+      try {
+        const snap = await get(ref(db, `userChats/${currentUser.uid}`));
+        if (!snap.exists()) return null;
+        const chats = snap.val();
+        for (const [chatId, chat] of Object.entries(chats)) {
+          if (chat.type !== 'direct') continue;
+          const memberUids = Object.keys(chat.members || {});
+          if (memberUids.length === 2 &&
+              memberUids.includes(currentUser.uid) &&
+              memberUids.includes(partnerUid)) {
+            return chatId;
+          }
+        }
+        return null;
+      } catch (e) {
+        console.warn('既存チャット検索エラー:', e);
+        return null;
+      }
+    }
 
     // ========================================
     // プロフィールモーダル
@@ -1056,11 +1131,10 @@
 
     window.doLogout = async function() {
       intentionalSignOut = true;
-      if (roomsUnsubscribe) roomsUnsubscribe();
+      if (chatsUnsubscribe) chatsUnsubscribe();
       if (messagesUnsubscribe) messagesUnsubscribe();
       if (profilesUnsubscribe) profilesUnsubscribe();
       if (bansUnsubscribe) bansUnsubscribe();
-      if (dmConversationsUnsubscribe) dmConversationsUnsubscribe();
       try { await signOut(auth); } catch (e) {}
       loginView.classList.remove('hidden');
       mainView.classList.add('hidden');
@@ -1106,7 +1180,6 @@
             nickname: p.nickname || user.displayName || '名無しさん',
             avatar: p.avatar || user.photoURL || DEFAULT_AVATAR
           };
-          // メールアドレスが未保存なら更新
           if (!p.email && user.email) {
             await update(ref(db, `chatProfiles/${user.uid}`), { email: user.email });
           }
@@ -1139,7 +1212,7 @@
 
       initProfilesListener();
       initBansListener();
-      initRoomsListener();
+      initChatsListener();
     });
 
     // 右クリック・ドラッグ防止
@@ -1152,11 +1225,10 @@
     window.addEventListener('offline', () => setConnection(false));
 
     window.addEventListener('beforeunload', () => {
-      if (roomsUnsubscribe) roomsUnsubscribe();
+      if (chatsUnsubscribe) chatsUnsubscribe();
       if (messagesUnsubscribe) messagesUnsubscribe();
       if (profilesUnsubscribe) profilesUnsubscribe();
       if (bansUnsubscribe) bansUnsubscribe();
-      if (dmConversationsUnsubscribe) dmConversationsUnsubscribe();
     });
   </script>
 </body>
