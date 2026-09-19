@@ -89,6 +89,54 @@
 
     .edited-label { font-size: 10px; color: #9ca3af; margin-left: 6px; font-style: italic; }
 
+    /* 既読表示 */
+    .read-receipt {
+      font-size: 10px;
+      color: #0284c7;
+      font-weight: 600;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      animation: fadeIn 0.3s ease both;
+    }
+    .msg-meta.text-right + .msg-bubble + .read-receipt,
+    .read-receipt.right { justify-content: flex-end; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* 入力中表示 */
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 12px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      font-size: 12px;
+      color: #6b7280;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      animation: msgIn 0.3s ease both;
+      margin-bottom: 12px;
+    }
+    .typing-indicator .typing-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .typing-indicator .typing-dots span {
+      width: 6px; height: 6px;
+      background: #0284c7;
+      border-radius: 50%;
+      animation: typingBounce 1.2s infinite ease-in-out;
+    }
+    .typing-indicator .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .typing-indicator .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes typingBounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+
     .msg-menu-btn {
       position: absolute;
       top: 6px;
@@ -474,12 +522,12 @@
 
   <script type="module">
     // ========================================
-    // ★★★ 最初に import ★★★
+    // import
     // ========================================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import {
       getDatabase, ref, push, set, remove, onValue,
-      query, orderByChild, get, update
+      query, orderByChild, get, update, onDisconnect, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import {
       getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged,
@@ -487,7 +535,7 @@
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     // ========================================
-    // ★★★ アバター関連（最初に定義！DEFAULT_AVATARを使う前に） ★★★
+    // アバター関連（最初に定義！）
     // ========================================
     function makeAvatarSvg(color, emoji) {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -509,19 +557,16 @@
     const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af', '👤');
 
     // ========================================
-    // アイコン（通常 / 通知あり）
+    // アイコン
     // ========================================
     const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3C/svg%3E";
     const FAVICON_UNREAD = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='48' cy='16' r='12' fill='%23ef4444' stroke='%23ffffff' stroke-width='3'/%3E%3C/svg%3E";
 
     const faviconLink = document.getElementById('faviconLink');
-
-    function setFavicon(url) {
-      faviconLink.href = url;
-    }
+    function setFavicon(url) { faviconLink.href = url; }
 
     // ========================================
-    // 通知音（Web Audio API）
+    // 通知音
     // ========================================
     let audioCtx = null;
     function playNotificationSound() {
@@ -529,9 +574,7 @@
         if (!audioCtx) {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
         const now = audioCtx.currentTime;
         const notes = [
           { freq: 880, start: 0, dur: 0.12 },
@@ -556,7 +599,7 @@
     }
 
     // ========================================
-    // Firebase設定
+    // Firebase
     // ========================================
     const firebaseConfig = {
       apiKey: "AIzaSyAexiMqMGTzd1r9IzHb4_aQomhPf-DCB6U",
@@ -639,12 +682,16 @@
     let messagesUnsubscribe = null;
     let profilesUnsubscribe = null;
     let bansUnsubscribe = null;
+    let readsUnsubscribe = null;
+    let typingUnsubscribe = null;
     let roomLatestListeners = {};
 
     let chatsCache = {};
     let messagesCache = [];
     let profilesCache = {};
     let bansCache = {};
+    let readsCache = {};    // { chatId: { uid: timestamp } }
+    let typingCache = {};   // { chatId: { uid: { nickname, at } } }
 
     let selectedAvatar = DEFAULT_AVATAR;
     let intentionalSignOut = false;
@@ -652,6 +699,11 @@
     let pendingMembers = [];
     let editingMsgKey = null;
     let openMenuKey = null;
+
+    // 入力中管理
+    let typingTimeout = null;
+    let isCurrentlyTyping = false;
+    const TYPING_TIMEOUT_MS = 3000;
 
     // ========================================
     // 未読管理
@@ -743,7 +795,7 @@
     }
 
     // ========================================
-    // 未読関連ロジック
+    // 未読
     // ========================================
     function getTotalUnread() {
       return Object.values(unreadCounts).reduce((a, b) => a + (b || 0), 0);
@@ -765,6 +817,11 @@
       saveJson(UNREAD_STORAGE_KEY, unreadCounts);
       saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
       refreshFavicon();
+
+      // 既読時刻をFirebaseにも記録（相手に「既読」を表示するため）
+      if (currentUser && chatId) {
+        set(ref(db, `chatReads/${chatId}/${currentUser.uid}`), Date.now()).catch(() => {});
+      }
     }
 
     function handleNewLatest(chatId, data) {
@@ -778,9 +835,7 @@
 
       if (lastAt <= prev) return;
       if (!currentUser) return;
-      if (lastSender === currentUser.uid) {
-        return;
-      }
+      if (lastSender === currentUser.uid) return;
 
       if (chatId === currentChatId && isTabActive) {
         markChatAsRead(chatId);
@@ -814,6 +869,95 @@
         });
         roomLatestListeners[chatId] = unsub;
       });
+    }
+
+    // ========================================
+    // 既読監視
+    // ========================================
+    function initReadsListener(chatId) {
+      if (readsUnsubscribe) readsUnsubscribe();
+      const r = ref(db, `chatReads/${chatId}`);
+      readsUnsubscribe = onValue(r, (snap) => {
+        readsCache = snap.exists() ? snap.val() : {};
+        renderMessages();
+      }, (err) => {
+        console.warn('既読監視エラー:', err);
+      });
+    }
+
+    // ========================================
+    // 入力中監視
+    // ========================================
+    function initTypingListener(chatId) {
+      if (typingUnsubscribe) typingUnsubscribe();
+      const r = ref(db, `chatTyping/${chatId}`);
+      typingUnsubscribe = onValue(r, (snap) => {
+        const now = Date.now();
+        const raw = snap.exists() ? snap.val() : {};
+        // 3秒以上前のものは除外
+        typingCache = {};
+        Object.entries(raw).forEach(([uid, info]) => {
+          if (uid === currentUser.uid) return;
+          if (info && info.at && (now - info.at) < TYPING_TIMEOUT_MS) {
+            typingCache[uid] = info;
+          }
+        });
+        renderTypingIndicator();
+      }, (err) => {
+        console.warn('入力中監視エラー:', err);
+      });
+    }
+
+    function renderTypingIndicator() {
+      const existing = document.getElementById('typingIndicatorRow');
+      if (existing) existing.remove();
+
+      const uids = Object.keys(typingCache);
+      if (uids.length === 0) return;
+      if (!currentChatId) return;
+
+      const names = uids.map(uid => {
+        const p = getProfileForUid(uid);
+        return p.nickname;
+      });
+      const label = names.length === 1
+        ? `${names[0]} が入力中`
+        : `${names.join('、')} が入力中`;
+
+      const row = document.createElement('div');
+      row.id = 'typingIndicatorRow';
+      row.style.display = 'flex';
+      row.style.justifyContent = 'flex-start';
+      row.innerHTML = `
+        <div class="typing-indicator">
+          <span>${escapeHtml(label)}</span>
+          <span class="typing-dots"><span></span><span></span><span></span></span>
+        </div>
+      `;
+      messagesContainer.appendChild(row);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    async function setMyTypingState(isTyping) {
+      if (!currentUser || !currentChatId) return;
+      if (isCurrentlyTyping === isTyping) return;
+      isCurrentlyTyping = isTyping;
+
+      try {
+        const typingRef = ref(db, `chatTyping/${currentChatId}/${currentUser.uid}`);
+        if (isTyping) {
+          await set(typingRef, {
+            nickname: myProfile.nickname,
+            at: Date.now()
+          });
+          // 切断時に自動削除
+          onDisconnect(typingRef).remove();
+        } else {
+          await remove(typingRef);
+        }
+      } catch (e) {
+        console.warn('入力中送信エラー:', e);
+      }
     }
 
     // ========================================
@@ -978,6 +1122,12 @@
       if (!chat) return;
 
       markChatAsRead(chatId);
+      initReadsListener(chatId);
+      initTypingListener(chatId);
+
+      // 入力中状態をリセット
+      isCurrentlyTyping = false;
+      clearTimeout(typingTimeout);
 
       const isGroup = chat.type === 'group';
       let displayName;
@@ -1014,6 +1164,9 @@
     }
 
     window.backToChatList = function() {
+      // 退出時に自分の入力中状態を削除
+      setMyTypingState(false);
+
       currentChatId = null;
       chatView.classList.add('hidden');
       chatListView.classList.remove('hidden');
@@ -1021,7 +1174,11 @@
       void chatListView.offsetWidth;
       chatListView.classList.add('view-enter-reverse');
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
+      if (readsUnsubscribe) { readsUnsubscribe(); readsUnsubscribe = null; }
+      if (typingUnsubscribe) { typingUnsubscribe(); typingUnsubscribe = null; }
       messagesCache = [];
+      readsCache = {};
+      typingCache = {};
       closeAllMenus();
       renderChatList();
     };
@@ -1053,12 +1210,35 @@
       });
     }
 
+    // 自分のメッセージが既読かどうか判定
+    // 相手（グループなら自分以外の誰か）の既読時刻が、このメッセージの作成時刻より後なら既読
+    function isMessageReadByOthers(msg) {
+      if (!currentUser) return false;
+      if (msg.authorUid !== currentUser.uid) return false;
+      const chat = chatsCache[currentChatId];
+      if (!chat) return false;
+      const memberUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
+      if (memberUids.length === 0) return false;
+
+      const msgAt = msg.createdAt || 0;
+      if (chat.type === 'direct') {
+        const otherUid = memberUids[0];
+        const otherRead = readsCache[otherUid] || 0;
+        return otherRead >= msgAt;
+      } else {
+        // グループ：全員が読んだら既読（最小値で判定）
+        const readTimes = memberUids.map(uid => readsCache[uid] || 0);
+        return readTimes.every(t => t >= msgAt);
+      }
+    }
+
     function renderMessages() {
       messagesContainer.innerHTML = '';
       closeAllMenus();
 
       if (messagesCache.length === 0) {
         messagesContainer.innerHTML = '<p class="text-gray-400 text-sm text-center py-8" style="animation: msgIn 0.4s ease both;">まだメッセージがありません。最初のメッセージを送ってみましょう！</p>';
+        renderTypingIndicator();
         return;
       }
 
@@ -1084,6 +1264,12 @@
 
         const editedHtml = msg.edited ? '<span class="edited-label">(編集済み)</span>' : '';
 
+        // 既読表示（自分のメッセージのみ）
+        let readHtml = '';
+        if (isMine && isMessageReadByOthers(msg)) {
+          readHtml = `<div class="read-receipt" style="justify-content: flex-end;">✓ 既読</div>`;
+        }
+
         row.innerHTML = `
           <img class="avatar" src="${escapeHtml(profile.avatar)}" alt="">
           <div style="max-width: 75%; position: relative;">
@@ -1097,6 +1283,7 @@
               ${msg.content ? `<div class="msg-content">${formatContent(msg.content)}</div>` : ''}
               ${fileHtml}
             </div>
+            ${readHtml}
           </div>
         `;
         frag.appendChild(row);
@@ -1117,6 +1304,7 @@
 
       document.addEventListener('click', outsideClickHandler);
 
+      renderTypingIndicator();
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
@@ -1228,6 +1416,25 @@
     messageInput.addEventListener('input', () => {
       messageInput.style.height = 'auto';
       messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+
+      // 入力中送信
+      const hasText = messageInput.value.trim().length > 0;
+      if (hasText) {
+        setMyTypingState(true);
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+          setMyTypingState(false);
+        }, TYPING_TIMEOUT_MS);
+      } else {
+        clearTimeout(typingTimeout);
+        setMyTypingState(false);
+      }
+    });
+
+    messageInput.addEventListener('blur', () => {
+      // フォーカス外れたら入力中を解除
+      clearTimeout(typingTimeout);
+      setMyTypingState(false);
     });
 
     messageInput.addEventListener('keydown', (e) => {
@@ -1300,6 +1507,10 @@
         await update(ref(db), updates);
 
         markChatAsRead(currentChatId);
+
+        // 送信したら入力中状態を解除
+        clearTimeout(typingTimeout);
+        setMyTypingState(false);
 
         messageInput.value = '';
         messageInput.style.height = 'auto';
@@ -1610,10 +1821,14 @@
 
     window.doLogout = async function() {
       intentionalSignOut = true;
+      // 退出前に自分の入力中状態を削除
+      try { await setMyTypingState(false); } catch (e) {}
       if (chatsUnsubscribe) chatsUnsubscribe();
       if (messagesUnsubscribe) messagesUnsubscribe();
       if (profilesUnsubscribe) profilesUnsubscribe();
       if (bansUnsubscribe) bansUnsubscribe();
+      if (readsUnsubscribe) readsUnsubscribe();
+      if (typingUnsubscribe) typingUnsubscribe();
       Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       roomLatestListeners = {};
       try { await signOut(auth); } catch (e) {}
@@ -1629,9 +1844,7 @@
     // 認証状態監視
     // ========================================
     onAuthStateChanged(auth, async (user) => {
-      // ★ 最初にオーバーレイを消す（エラーで止まらないように）
       bootOverlay.classList.add('hidden');
-
       if (intentionalSignOut) return;
 
       console.log('🔍 onAuthStateChanged:', user ? user.uid : 'null');
@@ -1651,7 +1864,6 @@
       setConnection(navigator.onLine);
       refreshFavicon();
 
-      // BANチェック（失敗しても続行）
       try {
         const bansSnap = await get(ref(db, 'bans'));
         bansCache = bansSnap.exists() ? bansSnap.val() : {};
@@ -1663,7 +1875,6 @@
         console.warn('BANチェックエラー:', e);
       }
 
-      // プロフィール取得（失敗しても続行）
       try {
         const profileSnap = await get(ref(db, `chatProfiles/${user.uid}`));
         if (profileSnap.exists()) {
@@ -1704,7 +1915,7 @@
     });
 
     // ========================================
-    // タブの可視状態監視
+    // タブ可視状態
     // ========================================
     document.addEventListener('visibilitychange', () => {
       isTabActive = !document.hidden;
@@ -1728,7 +1939,6 @@
       refreshFavicon();
     });
 
-    // AudioContext を最初のユーザー操作で有効化
     ['click', 'keydown', 'touchstart'].forEach(evt => {
       window.addEventListener(evt, () => {
         if (!audioCtx) {
@@ -1751,10 +1961,14 @@
     window.addEventListener('offline', () => setConnection(false));
 
     window.addEventListener('beforeunload', () => {
+      // 退室時に自分の入力中状態を削除
+      try { setMyTypingState(false); } catch (e) {}
       if (chatsUnsubscribe) chatsUnsubscribe();
       if (messagesUnsubscribe) messagesUnsubscribe();
       if (profilesUnsubscribe) profilesUnsubscribe();
       if (bansUnsubscribe) bansUnsubscribe();
+      if (readsUnsubscribe) readsUnsubscribe();
+      if (typingUnsubscribe) typingUnsubscribe();
       Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
     });
   </script>
