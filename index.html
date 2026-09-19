@@ -16,12 +16,6 @@
       border-radius: 50%; animation: spin 1s linear infinite;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    .optimistic-item { opacity: 0.55; pointer-events: none; position: relative; }
-    .optimistic-item::after {
-      content: "送信中..."; position: absolute; right: 12px; top: 50%;
-      transform: translateY(-50%); font-size: 10px; color: #0284c7;
-      background: #eff6ff; padding: 2px 6px; border-radius: 4px; border: 1px solid #bfdbfe;
-    }
     .avatar {
       width: 40px; height: 40px; border-radius: 50%;
       object-fit: cover; flex-shrink: 0;
@@ -37,9 +31,7 @@
       box-shadow: 0 1px 2px rgba(0,0,0,0.05);
       word-break: break-word;
     }
-    .msg-mine .msg-bubble {
-      background: #dbeafe; border-color: #93c5fd;
-    }
+    .msg-mine .msg-bubble { background: #dbeafe; border-color: #93c5fd; }
     .msg-row { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start; }
     .msg-row.mine { flex-direction: row-reverse; }
     .msg-meta { font-size: 11px; color: #6b7280; margin-bottom: 2px; }
@@ -48,14 +40,18 @@
     .msg-content { font-size: 14px; color: #111827; white-space: pre-wrap; }
     .msg-file img { max-height: 240px; max-width: 100%; border-radius: 8px; margin-top: 6px; border: 1px solid #e5e7eb; }
     .msg-file a { font-size: 12px; color: #2563eb; text-decoration: underline; word-break: break-all; }
-
+    .delete-msg-btn {
+      font-size: 10px; color: #ef4444; background: #fef2f2;
+      border: 1px solid #fecaca; border-radius: 4px;
+      padding: 2px 6px; cursor: pointer; margin-top: 4px;
+    }
+    .delete-msg-btn:hover { background: #fee2e2; }
     #statusBanner {
       position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
       text-align: center; padding: 6px; font-size: 12px;
       transition: transform 0.3s; transform: translateY(-100%);
     }
     #statusBanner.show { transform: translateY(0); }
-
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(0,0,0,0.55);
       display: flex; align-items: center; justify-content: center;
@@ -67,7 +63,6 @@
       max-width: 520px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
       max-height: 90vh; overflow-y: auto;
     }
-
     #bootOverlay {
       position: fixed; inset: 0; background: #111827;
       z-index: 99997; display: flex;
@@ -83,7 +78,6 @@
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-
     #banOverlay {
       position: fixed; inset: 0; background: #000;
       z-index: 99999; display: none;
@@ -92,42 +86,35 @@
       flex-direction: column; padding: 20px;
     }
     #banOverlay.show { display: flex; }
-
     .preset-avatar {
       width: 56px; height: 56px; border-radius: 50%;
       cursor: pointer; border: 3px solid transparent;
       object-fit: cover; background: #f3f4f6;
     }
     .preset-avatar.selected { border-color: #0284c7; }
-
     .icon-btn {
       background: #f3f4f6; border: 1px solid #d1d5db;
       border-radius: 8px; padding: 6px 10px; cursor: pointer;
       font-size: 12px; color: #374151;
     }
     .icon-btn:hover { background: #e5e7eb; }
-
-    .unread-badge {
-      background: #ef4444; color: #fff;
-      font-size: 10px; padding: 2px 6px; border-radius: 9999px;
-      margin-left: 6px; font-weight: 700;
+    .user-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px; border-bottom: 1px solid #e5e7eb;
+      cursor: pointer;
     }
-
+    .user-item:hover { background: #eff6ff; }
     body { -webkit-user-select: none; user-select: none; }
-    input, textarea, [contenteditable="true"] {
-      -webkit-user-select: text; user-select: text;
-    }
+    input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans p-4 max-w-3xl mx-auto">
 
-  <!-- 起動オーバーレイ -->
   <div id="bootOverlay">
     <div class="boot-spinner"></div>
     <div style="font-size:14px;color:#9ca3af;">アカウントを確認しています...</div>
   </div>
 
-  <!-- BANオーバーレイ -->
   <div id="banOverlay">
     <div style="font-size:24px;font-weight:bold;letter-spacing:0.1em;" id="banOverlayMsg">アクセスが拒否されました</div>
     <div style="font-size:14px;margin-top:16px;color:#fca5a5;line-height:1.6;max-width:400px;" id="banOverlaySub"></div>
@@ -136,7 +123,6 @@
     </div>
   </div>
 
-  <!-- ステータスバナー -->
   <div id="statusBanner" class="bg-red-600 text-white"></div>
 
   <!-- ログイン画面 -->
@@ -179,6 +165,12 @@
       </div>
     </header>
 
+    <!-- タブ切替 -->
+    <div class="flex gap-2 mb-3">
+      <button id="tabRooms" class="flex-1 py-2 rounded font-bold text-sm bg-blue-800 text-white">💬 ルーム</button>
+      <button id="tabDm" class="flex-1 py-2 rounded font-bold text-sm bg-gray-200 text-gray-700">✉️ ダイレクトメッセージ</button>
+    </div>
+
     <!-- チャットルーム一覧 -->
     <div id="roomListView">
       <div class="bg-white border border-gray-300 rounded-lg p-4 mb-4 shadow-sm">
@@ -189,26 +181,40 @@
           <button id="createRoomBtn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded text-sm transition">作成</button>
         </div>
       </div>
-
       <div id="roomsContainer" class="space-y-2">
         <p class="text-gray-500 text-sm"><span class="loading-spinner"></span> ルームを読み込み中...</p>
       </div>
     </div>
 
-    <!-- チャット画面 -->
+    <!-- DM一覧 -->
+    <div id="dmListView" class="hidden">
+      <div class="bg-white border border-gray-300 rounded-lg p-4 mb-4 shadow-sm">
+        <h2 class="text-md font-bold text-gray-700 mb-2">✉️ メールアドレスで相手を検索</h2>
+        <div class="flex gap-2">
+          <input type="email" id="dmSearchInput" placeholder="相手のメールアドレスを入力"
+            class="flex-1 border p-2 rounded text-sm focus:ring-2 focus:ring-blue-300 outline-none">
+          <button id="dmSearchBtn" class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded text-sm transition">検索</button>
+        </div>
+        <div id="dmSearchResult" class="mt-2"></div>
+      </div>
+      <div class="bg-white border border-gray-300 rounded-lg p-4 shadow-sm">
+        <h2 class="text-md font-bold text-gray-700 mb-2">📨 メッセージ一覧</h2>
+        <div id="dmConversations"></div>
+      </div>
+    </div>
+
+    <!-- チャット画面（ルーム・DM共通） -->
     <div id="chatView" class="hidden">
       <div class="bg-white p-3 border border-gray-300 rounded mb-3 shadow-sm flex justify-between items-center">
         <div>
           <h2 id="currentRoomName" class="text-lg font-bold text-blue-900"></h2>
           <p class="text-xs text-gray-500" id="currentRoomMeta"></p>
         </div>
-        <button onclick="backToRooms()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded">← ルーム一覧</button>
+        <button onclick="backToRooms()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded">← 戻る</button>
       </div>
-
       <div id="messagesContainer" class="msg-scroll bg-gray-50 border border-gray-200 rounded p-3 mb-3">
         <p class="text-gray-500 text-sm"><span class="loading-spinner"></span> メッセージを読み込み中...</p>
       </div>
-
       <form id="messageForm" class="bg-white border border-gray-300 rounded p-3 shadow-sm">
         <div class="flex items-end gap-2">
           <textarea id="messageInput" rows="1" maxlength="1000" placeholder="メッセージを入力..."
@@ -232,20 +238,16 @@
   <div id="profileModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <h3 class="text-lg font-bold text-gray-800 mb-3">👤 プロフィール設定</h3>
-
       <div class="text-center mb-4">
         <img id="profileAvatarPreview" class="avatar-lg mx-auto" src="" alt="">
         <p class="text-xs text-gray-500 mt-2">アイコンを選択</p>
         <div id="presetAvatarRow" class="flex flex-wrap justify-center gap-2 mt-2"></div>
       </div>
-
       <label class="block text-xs text-gray-600 mb-1">ニックネーム（最大20文字）:</label>
       <input type="text" id="nicknameInput" maxlength="20" placeholder="例: 名無しさん"
         class="w-full border p-2 rounded text-sm mb-3 focus:ring-2 focus:ring-blue-300 outline-none">
-
       <label class="block text-xs text-gray-600 mb-1">または画像をアップロード:</label>
       <input type="file" id="avatarFileInput" accept="image/*" class="text-xs text-gray-600 w-full mb-3">
-
       <div class="flex justify-end gap-2 flex-wrap">
         <button id="profileCancelBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-4 rounded">キャンセル</button>
         <button id="profileSaveBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-4 rounded font-bold">保存</button>
@@ -264,9 +266,6 @@
       setPersistence, browserLocalPersistence
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // ========================================
-    // ★ Firebase設定（chat-d04a6 プロジェクト）
-    // ========================================
     const firebaseConfig = {
       apiKey: "AIzaSyAexiMqMGTzd1r9IzHb4_aQomhPf-DCB6U",
       authDomain: "chat-d04a6.firebaseapp.com",
@@ -288,7 +287,7 @@
     });
 
     // ========================================
-    // プリセットアバター（SVG dataURL）
+    // プリセットアバター
     // ========================================
     function makeAvatarSvg(color, emoji) {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
@@ -299,18 +298,12 @@
     }
 
     const PRESET_AVATARS = [
-      makeAvatarSvg('#0284c7', '😀'),
-      makeAvatarSvg('#16a34a', '😎'),
-      makeAvatarSvg('#dc2626', '🔥'),
-      makeAvatarSvg('#7c3aed', '🌟'),
-      makeAvatarSvg('#d97706', '🍀'),
-      makeAvatarSvg('#db2777', '🌸'),
-      makeAvatarSvg('#0891b2', '🐱'),
-      makeAvatarSvg('#65a30d', '🐶'),
-      makeAvatarSvg('#ea580c', '🦊'),
-      makeAvatarSvg('#475569', '🐼'),
-      makeAvatarSvg('#c026d3', '🎮'),
-      makeAvatarSvg('#0d9488', '☕')
+      makeAvatarSvg('#0284c7', '😀'), makeAvatarSvg('#16a34a', '😎'),
+      makeAvatarSvg('#dc2626', '🔥'), makeAvatarSvg('#7c3aed', '🌟'),
+      makeAvatarSvg('#d97706', '🍀'), makeAvatarSvg('#db2777', '🌸'),
+      makeAvatarSvg('#0891b2', '🐱'), makeAvatarSvg('#65a30d', '🐶'),
+      makeAvatarSvg('#ea580c', '🦊'), makeAvatarSvg('#475569', '🐼'),
+      makeAvatarSvg('#c026d3', '🎮'), makeAvatarSvg('#0d9488', '☕')
     ];
 
     const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af', '👤');
@@ -372,15 +365,19 @@
     let currentUser = null;
     let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
     let currentRoomId = null;
+    let currentChatType = 'room'; // 'room' or 'dm'
+    let currentDmPartnerUid = null;
     let roomsUnsubscribe = null;
     let messagesUnsubscribe = null;
     let profilesUnsubscribe = null;
     let bansUnsubscribe = null;
+    let dmConversationsUnsubscribe = null;
 
     let roomsCache = {};
     let messagesCache = [];
     let profilesCache = {};
     let bansCache = {};
+    let dmConversationsCache = {};
 
     let selectedAvatar = DEFAULT_AVATAR;
     let intentionalSignOut = false;
@@ -391,6 +388,7 @@
     const loginView = document.getElementById('loginView');
     const mainView = document.getElementById('mainView');
     const roomListView = document.getElementById('roomListView');
+    const dmListView = document.getElementById('dmListView');
     const chatView = document.getElementById('chatView');
     const roomsContainer = document.getElementById('roomsContainer');
     const messagesContainer = document.getElementById('messagesContainer');
@@ -449,6 +447,11 @@
       bannerTimer = setTimeout(() => {
         statusBanner.style.transform = 'translateY(-100%)';
       }, 3500);
+    }
+
+    // DMチャットID生成（UIDをソートして連結）
+    function getDmChatId(uid1, uid2) {
+      return [uid1, uid2].sort().join('_');
     }
 
     // ========================================
@@ -518,17 +521,11 @@
       if (roomsUnsubscribe) roomsUnsubscribe();
       const roomsRef = ref(db, 'chatRooms');
 
-      console.log('🔌 ルーム読み込み開始...');
-
       const timeoutId = setTimeout(() => {
         if (roomsContainer.querySelector('.loading-spinner')) {
-          console.error('⏱️ ルーム読み込みタイムアウト');
           roomsContainer.innerHTML = `
             <div class="text-red-600 text-sm bg-red-50 border border-red-200 rounded p-3">
               ⚠️ ルームの読み込みがタイムアウトしました。<br>
-              以下を確認してください：<br>
-              ・Firebase Realtime Database のルールが <code>auth != null</code> になっているか<br>
-              ・ネットワーク接続<br>
               <button onclick="location.reload()" class="mt-2 bg-red-600 text-white px-3 py-1 rounded text-xs">再読み込み</button>
             </div>`;
           setConnection(false);
@@ -537,35 +534,16 @@
 
       roomsUnsubscribe = onValue(roomsRef, (snap) => {
         clearTimeout(timeoutId);
-        console.log('✅ ルーム取得成功:', snap.exists() ? Object.keys(snap.val()).length + '件' : '0件（空）');
-
         roomsCache = snap.exists() ? snap.val() : {};
         setConnection(true);
         renderRooms();
       }, (err) => {
         clearTimeout(timeoutId);
         console.error('❌ ルーム監視エラー:', err);
-
-        let hint = '';
-        if (err.code === 'PERMISSION_DENIED' || (err.message && err.message.includes('permission'))) {
-          hint = `
-            <div class="mt-2 text-xs text-left">
-              <strong>Firebase Console で以下を確認：</strong><br>
-              Realtime Database → ルール タブ → 以下を貼り付け：<br>
-              <pre class="bg-white border rounded p-2 mt-1 overflow-auto text-[10px]">{
-  "rules": {
-    ".read": "auth != null",
-    ".write": "auth != null"
-  }
-}</pre>
-            </div>`;
-        }
-
         roomsContainer.innerHTML = `
           <div class="text-red-600 text-sm bg-red-50 border border-red-200 rounded p-3">
             ⚠️ ルームの読み込みに失敗しました。<br>
             <span class="text-xs">${escapeHtml(err.message || err.code || '不明なエラー')}</span>
-            ${hint}
           </div>`;
         setConnection(false);
       });
@@ -628,30 +606,148 @@
     });
 
     // ========================================
-    // チャット画面
+    // DM関連
+    // ========================================
+    function initDmConversationsListener() {
+      if (dmConversationsUnsubscribe) dmConversationsUnsubscribe();
+      if (!currentUser) return;
+      const dmRef = ref(db, `dmConversations/${currentUser.uid}`);
+      dmConversationsUnsubscribe = onValue(dmRef, (snap) => {
+        dmConversationsCache = snap.exists() ? snap.val() : {};
+        renderDmConversations();
+      }, (err) => {
+        console.error('DM会話監視エラー:', err);
+      });
+    }
+
+    function renderDmConversations() {
+      const container = document.getElementById('dmConversations');
+      container.innerHTML = '';
+      const entries = Object.entries(dmConversationsCache || {});
+      if (entries.length === 0) {
+        container.innerHTML = '<p class="text-gray-400 text-sm text-center py-4">まだDMはありません。上の検索から相手を探しましょう。</p>';
+        return;
+      }
+      entries.sort((a, b) => (b[1].lastMessageAt || 0) - (a[1].lastMessageAt || 0));
+      entries.forEach(([partnerUid, conv]) => {
+        const profile = getProfileForUid(partnerUid);
+        const item = document.createElement('div');
+        item.className = 'user-item';
+        item.innerHTML = `
+          <img class="avatar" src="${escapeHtml(profile.avatar)}" alt="">
+          <div class="flex-1 min-w-0">
+            <div class="font-bold text-sm text-blue-900">${escapeHtml(profile.nickname)}</div>
+            <div class="text-xs text-gray-500 truncate">${escapeHtml(conv.lastMessage || '')}</div>
+          </div>
+          <div class="text-xs text-gray-400 whitespace-nowrap">${formatTime(conv.lastMessageAt)}</div>
+        `;
+        item.onclick = () => openDmChat(partnerUid);
+        container.appendChild(item);
+      });
+    }
+
+    document.getElementById('dmSearchBtn').addEventListener('click', async () => {
+      const email = document.getElementById('dmSearchInput').value.trim().toLowerCase();
+      const resultDiv = document.getElementById('dmSearchResult');
+      if (!email) { resultDiv.innerHTML = '<p class="text-xs text-red-500">メールアドレスを入力してください。</p>'; return; }
+
+      resultDiv.innerHTML = '<p class="text-xs text-gray-500"><span class="loading-spinner"></span> 検索中...</p>';
+
+      try {
+        const profilesRef = ref(db, 'chatProfiles');
+        const snap = await get(profilesRef);
+        if (!snap.exists()) {
+          resultDiv.innerHTML = '<p class="text-xs text-red-500">ユーザーが見つかりません。</p>';
+          return;
+        }
+        const profiles = snap.val();
+        let found = null;
+        for (const [uid, p] of Object.entries(profiles)) {
+          if (p.email && p.email.toLowerCase() === email && uid !== currentUser.uid) {
+            found = { uid, ...p };
+            break;
+          }
+        }
+        if (!found) {
+          resultDiv.innerHTML = '<p class="text-xs text-red-500">該当するユーザーが見つかりませんでした。</p>';
+          return;
+        }
+        resultDiv.innerHTML = `
+          <div class="user-item border rounded mt-2">
+            <img class="avatar" src="${escapeHtml(found.avatar || DEFAULT_AVATAR)}" alt="">
+            <div class="flex-1">
+              <div class="font-bold text-sm text-blue-900">${escapeHtml(found.nickname || '名無しさん')}</div>
+              <div class="text-xs text-gray-500">${escapeHtml(found.email)}</div>
+            </div>
+            <button class="bg-blue-800 text-white text-xs px-3 py-1 rounded start-dm-btn" data-uid="${found.uid}">DMを開始</button>
+          </div>
+        `;
+        resultDiv.querySelector('.start-dm-btn').addEventListener('click', () => {
+          openDmChat(found.uid);
+        });
+      } catch (err) {
+        console.error('検索エラー:', err);
+        resultDiv.innerHTML = '<p class="text-xs text-red-500">検索に失敗しました。</p>';
+      }
+    });
+
+    // ========================================
+    // チャット画面（ルーム・DM共通）
     // ========================================
     function openRoom(roomId, roomName) {
+      currentChatType = 'room';
+      currentDmPartnerUid = null;
       currentRoomId = roomId;
       document.getElementById('currentRoomName').textContent = '💬 ' + roomName;
       document.getElementById('currentRoomMeta').textContent = 'リアルタイム同期中';
       roomListView.classList.add('hidden');
+      dmListView.classList.add('hidden');
       chatView.classList.remove('hidden');
-      loadMessages(roomId);
+      loadMessages(roomId, 'room');
+    }
+
+    function openDmChat(partnerUid) {
+      currentChatType = 'dm';
+      currentDmPartnerUid = partnerUid;
+      const dmId = getDmChatId(currentUser.uid, partnerUid);
+      currentRoomId = dmId;
+      const profile = getProfileForUid(partnerUid);
+      document.getElementById('currentRoomName').textContent = '✉️ ' + profile.nickname;
+      document.getElementById('currentRoomMeta').textContent = 'ダイレクトメッセージ';
+      roomListView.classList.add('hidden');
+      dmListView.classList.add('hidden');
+      chatView.classList.remove('hidden');
+      loadMessages(dmId, 'dm');
     }
 
     window.backToRooms = function() {
       currentRoomId = null;
+      currentChatType = 'room';
+      currentDmPartnerUid = null;
       chatView.classList.add('hidden');
-      roomListView.classList.remove('hidden');
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
       messagesCache = [];
+      // 現在のタブに応じて戻る
+      const activeTab = document.querySelector('#tabRooms.bg-blue-800') ? 'rooms' : 'dm';
+      if (activeTab === 'rooms') {
+        roomListView.classList.remove('hidden');
+        dmListView.classList.add('hidden');
+      } else {
+        roomListView.classList.add('hidden');
+        dmListView.classList.remove('hidden');
+      }
     };
 
-    function loadMessages(roomId) {
+    function loadMessages(chatId, type) {
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
       messagesContainer.innerHTML = '<p class="text-gray-500 text-sm"><span class="loading-spinner"></span> 読み込み中...</p>';
 
-      const msgsRef = ref(db, `chatMessages/${roomId}`);
+      let msgsRef;
+      if (type === 'room') {
+        msgsRef = ref(db, `chatMessages/${chatId}`);
+      } else {
+        msgsRef = ref(db, `dmMessages/${chatId}`);
+      }
       const q = query(msgsRef, orderByChild('createdAt'));
 
       messagesUnsubscribe = onValue(q, (snapshot) => {
@@ -702,12 +798,36 @@
             <div class="msg-bubble">
               ${msg.content ? `<div class="msg-content">${formatContent(msg.content)}</div>` : ''}
               ${fileHtml}
+              ${isMine ? `<button class="delete-msg-btn" data-key="${msg.key}">取り消し</button>` : ''}
             </div>
           </div>
         `;
         frag.appendChild(row);
       });
       messagesContainer.appendChild(frag);
+
+      // 取り消しボタンにイベント
+      messagesContainer.querySelectorAll('.delete-msg-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const key = btn.dataset.key;
+          if (!confirm('このメッセージを取り消しますか？')) return;
+          try {
+            let path;
+            if (currentChatType === 'room') {
+              path = `chatMessages/${currentRoomId}/${key}`;
+            } else {
+              path = `dmMessages/${currentRoomId}/${key}`;
+            }
+            await remove(ref(db, path));
+            // DMの会話一覧の最終メッセージ更新は省略（必要なら再取得）
+            showBanner('メッセージを取り消しました', false);
+          } catch (err) {
+            console.error('取り消しエラー:', err);
+            showBanner('取り消しに失敗しました', true);
+          }
+        });
+      });
+
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
@@ -765,16 +885,36 @@
         let fileData = null;
         if (file) fileData = await fileToBase64Image(file);
 
-        const msgsRef = ref(db, `chatMessages/${currentRoomId}`);
-        const newRef = push(msgsRef);
-        await set(newRef, {
+        const msgData = {
           content: content || '',
           file: fileData,
           authorUid: currentUser.uid,
           authorName: myProfile.nickname,
           authorAvatar: myProfile.avatar,
           createdAt: Date.now()
-        });
+        };
+
+        if (currentChatType === 'room') {
+          const msgsRef = ref(db, `chatMessages/${currentRoomId}`);
+          const newRef = push(msgsRef);
+          await set(newRef, msgData);
+        } else {
+          // DM
+          const dmId = currentRoomId;
+          const msgsRef = ref(db, `dmMessages/${dmId}`);
+          const newRef = push(msgsRef);
+          await set(newRef, msgData);
+
+          // 会話一覧更新（双方のユーザーノード）
+          const partnerUid = currentDmPartnerUid;
+          const updateData = {
+            lastMessage: content || '📷 画像',
+            lastMessageAt: Date.now(),
+            lastSenderUid: currentUser.uid
+          };
+          await update(ref(db, `dmConversations/${currentUser.uid}/${partnerUid}`), updateData);
+          await update(ref(db, `dmConversations/${partnerUid}/${currentUser.uid}`), updateData);
+        }
 
         messageInput.value = '';
         messageInput.style.height = 'auto';
@@ -788,6 +928,26 @@
         sendBtn.disabled = false;
         sendBtn.textContent = '送信';
       }
+    });
+
+    // ========================================
+    // タブ切替
+    // ========================================
+    document.getElementById('tabRooms').addEventListener('click', () => {
+      document.getElementById('tabRooms').className = 'flex-1 py-2 rounded font-bold text-sm bg-blue-800 text-white';
+      document.getElementById('tabDm').className = 'flex-1 py-2 rounded font-bold text-sm bg-gray-200 text-gray-700';
+      roomListView.classList.remove('hidden');
+      dmListView.classList.add('hidden');
+      chatView.classList.add('hidden');
+    });
+
+    document.getElementById('tabDm').addEventListener('click', () => {
+      document.getElementById('tabDm').className = 'flex-1 py-2 rounded font-bold text-sm bg-blue-800 text-white';
+      document.getElementById('tabRooms').className = 'flex-1 py-2 rounded font-bold text-sm bg-gray-200 text-gray-700';
+      roomListView.classList.add('hidden');
+      dmListView.classList.remove('hidden');
+      chatView.classList.add('hidden');
+      initDmConversationsListener();
     });
 
     // ========================================
@@ -900,6 +1060,7 @@
       if (messagesUnsubscribe) messagesUnsubscribe();
       if (profilesUnsubscribe) profilesUnsubscribe();
       if (bansUnsubscribe) bansUnsubscribe();
+      if (dmConversationsUnsubscribe) dmConversationsUnsubscribe();
       try { await signOut(auth); } catch (e) {}
       loginView.classList.remove('hidden');
       mainView.classList.add('hidden');
@@ -945,6 +1106,10 @@
             nickname: p.nickname || user.displayName || '名無しさん',
             avatar: p.avatar || user.photoURL || DEFAULT_AVATAR
           };
+          // メールアドレスが未保存なら更新
+          if (!p.email && user.email) {
+            await update(ref(db, `chatProfiles/${user.uid}`), { email: user.email });
+          }
         } else {
           myProfile = {
             nickname: user.displayName || '名無しさん',
@@ -991,6 +1156,7 @@
       if (messagesUnsubscribe) messagesUnsubscribe();
       if (profilesUnsubscribe) profilesUnsubscribe();
       if (bansUnsubscribe) bansUnsubscribe();
+      if (dmConversationsUnsubscribe) dmConversationsUnsubscribe();
     });
   </script>
 </body>
