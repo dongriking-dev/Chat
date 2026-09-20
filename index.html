@@ -560,6 +560,7 @@
       color: #fff; border: none; border-radius: 8px;
       padding: 7px 12px; font-size: 12px; font-weight: 900;
       cursor: pointer; box-shadow: 0 2px 6px rgba(124,58,237,0.4);
+      position: relative;
     }
     .admin-btn:hover { transform: translateY(-1px); }
     .icon-btn {
@@ -1028,6 +1029,10 @@
           <button id="announceBtn" class="admin-btn" style="display:none;">📢</button>
           <button id="banUserBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#dc2626,#991b1b);">🔨</button>
           <button id="adminStoryDeleteBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#ec4899,#be185d);">📁</button>
+          <button id="notificationBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#0891b2,#0e7490);">
+            🔔
+            <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9999px;border:2px solid #fff;">0</span>
+          </button>
           <button id="emergencyHelpBtn" class="help-btn" title="緊急モードについて">？</button>
           <button id="emergencyBtn" class="emergency-btn" title="緊急停止（長押しで説明）">🚨</button>
           <button id="logoutBtn" class="icon-btn">ログアウト</button>
@@ -1199,6 +1204,21 @@
     </div>
   </div>
 
+  <!-- ★ 通知パネル -->
+  <div id="notificationPanel" class="modal-backdrop hidden">
+    <div class="modal-content" style="border-top:6px solid #0891b2; max-width:560px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 style="font-size:17px;font-weight:700;margin:0;color:#0e7490;">🔔 ログイン通知</h3>
+        <button id="notifClearAllBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">全削除</button>
+      </div>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 14px;">新規ログインがあったユーザーの通知です。<br>Discord Webhook にも同時送信されています。</p>
+      <div id="notificationList" style="max-height:55vh;overflow-y:auto;"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+        <button id="notificationCloseBtn" class="secondary-btn">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <div id="emergencyHelpModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <div class="eh-header">
@@ -1331,6 +1351,8 @@
       if (!email) return false;
       return ADMIN_EMAILS.includes(email.toLowerCase());
     }
+
+    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1551138462634082357/ey4MZT_qrEunUGTaD6ayOmW4DjQb4bJn4Lwdn-xylbtkrDiLDMVu2ygyHTOVgmALD5vI';
 
     function makeAvatarSvg(color, emoji) {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="${color}"/><text x="32" y="42" font-size="32" text-anchor="middle">${emoji}</text></svg>`;
@@ -1465,6 +1487,7 @@
     let presenceUnsubscribe = null;
     let emergencyUnsubscribe = null;
     let announcementUnsubscribe = null;
+    let notificationsUnsubscribe = null;
     let chatLatestListeners = {};
     let storyLikesUnsubscribe = null;
     let storyViewsUnsubscribe = null;
@@ -1480,6 +1503,7 @@
     const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v5';
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
     const ANNOUNCE_DISMISS_KEY = 'sikunai_dismissed_announcements_v1';
+    const NOTIF_SEEN_KEY = 'sikunai_notif_seen_v1';
     function loadJson(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
     function saveJson(key, obj) { try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {} }
 
@@ -1530,9 +1554,10 @@
 
     let emergencyHoldTimer = null;
     let emergencyHoldTriggered = false;
-
-    // ★ BAN強制実行用
     let banEnforcerInterval = null;
+
+    let notificationsCache = {};
+    let lastSeenNotificationCount = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0', 10);
 
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
@@ -1805,7 +1830,6 @@
       document.body.style.background = '#000';
       document.title = 'アクセスが拒否されました';
 
-      // 緊急停止と同じタブ削除動作
       let exitAttempts = 0;
       const attemptClose = () => {
         exitAttempts++;
@@ -1833,7 +1857,6 @@
       bansUnsubscribe = onValue(ref(db, 'bans'), (snap) => {
         bansCache = snap.exists() ? snap.val() : {};
         if (currentUser && bansCache[currentUser.uid]) executeBan();
-        // BANリスト表示の更新
         renderBanList();
       }, () => {});
     }
@@ -3180,7 +3203,6 @@
         };
         const newRef = push(ref(db, `stories/${currentUser.uid}`));
         await set(newRef, storyData);
-        // アーカイブにも保存
         await set(ref(db, `storyArchive/${currentUser.uid}/${newRef.key}`), storyData);
         document.getElementById('storyPostModal').classList.add('hidden');
         showBanner('ストーリーを投稿しました', false);
@@ -3295,7 +3317,6 @@
         storyFooter.style.display = 'none';
         storyStatsOverlay.style.display = 'flex';
 
-        // ★ 自分のストーリー削除ボタン
         let deleteBtn = document.getElementById('storyDeleteBtn');
         if (!deleteBtn) {
           deleteBtn = document.createElement('button');
@@ -3386,7 +3407,6 @@
       }
     }
 
-    /* ★ 自分のストーリー削除 */
     async function deleteMyStory(storyId) {
       if (!currentUser || !storyId) return;
       if (currentStoryUserId !== currentUser.uid) return;
@@ -3469,7 +3489,6 @@
       if (!story) return;
 
       const partnerUid = currentStoryUserId;
-
       const chatPartnerUids = getChatPartnerUids();
       if (!chatPartnerUids.has(partnerUid)) {
         showBanner('チャットしていない相手には返信できません', true);
@@ -3613,6 +3632,137 @@
     document.getElementById('archiveModal').addEventListener('click', (e) => {
       if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden');
     });
+
+    /* ============================================================
+       ★ ログイン通知（管理者向け + Discord Webhook）
+       ============================================================ */
+    async function sendDiscordNotification(payload) {
+      try {
+        const embed = {
+          title: '🔔 新規ログイン通知',
+          color: 0x0891b2,
+          fields: [
+            { name: 'メールアドレス', value: payload.email || '(不明)', inline: false },
+            { name: 'ニックネーム', value: payload.nickname || '(未設定)', inline: true },
+            { name: 'UID', value: payload.uid || '(不明)', inline: true },
+            { name: 'ログイン時刻', value: new Date(payload.loggedInAt).toLocaleString('ja-JP'), inline: false }
+          ],
+          timestamp: new Date(payload.loggedInAt).toISOString(),
+          footer: { text: 'シクナイチャット ログイン通知' }
+        };
+        await fetch(DISCORD_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: '🔔 **新規ログイン** がありました',
+            embeds: [embed]
+          })
+        });
+      } catch (err) {
+        console.warn('Discord通知失敗:', err);
+      }
+    }
+
+    async function notifyLogin(user, nickname) {
+      if (!user) return;
+      const payload = {
+        uid: user.uid,
+        email: user.email || '',
+        nickname: nickname || user.displayName || '名無しさん',
+        loggedInAt: Date.now()
+      };
+      try {
+        const newRef = push(ref(db, 'loginNotifications'));
+        await set(newRef, payload);
+      } catch (e) {
+        console.warn('通知保存失敗:', e);
+      }
+      sendDiscordNotification(payload);
+    }
+
+    function initNotificationsListener() {
+      if (notificationsUnsubscribe) notificationsUnsubscribe();
+      if (!currentUser || !isAdmin(currentUser.email)) return;
+      notificationsUnsubscribe = onValue(ref(db, 'loginNotifications'), (snap) => {
+        notificationsCache = snap.exists() ? snap.val() : {};
+        renderNotifications();
+        updateNotifBadge();
+      }, () => {});
+    }
+
+    function updateNotifBadge() {
+      const badge = document.getElementById('notifBadge');
+      if (!badge) return;
+      const total = Object.keys(notificationsCache).length;
+      const unread = total - lastSeenNotificationCount;
+      if (unread > 0) {
+        badge.style.display = 'block';
+        badge.textContent = unread > 99 ? '99+' : unread;
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById('notificationList');
+      if (!list) return;
+      const entries = Object.entries(notificationsCache || {})
+        .map(([id, n]) => ({ id, ...n }))
+        .sort((a, b) => (b.loggedInAt || 0) - (a.loggedInAt || 0));
+      if (entries.length === 0) {
+        list.innerHTML = '<div style="text-align:center;color:#9ca3af;font-size:13px;padding:32px;">通知はありません</div>';
+        return;
+      }
+      list.innerHTML = '';
+      entries.forEach(n => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display:flex;align-items:flex-start;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px;background:#f9fafb;';
+        item.innerHTML = `
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">🔔</div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;color:#0e7490;font-size:12px;word-break:break-all;">${escapeHtml(n.email || '(不明)')}</div>
+            <div style="font-size:11px;color:#374151;margin-top:2px;">${escapeHtml(n.nickname || '名無しさん')}</div>
+            <div style="font-size:10px;color:#9ca3af;margin-top:2px;">${formatTime(n.loggedInAt)}</div>
+          </div>
+          <button class="notif-del-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">✕</button>
+        `;
+        item.querySelector('.notif-del-btn').addEventListener('click', async () => {
+          try {
+            await remove(ref(db, `loginNotifications/${n.id}`));
+          } catch (e) {}
+        });
+        list.appendChild(item);
+      });
+    }
+
+    function initNotificationPanel() {
+      const btn = document.getElementById('notificationBtn');
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        renderNotifications();
+        document.getElementById('notificationPanel').classList.remove('hidden');
+        lastSeenNotificationCount = Object.keys(notificationsCache).length;
+        localStorage.setItem(NOTIF_SEEN_KEY, String(lastSeenNotificationCount));
+        updateNotifBadge();
+      });
+      document.getElementById('notificationCloseBtn').addEventListener('click', () => {
+        document.getElementById('notificationPanel').classList.add('hidden');
+      });
+      document.getElementById('notificationPanel').addEventListener('click', (e) => {
+        if (e.target.id === 'notificationPanel') {
+          document.getElementById('notificationPanel').classList.add('hidden');
+        }
+      });
+      document.getElementById('notifClearAllBtn').addEventListener('click', async () => {
+        if (!confirm('全ての通知を削除しますか？')) return;
+        try {
+          await remove(ref(db, 'loginNotifications'));
+          showBanner('通知を全削除しました', false);
+        } catch (e) {
+          showBanner('削除に失敗しました', true);
+        }
+      });
+    }
 
     /* ============================================================
        管理者BANパネル
@@ -3763,7 +3913,6 @@
 
           if (!confirm(`「${targetProfile.nickname || email}」の全ストーリーを削除しますか？`)) return;
 
-          // ストーリーIDを取得して、関連データも削除
           const storySnap = await get(ref(db, `stories/${targetUid}`));
           if (storySnap.exists()) {
             const storyIds = Object.keys(storySnap.val());
@@ -4074,7 +4223,7 @@
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
-       storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       notificationsUnsubscribe, storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       stopEmergencyEnforcer();
       if (banEnforcerInterval) clearInterval(banEnforcerInterval);
@@ -4114,6 +4263,7 @@
       announceBtn.style.display = admin ? 'block' : 'none';
       document.getElementById('banUserBtn').style.display = admin ? 'block' : 'none';
       document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'block' : 'none';
+      document.getElementById('notificationBtn').style.display = admin ? 'block' : 'none';
 
       try {
         const bansSnap = await get(ref(db, 'bans'));
@@ -4164,6 +4314,14 @@
       initAdminBanPanel();
       initAdminStoryDeletePanel();
       setupMyPresence();
+
+      // ★ 管理者は通知リスナー＆パネル、一般ユーザーはログイン通知送信
+      if (admin) {
+        initNotificationsListener();
+        initNotificationPanel();
+      } else {
+        notifyLogin(user, myProfile.nickname);
+      }
 
       try {
         const snap = await get(ref(db, 'emergency'));
@@ -4222,7 +4380,7 @@
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
-       storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       notificationsUnsubscribe, storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       if (banEnforcerInterval) clearInterval(banEnforcerInterval);
     });
