@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>69CT</title>
+  <title>シクナイチャット</title>
   <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='24' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='32' cy='30' r='3' fill='%230284c7'/%3E%3Ccircle cx='40' cy='30' r='3' fill='%230284c7'/%3E%3C/svg%3E">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -139,6 +139,7 @@
       padding: 16px 14px;
       background: #f9fafb;
       -webkit-overflow-scrolling: touch;
+      position: relative;
     }
     .chat-messages { display: flex; flex-direction: column; gap: 4px; }
 
@@ -625,7 +626,6 @@
       font-size: 26px; color: #6b7280;
     }
 
-    /* ★ ストーリー空状態 */
     .stories-empty {
       padding: 18px 20px;
       text-align: center;
@@ -691,7 +691,6 @@
       padding: 40px; font-size: 26px; font-weight: 700;
       color: #fff; text-align: center; word-break: break-word;
     }
-    /* ★ ストーリー視聴数・いいね数表示（自分のストーリー用） */
     .story-stats-overlay {
       position: absolute;
       bottom: 74px; left: 16px;
@@ -760,7 +759,6 @@
       100% { transform: scale(1); }
     }
 
-    /* ハートが浮かぶエフェクト */
     .heart-float {
       position: fixed;
       pointer-events: none;
@@ -939,6 +937,347 @@
     .eh-footer-note { font-size: 11px; color: #9ca3af; }
     .eh-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
+    /* ========================================
+       ★ 画面共有
+       ======================================== */
+    #screenShareBtn {
+      background: linear-gradient(135deg, #0891b2, #0369a1);
+      color: #fff;
+      border: 2px solid #075985;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(8,145,178,0.4);
+      transition: transform 0.15s, box-shadow 0.2s;
+      display: none;
+    }
+    #screenShareBtn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(8,145,178,0.6); }
+    #screenShareBtn.active {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      border-color: #7f1d1d;
+    }
+
+    /* 画面共有パネル（チャット内に固定表示） */
+    #screenSharePanel {
+      position: absolute;
+      inset: 0;
+      background: #0a0e14;
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+    }
+    #screenSharePanel.show { display: flex; }
+
+    .ss-header {
+      flex-shrink: 0;
+      background: rgba(0,0,0,0.7);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .ss-header .ss-title {
+      font-size: 14px;
+      font-weight: 700;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ss-header .ss-status {
+      font-size: 11px;
+      color: #22c55e;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(34,197,94,0.15);
+      padding: 3px 8px;
+      border-radius: 9999px;
+      flex-shrink: 0;
+    }
+    .ss-header .ss-status .dot {
+      width: 6px; height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .ss-header-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .ss-header-btn:hover { background: rgba(255,255,255,0.2); }
+
+    .ss-body {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 自分側のプレビュー（右下に小さく表示） */
+    .ss-self-preview {
+      position: absolute;
+      bottom: 90px;
+      right: 16px;
+      width: 180px;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 5;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      cursor: move;
+      transition: transform 0.2s;
+    }
+    .ss-self-preview:hover { transform: scale(1.02); }
+    .ss-self-preview video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #000;
+    }
+    .ss-self-preview .ss-self-label {
+      position: absolute;
+      bottom: 4px;
+      left: 6px;
+      font-size: 10px;
+      color: rgba(255,255,255,0.9);
+      background: rgba(0,0,0,0.6);
+      padding: 2px 6px;
+      border-radius: 4px;
+      pointer-events: none;
+    }
+    .ss-self-preview .ss-mosaic-overlay {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      pointer-events: none;
+      text-align: center;
+      padding: 8px;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .ss-self-preview .ss-mosaic-overlay.show { display: flex; }
+    .ss-mosaic-overlay .icon { font-size: 28px; }
+
+    /* 相手の映像グリッド */
+    .ss-grid {
+      width: 100%;
+      height: 100%;
+      padding: 12px;
+      display: grid;
+      gap: 12px;
+      grid-auto-rows: 1fr;
+      overflow: auto;
+    }
+    .ss-grid.grid-1 { grid-template-columns: 1fr; }
+    .ss-grid.grid-2 { grid-template-columns: 1fr 1fr; }
+    .ss-grid.grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .ss-grid.grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+    .ss-grid.grid-many { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+    .ss-tile {
+      position: relative;
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ss-tile video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #000;
+    }
+    .ss-tile .ss-tile-label {
+      position: absolute;
+      bottom: 8px;
+      left: 10px;
+      font-size: 12px;
+      color: #fff;
+      background: rgba(0,0,0,0.55);
+      padding: 3px 10px;
+      border-radius: 9999px;
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      max-width: calc(100% - 20px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ss-tile .ss-tile-label .online-dot {
+      border-color: rgba(0,0,0,0.5);
+      width: 8px; height: 8px;
+    }
+    .ss-tile .ss-tile-mosaic {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15,15,20,0.9);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      gap: 8px;
+    }
+    .ss-tile .ss-tile-mosaic.show { display: flex; }
+    .ss-tile .ss-tile-mosaic .icon { font-size: 36px; }
+
+    .ss-tile .ss-tile-waiting {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+      color: #9ca3af;
+      font-size: 12px;
+      gap: 8px;
+      text-align: center;
+      padding: 12px;
+    }
+    .ss-tile .ss-tile-waiting .icon { font-size: 32px; opacity: 0.5; }
+
+    /* モザイクをCanvasで描画する用 */
+    .ss-tile canvas, .ss-self-preview canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: none;
+      background: #000;
+    }
+    .ss-tile.mosaic-mode video, .ss-self-preview.mosaic-mode video {
+      display: none;
+    }
+    .ss-tile.mosaic-mode canvas, .ss-self-preview.mosaic-mode canvas {
+      display: block;
+    }
+
+    /* コントロールバー（下部） */
+    .ss-controls {
+      flex-shrink: 0;
+      background: rgba(0,0,0,0.75);
+      padding: 12px 16px;
+      padding-bottom: max(12px, env(safe-area-inset-bottom));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .ss-control-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      padding: 10px 18px;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      min-width: 90px;
+    }
+    .ss-control-btn:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+    }
+    .ss-control-btn:active { transform: translateY(0) scale(0.97); }
+    .ss-control-btn .icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .ss-control-btn .label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .ss-control-btn.danger {
+      background: rgba(239,68,68,0.25);
+      border-color: rgba(239,68,68,0.5);
+    }
+    .ss-control-btn.danger:hover {
+      background: rgba(239,68,68,0.4);
+    }
+    .ss-control-btn.mosaic-active {
+      background: rgba(245,158,11,0.3);
+      border-color: rgba(245,158,11,0.6);
+    }
+    .ss-control-btn.mosaic-active:hover {
+      background: rgba(245,158,11,0.45);
+    }
+    .ss-control-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* 待機画面 */
+    .ss-empty-state {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: #6b7280;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .ss-empty-state .icon { font-size: 64px; opacity: 0.4; }
+    .ss-empty-state .title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #d1d5db;
+    }
+    .ss-empty-state .desc {
+      font-size: 13px;
+      line-height: 1.7;
+      max-width: 400px;
+    }
+
     @media (max-width: 500px) {
       .header-title { font-size: 17px; }
       .chat-item { padding: 10px 12px; }
@@ -949,6 +1288,11 @@
       #messageInput { font-size: 14px; }
       .modal-content { padding: 18px; }
       .chat-messages-wrap { padding: 12px 10px; }
+      .ss-self-preview { width: 120px; bottom: 100px; right: 10px; }
+      .ss-control-btn { min-width: 76px; padding: 8px 12px; }
+      .ss-control-btn .label { font-size: 10px; }
+      .ss-grid.grid-3 { grid-template-columns: 1fr 1fr; }
+      .ss-grid.grid-4 { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -994,7 +1338,7 @@
     <div id="loginView" style="display:none; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:20px;">
       <div style="background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.08); padding:36px 28px; max-width:420px; width:100%; text-align:center;">
         <div style="font-size:48px; margin-bottom:12px;">💬</div>
-        <h1 style="font-size:26px; font-weight:800; color:#1e3a8a; margin:0 0 8px;">69CT</h1>
+        <h1 style="font-size:26px; font-weight:800; color:#1e3a8a; margin:0 0 8px;">シクナイチャット</h1>
         <p style="font-size:13px; color:#6b7280; margin:0 0 6px; line-height:1.6;">ご利用にはGoogleアカウントでのログインが必要です。</p>
         <p style="font-size:12px; color:#9ca3af; margin:0 0 24px;">安全のためです。</p>
         <button id="googleLoginBtn" style="background:#fff; border:1.5px solid #d1d5db; border-radius:10px; padding:12px 20px; font-size:14px; font-weight:700; color:#374151; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; width:100%;">
@@ -1039,8 +1383,8 @@
         <div id="chatListView" style="display:flex; flex-direction:column; height:100%;">
           <div style="flex-shrink:0; background:#fff; border-bottom:1px solid #e5e7eb;">
             <div style="padding:8px 14px 0; display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size:12px; font-weight:700; color:#374151;">ストーリー</span>
-              <button id="myArchiveBtn" style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:600;cursor:pointer;">アーカイブ</button>
+              <span style="font-size:12px; font-weight:700; color:#374151;">✨ ストーリー</span>
+              <button id="myArchiveBtn" style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:600;cursor:pointer;">📁 アーカイブ</button>
             </div>
             <div id="storiesStrip" class="stories-strip">
               <div class="story-bubble" id="storyAddBtn">
@@ -1062,6 +1406,7 @@
               <div class="chat-header-name" id="currentChatName"></div>
               <div class="chat-header-meta" id="currentChatMeta"></div>
             </div>
+            <button id="screenShareBtn" title="画面共有を開始">🖥 画面共有</button>
           </div>
 
           <div class="chat-messages-wrap" id="chatMessagesWrap">
@@ -1087,13 +1432,50 @@
               <div class="chat-input-wrap">
                 <textarea id="messageInput" rows="1" maxlength="2000" placeholder="メッセージを入力..."></textarea>
                 <label class="chat-input-icon-btn" style="cursor:pointer;" title="画像を添付">
-                  🖼️
+                  📎
                   <input type="file" id="messageFileInput" accept="image/*" style="display:none;">
                 </label>
               </div>
               <button type="submit" id="sendBtn" class="chat-send-btn" title="送信">➤</button>
             </div>
           </form>
+
+          <!-- ★ 画面共有パネル -->
+          <div id="screenSharePanel">
+            <div class="ss-header">
+              <div class="ss-title">🖥 画面共有中</div>
+              <div class="ss-status"><span class="dot"></span><span id="ssPeerCount">0人接続</span></div>
+              <button class="ss-header-btn" id="ssMinimizeBtn">最小化</button>
+            </div>
+            <div class="ss-body">
+              <div class="ss-empty-state" id="ssEmptyState" style="display:none;">
+                <div class="icon">📺</div>
+                <div class="title">まだ誰も接続していません</div>
+                <div class="desc">あなたの画面共有を開始しました。<br>他の参加者が同じチャットルームを開くと自動的に接続されます。</div>
+              </div>
+              <div class="ss-grid" id="ssGrid"></div>
+              <!-- 自分のプレビュー -->
+              <div class="ss-self-preview" id="ssSelfPreview" style="display:none;">
+                <video id="ssSelfVideo" autoplay muted playsinline></video>
+                <canvas id="ssSelfCanvas"></canvas>
+                <div class="ss-self-label">あなた</div>
+                <div class="ss-mosaic-overlay" id="ssSelfMosaicOverlay">
+                  <div class="icon">🀫</div>
+                  <div>モザイク中</div>
+                </div>
+              </div>
+            </div>
+            <div class="ss-controls">
+              <button class="ss-control-btn" id="ssMosaicBtn">
+                <span class="icon">🀫</span>
+                <span class="label">モザイク</span>
+              </button>
+              <button class="ss-control-btn danger" id="ssStopBtn">
+                <span class="icon">🚪</span>
+                <span class="label">共有を終了</span>
+              </button>
+            </div>
+          </div>
         </div>
       </main>
     </div>
@@ -1498,6 +1880,34 @@
     let emergencyHoldTimer = null;
     let emergencyHoldTriggered = false;
 
+    /* ============================================================
+       ★ 画面共有用の状態
+       ============================================================ */
+    const RTC_CONFIG = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        { urls: 'stun:stun3.l.google.com:19302' }
+      ]
+    };
+
+    let localStream = null;                 // 自分の画面共有ストリーム
+    let screenShareActive = false;         // 画面共有パネルが開いているか
+    let isMosaic = false;                  // モザイク中か
+    let peerConnections = new Map();       // peerUid -> RTCPeerConnection
+    let peerStreams = new Map();           // peerUid -> MediaStream (相手から受信)
+    let peerStates = new Map();            // peerUid -> 'connecting' | 'connected' | 'failed'
+    let peerTiles = new Map();             // peerUid -> HTMLElement
+    let screenShareSignalingUnsubscribe = null;
+    let screenShareWatchersUnsubscribe = null;
+    let mosaicRAF = null;
+    let mosaicCanvasStream = null;
+    let mosaicOffscreenCanvas = null;
+    let mosaicSourceVideo = null;
+    let myShareSessionId = null;           // 自分のセッションID
+    let currentSSUnsubscribers = [];       // チャット離脱時に解除するリスナー
+
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
     const mainView = document.getElementById('mainView');
@@ -1524,6 +1934,18 @@
     const lightboxImg = document.getElementById('lightboxImg');
     const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
     const scrollUnreadCount = document.getElementById('scrollUnreadCount');
+    const screenShareBtn = document.getElementById('screenShareBtn');
+    const screenSharePanel = document.getElementById('screenSharePanel');
+    const ssGrid = document.getElementById('ssGrid');
+    const ssSelfPreview = document.getElementById('ssSelfPreview');
+    const ssSelfVideo = document.getElementById('ssSelfVideo');
+    const ssSelfCanvas = document.getElementById('ssSelfCanvas');
+    const ssSelfMosaicOverlay = document.getElementById('ssSelfMosaicOverlay');
+    const ssEmptyState = document.getElementById('ssEmptyState');
+    const ssPeerCount = document.getElementById('ssPeerCount');
+    const ssMosaicBtn = document.getElementById('ssMosaicBtn');
+    const ssStopBtn = document.getElementById('ssStopBtn');
+    const ssMinimizeBtn = document.getElementById('ssMinimizeBtn');
     let bannerTimer = null;
     let announcementTimer = null;
 
@@ -1603,9 +2025,6 @@
       return true;
     }
 
-    /* ============================================================
-       ★ チャット相手一覧を取得（ストーリー表示対象）
-       ============================================================ */
     function getChatPartnerUids() {
       const uids = new Set();
       if (!currentUser) return uids;
@@ -1630,6 +2049,8 @@
         el.classList.toggle('online', online);
       });
       updateChatHeaderPresence();
+      // 画面共有タイルのドットも更新
+      updateSSTileDots();
     }
 
     function initPresenceListener() {
@@ -1750,6 +2171,8 @@
         updateProfilesInExistingMessages();
         renderChatList();
         renderStories();
+        // 画面共有のタイルラベルも更新
+        updateSSTileLabels();
       }, () => {});
     }
 
@@ -1783,7 +2206,6 @@
         chatsCache = snap.exists() ? snap.val() : {};
         renderChatList();
         initChatLatestListeners();
-        // ★ チャット一覧が更新されたらストーリー表示も更新（フィルタリングのため）
         renderStories();
       }, () => {});
     }
@@ -1891,6 +2313,11 @@
     }
 
     function openChat(chatId) {
+      // 既に他のチャットにいた場合、画面共有を終了
+      if (currentChatId && currentChatId !== chatId && screenShareActive) {
+        stopScreenShare();
+      }
+
       currentChatId = chatId;
       const chat = chatsCache[chatId];
       if (!chat) return;
@@ -1927,12 +2354,26 @@
         }
       });
 
+      // 画面共有ボタンを表示
+      screenShareBtn.style.display = 'block';
+      screenShareBtn.classList.remove('active');
+      screenShareBtn.textContent = '🖥 画面共有';
+
+      // 画面共有シグナリングを監視開始
+      startScreenShareSignaling(chatId);
+
       isNearBottom = true;
       updateScrollButton();
       loadMessages(chatId);
     }
 
     function backToChatList() {
+      // 画面共有を終了
+      if (screenShareActive) {
+        stopScreenShare();
+      }
+      cleanupScreenShareSignaling();
+
       setMyTypingState(false);
       currentChatId = null;
       chatView.style.display = 'none';
@@ -2737,6 +3178,596 @@
       if (currentChatId) markChatAsRead(currentChatId);
     });
 
+    /* ============================================================
+       ★ 画面共有機能
+       ============================================================ */
+
+    // モザイク処理用：Canvasに縮小描画してぼかす
+    function drawMosaic(ctx, video, canvas, blockSize = 16) {
+      const w = canvas.width;
+      const h = canvas.height;
+      const sw = Math.max(2, Math.floor(w / blockSize));
+      const sh = Math.max(2, Math.floor(h / blockSize));
+
+      // 一旦小さく描画
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(video, 0, 0, sw, sh);
+      // 元のサイズに戻す（拡大でぼかし）
+      ctx.drawImage(canvas, 0, 0, sw, sh, 0, 0, w, h);
+    }
+
+    // モザイクCanvasストリームを生成（自分の送信トラックを差し替える用）
+    function startMosaicStream() {
+      if (!localStream || !mosaicSourceVideo) return null;
+
+      const videoTrack = localStream.getVideoTracks()[0];
+      if (!videoTrack) return null;
+      const settings = videoTrack.getSettings();
+      const width = settings.width || 1280;
+      const height = settings.height || 720;
+
+      if (!mosaicOffscreenCanvas) {
+        mosaicOffscreenCanvas = document.createElement('canvas');
+      }
+      mosaicOffscreenCanvas.width = width;
+      mosaicOffscreenCanvas.height = height;
+      const ctx = mosaicOffscreenCanvas.getContext('2d');
+
+      if (mosaicRAF) cancelAnimationFrame(mosaicRAF);
+      const render = () => {
+        if (!mosaicSourceVideo || mosaicSourceVideo.readyState < 2) {
+          mosaicRAF = requestAnimationFrame(render);
+          return;
+        }
+        drawMosaic(ctx, mosaicSourceVideo, mosaicOffscreenCanvas, 20);
+        mosaicRAF = requestAnimationFrame(render);
+      };
+      render();
+
+      if (mosaicCanvasStream) {
+        mosaicCanvasStream.getTracks().forEach(t => t.stop());
+      }
+      mosaicCanvasStream = mosaicOffscreenCanvas.captureStream(15);
+      return mosaicCanvasStream;
+    }
+
+    function stopMosaicStream() {
+      if (mosaicRAF) {
+        cancelAnimationFrame(mosaicRAF);
+        mosaicRAF = null;
+      }
+      if (mosaicCanvasStream) {
+        mosaicCanvasStream.getTracks().forEach(t => t.stop());
+        mosaicCanvasStream = null;
+      }
+    }
+
+    // 自分側のモザイク状態を全ピアへ反映
+    async function applyMosaicToPeers() {
+      if (!localStream) return;
+
+      let newTrack = null;
+      if (isMosaic) {
+        const ms = startMosaicStream();
+        if (ms) newTrack = ms.getVideoTracks()[0];
+      } else {
+        newTrack = localStream.getVideoTracks()[0];
+      }
+      if (!newTrack) return;
+
+      peerConnections.forEach((pc, peerUid) => {
+        const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
+        if (sender) {
+          sender.replaceTrack(newTrack).catch(err => {
+            console.warn('replaceTrack失敗:', peerUid, err);
+          });
+        }
+      });
+    }
+
+    // 自分のプレビュー更新
+    function updateSelfPreview() {
+      if (!localStream) {
+        ssSelfPreview.style.display = 'none';
+        return;
+      }
+      ssSelfPreview.style.display = 'block';
+
+      ssSelfVideo.srcObject = localStream;
+      ssSelfVideo.play().catch(() => {});
+
+      if (isMosaic) {
+        ssSelfPreview.classList.add('mosaic-mode');
+        ssSelfMosaicOverlay.classList.add('show');
+        // canvas にモザイクを描画
+        const update = () => {
+          if (!isMosaic || !localStream) return;
+          const v = ssSelfVideo;
+          if (v.readyState < 2) {
+            requestAnimationFrame(update);
+            return;
+          }
+          const c = ssSelfCanvas;
+          const w = v.videoWidth || 640;
+          const h = v.videoHeight || 360;
+          if (c.width !== w) c.width = w;
+          if (c.height !== h) c.height = h;
+          const ctx = c.getContext('2d');
+          drawMosaic(ctx, v, c, 20);
+          requestAnimationFrame(update);
+        };
+        update();
+      } else {
+        ssSelfPreview.classList.remove('mosaic-mode');
+        ssSelfMosaicOverlay.classList.remove('show');
+      }
+    }
+
+    // タイルを作成
+    function createSSTile(peerUid) {
+      if (peerTiles.has(peerUid)) return peerTiles.get(peerUid);
+
+      const profile = getProfileForUid(peerUid);
+      const online = isUserOnline(peerUid);
+
+      const tile = document.createElement('div');
+      tile.className = 'ss-tile';
+      tile.dataset.peerUid = peerUid;
+      tile.innerHTML = `
+        <video autoplay playsinline></video>
+        <canvas></canvas>
+        <div class="ss-tile-mosaic">
+          <div class="icon">🀫</div>
+          <div>モザイク中</div>
+        </div>
+        <div class="ss-tile-waiting">
+          <div class="icon">⏳</div>
+          <div>接続中...</div>
+        </div>
+        <div class="ss-tile-label">
+          <span class="online-dot ${online ? 'online' : ''}" data-presence-tile-uid="${escapeHtml(peerUid)}"></span>
+          <span data-tile-name>${escapeHtml(profile.nickname)}</span>
+        </div>
+      `;
+
+      ssGrid.appendChild(tile);
+      peerTiles.set(peerUid, tile);
+      updateSSGridLayout();
+      return tile;
+    }
+
+    // タイルのラベル更新
+    function updateSSTileLabels() {
+      peerTiles.forEach((tile, uid) => {
+        const p = getProfileForUid(uid);
+        const nameEl = tile.querySelector('[data-tile-name]');
+        if (nameEl) nameEl.textContent = p.nickname;
+      });
+    }
+
+    // タイルのドット更新
+    function updateSSTileDots() {
+      peerTiles.forEach((tile, uid) => {
+        const dot = tile.querySelector(`[data-presence-tile-uid="${uid}"]`);
+        if (dot) dot.classList.toggle('online', isUserOnline(uid));
+      });
+    }
+
+    // グリッドレイアウト更新
+    function updateSSGridLayout() {
+      const count = peerTiles.size;
+      ssGrid.className = 'ss-grid';
+      if (count === 0) return;
+      if (count === 1) ssGrid.classList.add('grid-1');
+      else if (count === 2) ssGrid.classList.add('grid-2');
+      else if (count === 3) ssGrid.classList.add('grid-3');
+      else if (count === 4) ssGrid.classList.add('grid-4');
+      else ssGrid.classList.add('grid-many');
+
+      ssEmptyState.style.display = count === 0 ? 'flex' : 'none';
+    }
+
+    // ピア接続を削除
+    function removeSSTile(peerUid) {
+      const tile = peerTiles.get(peerUid);
+      if (tile && tile.parentNode) tile.parentNode.removeChild(tile);
+      peerTiles.delete(peerUid);
+
+      const pc = peerConnections.get(peerUid);
+      if (pc) {
+        try { pc.close(); } catch (e) {}
+        peerConnections.delete(peerUid);
+      }
+      peerStreams.delete(peerUid);
+      peerStates.delete(peerUid);
+
+      updateSSGridLayout();
+      updatePeerCount();
+    }
+
+    function updatePeerCount() {
+      const connected = Array.from(peerStates.values()).filter(s => s === 'connected').length;
+      ssPeerCount.textContent = `${connected}人接続`;
+    }
+
+    // RTCPeerConnection を作成
+    function createPeerConnection(peerUid, isInitiator) {
+      if (peerConnections.has(peerUid)) return peerConnections.get(peerUid);
+
+      const pc = new RTCPeerConnection(RTC_CONFIG);
+      peerConnections.set(peerUid, pc);
+      peerStates.set(peerUid, 'connecting');
+
+      // 自分のトラックを追加
+      if (localStream) {
+        let trackToSend = localStream.getVideoTracks()[0];
+        if (isMosaic && mosaicCanvasStream) {
+          trackToSend = mosaicCanvasStream.getVideoTracks()[0];
+        }
+        if (trackToSend) {
+          pc.addTrack(trackToSend, localStream);
+        }
+      }
+
+      // 受信トラック
+      pc.ontrack = (event) => {
+        peerStreams.set(peerUid, event.streams[0]);
+        const tile = createSSTile(peerUid);
+        const video = tile.querySelector('video');
+        video.srcObject = event.streams[0];
+        video.play().catch(() => {});
+
+        // waitingオーバーレイを非表示
+        const waiting = tile.querySelector('.ss-tile-waiting');
+        if (waiting) waiting.style.display = 'none';
+      };
+
+      pc.onconnectionstatechange = () => {
+        const st = pc.connectionState;
+        if (st === 'connected') {
+          peerStates.set(peerUid, 'connected');
+          const tile = peerTiles.get(peerUid);
+          if (tile) {
+            const waiting = tile.querySelector('.ss-tile-waiting');
+            if (waiting) waiting.style.display = 'none';
+          }
+          updatePeerCount();
+        } else if (st === 'failed' || st === 'closed' || st === 'disconnected') {
+          peerStates.set(peerUid, 'failed');
+          updatePeerCount();
+          // 少し待ってから再接続を試みる
+          if (st === 'failed' && screenShareActive) {
+            setTimeout(() => {
+              if (peerConnections.has(peerUid)) {
+                removeSSTile(peerUid);
+                // 再ネゴシエーション
+                if (localStream) {
+                  negotiateWithPeer(peerUid, true);
+                }
+              }
+            }, 2000);
+          }
+        }
+      };
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          push(ref(db, `screenShare/${currentChatId}/signaling/${peerUid}/${myShareSessionId}/ice`), event.candidate.toJSON()).catch(() => {});
+        }
+      };
+
+      return pc;
+    }
+
+    // 特定ピアとネゴシエーション
+    async function negotiateWithPeer(peerUid, isInitiator) {
+      if (!currentChatId || !currentUser) return;
+      const pc = createPeerConnection(peerUid, isInitiator);
+
+      try {
+        if (isInitiator) {
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          // offer を送信
+          await set(ref(db, `screenShare/${currentChatId}/signaling/${peerUid}/${myShareSessionId}/offer`), {
+            sdp: offer.sdp,
+            type: offer.type,
+            from: currentUser.uid,
+            fromSession: myShareSessionId
+          });
+        } else {
+          // Answer を返す
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          await set(ref(db, `screenShare/${currentChatId}/signaling/${peerUid}/${myShareSessionId}/answer`), {
+            sdp: answer.sdp,
+            type: answer.type,
+            from: currentUser.uid,
+            fromSession: myShareSessionId
+          });
+        }
+      } catch (err) {
+        console.warn('negotiate失敗:', peerUid, err);
+      }
+    }
+
+    // シグナリング監視（チャットルーム内で受信側として動く）
+    function startScreenShareSignaling(chatId) {
+      cleanupScreenShareSignaling();
+
+      // 自分以外の画面共有セッションを監視
+      const sharersRef = ref(db, `screenShare/${chatId}/sharers`);
+      const unsubSharers = onValue(sharersRef, (snap) => {
+        const sharers = snap.exists() ? snap.val() : {};
+        // 自分以外のsharerを検出
+        Object.entries(sharers).forEach(([sessionId, info]) => {
+          if (!info) return;
+          if (info.uid === currentUser.uid) return; // 自分は除外
+          if (info.ended) return;
+          if (!screenShareActive) {
+            // 自分がまだ共有していないのに、誰かが共有を始めたら受信モードに入る
+            joinAsViewer(sessionId, info);
+          }
+        });
+      }, () => {});
+
+      currentSSUnsubscribers.push(() => unsubSharers());
+    }
+
+    // 受信モードで参加
+    async function joinAsViewer(sessionId, info) {
+      if (!currentChatId || !currentUser) return;
+      if (!screenShareActive) {
+        // 受信専用パネルを開く
+        openScreenSharePanelAsViewer();
+      }
+
+      const peerUid = info.uid;
+      if (!peerUid) return;
+
+      // シグナリング監視
+      const mySessionId = 'v_' + currentUser.uid + '_' + Date.now();
+      const sigRef = ref(db, `screenShare/${currentChatId}/signaling/${peerUid}/${mySessionId}`);
+
+      const unsub = onValue(sigRef, async (snap) => {
+        if (!snap.exists()) return;
+        const data = snap.val();
+
+        const pc = createPeerConnection(peerUid, false);
+
+        if (data.offer && !pc.currentRemoteDescription) {
+          try {
+            await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            await update(ref(db, `screenShare/${currentChatId}/signaling/${peerUid}/${mySessionId}`), {
+              answer: {
+                sdp: answer.sdp,
+                type: answer.type,
+                from: currentUser.uid
+              }
+            });
+          } catch (err) {
+            console.warn('offer処理エラー:', err);
+          }
+        }
+
+        // ICE候補
+        if (data.ice) {
+          Object.values(data.ice).forEach(async (cand) => {
+            try {
+              if (cand) await pc.addIceCandidate(new RTCIceCandidate(cand));
+            } catch (err) {}
+          });
+        }
+      }, () => {});
+
+      currentSSUnsubscribers.push(() => unsub());
+    }
+
+    // 画面共有開始（自分が配信者）
+    async function startScreenShare() {
+      if (!currentChatId || !currentUser) return;
+      if (screenShareActive) return;
+
+      try {
+        // 画面共有ストリーム取得
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            frameRate: { ideal: 30, max: 30 }
+          },
+          audio: false
+        });
+        localStream = stream;
+
+        // 画面共有停止をユーザーがブラウザUIで行った時
+        stream.getVideoTracks()[0].addEventListener('ended', () => {
+          stopScreenShare();
+        });
+
+        screenShareActive = true;
+        isMosaic = false;
+
+        // セッションID発行
+        myShareSessionId = 's_' + currentUser.uid + '_' + Date.now();
+
+        // Firebaseに自分が配信中であることを記録
+        await set(ref(db, `screenShare/${currentChatId}/sharers/${myShareSessionId}`), {
+          uid: currentUser.uid,
+          nickname: myProfile.nickname,
+          startedAt: Date.now(),
+          ended: false
+        });
+
+        // 終了時に自動削除
+        onDisconnect(ref(db, `screenShare/${currentChatId}/sharers/${myShareSessionId}`)).set({
+          uid: currentUser.uid,
+          nickname: myProfile.nickname,
+          startedAt: Date.now(),
+          ended: true
+        });
+
+        // チャット相手全員に offer を送信
+        const chat = chatsCache[currentChatId];
+        if (chat) {
+          const otherUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
+          for (const peerUid of otherUids) {
+            await negotiateWithPeer(peerUid, true);
+          }
+        }
+
+        // パネルを表示
+        screenSharePanel.classList.add('show');
+        screenShareBtn.classList.add('active');
+        screenShareBtn.textContent = '🖥 共有中';
+
+        // 自分のプレビュー表示
+        updateSelfPreview();
+
+        // モザイクボタンの状態リセット
+        updateMosaicBtnUI();
+
+      } catch (err) {
+        console.warn('画面共有開始失敗:', err);
+        if (err.name !== 'NotAllowedError') {
+          showBanner('画面共有の開始に失敗しました', true);
+        }
+        localStream = null;
+        screenShareActive = false;
+      }
+    }
+
+    // 受信専用パネルを開く
+    function openScreenSharePanelAsViewer() {
+      screenSharePanel.classList.add('show');
+      screenShareBtn.classList.add('active');
+      screenShareBtn.textContent = '👁 視聴中';
+      // 自分のプレビューは非表示
+      ssSelfPreview.style.display = 'none';
+      ssMosaicBtn.disabled = true;
+      ssMosaicBtn.style.opacity = '0.4';
+      ssStopBtn.innerHTML = '<span class="icon">🚪</span><span class="label">退出</span>';
+    }
+
+    // 画面共有停止
+    async function stopScreenShare() {
+      if (!currentChatId) return;
+
+      try {
+        // Firebaseから自分を削除
+        if (myShareSessionId) {
+          await remove(ref(db, `screenShare/${currentChatId}/sharers/${myShareSessionId}`));
+        }
+
+        // 全ピア接続を切断
+        peerConnections.forEach((pc) => { try { pc.close(); } catch (e) {} });
+        peerConnections.clear();
+        peerStreams.clear();
+        peerStates.clear();
+
+        // タイル削除
+        Array.from(peerTiles.keys()).forEach(uid => removeSSTile(uid));
+
+        // 自分側のストリーム停止
+        if (localStream) {
+          localStream.getTracks().forEach(t => t.stop());
+          localStream = null;
+        }
+
+        // モザイク停止
+        stopMosaicStream();
+        isMosaic = false;
+
+        // パネルを閉じる
+        screenSharePanel.classList.remove('show');
+        screenShareBtn.classList.remove('active');
+        screenShareBtn.textContent = '🖥 画面共有';
+
+        ssSelfVideo.srcObject = null;
+        ssSelfPreview.style.display = 'none';
+
+        screenShareActive = false;
+        myShareSessionId = null;
+
+        updateMosaicBtnUI();
+        updatePeerCount();
+
+      } catch (err) {
+        console.warn('画面共有停止エラー:', err);
+      }
+    }
+
+    // モザイクボタンのUI更新
+    function updateMosaicBtnUI() {
+      if (isMosaic) {
+        ssMosaicBtn.classList.add('mosaic-active');
+        ssMosaicBtn.querySelector('.icon').textContent = '👁';
+        ssMosaicBtn.querySelector('.label').textContent = 'モザイク解除';
+      } else {
+        ssMosaicBtn.classList.remove('mosaic-active');
+        ssMosaicBtn.querySelector('.icon').textContent = '🀫';
+        ssMosaicBtn.querySelector('.label').textContent = 'モザイク';
+      }
+    }
+
+    // モザイク切替
+    async function toggleMosaic() {
+      if (!screenShareActive || !localStream) return;
+      isMosaic = !isMosaic;
+
+      // 自分の送信トラックを置換
+      await applyMosaicToPeers();
+
+      // 自分のプレビュー更新
+      updateSelfPreview();
+
+      // ボタンUI更新
+      updateMosaicBtnUI();
+
+      showBanner(isMosaic ? 'モザイクをオンにしました' : 'モザイクをオフにしました', false);
+    }
+
+    // シグナリングクリーンアップ
+    function cleanupScreenShareSignaling() {
+      currentSSUnsubscribers.forEach(fn => { try { fn(); } catch (e) {} });
+      currentSSUnsubscribers = [];
+    }
+
+    // 画面共有ボタンのイベント
+    screenShareBtn.addEventListener('click', () => {
+      if (!screenShareActive) {
+        startScreenShare();
+      } else {
+        // パネルを再表示
+        screenSharePanel.classList.add('show');
+      }
+    });
+
+    // 最小化ボタン（パネルを閉じてチャットに戻る）
+    ssMinimizeBtn.addEventListener('click', () => {
+      screenSharePanel.classList.remove('show');
+    });
+
+    // モザイクボタン
+    ssMosaicBtn.addEventListener('click', toggleMosaic);
+
+    // 停止ボタン
+    ssStopBtn.addEventListener('click', () => {
+      stopScreenShare();
+      // 受信専用の場合も同じ動作
+    });
+
+    // ページ離脱時にクリーンアップ
+    window.addEventListener('beforeunload', () => {
+      if (screenShareActive) {
+        try { stopScreenShare(); } catch (e) {}
+      }
+    });
+
+    /* ============================================================
+       新規チャット・プロフィール・ストーリー・その他
+       ============================================================ */
+
     const newChatModal = document.getElementById('newChatModal');
     const memberEmailInput = document.getElementById('memberEmailInput');
     const memberSearchMsg = document.getElementById('memberSearchMsg');
@@ -2936,11 +3967,7 @@
       }
     });
 
-    /* ============================================================
-       ストーリー
-       ============================================================ */
     const STORY_TTL = 24 * 60 * 60 * 1000;
-
     function initStoriesListener() {
       if (storiesUnsubscribe) storiesUnsubscribe();
       storiesUnsubscribe = onValue(ref(db, 'stories'), (snap) => {
@@ -2969,20 +3996,16 @@
       }, () => {});
     }
 
-    /* ★ ストーリー一覧描画（チャット相手のみ表示） */
     function renderStories() {
       const strip = document.getElementById('storiesStrip');
       strip.querySelectorAll('.story-bubble:not(#storyAddBtn)').forEach(el => el.remove());
       strip.querySelectorAll('.stories-empty').forEach(el => el.remove());
       if (!currentUser) return;
 
-      // チャット相手のUIDセット
       const chatPartnerUids = getChatPartnerUids();
 
-      // 自分のストーリーは常に表示
       const otherUids = Object.keys(storiesCache || {}).filter(uid => {
         if (uid === currentUser.uid) return false;
-        // ★ チャット相手のみ表示
         return chatPartnerUids.has(uid);
       });
 
@@ -2997,7 +4020,6 @@
       unreadSection.style.display = 'flex';
       unreadSection.style.gap = '12px';
 
-      // 自分のストーリー
       if (storiesCache[currentUser.uid]) {
         const p = getProfileForUid(currentUser.uid);
         const bubble = document.createElement('div');
@@ -3024,7 +4046,6 @@
         strip.appendChild(seenSection);
       }
 
-      // チャット相手が誰もいない & 自分のストーリーもない場合、案内を表示
       const hasAnyStory = unreadSection.children.length > 0 || seenUids.length > 0;
       if (!hasAnyStory) {
         const empty = document.createElement('div');
@@ -3100,9 +4121,6 @@
       }
     });
 
-    /* ============================================================
-       ストーリービューア
-       ============================================================ */
     const storyViewer = document.getElementById('storyViewer');
     const storyStageContent = document.getElementById('storyStageContent');
     const storyProgressBar = document.getElementById('storyProgressBar');
@@ -3116,7 +4134,6 @@
       const source = options.archiveMode ? myArchivedStories : storiesCache[uid];
       if (!source) return;
 
-      // ★ 他人のストーリーはチャット相手のみ
       if (!options.archiveMode && uid !== currentUser.uid) {
         const chatPartnerUids = getChatPartnerUids();
         if (!chatPartnerUids.has(uid)) {
@@ -3197,10 +4214,8 @@
         storyStageContent.appendChild(d);
       }
 
-      // ★ 自分のストーリーかどうかでUIを切替
       const isMine = currentStoryUserId === currentUser.uid;
 
-      // フッター（返信・いいね）は自分のストーリーでは非表示
       const storyFooter = document.querySelector('.story-footer');
       if (isMine) {
         storyFooter.style.display = 'none';
@@ -3210,14 +4225,12 @@
         storyStatsOverlay.style.display = 'none';
       }
 
-      // 閲覧記録
       if (!isMine && !currentStoryIsArchive) {
         mySeenStories[story.id] = Date.now();
         saveJson(SEEN_STORIES_KEY, mySeenStories);
         set(ref(db, `storyViews/${story.id}/${currentUser.uid}`), Date.now()).catch(() => {});
       }
 
-      // いいね監視
       if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
       storyLikesUnsubscribe = onValue(ref(db, `storyLikes/${story.id}`), (snap) => {
         currentStoryLikes = snap.exists() ? snap.val() : {};
@@ -3227,7 +4240,6 @@
         }
       }, () => {});
 
-      // 閲覧数監視（自分のストーリーのみ）
       if (storyViewsUnsubscribe) { storyViewsUnsubscribe(); storyViewsUnsubscribe = null; }
       if (isMine) {
         storyViewsUnsubscribe = onValue(ref(db, `storyViews/${story.id}`), (snap) => {
@@ -3283,7 +4295,6 @@
       }
     }
 
-    /* ★ いいねボタンの状態更新 */
     function updateStoryLikeBtn(storyId) {
       const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
       if (liked) {
@@ -3295,7 +4306,6 @@
       }
     }
 
-    /* ★ いいねボタンクリック */
     storyLikeBtn.addEventListener('click', async (e) => {
       if (!currentUser) return;
       if (currentStoryUserId === currentUser.uid) return;
@@ -3309,7 +4319,6 @@
           await remove(ref(db, `storyLikes/${story.id}/${currentUser.uid}`));
         } else {
           await set(ref(db, `storyLikes/${story.id}/${currentUser.uid}`), Date.now());
-          // ハートを浮かべるエフェクト
           const heart = document.createElement('div');
           heart.className = 'heart-float';
           heart.textContent = '❤️';
@@ -3323,11 +4332,9 @@
       }
     });
 
-    /* ★ 返信入力欄：フォーカスでストーリー停止、ブラーで再開 */
     storyReplyInput.addEventListener('focus', pauseStory);
     storyReplyInput.addEventListener('blur', resumeStory);
 
-    /* ★ 返信送信 */
     storyReplyInput.addEventListener('keydown', async (e) => {
       if (e.key !== 'Enter') return;
       if (e.isComposing || e.keyCode === 229) return;
@@ -3345,18 +4352,14 @@
       if (!story) return;
 
       const partnerUid = currentStoryUserId;
-
-      // チャット相手かチェック（念のため）
       const chatPartnerUids = getChatPartnerUids();
       if (!chatPartnerUids.has(partnerUid)) {
         showBanner('チャットしていない相手には返信できません', true);
         return;
       }
 
-      // 既存DMを探す
       let chatId = await findExistingDirectChat(partnerUid);
 
-      // なければ新規作成
       if (!chatId) {
         try {
           const newChatRef = push(ref(db, 'chatMessages'));
@@ -3385,7 +4388,6 @@
         }
       }
 
-      // ストーリーのプレビュー情報
       let previewType = story.type;
       let previewDataUrl = '';
       if (story.type === 'image' && story.file && story.file.dataUrl) {
@@ -3396,7 +4398,6 @@
       }
       let previewText = story.content || (story.type === 'image' ? '📷 画像' : '（テキストなし）');
 
-      // メッセージ送信
       const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
       try {
         const msgData = {
@@ -3418,7 +4419,6 @@
         const newRef = push(ref(db, `chatMessages/${chatId}`));
         await set(newRef, msgData);
 
-        // チャット一覧更新
         const memberUids = [currentUser.uid, partnerUid];
         const updates = {};
         memberUids.forEach(uid => {
@@ -3437,9 +4437,6 @@
       }
     });
 
-    /* ============================================================
-       ストーリーアーカイブ
-       ============================================================ */
     document.getElementById('myArchiveBtn').addEventListener('click', () => {
       const list = document.getElementById('archiveList');
       list.innerHTML = '';
@@ -3757,6 +4754,8 @@
       if (!confirm('ログアウトしますか？')) return;
       intentionalSignOut = true;
       try { await setMyTypingState(false); await setMyOffline(); } catch (e) {}
+      try { stopScreenShare(); } catch (e) {}
+      cleanupScreenShareSignaling();
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
@@ -3895,6 +4894,8 @@
     });
 
     window.addEventListener('beforeunload', () => {
+      try { stopScreenShare(); } catch (e) {}
+      cleanupScreenShareSignaling();
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
