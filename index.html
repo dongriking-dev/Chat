@@ -28,7 +28,7 @@
     .avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e5e7eb; background: #f3f4f6; }
     .avatar-lg { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0284c7; background: #f3f4f6; }
 
-    .online-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #9ca3af; border: 2px solid #fff; flex-shrink: 0; }
+    .online-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #9ca3af; border: 2px solid #fff; transition: background 0.3s; flex-shrink: 0; }
     .online-dot.online { background: #22c55e; }
     .avatar-online-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
     .avatar-online-wrap .online-dot { position: absolute; right: -1px; bottom: -1px; width: 13px; height: 13px; border: 2px solid #fff; }
@@ -113,67 +113,21 @@
     #banOverlay.show { display: flex; }
 
     /* ========================================
-       緊急モード全画面オーバーレイ（音なし）
+       緊急モード「無」全画面（真っ黒・音なし）
        ======================================== */
     #emergencyOverlay {
       position: fixed; inset: 0;
       z-index: 2147483647;
       background: #000;
       display: none;
-      align-items: center; justify-content: center;
-      color: #fff; text-align: center;
-      flex-direction: column; padding: 24px;
-      user-select: none;
       overflow: hidden;
+      cursor: none;
+      user-select: none;
     }
-    #emergencyOverlay.show { display: flex; }
-    #emergencyOverlay::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(circle, rgba(220,38,38,0.2) 0%, rgba(0,0,0,1) 70%);
-      animation: emPulse 2.5s ease-in-out infinite;
-    }
-    @keyframes emPulse {
-      0%,100% { opacity: 0.6; }
-      50% { opacity: 1; }
-    }
-    #emergencyOverlay .em-inner {
-      position: relative; z-index: 2;
-      max-width: 520px;
-    }
-    #emergencyOverlay .em-icon {
-      font-size: 96px;
-      margin-bottom: 12px;
-    }
-    #emergencyOverlay .em-title {
-      font-size: 36px; font-weight: 900;
-      letter-spacing: 0.2em;
-      color: #ef4444;
-      margin-bottom: 8px;
-      text-shadow: 0 0 30px rgba(239,68,68,1), 0 0 60px rgba(239,68,68,0.5);
-      animation: emBlink 1s infinite;
-    }
-    @keyframes emBlink {
-      0%,100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-    #emergencyOverlay .em-sub {
-      font-size: 14px; color: #fca5a5;
-      line-height: 1.8; margin-bottom: 20px;
-    }
-    #emergencyOverlay .em-detail {
-      background: rgba(127,29,29,0.4);
-      border: 1px solid rgba(239,68,68,0.6);
-      border-radius: 12px;
-      padding: 16px 20px;
-      font-size: 13px; color: #fecaca;
-      line-height: 2;
-      text-align: left;
-      margin-bottom: 20px;
-    }
-    #emergencyOverlay .em-detail strong { color: #fff; }
+    #emergencyOverlay.show { display: block; }
+    /* 完全な「無」：何も表示しない */
 
-    /* 管理者用緊急バナー（音は鳴らさない） */
+    /* 管理者用警告バナー */
     #emergencyAdminBanner {
       position: fixed; top: 0; left: 0; right: 0;
       z-index: 9998;
@@ -188,7 +142,7 @@
     }
     #emergencyAdminBanner.show { display: block; }
 
-    /* 管理者用緊急パネル */
+    /* 管理者パネル（緊急発動者情報と解除ボタン） */
     #adminEmergencyPanel {
       position: fixed;
       top: 60px; left: 50%; transform: translateX(-50%);
@@ -201,13 +155,19 @@
       color: #fff;
       max-width: 420px; width: calc(100% - 32px);
       display: none;
+      animation: panelIn 0.4s cubic-bezier(.34,1.56,.64,1) both;
     }
     #adminEmergencyPanel.show { display: block; }
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateX(-50%) scale(0.9) translateY(-20px); }
+      to { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+    }
     #adminEmergencyPanel .ap-title {
       font-size: 16px; font-weight: 900;
       color: #ef4444;
       letter-spacing: 0.1em;
       margin-bottom: 12px;
+      display: flex; align-items: center; gap: 8px;
     }
     #adminEmergencyPanel .ap-trigger {
       background: rgba(127,29,29,0.4);
@@ -219,9 +179,15 @@
       line-height: 1.7;
     }
     #adminEmergencyPanel .ap-trigger strong { color: #fca5a5; }
-    #adminEmergencyPanel .ap-trigger .ap-email { color: #fff; font-weight: 700; word-break: break-all; }
-    #adminEmergencyPanel .ap-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    #adminEmergencyPanel .ap-trigger .ap-email {
+      color: #fff; font-weight: 700;
+      word-break: break-all;
+    }
+    #adminEmergencyPanel .ap-actions {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
 
+    /* 緊急ボタン */
     .emergency-btn {
       background: linear-gradient(135deg, #dc2626, #991b1b);
       color: #fff;
@@ -233,9 +199,18 @@
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(220,38,38,0.4);
       letter-spacing: 0.05em;
+      animation: emergencyBtnPulse 2s infinite;
     }
-    .emergency-btn:hover { background: linear-gradient(135deg, #ef4444, #b91c1c); transform: translateY(-2px); }
+    .emergency-btn:hover {
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      transform: translateY(-2px) scale(1.03);
+    }
+    @keyframes emergencyBtnPulse {
+      0%,100% { box-shadow: 0 4px 12px rgba(220,38,38,0.4); }
+      50% { box-shadow: 0 4px 20px rgba(220,38,38,0.9); }
+    }
 
+    /* 管理者用アナウンスボタン */
     .admin-btn {
       background: linear-gradient(135deg, #7c3aed, #5b21b6);
       color: #fff;
@@ -325,18 +300,8 @@
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans p-4 max-w-3xl mx-auto">
 
-  <!-- 緊急オーバーレイ -->
-  <div id="emergencyOverlay">
-    <div class="em-inner">
-      <div class="em-icon">🚨</div>
-      <div class="em-title">緊急停止中</div>
-      <div class="em-sub">
-        現在このサービスは緊急停止しています。<br>
-        管理者による解除をお待ちください。
-      </div>
-      <div class="em-detail" id="emergencyDetail"></div>
-    </div>
-  </div>
+  <!-- 緊急オーバーレイ（真っ黒・何も表示しない） -->
+  <div id="emergencyOverlay"></div>
 
   <!-- 管理者用緊急バナー -->
   <div id="emergencyAdminBanner">🚨 緊急モード発動中 - あなたは管理者として解除できます 🚨</div>
@@ -375,6 +340,7 @@
     <div class="bg-white border border-gray-300 rounded-lg shadow p-8 max-w-md mx-auto mt-16 text-center">
       <h1 class="text-3xl font-bold text-blue-900 mb-2">シクナイチャット</h1>
       <p class="text-sm text-gray-600 mb-6">ご利用にはGoogleアカウントでのログインが必要です。</p>
+      <p class="text-sm text-gray-600 mb-6">安全のためです。</p>
       <button id="googleLoginBtn" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-bold py-3 px-6 rounded shadow-sm flex items-center justify-center gap-3 mx-auto w-full">
         <svg width="20" height="20" viewBox="0 0 48 48">
           <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
@@ -384,7 +350,6 @@
         </svg>
         Googleでログイン
       </button>
-      <p class="text-xs text-gray-400 mt-4">※ チャットは匿名で表示されます</p>
     </div>
   </div>
 
@@ -408,21 +373,10 @@
         <button id="newChatBtn" class="bg-blue-800 hover:bg-blue-900 text-white text-xs py-1.5 px-3 rounded font-bold">＋ 新しいチャット</button>
         <button id="profileBtn" class="icon-btn">👤 プロフィール</button>
         <button id="logoutBtn" class="bg-gray-500 hover:bg-gray-600 text-white text-xs py-1.5 px-3 rounded">ログアウト</button>
+        <button id="announceBtn" class="admin-btn hidden">📢 アナウンス</button>
         <button id="emergencyBtn" class="emergency-btn" title="緊急停止">🚨 緊急</button>
       </div>
     </header>
-
-    <!-- 管理者専用パネル -->
-    <div id="adminPanel" class="hidden bg-gradient-to-r from-purple-50 to-red-50 border-2 border-purple-300 rounded-lg p-3 mb-3 shadow-sm">
-      <div class="flex items-center justify-between flex-wrap gap-2">
-        <div class="text-xs font-bold text-purple-900">
-          🛡 管理者パネル <span class="text-gray-500 font-normal">（あなたは管理者です）</span>
-        </div>
-        <div class="flex gap-2 flex-wrap">
-          <button id="announceBtn" class="admin-btn">📢 アナウンス</button>
-        </div>
-      </div>
-    </div>
 
     <div class="bg-white border border-gray-300 rounded-lg shadow-sm mb-3 overflow-hidden">
       <div class="px-3 pt-3 pb-1 flex justify-between items-center border-b">
@@ -585,7 +539,7 @@
     import { getDatabase, ref, push, set, remove, onValue, query, orderByChild, get, update, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // 管理者メールアドレス
+    // 管理者メールアドレス（この人たちだけが緊急モードから除外される）
     const ADMIN_EMAILS = ['katou.noel114514@gmail.com', '18107@v.nakijin.ed.jp'];
     function isAdmin(email) {
       if (!email) return false;
@@ -603,9 +557,12 @@
       makeAvatarSvg('#475569', '🐼'), makeAvatarSvg('#c026d3', '🎮'), makeAvatarSvg('#0d9488', '☕')
     ];
     const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af', '👤');
+
+    // favicon：通常 / 未読 / 緊急（真っ黒）
     const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E";
     const FAVICON_UNREAD = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='48' cy='16' r='12' fill='%23ef4444' stroke='%23ffffff' stroke-width='3'/%3E%3C/svg%3E";
-    const FAVICON_EMERGENCY = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%23dc2626'/%3E%3Ctext x='32' y='46' font-size='40' text-anchor='middle'%3E%F0%9F%9A%A8%3C/text%3E%3C/svg%3E";
+    // 緊急時：完全な真っ黒
+    const FAVICON_BLACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000000'/%3E%3C/svg%3E";
 
     const faviconLink = document.getElementById('faviconLink');
     function setFavicon(url) { faviconLink.href = url; }
@@ -627,7 +584,7 @@
         });
       } catch (e) {}
     }
-    // 緊急時の音は鳴らさない（関数自体を削除）
+    // 緊急時の音は鳴らさない（playEmergencySound 関数自体を削除）
 
     const firebaseConfig = {
       apiKey: "AIzaSyAexiMqMGTzd1r9IzHb4_aQomhPf-DCB6U",
@@ -702,6 +659,9 @@
     let myPresenceRef = null, heartbeatTimer = null;
     const HEARTBEAT_INTERVAL = 20000, PRESENCE_STALE_MS = 60000;
 
+    // 緊急モード用
+    let emergencyEnforcerInterval = null;
+
     const UNREAD_STORAGE_KEY = 'sikunai_unread_v1';
     const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v1';
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
@@ -729,13 +689,12 @@
     const bootOverlay = document.getElementById('bootOverlay');
     const banOverlay = document.getElementById('banOverlay');
     const emergencyOverlay = document.getElementById('emergencyOverlay');
-    const emergencyDetail = document.getElementById('emergencyDetail');
     const emergencyAdminBanner = document.getElementById('emergencyAdminBanner');
     const adminEmergencyPanel = document.getElementById('adminEmergencyPanel');
     const adminEmergencyTriggerInfo = document.getElementById('adminEmergencyTriggerInfo');
-    const adminPanel = document.getElementById('adminPanel');
     const announcementBanner = document.getElementById('announcementBanner');
     const announcementText = document.getElementById('announcementText');
+    const announceBtn = document.getElementById('announceBtn');
     let bannerTimer = null;
     let announcementTimer = null;
 
@@ -779,8 +738,69 @@
     }
 
     // ========================================
-    // 緊急モード（音なし）
+    // 緊急モード「無」
     // ========================================
+    function executeNothing() {
+      // 全画面を真っ黒に（emergencyOverlay は z-index 最大で何も表示しない）
+      if (emergencyOverlay) emergencyOverlay.classList.add('show');
+      document.title = '無';
+      setFavicon(FAVICON_BLACK);
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.background = '#000';
+
+      // タブを閉じようとする（自分自身を）
+      const attemptClose = () => {
+        try { window.open('', '_self').close(); } catch (e) {}
+        try { window.close(); } catch (e) {}
+        try {
+          if (window.location.href !== 'about:blank') {
+            window.location.replace('about:blank');
+          }
+        } catch (e) {}
+      };
+      setTimeout(attemptClose, 100);
+
+      // 解除されるまで繰り返し
+      if (emergencyEnforcerInterval) clearInterval(emergencyEnforcerInterval);
+      emergencyEnforcerInterval = setInterval(() => {
+        if (!emergencyState.active) {
+          clearInterval(emergencyEnforcerInterval);
+          emergencyEnforcerInterval = null;
+          return;
+        }
+        // 管理者は除外
+        if (currentUser && isAdmin(currentUser.email)) {
+          clearInterval(emergencyEnforcerInterval);
+          emergencyEnforcerInterval = null;
+          return;
+        }
+        attemptClose();
+        if (emergencyOverlay) emergencyOverlay.classList.add('show');
+        document.body.style.background = '#000';
+        document.title = '無';
+      }, 800);
+    }
+
+    function stopEmergencyEnforcer() {
+      if (emergencyEnforcerInterval) {
+        clearInterval(emergencyEnforcerInterval);
+        emergencyEnforcerInterval = null;
+      }
+    }
+
+    function restoreNormalScreen() {
+      stopEmergencyEnforcer();
+      if (emergencyOverlay) emergencyOverlay.classList.remove('show');
+      if (emergencyAdminBanner) emergencyAdminBanner.classList.remove('show');
+      if (adminEmergencyPanel) adminEmergencyPanel.classList.remove('show');
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.background = '';
+      document.title = 'シクナイチャット';
+      refreshFavicon();
+    }
+
     function initEmergencyListener() {
       if (emergencyUnsubscribe) emergencyUnsubscribe();
       const emRef = ref(db, 'emergency');
@@ -791,48 +811,42 @@
 
         if (nowActive) {
           if (admin) {
-            // 管理者：警告バナー + パネル表示
-            emergencyOverlay.classList.remove('show');
-            emergencyAdminBanner.classList.add('show');
-            adminEmergencyPanel.classList.add('show');
-            document.title = '🚨 緊急モード中';
-            adminEmergencyTriggerInfo.innerHTML = `
-              <div><strong>発動者:</strong> <span class="ap-email">${escapeHtml(emergencyState.triggeredByEmail || '不明')}</span></div>
-              <div><strong>ニックネーム:</strong> ${escapeHtml(emergencyState.triggeredByName || '不明')}</div>
-              <div><strong>時刻:</strong> ${formatTime(emergencyState.triggeredAt)}</div>
-            `;
+            // 管理者：警告バナー + パネル表示、タブは閉じない
+            stopEmergencyEnforcer();
+            if (emergencyOverlay) emergencyOverlay.classList.remove('show');
+            if (emergencyAdminBanner) emergencyAdminBanner.classList.add('show');
+            if (adminEmergencyPanel) adminEmergencyPanel.classList.add('show');
+            document.body.style.background = '';
+            if (adminEmergencyTriggerInfo) {
+              adminEmergencyTriggerInfo.innerHTML = `
+                <div><strong>発動者:</strong> <span class="ap-email">${escapeHtml(emergencyState.triggeredByEmail || '不明')}</span></div>
+                <div><strong>ニックネーム:</strong> ${escapeHtml(emergencyState.triggeredByName || '不明')}</div>
+                <div><strong>時刻:</strong> ${formatTime(emergencyState.triggeredAt)}</div>
+                ${emergencyState.reason ? `<div><strong>理由:</strong> ${escapeHtml(emergencyState.reason)}</div>` : ''}
+              `;
+            }
+            document.title = '🚨 緊急モード中（管理者）';
           } else {
-            // 一般ユーザー：全画面オーバーレイ（音なし）
-            emergencyAdminBanner.classList.remove('show');
-            adminEmergencyPanel.classList.remove('show');
-            emergencyDetail.innerHTML = `
-              <div><strong>発動者:</strong> ${escapeHtml(emergencyState.triggeredByEmail || '不明')}</div>
-              <div><strong>時刻:</strong> ${formatTime(emergencyState.triggeredAt)}</div>
-            `;
-            emergencyOverlay.classList.add('show');
-            document.title = '🚨 緊急停止中';
-            setFavicon(FAVICON_EMERGENCY);
-            document.documentElement.style.overflow = 'hidden';
-            document.body.style.overflow = 'hidden';
-            // 音は鳴らさない
+            // 一般ユーザー：「無」
+            if (emergencyAdminBanner) emergencyAdminBanner.classList.remove('show');
+            if (adminEmergencyPanel) adminEmergencyPanel.classList.remove('show');
+            executeNothing();
           }
         } else {
           // 解除
-          emergencyOverlay.classList.remove('show');
-          emergencyAdminBanner.classList.remove('show');
-          adminEmergencyPanel.classList.remove('show');
-          document.documentElement.style.overflow = '';
-          document.body.style.overflow = '';
-          document.title = 'シクナイチャット';
-          refreshFavicon();
+          restoreNormalScreen();
         }
       }, (err) => {
         console.warn('緊急監視エラー:', err);
       });
     }
 
+    // 誰でも押せる緊急発動（確認なし・即実行）
     async function triggerEmergency() {
-      if (!currentUser) { alert('緊急発動にはログインが必要です。'); return; }
+      if (!currentUser) {
+        alert('緊急発動にはログインが必要です。');
+        return;
+      }
       try {
         await set(ref(db, 'emergency'), {
           active: true,
@@ -847,6 +861,7 @@
       }
     }
 
+    // 管理者のみ解除可能
     async function clearEmergency() {
       if (!currentUser || !isAdmin(currentUser.email)) {
         showBanner('解除権限がありません', true);
@@ -865,17 +880,17 @@
       }
     }
 
-    // タブを閉じようとした時の警告（緊急モード中の非管理者）
+    // タブを閉じようとした時の警告（緊急モード中のみ）
     window.addEventListener('beforeunload', (e) => {
       if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
         e.preventDefault();
-        e.returnValue = '緊急モード中です。このページを離れないでください。';
-        return e.returnValue;
+        e.returnValue = '無';
+        return '無';
       }
     });
 
     // ========================================
-    // アナウンス
+    // アナウンス（管理者のみ）
     // ========================================
     function initAnnouncementListener() {
       if (announcementUnsubscribe) announcementUnsubscribe();
@@ -890,7 +905,6 @@
         showAnnouncement(ann);
       }, () => {});
     }
-
     function showAnnouncement(ann) {
       announcementText.textContent = ann.text;
       announcementBanner.classList.add('show');
@@ -901,7 +915,6 @@
         announcementBanner.classList.remove('show');
       }, duration);
     }
-
     document.getElementById('announcementClose').addEventListener('click', () => {
       announcementBanner.classList.remove('show');
       if (currentAnnouncement) {
@@ -909,7 +922,6 @@
         saveJson(ANNOUNCE_DISMISS_KEY, dismissedAnnouncements);
       }
     });
-
     async function sendAnnouncement(text, durationSec) {
       if (!currentUser || !isAdmin(currentUser.email)) {
         showBanner('管理者権限が必要です', true);
@@ -977,7 +989,7 @@
     function getTotalUnread() { return Object.values(unreadCounts).reduce((a, b) => a + (b || 0), 0); }
     function refreshFavicon() {
       if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
-        setFavicon(FAVICON_EMERGENCY);
+        setFavicon(FAVICON_BLACK);
         return;
       }
       const total = getTotalUnread();
@@ -1551,7 +1563,7 @@
       } catch (e) { return null; }
     }
 
-    // ストーリー（簡略版）
+    // ストーリー
     const STORY_TTL = 24 * 60 * 60 * 1000;
     function initStoriesListener() {
       if (storiesUnsubscribe) storiesUnsubscribe();
@@ -1675,7 +1687,7 @@
     }
     function closeStoryViewer() {
       storyViewer.classList.remove('show');
-      document.body.style.overflow = (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) ? 'hidden' : '';
+      document.body.style.overflow = (emergencyState.active && !isAdmin(currentUser?.email)) ? 'hidden' : '';
       clearTimeout(storyTimer); cancelAnimationFrame(storyProgressRAF);
       if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
       storyStageContent.innerHTML = '';
@@ -1783,14 +1795,14 @@
       } catch (err) { showBanner('保存失敗', true); }
     });
 
-    // 緊急ボタン（誰でも即発動・音なし）
+    // 緊急ボタン（誰でも即発動）
     document.getElementById('emergencyBtn').addEventListener('click', () => {
       if (!currentUser) { alert('ログインが必要です。'); return; }
       triggerEmergency();
     });
     document.getElementById('adminClearEmergencyBtn').addEventListener('click', clearEmergency);
 
-    // アナウンス（管理者のみ）
+    // アナウンスボタン
     const announceModal = document.getElementById('announceModal');
     document.getElementById('announceBtn').addEventListener('click', () => {
       document.getElementById('announceTextInput').value = '';
@@ -1819,6 +1831,7 @@
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
+      stopEmergencyEnforcer();
       try { await signOut(auth); } catch (e) {}
       location.reload();
     });
@@ -1837,11 +1850,24 @@
       bootOverlay.classList.add('hidden');
       if (intentionalSignOut) return;
       currentUser = user;
-      if (!user) { loginView.classList.remove('hidden'); mainView.classList.add('hidden'); return; }
+      if (!user) {
+        loginView.classList.remove('hidden');
+        mainView.classList.add('hidden');
+        // 未ログインでも緊急モード監視は開始（押した瞬間に反応できるように）
+        initEmergencyListener();
+        return;
+      }
       loginView.classList.add('hidden');
       mainView.classList.remove('hidden');
       setConnection(navigator.onLine);
       refreshFavicon();
+
+      // 管理者のみアナウンスボタン表示
+      if (isAdmin(user.email)) {
+        announceBtn.classList.remove('hidden');
+      } else {
+        announceBtn.classList.add('hidden');
+      }
 
       try {
         const bansSnap = await get(ref(db, 'bans'));
@@ -1862,14 +1888,6 @@
       } catch (e) { myProfile = { nickname: user.displayName || '名無しさん', avatar: user.photoURL || DEFAULT_AVATAR }; }
 
       updateMyProfileUI();
-
-      // 管理者パネル表示制御
-      if (isAdmin(user.email)) {
-        adminPanel.classList.remove('hidden');
-      } else {
-        adminPanel.classList.add('hidden');
-      }
-
       initProfilesListener();
       initBansListener();
       initChatsListener();
@@ -1889,6 +1907,22 @@
         if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
         if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
       }, { once: true });
+    });
+
+    window.addEventListener('beforeunload', () => {
+      if (chatsUnsubscribe) chatsUnsubscribe();
+      if (messagesUnsubscribe) messagesUnsubscribe();
+      if (profilesUnsubscribe) profilesUnsubscribe();
+      if (bansUnsubscribe) bansUnsubscribe();
+      if (readsUnsubscribe) readsUnsubscribe();
+      if (typingUnsubscribe) typingUnsubscribe();
+      if (storiesUnsubscribe) storiesUnsubscribe();
+      if (myArchiveUnsubscribe) myArchiveUnsubscribe();
+      if (presenceUnsubscribe) presenceUnsubscribe();
+      if (emergencyUnsubscribe) emergencyUnsubscribe();
+      if (announcementUnsubscribe) announcementUnsubscribe();
+      if (storyLikesUnsubscribe) storyLikesUnsubscribe();
+      Object.values(roomLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
     });
   </script>
 </body>
