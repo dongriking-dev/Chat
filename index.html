@@ -22,7 +22,6 @@
     }
     input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
 
-    /* ============ 全体レイアウト ============ */
     #appContainer {
       display: flex;
       flex-direction: column;
@@ -69,7 +68,6 @@
     .scroll-area::-webkit-scrollbar { width: 8px; }
     .scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
-    /* ============ ヘッダー ============ */
     .header-user { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
     .header-title {
       font-size: 20px; font-weight: 700; color: #1e3a8a;
@@ -82,7 +80,6 @@
     }
     .header-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
-    /* ============ アバター ============ */
     .avatar {
       width: 40px; height: 40px; border-radius: 50%;
       object-fit: cover; flex-shrink: 0;
@@ -98,7 +95,6 @@
       object-fit: cover; border: 3px solid #0284c7; background: #f3f4f6;
     }
 
-    /* ============ オンライン状態 ============ */
     .online-dot {
       display: inline-block;
       width: 10px; height: 10px;
@@ -132,7 +128,6 @@
       width: 8px; height: 8px; border-width: 1px;
     }
 
-    /* ============ チャット一覧 ============ */
     .chat-list {
       display: flex;
       flex-direction: column;
@@ -195,14 +190,12 @@
       min-width: 20px; text-align: center;
     }
 
-    /* グループアバター */
     .group-avatars { display: flex; position: relative; width: 40px; height: 40px; }
     .group-avatars .avatar-sm { position: absolute; width: 26px; height: 26px; }
     .group-avatars .avatar-sm:nth-child(1) { top: 0; left: 0; z-index: 3; }
     .group-avatars .avatar-sm:nth-child(2) { bottom: 0; right: 0; z-index: 2; }
     .group-avatars .avatar-sm:nth-child(3) { top: 0; right: 0; z-index: 1; width: 22px; height: 22px; }
 
-    /* ============ チャット画面 ============ */
     #chatView {
       display: flex; flex-direction: column;
       height: 100%; position: relative;
@@ -237,7 +230,6 @@
     }
     .chat-messages { display: flex; flex-direction: column; gap: 4px; }
 
-    /* 日付区切り */
     .date-divider {
       display: flex; align-items: center; justify-content: center;
       margin: 16px 0; position: relative;
@@ -255,7 +247,6 @@
       border-radius: 9999px; border: 1px solid #e5e7eb;
     }
 
-    /* メッセージ */
     .msg-row {
       display: flex;
       gap: 8px;
@@ -324,7 +315,6 @@
     }
     .msg-row.mine .msg-content a { color: #1e3a8a; }
 
-    /* 画像 */
     .msg-file {
       margin-top: 6px;
       display: block;
@@ -345,7 +335,6 @@
     .msg-row.mine .msg-file { border-color: #93c5fd; }
     .msg-file.only-file { margin-top: 0; }
 
-    /* ストーリー返信 */
     .story-reply-context {
       background: rgba(0,0,0,0.04);
       border-radius: 8px;
@@ -374,7 +363,6 @@
       line-clamp: 2;
     }
 
-    /* 既読 */
     .read-receipt {
       font-size: 10px; color: #0284c7; font-weight: 600;
       margin-top: 2px; padding: 0 4px;
@@ -384,8 +372,25 @@
     .edited-label {
       font-size: 10px; color: #9ca3af; font-style: italic;
     }
+    .sending-label {
+      font-size: 10px; color: #6b7280; font-style: italic;
+    }
+    .sending-label::after {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      animation: sendingDots 1.2s steps(4, end) infinite;
+      overflow: hidden;
+      vertical-align: bottom;
+    }
+    @keyframes sendingDots {
+      0% { content: ''; }
+      25% { content: '.'; }
+      50% { content: '..'; }
+      75% { content: '...'; }
+      100% { content: ''; }
+    }
 
-    /* メニューボタン */
     .msg-menu-btn {
       width: 24px; height: 24px;
       border-radius: 50%;
@@ -425,7 +430,6 @@
     .msg-menu-popup button.danger { color: #ef4444; }
     .msg-menu-popup button.danger:hover { background: #fef2f2; }
 
-    /* タイピングインジケータ（独立DOM） */
     #typingIndicatorSlot {
       min-height: 0;
       transition: min-height 0.2s ease;
@@ -463,7 +467,6 @@
       30% { transform: translateY(-3px); opacity: 1; }
     }
 
-    /* 入力フォーム */
     .chat-input-form {
       flex-shrink: 0;
       background: #fff;
@@ -566,7 +569,6 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* モーダル */
     .modal-backdrop {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.55);
@@ -588,7 +590,6 @@
       overflow-y: auto;
     }
 
-    /* ライトボックス */
     #lightbox {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.92);
@@ -614,7 +615,6 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* ステータスバナー */
     #statusBanner {
       position: fixed;
       top: 12px; left: 50%;
@@ -633,7 +633,6 @@
     }
     #statusBanner.show { transform: translate(-50%, 0); opacity: 1; }
 
-    /* 起動 */
     #bootOverlay {
       position: fixed; inset: 0;
       background: #111827;
@@ -661,7 +660,6 @@
       margin-right: 6px;
     }
 
-    /* BAN */
     #banOverlay {
       position: fixed; inset: 0;
       background: #000;
@@ -673,7 +671,6 @@
     }
     #banOverlay.show { display: flex; }
 
-    /* 緊急 */
     #emergencyOverlay {
       position: fixed; inset: 0;
       z-index: 2147483647;
@@ -730,7 +727,6 @@
       color: #fff; font-weight: 700; word-break: break-all;
     }
 
-    /* ボタン */
     .emergency-btn {
       background: linear-gradient(135deg, #dc2626, #991b1b);
       color: #fff;
@@ -754,7 +750,6 @@
       font-size: 12px; font-weight: 900;
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(124,58,237,0.4);
-      transition: transform 0.15s;
     }
     .admin-btn:hover { transform: translateY(-1px); }
     .icon-btn {
@@ -791,7 +786,6 @@
     }
     .secondary-btn:hover { background: #4b5563; }
 
-    /* ストーリー */
     .stories-strip {
       display: flex;
       gap: 12px;
@@ -836,7 +830,6 @@
       font-size: 26px; color: #6b7280;
     }
 
-    /* ストーリービューア */
     #storyViewer {
       position: fixed; inset: 0;
       z-index: 20000;
@@ -929,7 +922,6 @@
     }
     .story-like-btn.liked { color: #ef4444; }
 
-    /* プリセットアバター */
     .preset-avatar {
       width: 52px; height: 52px;
       border-radius: 50%;
@@ -944,7 +936,6 @@
       transform: scale(1.05);
     }
 
-    /* メンバーチップ */
     .member-chip {
       display: inline-flex; align-items: center; gap: 4px;
       background: #eff6ff;
@@ -963,7 +954,6 @@
       font-size: 14px; line-height: 1;
     }
 
-    /* アナウンス */
     #announcementBanner {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -989,7 +979,6 @@
       border-radius: 50%; cursor: pointer; line-height: 1;
     }
 
-    /* 新着ボタン */
     #scrollToBottomBtn {
       position: absolute;
       bottom: 90px; right: 20px;
@@ -1016,7 +1005,6 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* モバイル */
     @media (max-width: 500px) {
       .header-title { font-size: 17px; }
       .chat-item { padding: 10px 12px; }
@@ -1032,13 +1020,11 @@
 </head>
 <body>
 
-  <!-- 起動 -->
   <div id="bootOverlay">
     <div class="boot-spinner"></div>
     <div style="font-size:14px;color:#9ca3af;">アカウントを確認しています...</div>
   </div>
 
-  <!-- 緊急 -->
   <div id="emergencyOverlay"></div>
   <div id="emergencyAdminBanner">🚨 緊急モード発動中 - あなたは管理者として解除できます 🚨</div>
   <div id="adminEmergencyPanel">
@@ -1049,13 +1035,11 @@
     </div>
   </div>
 
-  <!-- アナウンス -->
   <div id="announcementBanner">
     <span id="announcementText"></span>
     <button class="ann-close" id="announcementClose">✕</button>
   </div>
 
-  <!-- BAN -->
   <div id="banOverlay">
     <div style="font-size:24px;font-weight:bold;letter-spacing:0.1em;" id="banOverlayMsg">アクセスが拒否されました</div>
     <div style="font-size:14px;margin-top:16px;color:#fca5a5;line-height:1.6;max-width:400px;" id="banOverlaySub"></div>
@@ -1066,16 +1050,13 @@
 
   <div id="statusBanner" class="bg-red-600 text-white"></div>
 
-  <!-- ライトボックス -->
   <div id="lightbox">
     <button class="lightbox-close" id="lightboxClose">✕</button>
     <img id="lightboxImg" src="" alt="">
   </div>
 
-  <!-- アプリ本体 -->
   <div id="appContainer">
 
-    <!-- ログイン -->
     <div id="loginView" style="display:none; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:20px;">
       <div style="background:#fff; border:1px solid #e5e7eb; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,0.08); padding:36px 28px; max-width:420px; width:100%; text-align:center;">
         <div style="font-size:48px; margin-bottom:12px;">💬</div>
@@ -1094,7 +1075,6 @@
       </div>
     </div>
 
-    <!-- メイン -->
     <div id="mainView" style="display:none; flex-direction:column; height:100%;">
       <header id="appHeader">
         <div class="header-user">
@@ -1121,7 +1101,6 @@
       </header>
 
       <main id="appMain">
-        <!-- チャット一覧 -->
         <div id="chatListView" style="display:flex; flex-direction:column; height:100%;">
           <div style="flex-shrink:0; background:#fff; border-bottom:1px solid #e5e7eb;">
             <div style="padding:8px 14px 0; display:flex; justify-content:space-between; align-items:center;">
@@ -1140,7 +1119,6 @@
           </div>
         </div>
 
-        <!-- チャット画面 -->
         <div id="chatView" style="display:none;">
           <div class="chat-header">
             <button id="backToChatListBtn" class="icon-btn" style="padding:6px 10px; font-size:14px;">←</button>
@@ -1153,7 +1131,6 @@
 
           <div class="chat-messages-wrap" id="chatMessagesWrap">
             <div class="chat-messages" id="messagesContainer"></div>
-            <!-- タイピングインジケータは独立スロット（メッセージ再描画と分離） -->
             <div id="typingIndicatorSlot"></div>
           </div>
 
@@ -1187,7 +1164,6 @@
     </div>
   </div>
 
-  <!-- モーダル群 -->
   <div id="newChatModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#1e3a8a;">＋ 新しいチャット</h3>
@@ -1307,18 +1283,12 @@
     import { getDatabase, ref, push, set, remove, onValue, query, orderByChild, get, update, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    /* ============================================================
-       管理者
-       ============================================================ */
     const ADMIN_EMAILS = ['katou.noel114514@gmail.com', '18107@v.nakijin.ed.jp'];
     function isAdmin(email) {
       if (!email) return false;
       return ADMIN_EMAILS.includes(email.toLowerCase());
     }
 
-    /* ============================================================
-       アバター
-       ============================================================ */
     function makeAvatarSvg(color, emoji) {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="${color}"/><text x="32" y="42" font-size="32" text-anchor="middle">${emoji}</text></svg>`;
       return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
@@ -1337,9 +1307,6 @@
     const faviconLink = document.getElementById('faviconLink');
     function setFavicon(url) { faviconLink.href = url; }
 
-    /* ============================================================
-       通知音
-       ============================================================ */
     let audioCtx = null;
     function playNotificationSound() {
       try {
@@ -1362,9 +1329,6 @@
       } catch (e) {}
     }
 
-    /* ============================================================
-       Firebase
-       ============================================================ */
     const firebaseConfig = {
       apiKey: "AIzaSyAexiMqMGTzd1r9IzHb4_aQomhPf-DCB6U",
       authDomain: "chat-d04a6.firebaseapp.com",
@@ -1380,9 +1344,6 @@
     const provider = new GoogleAuthProvider();
     setPersistence(auth, browserLocalPersistence).catch(() => {});
 
-    /* ============================================================
-       画像処理
-       ============================================================ */
     const IMAGE_MAX_WIDTH = 1200;
     const IMAGE_MAX_HEIGHT = 1200;
     const IMAGE_QUALITY = 0.8;
@@ -1438,9 +1399,6 @@
       return (bytes / 1024 / 1024).toFixed(2) + ' MB';
     }
 
-    /* ============================================================
-       状態
-       ============================================================ */
     let currentUser = null;
     let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
 
@@ -1466,17 +1424,16 @@
     let announcementUnsubscribe = null;
     let chatLatestListeners = {};
 
-    // レンダリング
-    let renderedMessageKeys = new Set(); // 既にDOMに存在するメッセージキー
+    // ★ 楽観的メッセージ（送信中メッセージ）管理
+    // Map<tempId, { data, realKey }>  realKeyがセットされたら本物と紐付け
     let optimisticMessages = new Map();
+    // Map<realKey, tempId>  本物のキー → 仮のキー
+    let optimisticByRealKey = new Map();
     let tempIdCounter = 0;
-    let renderScheduled = false;
 
-    // スクロール
     let isNearBottom = true;
     let unreadInChat = 0;
 
-    // 未読
     const UNREAD_STORAGE_KEY = 'sikunai_unread_v3';
     const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v3';
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
@@ -1493,18 +1450,15 @@
     let chatLatestMsgSender = {};
     let isTabActive = !document.hidden;
 
-    // プレゼンス
     let myPresenceRef = null;
     let heartbeatTimer = null;
     const HEARTBEAT_INTERVAL = 20000;
     const PRESENCE_STALE_MS = 60000;
 
-    // 緊急
     let emergencyState = { active: false };
     let emergencyEnforcerInterval = null;
     let emergencyExiting = false;
 
-    // ストーリー
     let storiesCache = {};
     let currentStoryUserId = null;
     let currentStoryIndex = 0;
@@ -1522,12 +1476,10 @@
     let myArchivedStories = {};
     let pendingStoryFile = null;
 
-    // 入力
     let typingTimeout = null;
     let isCurrentlyTyping = false;
     const TYPING_TIMEOUT_MS = 3000;
 
-    // その他
     let pendingMembers = [];
     let editingMsgKey = null;
     let openMenuKey = null;
@@ -1535,7 +1487,6 @@
     let intentionalSignOut = false;
     let selectedAvatar = DEFAULT_AVATAR;
 
-    // DOM
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
     const mainView = document.getElementById('mainView');
@@ -1565,9 +1516,6 @@
     let bannerTimer = null;
     let announcementTimer = null;
 
-    /* ============================================================
-       ユーティリティ
-       ============================================================ */
     function escapeHtml(str) {
       if (!str) return '';
       return String(str)
@@ -1647,21 +1595,17 @@
       return true;
     }
 
-    // presenceの更新は「ドットだけ」を直接更新する（再描画しない）
     function updatePresenceDots() {
-      // チャット一覧
       document.querySelectorAll('[data-presence-uid]').forEach(el => {
         const uid = el.dataset.presenceUid;
         const online = isUserOnline(uid);
         el.classList.toggle('online', online);
       });
-      // メッセージ内のアバタードット
       document.querySelectorAll('[data-presence-msg-uid]').forEach(el => {
         const uid = el.dataset.presenceMsgUid;
         const online = isUserOnline(uid);
         el.classList.toggle('online', online);
       });
-      // チャットヘッダー
       updateChatHeaderPresence();
     }
 
@@ -1669,7 +1613,6 @@
       if (presenceUnsubscribe) presenceUnsubscribe();
       presenceUnsubscribe = onValue(ref(db, 'presence'), (snap) => {
         presenceCache = snap.exists() ? snap.val() : {};
-        // ドットだけ更新（再描画しない）
         requestAnimationFrame(updatePresenceDots);
       }, () => {});
     }
@@ -1745,7 +1688,6 @@
         if (!isTabActive) playNotificationSound();
         if (chatId === currentChatId) unreadInChat++;
         refreshFavicon();
-        // チャット一覧だけ更新（メッセージは触らない）
         renderChatList();
         updateScrollButton();
       }
@@ -1788,14 +1730,12 @@
           };
           updateMyProfileUI();
         }
-        // プロフィール更新時、既存メッセージのアバター・名前を差分更新（再構築しない）
         updateProfilesInExistingMessages();
         renderChatList();
         renderStories();
       }, () => {});
     }
 
-    // 既存メッセージのアバターと名前を差分更新
     function updateProfilesInExistingMessages() {
       messagesContainer.querySelectorAll('[data-msg-author-uid]').forEach(el => {
         const uid = el.dataset.msgAuthorUid;
@@ -1844,7 +1784,6 @@
       };
     }
 
-    // チャット一覧全体を再構築（頻度は低い：userChatsの変化時のみ）
     function renderChatList() {
       chatListContainer.innerHTML = '';
       const entries = Object.entries(chatsCache || {});
@@ -1967,9 +1906,7 @@
       chatListView.style.display = 'none';
       chatView.style.display = 'flex';
 
-      // DOMリセット
       messagesContainer.innerHTML = '';
-      renderedMessageKeys.clear();
       typingIndicatorSlot.innerHTML = '';
       typingCache = {};
 
@@ -1989,7 +1926,6 @@
       messagesCache = [];
       readsCache = {};
       typingCache = {};
-      renderedMessageKeys.clear();
       unreadInChat = 0;
       closeAllMenus();
       renderChatList();
@@ -2058,7 +1994,6 @@
       }
     }
 
-    // ヘッダーのプレゼンスだけ更新
     function updateChatHeaderPresence() {
       if (!currentChatId) return;
       const chat = chatsCache[currentChatId];
@@ -2076,7 +2011,6 @@
           label.className = 'online-label ' + (onlineCount === 0 ? 'offline' : '');
           const dot = label.querySelector('.online-dot');
           if (dot) dot.classList.toggle('online', onlineCount > 0);
-          // テキスト部分のみ更新
           const textNodes = Array.from(label.childNodes).filter(n => n.nodeType === Node.TEXT_NODE);
           if (textNodes[0]) textNodes[0].nodeValue = ` ${onlineCount}人オンライン`;
         }
@@ -2091,7 +2025,6 @@
           const textNodes = Array.from(label.childNodes).filter(n => n.nodeType === Node.TEXT_NODE);
           if (textNodes[0]) textNodes[0].nodeValue = ` ${online ? 'オンライン' : 'オフライン'}`;
         }
-        // アバターのドット
         const dot = headerAvatars.querySelector('.online-dot');
         if (dot) dot.classList.toggle('online', online);
       }
@@ -2120,64 +2053,83 @@
     }
 
     /* ============================================================
-       ★ 重要：メッセージの差分更新
+       ★ メッセージ更新（楽観的メッセージの置換を改善）
        ============================================================ */
     function handleMessagesUpdate(newMessages) {
-      const hadMessages = messagesCache.length > 0;
-      const oldIds = new Set(messagesCache.map(m => m.key));
-      const newIds = new Set(newMessages.map(m => m.key));
+      // 本物のメッセージで「楽観的メッセージと紐付いたもの」を探して置換
+      const newMessageKeys = new Set(newMessages.map(m => m.key));
 
-      // 削除されたメッセージがあるか
-      const hasDeletions = messagesCache.some(m => !newIds.has(m.key));
+      // 楽観的メッセージのうち、本物が届いたものを処理
+      // optimisticByRealKey: realKey → tempId
+      const toRemoveTempIds = [];
+      optimisticByRealKey.forEach((tempId, realKey) => {
+        if (newMessageKeys.has(realKey)) {
+          // 本物が届いた → DOM上の楽観メッセージを削除（置換扱い）
+          const tempEl = messagesContainer.querySelector(`[data-msg-key="${tempId}"]`);
+          if (tempEl) tempEl.remove();
+          toRemoveTempIds.push(tempId);
+        }
+      });
+      toRemoveTempIds.forEach(tempId => {
+        const info = optimisticMessages.get(tempId);
+        if (info && info.realKey) optimisticByRealKey.delete(info.realKey);
+        optimisticMessages.delete(tempId);
+      });
 
-      // メッセージ数が減った or 内容が変わった場合は全体再構築が必要
-      // 単純な「追加」「既読更新」「編集」だけであれば差分更新
-      const needFullRender = hasDeletions || !hadMessages && newMessages.length > 0 || messagesCache.length === 0;
+      // 楽観的メッセージ（まだ本物が届いていないもの）を取得
+      const pendingOptimistic = Array.from(optimisticMessages.values())
+        .filter(m => m.chatId === currentChatId);
 
+      // メッセージ全体（キャッシュ + まだ確定していない楽観）
+      const oldMessagesCache = messagesCache;
       messagesCache = newMessages;
 
-      if (needFullRender) {
+      // 削除チェック
+      const oldKeys = new Set(oldMessagesCache.map(m => m.key));
+      const hasDeletions = oldMessagesCache.some(m => !newMessageKeys.has(m.key));
+
+      // 初回 or 大幅な変動 → 全体再構築
+      const currentDomKeys = new Set();
+      messagesContainer.querySelectorAll('[data-msg-key]').forEach(el => {
+        if (!el.dataset.msgKey.startsWith('temp_')) currentDomKeys.add(el.dataset.msgKey);
+      });
+      const domMissing = oldMessagesCache.some(m => !currentDomKeys.has(m.key));
+
+      if (hasDeletions || domMissing || messagesContainer.children.length === 0) {
         fullRenderMessages();
-      } else {
-        // 差分更新
-        // 1) 削除されたメッセージをDOMから除去
-        const currentKeys = newIds;
-        document.querySelectorAll('[data-msg-key]').forEach(el => {
-          const key = el.dataset.msgKey;
-          if (key && !key.startsWith('temp_') && !currentKeys.has(key)) {
-            el.remove();
-            renderedMessageKeys.delete(key);
-          }
-        });
+        return;
+      }
 
-        // 2) 既読の更新（既存メッセージで「既読」表示の変化をチェック）
-        updateReadReceipts();
+      // 差分更新
+      // 1) 編集済みの更新
+      updateEditedFlags();
 
-        // 3) 編集済み表示の更新
-        updateEditedFlags();
+      // 2) 既読の更新
+      updateReadReceipts();
 
-        // 4) 新規メッセージを追加
-        const lastRenderedMsg = getLastRenderedMessageKey();
-        const newMsgs = [];
-        let foundLast = !lastRenderedMsg;
-        for (const m of newMessages) {
-          if (!foundLast) {
-            if (m.key === lastRenderedMsg) foundLast = true;
-            continue;
-          }
-          if (!renderedMessageKeys.has(m.key)) {
-            newMsgs.push(m);
-          }
+      // 3) 新規追加（既にDOMにないメッセージ）
+      const lastRenderedMsg = getLastRenderedMessageKey();
+      const newMsgs = [];
+      let foundLast = !lastRenderedMsg;
+      for (const m of newMessages) {
+        if (!foundLast) {
+          if (m.key === lastRenderedMsg) foundLast = true;
+          continue;
         }
-
-        if (newMsgs.length > 0) {
-          appendMessages(newMsgs);
+        if (!currentDomKeys.has(m.key)) {
+          newMsgs.push(m);
         }
+      }
+
+      if (newMsgs.length > 0) {
+        appendMessages(newMsgs);
       }
     }
 
     function getLastRenderedMessageKey() {
-      const els = messagesContainer.querySelectorAll('[data-msg-key]');
+      // 楽観的メッセージは除外
+      const els = Array.from(messagesContainer.querySelectorAll('[data-msg-key]'))
+        .filter(el => !el.dataset.msgKey.startsWith('temp_'));
       if (els.length === 0) return null;
       return els[els.length - 1].dataset.msgKey;
     }
@@ -2202,22 +2154,18 @@
     }
 
     function updateEditedFlags() {
-      // 編集済みは編集時に update() で書き換わるので、Firebaseの updated 値を反映
       messagesCache.forEach(msg => {
         const row = messagesContainer.querySelector(`[data-msg-key="${msg.key}"]`);
         if (!row) return;
         const meta = row.querySelector('.msg-meta');
         if (!meta) return;
-        const hasEdited = meta.querySelector('.edited-label');
         const content = row.querySelector('.msg-content');
-        // 編集済みラベル
-        if (msg.edited && !hasEdited) {
+        if (msg.edited && !meta.querySelector('.edited-label')) {
           const lab = document.createElement('span');
           lab.className = 'edited-label';
           lab.textContent = '(編集済み)';
           meta.appendChild(lab);
         }
-        // 本文更新
         if (content) {
           const newContentHtml = formatContent(msg.content);
           if (content.innerHTML !== newContentHtml) {
@@ -2228,24 +2176,31 @@
     }
 
     /* ============================================================
-       メッセージ追加（差分）
+       メッセージ追加
        ============================================================ */
     function appendMessages(messages) {
       const fragment = document.createDocumentFragment();
-      let lastRenderedMsg = null;
 
-      // 既に描画されている最後のメッセージを取得
+      // 現在の最後のメッセージ（楽観的も含む）
       const lastEl = messagesContainer.lastElementChild;
+      let lastRenderedMsg = null;
       if (lastEl && lastEl.dataset.msgKey) {
         const key = lastEl.dataset.msgKey;
-        const found = messagesCache.find(m => m.key === key);
-        if (found) lastRenderedMsg = found;
+        if (key.startsWith('temp_')) {
+          // 楽観的メッセージ
+          const opt = optimisticMessages.get(key);
+          if (opt) lastRenderedMsg = opt;
+        } else {
+          const found = messagesCache.find(m => m.key === key);
+          if (found) lastRenderedMsg = found;
+        }
       }
-      // 日付区切りが必要かチェック
       let lastDateForDivider = lastRenderedMsg ? lastRenderedMsg.createdAt : null;
 
       messages.forEach((msg) => {
-        // 日付区切り
+        const isOptimistic = msg.optimistic === true;
+        const key = msg.key || msg.tempId;
+
         if (!lastDateForDivider || !isSameDay(lastDateForDivider, msg.createdAt)) {
           const divider = document.createElement('div');
           divider.className = 'date-divider';
@@ -2265,16 +2220,19 @@
 
         const row = document.createElement('div');
         row.className = 'msg-row' + (isMine ? ' mine' : '') + (isGrouped ? ' msg-grouped' : '');
-        row.dataset.msgKey = msg.key;
+        row.dataset.msgKey = key;
         row.dataset.msgAuthorUid = msg.authorUid;
 
         let metaHtml = '';
         if (!isGrouped) {
+          const editedHtml = msg.edited ? '<span class="edited-label">(編集済み)</span>' : '';
+          const sendingHtml = isOptimistic ? '<span class="sending-label">送信中</span>' : '';
           metaHtml = `
             <div class="msg-meta">
               <span class="name" data-profile-name>${escapeHtml(profile.nickname)}</span>
               <span class="time">${formatTime(msg.createdAt)}</span>
-              ${msg.edited ? '<span class="edited-label">(編集済み)</span>' : ''}
+              ${editedHtml}
+              ${sendingHtml}
             </div>
           `;
         }
@@ -2311,12 +2269,13 @@
         }
 
         let readHtml = '';
-        if (isMine && isMessageReadByOthers(msg)) {
+        if (!isOptimistic && isMine && isMessageReadByOthers(msg)) {
           readHtml = `<div class="read-receipt">✓ 既読</div>`;
         }
 
-        const menuBtnHtml = isMine
-          ? `<button class="msg-menu-btn" data-key="${msg.key}">⋯</button>`
+        // 楽観的メッセージにはメニューボタンを付けない
+        const menuBtnHtml = (!isOptimistic && isMine)
+          ? `<button class="msg-menu-btn" data-key="${key}">⋯</button>`
           : '';
 
         const showAvatar = !isMine && !isGrouped;
@@ -2345,20 +2304,18 @@
           </div>
         `;
 
-        // メニューボタンのイベント
         const menuBtn = row.querySelector('.msg-menu-btn');
         if (menuBtn) {
           menuBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            const key = menuBtn.dataset.key;
-            if (openMenuKey === key) {
+            const k = menuBtn.dataset.key;
+            if (openMenuKey === k) {
               closeAllMenus();
             } else {
-              openMenu(menuBtn, key);
+              openMenu(menuBtn, k);
             }
           });
         }
-        // ライトボックス
         const lightboxTarget = row.querySelector('[data-lightbox]');
         if (lightboxTarget) {
           lightboxTarget.addEventListener('click', () => {
@@ -2368,14 +2325,11 @@
         }
 
         fragment.appendChild(row);
-        renderedMessageKeys.add(msg.key);
         lastRenderedMsg = msg;
       });
 
-      // タイピングインジケータの前に挿入
       messagesContainer.appendChild(fragment);
 
-      // 自動スクロール
       if (isNearBottom) {
         requestAnimationFrame(() => {
           chatMessagesWrap.scrollTop = chatMessagesWrap.scrollHeight;
@@ -2383,18 +2337,15 @@
       }
     }
 
-    /* ============================================================
-       全体再構築（メッセージ削除時など）
-       ============================================================ */
     function fullRenderMessages() {
       messagesContainer.innerHTML = '';
-      renderedMessageKeys.clear();
 
-      const optimisticList = Array.from(optimisticMessages.values())
-        .filter(m => m.chatId === currentChatId)
+      // キャッシュ + まだ本物が届いていない楽観メッセージ
+      const pendingOptimistic = Array.from(optimisticMessages.values())
+        .filter(m => m.chatId === currentChatId && !m.realKey)
         .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
 
-      const allMessages = [...messagesCache, ...optimisticList];
+      const allMessages = [...messagesCache, ...pendingOptimistic];
 
       if (allMessages.length === 0) {
         messagesContainer.innerHTML = `
@@ -2406,13 +2357,9 @@
         return;
       }
 
-      // appendMessagesを使って一括描画
       appendMessages(allMessages);
     }
 
-    /* ============================================================
-       既読判定
-       ============================================================ */
     function isMessageReadByOthers(msg) {
       if (!currentUser || msg.authorUid !== currentUser.uid) return false;
       const chat = chatsCache[currentChatId];
@@ -2430,14 +2377,10 @@
       if (readsUnsubscribe) readsUnsubscribe();
       readsUnsubscribe = onValue(ref(db, `chatReads/${chatId}`), (snap) => {
         readsCache = snap.exists() ? snap.val() : {};
-        // 既読だけ更新（メッセージ全体は再構築しない）
         requestAnimationFrame(updateReadReceipts);
       }, () => {});
     }
 
-    /* ============================================================
-       タイピング（独立スロットで更新）
-       ============================================================ */
     function initTypingListener(chatId) {
       if (typingUnsubscribe) typingUnsubscribe();
       typingUnsubscribe = onValue(ref(db, `chatTyping/${chatId}`), (snap) => {
@@ -2448,7 +2391,6 @@
           if (uid === currentUser.uid) return;
           if (info && info.at && (now - info.at) < TYPING_TIMEOUT_MS) newTypingCache[uid] = info;
         });
-        // 変化があった時だけ再描画
         const oldKeys = Object.keys(typingCache).sort().join(',');
         const newKeys = Object.keys(newTypingCache).sort().join(',');
         typingCache = newTypingCache;
@@ -2459,13 +2401,9 @@
     }
 
     function renderTypingIndicator() {
-      // 独立スロットを更新
       typingIndicatorSlot.innerHTML = '';
       const uids = Object.keys(typingCache);
-      if (uids.length === 0 || !currentChatId) {
-        // スロットが空になればmin-height 0
-        return;
-      }
+      if (uids.length === 0 || !currentChatId) return;
       const names = uids.map(uid => getProfileForUid(uid).nickname);
       const label = names.length === 1
         ? `${names[0]} が入力中`
@@ -2694,7 +2632,7 @@
       const sendBtn = document.getElementById('sendBtn');
       sendBtn.disabled = true;
 
-      // 楽観的UI
+      // ★ 楽観的メッセージ作成
       tempIdCounter++;
       const tempId = 'temp_' + Date.now() + '_' + tempIdCounter;
       const optimistic = {
@@ -2712,7 +2650,7 @@
       };
       optimisticMessages.set(tempId, optimistic);
 
-      // 入力クリア
+      // 入力欄クリア
       messageInput.value = '';
       autoResizeTextarea();
       pendingFile = null;
@@ -2721,9 +2659,8 @@
       clearTimeout(typingTimeout);
       setMyTypingState(false);
 
-      // 楽観的メッセージを追加
+      // ★ 楽観メッセージをDOMに追加（削除しない！）
       appendMessages([optimistic]);
-      renderedMessageKeys.add(tempId);
 
       // 最下部へ
       requestAnimationFrame(() => {
@@ -2731,6 +2668,8 @@
         isNearBottom = true;
         updateScrollButton();
       });
+
+      const chatIdAtSend = currentChatId;
 
       try {
         const msgData = {
@@ -2741,40 +2680,42 @@
           authorAvatar: myProfile.avatar,
           createdAt: Date.now()
         };
-        const newRef = push(ref(db, `chatMessages/${currentChatId}`));
+        const newRef = push(ref(db, `chatMessages/${chatIdAtSend}`));
         await set(newRef, msgData);
 
+        // ★ 本物のキーを楽観メッセージに紐付け（DOMは削除しない）
+        const realKey = newRef.key;
+        const opt = optimisticMessages.get(tempId);
+        if (opt) {
+          opt.realKey = realKey;
+          optimisticByRealKey.set(realKey, tempId);
+        }
+
         // チャット一覧の最終メッセージ更新
-        const chat = chatsCache[currentChatId];
+        const chat = chatsCache[chatIdAtSend];
         if (chat) {
           const memberUids = Object.keys(chat.members || {});
           const lastMsgLabel = content || (file ? '📷 画像' : '');
           const updates = {};
           memberUids.forEach(uid => {
-            updates[`userChats/${uid}/${currentChatId}/lastMessage`] = lastMsgLabel;
-            updates[`userChats/${uid}/${currentChatId}/lastMessageAt`] = Date.now();
-            updates[`userChats/${uid}/${currentChatId}/lastSenderUid`] = currentUser.uid;
+            updates[`userChats/${uid}/${chatIdAtSend}/lastMessage`] = lastMsgLabel;
+            updates[`userChats/${uid}/${chatIdAtSend}/lastMessageAt`] = Date.now();
+            updates[`userChats/${uid}/${chatIdAtSend}/lastSenderUid`] = currentUser.uid;
           });
           await update(ref(db), updates);
         }
 
-        markChatAsRead(currentChatId);
+        if (currentChatId === chatIdAtSend) markChatAsRead(chatIdAtSend);
 
-        // 楽観的メッセージを削除
-        optimisticMessages.delete(tempId);
-        const tempEl = messagesContainer.querySelector(`[data-msg-key="${tempId}"]`);
-        if (tempEl) {
-          tempEl.remove();
-          renderedMessageKeys.delete(tempId);
-        }
+        // ここで楽観メッセージを削除しない！
+        // handleMessagesUpdate が本物を受け取った時に置換する
+
       } catch (err) {
         console.error('送信エラー:', err);
+        // 失敗時のみ楽観メッセージを削除
         optimisticMessages.delete(tempId);
         const tempEl = messagesContainer.querySelector(`[data-msg-key="${tempId}"]`);
-        if (tempEl) {
-          tempEl.remove();
-          renderedMessageKeys.delete(tempId);
-        }
+        if (tempEl) tempEl.remove();
         showBanner('送信失敗: ' + (err.message || ''), true);
         if (!messageInput.value) {
           messageInput.value = content;
@@ -3661,7 +3602,7 @@
     });
 
     /* ============================================================
-       その他イベント
+       その他
        ============================================================ */
     window.addEventListener('online', () => setConnection(true));
     window.addEventListener('offline', () => setConnection(false));
