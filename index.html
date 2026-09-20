@@ -259,11 +259,6 @@
       75% { content: '...'; }
       100% { content: ''; }
     }
-    .failed-label {
-      font-size: 10px; color: #ef4444;
-      font-style: italic; font-weight: 700;
-      margin-left: 4px;
-    }
 
     .msg-menu-btn {
       width: 24px; height: 24px; border-radius: 50%;
@@ -528,8 +523,39 @@
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(220,38,38,0.4);
       transition: transform 0.15s, box-shadow 0.2s;
+      position: relative;
+      user-select: none;
     }
     .emergency-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,0.6); }
+    .emergency-btn.holding {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border-color: #fbbf24;
+    }
+
+    /* ★ ヘルプボタン */
+    .help-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      border: 1.5px solid #d1d5db;
+      color: #6b7280;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
+    .help-btn:hover {
+      background: #dbeafe;
+      border-color: #93c5fd;
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+
     .admin-btn {
       background: linear-gradient(135deg, #7c3aed, #5b21b6);
       color: #fff; border: none; border-radius: 8px;
@@ -738,6 +764,119 @@
       display: flex; align-items: center; justify-content: center;
     }
 
+    /* ========================================
+       ★ 緊急モード説明モーダル専用スタイル
+       ======================================== */
+    #emergencyHelpModal .modal-content {
+      max-width: 560px;
+      border-top: 6px solid #dc2626;
+    }
+    .eh-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .eh-icon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      color: #fff;
+      font-size: 24px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(220,38,38,0.4);
+    }
+    .eh-title {
+      font-size: 18px; font-weight: 900;
+      color: #991b1b;
+      line-height: 1.2;
+    }
+    .eh-subtitle {
+      font-size: 11px; color: #6b7280;
+      margin-top: 2px;
+    }
+    .eh-section {
+      margin-bottom: 18px;
+    }
+    .eh-section-title {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 800;
+      color: #1e3a8a;
+      margin-bottom: 8px;
+      padding: 6px 10px;
+      background: #eff6ff;
+      border-left: 3px solid #2563eb;
+      border-radius: 4px;
+    }
+    .eh-section-title.warn {
+      background: #fef2f2;
+      color: #991b1b;
+      border-left-color: #dc2626;
+    }
+    .eh-section-title.info {
+      background: #f0fdf4;
+      color: #166534;
+      border-left-color: #16a34a;
+    }
+    .eh-body {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #374151;
+      padding-left: 4px;
+    }
+    .eh-body p { margin: 0 0 8px 0; }
+    .eh-body ul {
+      margin: 0 0 8px 0;
+      padding-left: 20px;
+    }
+    .eh-body li { margin-bottom: 4px; }
+    .eh-body strong { color: #111827; font-weight: 700; }
+    .eh-body .email {
+      font-family: monospace;
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #1e40af;
+      word-break: break-all;
+    }
+    .eh-body .warn-box {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #991b1b;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .eh-body .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #1e40af;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .eh-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid #e5e7eb;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .eh-footer-note {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .eh-actions {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+
     @media (max-width: 500px) {
       .header-title { font-size: 17px; }
       .chat-item { padding: 10px 12px; }
@@ -828,7 +967,10 @@
           <button id="newChatBtn" class="primary-btn" style="padding:7px 12px;font-size:12px;">＋ チャット</button>
           <button id="profileBtn" class="icon-btn">👤</button>
           <button id="announceBtn" class="admin-btn" style="display:none;">📢</button>
-          <button id="emergencyBtn" class="emergency-btn">🚨</button>
+          <!-- ★ 緊急モードヘルプボタン -->
+          <button id="emergencyHelpBtn" class="help-btn" title="緊急モードについて">？</button>
+          <!-- ★ 緊急ボタン -->
+          <button id="emergencyBtn" class="emergency-btn" title="緊急停止（長押しで説明）">🚨</button>
           <button id="logoutBtn" class="icon-btn">ログアウト</button>
         </div>
       </header>
@@ -960,6 +1102,112 @@
       <div style="display:flex;justify-content:flex-end;gap:8px;">
         <button id="announceCancel" class="secondary-btn">キャンセル</button>
         <button id="announceSend" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">📢 送信</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ★ 緊急モード説明モーダル -->
+  <div id="emergencyHelpModal" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <div class="eh-header">
+        <div class="eh-icon">🚨</div>
+        <div>
+          <div class="eh-title">緊急モードについて</div>
+          <div class="eh-subtitle">EMERGENCY MODE - 説明</div>
+        </div>
+      </div>
+
+      <!-- 概要 -->
+      <div class="eh-section">
+        <div class="eh-section-title">📖 概要</div>
+        <div class="eh-body">
+          <p>緊急ボタンは、サイト全体を<strong>即座に停止</strong>させるための機能です。荒らし・不正アクセス・その他の緊急事態が発生した時に使用します。</p>
+          <p>ボタンを押すと、発動した瞬間から<strong>管理者以外のすべてのユーザー</strong>の画面が<strong>真っ黒</strong>になり、タイトルは「<strong>無</strong>」に、アイコンは黒一色に変わります。</p>
+        </div>
+      </div>
+
+      <!-- 管理者 -->
+      <div class="eh-section">
+        <div class="eh-section-title warn">👑 管理者（除外対象）</div>
+        <div class="eh-body">
+          <p>以下のメールアドレスでログインしているユーザーは、緊急モード中でも<strong>通常通りサイトを操作できます</strong>：</p>
+          <ul>
+            <li><span class="email">katou.noel114514@gmail.com</span></li>
+            <li><span class="email">18107@v.nakijin.ed.jp</span></li>
+          </ul>
+          <p>管理者の画面には、以下の情報が表示されます：</p>
+          <ul>
+            <li>🚨 上部に赤い警告バナー</li>
+            <li>📋 「誰が」「いつ」「なぜ」発動したか</li>
+            <li>✅ 緊急解除ボタン</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 一般ユーザー -->
+      <div class="eh-section">
+        <div class="eh-section-title warn">👥 一般ユーザーの扱い</div>
+        <div class="eh-body">
+          <p>管理者以外のすべてのユーザー（発動した本人も含む）は、以下の処理が実行されます：</p>
+          <ul>
+            <li>画面全体が真っ黒になる</li>
+            <li>タイトルが「無」に変わる</li>
+            <li>ブラウザのアイコンが黒一色になる</li>
+            <li>タブを閉じる or <code>about:blank</code> へ遷移を試みる</li>
+            <li>タブを閉じようとすると警告が出る</li>
+            <li>タブを開き直しても、解除されるまで再度「無」画面になる</li>
+          </ul>
+          <div class="warn-box">
+            ⚠️ 技術的な制約により、他ユーザーのタブを物理的に閉じることはできません。ただし、解除されるまでサイトを利用できない状態が続きます。
+          </div>
+        </div>
+      </div>
+
+      <!-- 発動 -->
+      <div class="eh-section">
+        <div class="eh-section-title">🔴 発動方法</div>
+        <div class="eh-body">
+          <ul>
+            <li>🚨 ボタンを<strong>1回クリック</strong>すると即座に発動します</li>
+            <li>誤操作防止のため、ボタンを<strong>1秒以上長押し</strong>すると、この説明モーダルが開きます</li>
+            <li>発動すると、あなた自身も巻き込まれてタブが閉じられます（管理者以外）</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 解除 -->
+      <div class="eh-section">
+        <div class="eh-section-title info">✅ 解除方法</div>
+        <div class="eh-body">
+          <p>緊急モードを解除できるのは<strong>管理者のみ</strong>です。</p>
+          <ul>
+            <li>管理者の画面に表示される「✅ 緊急解除」ボタンを押す</li>
+            <li>解除すると、全ユーザーのサイトが通常通り利用可能になる</li>
+            <li>ただし、すでにタブを閉じたユーザーは、サイトのURLを再度開く必要がある</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 注意 -->
+      <div class="eh-section">
+        <div class="eh-section-title warn">⚠️ 注意事項</div>
+        <div class="eh-body">
+          <ul>
+            <li><strong>いたずらで押さないでください。</strong>全ユーザーが被害を受けます</li>
+            <li>誰でも押せる仕様のため、悪意あるユーザーによる悪用のリスクがあります</li>
+            <li>発動した記録（メールアドレス・時刻）は管理者に通知されます</li>
+            <li>誤って押してしまった場合は、管理者に解除を依頼してください</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="eh-footer">
+        <div class="eh-footer-note">
+          ※この説明はいつでも確認できます
+        </div>
+        <div class="eh-actions">
+          <button id="emergencyHelpCloseBtn" class="secondary-btn">閉じる</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1157,12 +1405,8 @@
     let announcementUnsubscribe = null;
     let chatLatestListeners = {};
 
-    // ★ 楽観的メッセージ管理
-    // clientMsgId をキーにして本物と紐付ける（Firebaseにも保存する）
-    let optimisticMessages = new Map();   // clientMsgId → { data, realKey }
-    let optimisticByRealKey = new Map();  // realKey → clientMsgId
-
-    // ★ 送信済み clientMsgId のセット（重複防止）
+    let optimisticMessages = new Map();
+    let optimisticByRealKey = new Map();
     let sentClientMsgIds = new Set();
 
     let isNearBottom = true;
@@ -1220,6 +1464,11 @@
     let openMenuEl = null;
     let intentionalSignOut = false;
     let selectedAvatar = DEFAULT_AVATAR;
+
+    // ★ 緊急ボタン長押し関連
+    let emergencyHoldTimer = null;
+    let emergencyHoldTriggered = false;
+    let emergencyLongPressStart = 0;
 
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
@@ -1626,8 +1875,6 @@
       typingIndicatorSlot.innerHTML = '';
       typingCache = {};
 
-      // ★ このチャットの楽観メッセージだけ再セット
-      // （他チャットのものは optimisticMessages に残しつつ、DOM上には出さない）
       optimisticMessages.forEach((info, key) => {
         if (info.data.chatId !== chatId) {
           optimisticMessages.delete(key);
@@ -1777,23 +2024,16 @@
       });
     }
 
-    /* ============================================================
-       ★ メッセージ更新（clientMsgId ベースの重複防止）
-       ============================================================ */
     function handleMessagesUpdate(newMessages) {
       const newMessageKeys = new Set(newMessages.map(m => m.key));
-      // clientMsgId セット
       const newClientMsgIds = new Set();
       newMessages.forEach(m => {
         if (m.clientMsgId) newClientMsgIds.add(m.clientMsgId);
       });
 
-      // 楽観的メッセージの処理
-      // clientMsgId が一致する本物が届いたら、楽観メッセージをDOMから削除
       const toRemoveOptimisticIds = [];
       optimisticMessages.forEach((info, clientMsgId) => {
         if (newClientMsgIds.has(clientMsgId)) {
-          // 本物が届いた
           const tempEl = messagesContainer.querySelector(`[data-client-msg-id="${clientMsgId}"]`);
           if (tempEl) tempEl.remove();
           toRemoveOptimisticIds.push(clientMsgId);
@@ -1805,27 +2045,22 @@
         optimisticMessages.delete(clientMsgId);
       });
 
-      // キャッシュ更新
       messagesCache = newMessages;
 
-      // 削除チェック
       const currentDomKeys = new Set();
       messagesContainer.querySelectorAll('[data-msg-key]').forEach(el => {
         currentDomKeys.add(el.dataset.msgKey);
       });
       const hasDeletions = Array.from(currentDomKeys).some(k => !k.startsWith('temp_') && !newMessageKeys.has(k));
 
-      // 初回 or 削除あり → 全体再構築
       if (hasDeletions || messagesContainer.children.length === 0 || messagesContainer.querySelector('.loading-spinner')) {
         fullRenderMessages();
         return;
       }
 
-      // 差分更新
       updateEditedFlags();
       updateReadReceipts();
 
-      // 新規追加
       const lastRenderedMsg = getLastRenderedMessageKey();
       const newMsgs = [];
       let foundLast = !lastRenderedMsg;
@@ -1892,9 +2127,6 @@
       });
     }
 
-    /* ============================================================
-       メッセージ追加
-       ============================================================ */
     function appendMessages(messages) {
       const fragment = document.createDocumentFragment();
 
@@ -1917,7 +2149,6 @@
         const key = msg.key || ('temp_' + msg.clientMsgId);
         const clientMsgId = msg.clientMsgId || key;
 
-        // ★ 重複防止：既にDOMに同じclientMsgIdまたはkeyがあればスキップ
         if (messagesContainer.querySelector(`[data-msg-key="${key}"]`)) return;
         if (clientMsgId && messagesContainer.querySelector(`[data-client-msg-id="${clientMsgId}"]`)) return;
 
@@ -2060,13 +2291,11 @@
     function fullRenderMessages() {
       messagesContainer.innerHTML = '';
 
-      // キャッシュ + まだ本物が届いていない楽観メッセージ
       const pendingOptimistic = Array.from(optimisticMessages.values())
         .filter(info => info.data.chatId === currentChatId && !info.realKey)
         .map(info => info.data)
         .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
 
-      // ★ 重複除去：既にmessagesCacheに同じclientMsgIdがあれば楽観側を除外
       const cacheClientIds = new Set(messagesCache.map(m => m.clientMsgId).filter(Boolean));
       const filteredOptimistic = pendingOptimistic.filter(o => !cacheClientIds.has(o.clientMsgId));
 
@@ -2348,13 +2577,11 @@
       const sendBtn = document.getElementById('sendBtn');
       sendBtn.disabled = true;
 
-      // ★ clientMsgId を生成（ユニーク）
       const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
       sentClientMsgIds.add(clientMsgId);
 
       const chatIdAtSend = currentChatId;
 
-      // ★ 楽観的メッセージ
       const optimisticData = {
         key: 'temp_' + clientMsgId,
         clientMsgId,
@@ -2370,7 +2597,6 @@
       };
       optimisticMessages.set(clientMsgId, { data: optimisticData, realKey: null });
 
-      // 入力欄クリア
       messageInput.value = '';
       autoResizeTextarea();
       pendingFile = null;
@@ -2379,7 +2605,6 @@
       clearTimeout(typingTimeout);
       setMyTypingState(false);
 
-      // 楽観メッセージをDOMに追加
       appendMessages([optimisticData]);
 
       requestAnimationFrame(() => {
@@ -2389,7 +2614,6 @@
       });
 
       try {
-        // ★ clientMsgId も一緒に保存（重複防止の要）
         const msgData = {
           clientMsgId,
           content: content || '',
@@ -2426,7 +2650,6 @@
 
       } catch (err) {
         console.error('送信エラー:', err);
-        // 失敗時のみ楽観メッセージを削除
         optimisticMessages.delete(clientMsgId);
         const tempEl = messagesContainer.querySelector(`[data-client-msg-id="${clientMsgId}"]`);
         if (tempEl) tempEl.remove();
@@ -2978,6 +3201,9 @@
       if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden');
     });
 
+    /* ============================================================
+       緊急モード
+       ============================================================ */
     function executeNothing() {
       emergencyOverlay.classList.add('show');
       document.title = '無';
@@ -3103,11 +3329,105 @@
         showBanner('解除に失敗しました', true);
       }
     }
-    document.getElementById('emergencyBtn').addEventListener('click', () => {
-      if (!currentUser) { alert('ログインが必要です。'); return; }
-      triggerEmergency();
-    });
     document.getElementById('adminClearEmergencyBtn').addEventListener('click', clearEmergency);
+
+    /* ============================================================
+       ★ 緊急モード説明モーダル
+       ============================================================ */
+    const emergencyHelpModal = document.getElementById('emergencyHelpModal');
+
+    function openEmergencyHelp() {
+      emergencyHelpModal.classList.remove('hidden');
+    }
+    function closeEmergencyHelp() {
+      emergencyHelpModal.classList.add('hidden');
+    }
+
+    // ヘルプボタンクリック
+    document.getElementById('emergencyHelpBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openEmergencyHelp();
+    });
+    document.getElementById('emergencyHelpCloseBtn').addEventListener('click', closeEmergencyHelp);
+    emergencyHelpModal.addEventListener('click', (e) => {
+      if (e.target.id === 'emergencyHelpModal') closeEmergencyHelp();
+    });
+
+    /* ============================================================
+       ★ 緊急ボタン本体（長押しで説明、シングルクリックで発動）
+       ============================================================ */
+    const emergencyBtn = document.getElementById('emergencyBtn');
+
+    function startEmergencyPress(e) {
+      if (e.type === 'mousedown' && e.button !== 0) return;
+      emergencyHoldTriggered = false;
+      emergencyLongPressStart = Date.now();
+      emergencyBtn.classList.add('holding');
+
+      // 1秒後に長押し判定 → 説明モーダル
+      emergencyHoldTimer = setTimeout(() => {
+        emergencyHoldTriggered = true;
+        emergencyBtn.classList.remove('holding');
+        openEmergencyHelp();
+      }, 1000);
+    }
+
+    function cancelEmergencyPress() {
+      if (emergencyHoldTimer) {
+        clearTimeout(emergencyHoldTimer);
+        emergencyHoldTimer = null;
+      }
+      emergencyBtn.classList.remove('holding');
+    }
+
+    function endEmergencyPress(e) {
+      const wasHolding = emergencyHoldTimer !== null;
+      cancelEmergencyPress();
+
+      // 長押しで説明が開いた場合は何もしない
+      if (emergencyHoldTriggered) {
+        emergencyHoldTriggered = false;
+        return;
+      }
+
+      // 短時間のクリック → 緊急発動
+      if (e && e.preventDefault) e.preventDefault();
+      if (!currentUser) { alert('ログインが必要です。'); return; }
+
+      // 説明モーダルが開いていたら閉じてから発動
+      if (!emergencyHelpModal.classList.contains('hidden')) {
+        closeEmergencyHelp();
+        return;
+      }
+
+      // 発動
+      triggerEmergency();
+    }
+
+    emergencyBtn.addEventListener('mousedown', startEmergencyPress);
+    emergencyBtn.addEventListener('mouseup', endEmergencyPress);
+    emergencyBtn.addEventListener('mouseleave', cancelEmergencyPress);
+
+    // タッチ対応
+    emergencyBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      startEmergencyPress(e);
+    }, { passive: false });
+    emergencyBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      endEmergencyPress(e);
+    }, { passive: false });
+    emergencyBtn.addEventListener('touchcancel', (e) => {
+      cancelEmergencyPress();
+      emergencyHoldTriggered = false;
+    });
+
+    // キーボード（Enter/Space）で長押し扱いを避けるため、keydownでは発動しない
+    emergencyBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+      }
+    });
 
     window.addEventListener('beforeunload', (e) => {
       if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
