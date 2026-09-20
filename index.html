@@ -2142,7 +2142,7 @@
         if (shouldShow && !hasReceipt && body) {
           const receipt = document.createElement('div');
           receipt.className = 'read-receipt';
-          receipt.textContent = '✓ 既読';
+          receipt.textContent = '既読';
           body.appendChild(receipt);
         } else if (!shouldShow && hasReceipt) {
           hasReceipt.remove();
