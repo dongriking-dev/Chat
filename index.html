@@ -272,6 +272,9 @@
     }
     .msg-bubble-wrap:hover .msg-menu-btn,
     .msg-menu-btn.open { opacity: 1; }
+    @media (hover: none) {
+      .msg-menu-btn { opacity: 0.7; }
+    }
     .msg-menu-btn:hover { background: #eff6ff; color: #1e40af; }
     .msg-menu-popup {
       position: fixed; background: #fff;
@@ -436,6 +439,17 @@
       pointer-events: none;
     }
     #statusBanner.show { transform: translate(-50%, 0); opacity: 1; }
+
+    #loginToastContainer {
+      position: fixed; top: 60px; right: 16px;
+      z-index: 26000;
+      display: flex; flex-direction: column; gap: 8px;
+      pointer-events: none; max-width: 340px;
+    }
+    @keyframes toastSlideIn {
+      0% { opacity: 0; transform: translateX(40px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
 
     #bootOverlay {
       position: fixed; inset: 0; background: #111827;
@@ -906,26 +920,6 @@
       color: #1e40af;
       word-break: break-all;
     }
-    .eh-body .warn-box {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 12px;
-      color: #991b1b;
-      line-height: 1.6;
-      margin-top: 8px;
-    }
-    .eh-body .info-box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 12px;
-      color: #1e40af;
-      line-height: 1.6;
-      margin-top: 8px;
-    }
     .eh-footer {
       display: flex; justify-content: space-between; align-items: center;
       margin-top: 20px;
@@ -947,6 +941,7 @@
       #messageInput { font-size: 14px; }
       .modal-content { padding: 18px; }
       .chat-messages-wrap { padding: 12px 10px; }
+      #loginToastContainer { right: 8px; left: 8px; max-width: none; }
     }
   </style>
 </head>
@@ -981,6 +976,7 @@
   </div>
 
   <div id="statusBanner" class="bg-red-600 text-white"></div>
+  <div id="loginToastContainer"></div>
 
   <div id="lightbox">
     <button class="lightbox-close" id="lightboxClose">✕</button>
@@ -1170,7 +1166,6 @@
     </div>
   </div>
 
-  <!-- ★ 管理者BANパネル -->
   <div id="adminBanPanel" class="modal-backdrop hidden">
     <div class="modal-content" style="border-top:6px solid #dc2626; max-width:480px;">
       <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#991b1b;">🔨 ユーザーBAN</h3>
@@ -1189,7 +1184,6 @@
     </div>
   </div>
 
-  <!-- ★ 管理者ストーリー削除パネル -->
   <div id="adminStoryDeletePanel" class="modal-backdrop hidden">
     <div class="modal-content" style="border-top:6px solid #ec4899; max-width:480px;">
       <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#be185d;">📁 ユーザーのストーリー削除</h3>
@@ -1204,7 +1198,6 @@
     </div>
   </div>
 
-  <!-- ★ 通知パネル -->
   <div id="notificationPanel" class="modal-backdrop hidden">
     <div class="modal-content" style="border-top:6px solid #0891b2; max-width:560px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
@@ -1558,6 +1551,7 @@
 
     let notificationsCache = {};
     let lastSeenNotificationCount = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0', 10);
+    let lastNotifIds = new Set();
 
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
@@ -1822,9 +1816,6 @@
       });
     }
 
-    /* ============================================================
-       ★ BAN実行（タブ強制削除）
-       ============================================================ */
     function executeBan() {
       banOverlay.classList.add('show');
       document.body.style.background = '#000';
@@ -2386,8 +2377,9 @@
           readHtml = `<div class="read-receipt">✓ 既読</div>`;
         }
 
-        const menuBtnHtml = (!isOptimistic && isMine)
-          ? `<button class="msg-menu-btn" data-key="${key}">⋯</button>`
+        // ★ 自分のメッセージも相手のメッセージも ⋯ ボタンを表示
+        const menuBtnHtml = !isOptimistic
+          ? `<button class="msg-menu-btn" data-key="${key}" data-mine="${isMine ? '1' : '0'}">⋯</button>`
           : '';
 
         const showAvatar = !isMine && !isGrouped;
@@ -2578,12 +2570,19 @@
       openMenuKey = key;
       btn.classList.add('open');
 
+      const isMine = btn.dataset.mine === '1';
+
       const popup = document.createElement('div');
       popup.className = 'msg-menu-popup';
-      popup.innerHTML = `
-        <button class="edit-action">✏️ 編集</button>
-        <button class="danger delete-action">🗑️ 取り消し</button>
-      `;
+
+      let menuHtml = `<button class="copy-action">📋 コピー</button>`;
+      if (isMine) {
+        menuHtml += `
+          <button class="edit-action">✏️ 編集</button>
+          <button class="danger delete-action">🗑️ 取り消し</button>
+        `;
+      }
+      popup.innerHTML = menuHtml;
       document.body.appendChild(popup);
       openMenuEl = popup;
 
@@ -2597,26 +2596,89 @@
       popup.style.left = left + 'px';
       popup.style.top = top + 'px';
 
-      popup.querySelector('.edit-action').addEventListener('click', (e) => {
+      popup.querySelector('.copy-action').addEventListener('click', async (e) => {
         e.stopPropagation();
         closeAllMenus();
-        openEditModal(key);
+        await copyMessageToClipboard(key);
       });
-      popup.querySelector('.delete-action').addEventListener('click', async (e) => {
-        e.stopPropagation();
-        closeAllMenus();
-        if (!confirm('このメッセージを取り消しますか？')) return;
-        try {
-          await remove(ref(db, `chatMessages/${currentChatId}/${key}`));
-          showBanner('メッセージを取り消しました', false);
-        } catch (err) {
-          showBanner('取り消しに失敗しました', true);
-        }
-      });
+
+      if (isMine) {
+        popup.querySelector('.edit-action').addEventListener('click', (e) => {
+          e.stopPropagation();
+          closeAllMenus();
+          openEditModal(key);
+        });
+        popup.querySelector('.delete-action').addEventListener('click', async (e) => {
+          e.stopPropagation();
+          closeAllMenus();
+          if (!confirm('このメッセージを取り消しますか？')) return;
+          try {
+            await remove(ref(db, `chatMessages/${currentChatId}/${key}`));
+            showBanner('メッセージを取り消しました', false);
+          } catch (err) {
+            showBanner('取り消しに失敗しました', true);
+          }
+        });
+      }
 
       setTimeout(() => {
         document.addEventListener('click', outsideClickHandler);
       }, 0);
+    }
+
+    /* ★ メッセージコピー */
+    async function copyMessageToClipboard(key) {
+      const msg = messagesCache.find(m => m.key === key);
+      if (msg) {
+        await doCopy(msg);
+        return;
+      }
+      let found = null;
+      optimisticMessages.forEach(info => {
+        if (info.data.key === key || ('temp_' + info.data.clientMsgId) === key) {
+          found = info.data;
+        }
+      });
+      if (found) {
+        await doCopy(found);
+      } else {
+        showBanner('メッセージが見つかりません', true);
+      }
+    }
+
+    async function doCopy(msg) {
+      const parts = [];
+      if (msg.storyReplyTo && msg.storyReplyTo.previewText) {
+        parts.push(`↩ ストーリーに返信: ${msg.storyReplyTo.previewText}`);
+      }
+      if (msg.content) parts.push(msg.content);
+      if (msg.file && msg.file.dataUrl) parts.push('[画像]');
+
+      const text = parts.join('\n').trim();
+      if (!text) {
+        showBanner('コピーする内容がありません', true);
+        return;
+      }
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        showBanner('📋 コピーしました', false);
+      } catch (err) {
+        console.error('コピー失敗:', err);
+        showBanner('コピーに失敗しました', true);
+      }
     }
 
     const editMsgModal = document.getElementById('editMsgModal');
@@ -3634,7 +3696,7 @@
     });
 
     /* ============================================================
-       ★ ログイン通知（管理者向け + Discord Webhook）
+       ログイン通知（管理者向け + Discord Webhook）
        ============================================================ */
     async function sendDiscordNotification(payload) {
       try {
@@ -3684,10 +3746,60 @@
       if (notificationsUnsubscribe) notificationsUnsubscribe();
       if (!currentUser || !isAdmin(currentUser.email)) return;
       notificationsUnsubscribe = onValue(ref(db, 'loginNotifications'), (snap) => {
+        const prevIds = new Set(lastNotifIds);
         notificationsCache = snap.exists() ? snap.val() : {};
+        const currentIds = new Set(Object.keys(notificationsCache));
+
+        if (prevIds.size > 0) {
+          currentIds.forEach(id => {
+            if (!prevIds.has(id)) {
+              const n = notificationsCache[id];
+              showLoginToast(n);
+            }
+          });
+        }
+        lastNotifIds = currentIds;
+
         renderNotifications();
         updateNotifBadge();
       }, () => {});
+    }
+
+    function showLoginToast(n) {
+      const container = document.getElementById('loginToastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        background: linear-gradient(135deg, #0891b2, #0e7490);
+        color: #fff;
+        border-radius: 12px;
+        padding: 12px 14px;
+        box-shadow: 0 8px 24px rgba(8,145,178,0.45);
+        display: flex; align-items: flex-start; gap: 10px;
+        pointer-events: auto;
+        animation: toastSlideIn 0.35s cubic-bezier(.21,1.02,.73,1);
+        border-left: 4px solid #22d3ee;
+      `;
+      toast.innerHTML = `
+        <div style="font-size: 22px; line-height: 1;">🔔</div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-size: 11px; font-weight: 700; opacity: 0.85; letter-spacing: 0.05em;">新規ログイン</div>
+          <div style="font-size: 12px; font-weight: 700; margin-top: 2px; word-break: break-all;">${escapeHtml(n.email || '(不明)')}</div>
+          <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">${escapeHtml(n.nickname || '名無しさん')}</div>
+          <div style="font-size: 10px; opacity: 0.75; margin-top: 2px;">${formatTime(n.loggedInAt)}</div>
+        </div>
+        <button style="background: rgba(255,255,255,0.2); border: none; color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 12px; line-height: 1; flex-shrink: 0;">✕</button>
+      `;
+      toast.querySelector('button').addEventListener('click', () => toast.remove());
+      container.appendChild(toast);
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.style.transition = 'opacity 0.4s, transform 0.4s';
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(20px)';
+          setTimeout(() => toast.remove(), 400);
+        }
+      }, 8000);
     }
 
     function updateNotifBadge() {
@@ -4315,8 +4427,8 @@
       initAdminStoryDeletePanel();
       setupMyPresence();
 
-      // ★ 管理者は通知リスナー＆パネル、一般ユーザーはログイン通知送信
       if (admin) {
+        lastNotifIds = new Set();
         initNotificationsListener();
         initNotificationPanel();
       } else {
