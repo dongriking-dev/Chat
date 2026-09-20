@@ -437,75 +437,6 @@
     }
     #statusBanner.show { transform: translate(-50%, 0); opacity: 1; }
 
-    /* ========================================
-       ★ セキュリティアラート通知
-       ======================================== */
-    #securityAlertToast {
-      position: fixed;
-      top: 16px;
-      left: 50%;
-      transform: translate(-50%, -150%);
-      z-index: 24000;
-      max-width: calc(100vw - 32px);
-      width: auto;
-      background: linear-gradient(135deg, #7f1d1d, #b91c1c);
-      border: 2px solid #fca5a5;
-      border-radius: 12px;
-      padding: 12px 16px 12px 14px;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.4), 0 0 20px rgba(220,38,38,0.4);
-      color: #fff;
-      display: none;
-      align-items: center;
-      gap: 12px;
-      transition: transform 0.4s cubic-bezier(.21,1.02,.73,1), opacity 0.3s;
-      opacity: 0;
-    }
-    #securityAlertToast.show {
-      display: flex;
-      transform: translate(-50%, 0);
-      opacity: 1;
-    }
-    #securityAlertToast .sa-icon {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      flex-shrink: 0;
-      animation: saPulse 1.6s ease-in-out infinite;
-    }
-    @keyframes saPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.12); }
-    }
-    #securityAlertToast .sa-body {
-      flex: 1; min-width: 0;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-    #securityAlertToast .sa-title {
-      font-weight: 900;
-      font-size: 14px;
-      color: #fecaca;
-      margin-bottom: 2px;
-      letter-spacing: 0.02em;
-    }
-    #securityAlertToast .sa-msg {
-      color: #fff;
-      word-break: break-word;
-    }
-    #securityAlertToast .sa-close {
-      background: rgba(0,0,0,0.3);
-      border: none; color: #fff;
-      width: 26px; height: 26px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 14px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    #securityAlertToast .sa-close:hover { background: rgba(0,0,0,0.5); }
-
     #bootOverlay {
       position: fixed; inset: 0; background: #111827;
       z-index: 99997; display: flex; align-items: center; justify-content: center;
@@ -694,6 +625,7 @@
       font-size: 26px; color: #6b7280;
     }
 
+    /* ★ ストーリー空状態 */
     .stories-empty {
       padding: 18px 20px;
       text-align: center;
@@ -759,6 +691,7 @@
       padding: 40px; font-size: 26px; font-weight: 700;
       color: #fff; text-align: center; word-break: break-word;
     }
+    /* ★ ストーリー視聴数・いいね数表示（自分のストーリー用） */
     .story-stats-overlay {
       position: absolute;
       bottom: 74px; left: 16px;
@@ -817,7 +750,9 @@
       color: #ef4444;
       animation: likePop 0.5s cubic-bezier(.34,1.56,.64,1);
     }
-    .story-like-btn.liked:active { transform: scale(0.9); }
+    .story-like-btn.liked:active {
+      transform: scale(0.9);
+    }
     @keyframes likePop {
       0% { transform: scale(1); }
       40% { transform: scale(1.4); }
@@ -825,6 +760,7 @@
       100% { transform: scale(1); }
     }
 
+    /* ハートが浮かぶエフェクト */
     .heart-float {
       position: fixed;
       pointer-events: none;
@@ -1036,16 +972,6 @@
   <div id="announcementBanner">
     <span id="announcementText"></span>
     <button class="ann-close" id="announcementClose">✕</button>
-  </div>
-
-  <!-- ★ セキュリティアラート通知 -->
-  <div id="securityAlertToast">
-    <div class="sa-icon">⚠️</div>
-    <div class="sa-body">
-      <div class="sa-title">セキュリティ警告</div>
-      <div class="sa-msg" id="securityAlertMsg">誰かが検証ツールを開きました</div>
-    </div>
-    <button class="sa-close" id="securityAlertClose" title="閉じる">✕</button>
   </div>
 
   <div id="banOverlay">
@@ -1413,29 +1339,6 @@
       } catch (e) {}
     }
 
-    // ★ セキュリティ警告音（ブザー風）
-    function playSecurityAlertSound() {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const now = audioCtx.currentTime;
-        // 2回ブザー
-        [0, 0.3].forEach(offset => {
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'square';
-          osc.frequency.value = 220;
-          gain.gain.setValueAtTime(0, now + offset);
-          gain.gain.linearRampToValueAtTime(0.08, now + offset + 0.02);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.25);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(now + offset);
-          osc.stop(now + offset + 0.3);
-        });
-      } catch (e) {}
-    }
-
     const firebaseConfig = {
       apiKey: "AIzaSyAexiMqMGTzd1r9IzHb4_aQomhPf-DCB6U",
       authDomain: "chat-d04a6.firebaseapp.com",
@@ -1529,7 +1432,6 @@
     let presenceUnsubscribe = null;
     let emergencyUnsubscribe = null;
     let announcementUnsubscribe = null;
-    let securityAlertsUnsubscribe = null;
     let chatLatestListeners = {};
     let storyLikesUnsubscribe = null;
     let storyViewsUnsubscribe = null;
@@ -1541,12 +1443,10 @@
     let isNearBottom = true;
     let unreadInChat = 0;
 
-    const UNREAD_STORAGE_KEY = 'sikunai_unread_v6';
-    const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v6';
+    const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
+    const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v5';
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
     const ANNOUNCE_DISMISS_KEY = 'sikunai_dismissed_announcements_v1';
-    // ★ 自分のアラートIDを保持（自分がリロードした時に削除するため）
-    const MY_ALERT_ID_KEY = 'sikunai_my_alert_id_v1';
     function loadJson(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
     function saveJson(key, obj) { try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {} }
 
@@ -1567,13 +1467,6 @@
     let emergencyState = { active: false };
     let emergencyEnforcerInterval = null;
     let emergencyExiting = false;
-
-    // ★ セキュリティアラート関連
-    let securityAlertsCache = {};
-    let lastShownAlertKey = null;
-    let securityAlertTimer = null;
-    // 検知の重複防止（同じ検知を連続で送らない）
-    let recentSecurityTriggers = {};
 
     let storiesCache = {};
     let currentStoryUserId = null;
@@ -1631,10 +1524,6 @@
     const lightboxImg = document.getElementById('lightboxImg');
     const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
     const scrollUnreadCount = document.getElementById('scrollUnreadCount');
-    // ★ セキュリティアラート
-    const securityAlertToast = document.getElementById('securityAlertToast');
-    const securityAlertMsg = document.getElementById('securityAlertMsg');
-    const securityAlertClose = document.getElementById('securityAlertClose');
     let bannerTimer = null;
     let announcementTimer = null;
 
@@ -1714,6 +1603,9 @@
       return true;
     }
 
+    /* ============================================================
+       ★ チャット相手一覧を取得（ストーリー表示対象）
+       ============================================================ */
     function getChatPartnerUids() {
       const uids = new Set();
       if (!currentUser) return uids;
@@ -1891,6 +1783,7 @@
         chatsCache = snap.exists() ? snap.val() : {};
         renderChatList();
         initChatLatestListeners();
+        // ★ チャット一覧が更新されたらストーリー表示も更新（フィルタリングのため）
         renderStories();
       }, () => {});
     }
@@ -3043,6 +2936,9 @@
       }
     });
 
+    /* ============================================================
+       ストーリー
+       ============================================================ */
     const STORY_TTL = 24 * 60 * 60 * 1000;
 
     function initStoriesListener() {
@@ -3073,15 +2969,20 @@
       }, () => {});
     }
 
+    /* ★ ストーリー一覧描画（チャット相手のみ表示） */
     function renderStories() {
       const strip = document.getElementById('storiesStrip');
       strip.querySelectorAll('.story-bubble:not(#storyAddBtn)').forEach(el => el.remove());
       strip.querySelectorAll('.stories-empty').forEach(el => el.remove());
       if (!currentUser) return;
 
+      // チャット相手のUIDセット
       const chatPartnerUids = getChatPartnerUids();
+
+      // 自分のストーリーは常に表示
       const otherUids = Object.keys(storiesCache || {}).filter(uid => {
         if (uid === currentUser.uid) return false;
+        // ★ チャット相手のみ表示
         return chatPartnerUids.has(uid);
       });
 
@@ -3096,6 +2997,7 @@
       unreadSection.style.display = 'flex';
       unreadSection.style.gap = '12px';
 
+      // 自分のストーリー
       if (storiesCache[currentUser.uid]) {
         const p = getProfileForUid(currentUser.uid);
         const bubble = document.createElement('div');
@@ -3122,6 +3024,7 @@
         strip.appendChild(seenSection);
       }
 
+      // チャット相手が誰もいない & 自分のストーリーもない場合、案内を表示
       const hasAnyStory = unreadSection.children.length > 0 || seenUids.length > 0;
       if (!hasAnyStory) {
         const empty = document.createElement('div');
@@ -3197,6 +3100,9 @@
       }
     });
 
+    /* ============================================================
+       ストーリービューア
+       ============================================================ */
     const storyViewer = document.getElementById('storyViewer');
     const storyStageContent = document.getElementById('storyStageContent');
     const storyProgressBar = document.getElementById('storyProgressBar');
@@ -3210,6 +3116,7 @@
       const source = options.archiveMode ? myArchivedStories : storiesCache[uid];
       if (!source) return;
 
+      // ★ 他人のストーリーはチャット相手のみ
       if (!options.archiveMode && uid !== currentUser.uid) {
         const chatPartnerUids = getChatPartnerUids();
         if (!chatPartnerUids.has(uid)) {
@@ -3290,8 +3197,10 @@
         storyStageContent.appendChild(d);
       }
 
+      // ★ 自分のストーリーかどうかでUIを切替
       const isMine = currentStoryUserId === currentUser.uid;
 
+      // フッター（返信・いいね）は自分のストーリーでは非表示
       const storyFooter = document.querySelector('.story-footer');
       if (isMine) {
         storyFooter.style.display = 'none';
@@ -3301,12 +3210,14 @@
         storyStatsOverlay.style.display = 'none';
       }
 
+      // 閲覧記録
       if (!isMine && !currentStoryIsArchive) {
         mySeenStories[story.id] = Date.now();
         saveJson(SEEN_STORIES_KEY, mySeenStories);
         set(ref(db, `storyViews/${story.id}/${currentUser.uid}`), Date.now()).catch(() => {});
       }
 
+      // いいね監視
       if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
       storyLikesUnsubscribe = onValue(ref(db, `storyLikes/${story.id}`), (snap) => {
         currentStoryLikes = snap.exists() ? snap.val() : {};
@@ -3316,6 +3227,7 @@
         }
       }, () => {});
 
+      // 閲覧数監視（自分のストーリーのみ）
       if (storyViewsUnsubscribe) { storyViewsUnsubscribe(); storyViewsUnsubscribe = null; }
       if (isMine) {
         storyViewsUnsubscribe = onValue(ref(db, `storyViews/${story.id}`), (snap) => {
@@ -3371,6 +3283,7 @@
       }
     }
 
+    /* ★ いいねボタンの状態更新 */
     function updateStoryLikeBtn(storyId) {
       const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
       if (liked) {
@@ -3382,6 +3295,7 @@
       }
     }
 
+    /* ★ いいねボタンクリック */
     storyLikeBtn.addEventListener('click', async (e) => {
       if (!currentUser) return;
       if (currentStoryUserId === currentUser.uid) return;
@@ -3395,6 +3309,7 @@
           await remove(ref(db, `storyLikes/${story.id}/${currentUser.uid}`));
         } else {
           await set(ref(db, `storyLikes/${story.id}/${currentUser.uid}`), Date.now());
+          // ハートを浮かべるエフェクト
           const heart = document.createElement('div');
           heart.className = 'heart-float';
           heart.textContent = '❤️';
@@ -3408,9 +3323,11 @@
       }
     });
 
+    /* ★ 返信入力欄：フォーカスでストーリー停止、ブラーで再開 */
     storyReplyInput.addEventListener('focus', pauseStory);
     storyReplyInput.addEventListener('blur', resumeStory);
 
+    /* ★ 返信送信 */
     storyReplyInput.addEventListener('keydown', async (e) => {
       if (e.key !== 'Enter') return;
       if (e.isComposing || e.keyCode === 229) return;
@@ -3428,13 +3345,18 @@
       if (!story) return;
 
       const partnerUid = currentStoryUserId;
+
+      // チャット相手かチェック（念のため）
       const chatPartnerUids = getChatPartnerUids();
       if (!chatPartnerUids.has(partnerUid)) {
         showBanner('チャットしていない相手には返信できません', true);
         return;
       }
 
+      // 既存DMを探す
       let chatId = await findExistingDirectChat(partnerUid);
+
+      // なければ新規作成
       if (!chatId) {
         try {
           const newChatRef = push(ref(db, 'chatMessages'));
@@ -3463,6 +3385,7 @@
         }
       }
 
+      // ストーリーのプレビュー情報
       let previewType = story.type;
       let previewDataUrl = '';
       if (story.type === 'image' && story.file && story.file.dataUrl) {
@@ -3473,6 +3396,7 @@
       }
       let previewText = story.content || (story.type === 'image' ? '📷 画像' : '（テキストなし）');
 
+      // メッセージ送信
       const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
       try {
         const msgData = {
@@ -3494,6 +3418,7 @@
         const newRef = push(ref(db, `chatMessages/${chatId}`));
         await set(newRef, msgData);
 
+        // チャット一覧更新
         const memberUids = [currentUser.uid, partnerUid];
         const updates = {};
         memberUids.forEach(uid => {
@@ -3512,6 +3437,9 @@
       }
     });
 
+    /* ============================================================
+       ストーリーアーカイブ
+       ============================================================ */
     document.getElementById('myArchiveBtn').addEventListener('click', () => {
       const list = document.getElementById('archiveList');
       list.innerHTML = '';
@@ -3551,105 +3479,6 @@
     document.getElementById('archiveModal').addEventListener('click', (e) => {
       if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden');
     });
-
-    /* ============================================================
-       ★ セキュリティアラート（検証ツール/ソースコード検知）
-       ============================================================ */
-    function showSecurityAlert(msg) {
-      securityAlertMsg.textContent = msg || '誰かが検証ツールを開きました';
-      securityAlertToast.classList.add('show');
-      playSecurityAlertSound();
-      if (securityAlertTimer) clearTimeout(securityAlertTimer);
-      securityAlertTimer = setTimeout(() => {
-        securityAlertToast.classList.remove('show');
-      }, 8000);
-    }
-    securityAlertClose.addEventListener('click', () => {
-      securityAlertToast.classList.remove('show');
-    });
-
-    /* 自分が検知した時にFirebaseにアラートを書き込む */
-    async function reportSecurityAlert(type, detail) {
-      if (!currentUser) return;
-      // 同じ種類のアラートを短時間に連発しないようにする
-      const now = Date.now();
-      const last = recentSecurityTriggers[type] || 0;
-      if (now - last < 10000) return; // 10秒以内の同種は無視
-      recentSecurityTriggers[type] = now;
-
-      const alertId = 'alert_' + now + '_' + Math.random().toString(36).slice(2, 8);
-      try {
-        await set(ref(db, `securityAlerts/${alertId}`), {
-          type: type,
-          detail: detail || '',
-          uid: currentUser.uid,
-          email: currentUser.email || '',
-          name: myProfile.nickname || '',
-          createdAt: now
-        });
-        // 自分のアラートIDを保持（リロード時に削除するため）
-        try { localStorage.setItem(MY_ALERT_ID_KEY, alertId); } catch (e) {}
-      } catch (e) {
-        console.warn('セキュリティアラートの送信に失敗:', e);
-      }
-    }
-
-    /* 全ユーザーのアラートを監視 */
-    function initSecurityAlertsListener() {
-      if (securityAlertsUnsubscribe) securityAlertsUnsubscribe();
-      securityAlertsUnsubscribe = onValue(ref(db, 'securityAlerts'), (snap) => {
-        const raw = snap.exists() ? snap.val() : {};
-        securityAlertsCache = raw;
-        // 最新のアラートを取得
-        const entries = Object.entries(raw);
-        if (entries.length === 0) return;
-        entries.sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0));
-        const [latestId, latest] = entries[0];
-        // 自分自身のアラートは表示しない
-        if (currentUser && latest.uid === currentUser.uid) return;
-        // 既に表示済みならスキップ
-        if (lastShownAlertKey === latestId) return;
-        lastShownAlertKey = latestId;
-
-        // 5秒以上前のものは無視（起動時に古いアラートを表示しない）
-        if (Date.now() - (latest.createdAt || 0) > 5000) return;
-
-        const typeLabel = latest.type === 'devtools' ? '検証ツール' :
-                          latest.type === 'source' ? 'ソースコード表示' :
-                          latest.type === 'shortcut' ? '禁止ショートカット' :
-                          '不正操作';
-        const who = latest.name || latest.email || '誰か';
-        showSecurityAlert(`${who} が${typeLabel}を開きました`);
-      }, () => {});
-    }
-
-    /* ★ リロード時に自分のアラートを削除 */
-    async function clearMySecurityAlerts() {
-      if (!currentUser) return;
-      try {
-        const myAlertId = localStorage.getItem(MY_ALERT_ID_KEY);
-        if (myAlertId) {
-          await remove(ref(db, `securityAlerts/${myAlertId}`)).catch(() => {});
-          localStorage.removeItem(MY_ALERT_ID_KEY);
-        }
-        // 念のため、自分の古いアラートも全消去（念入り）
-        const snap = await get(ref(db, 'securityAlerts'));
-        if (snap.exists()) {
-          const raw = snap.val();
-          const updates = {};
-          let hasAny = false;
-          Object.entries(raw).forEach(([id, a]) => {
-            if (a && a.uid === currentUser.uid) {
-              updates[id] = null;
-              hasAny = true;
-            }
-          });
-          if (hasAny) await update(ref(db, 'securityAlerts'), updates);
-        }
-      } catch (e) {
-        console.warn('自分のアラート削除に失敗:', e);
-      }
-    }
 
     /* ============================================================
        緊急モード
@@ -3931,7 +3760,7 @@
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
-       storyLikesUnsubscribe, storyViewsUnsubscribe, securityAlertsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       stopEmergencyEnforcer();
       try { await signOut(auth); } catch (e) {}
@@ -3957,7 +3786,6 @@
         loginView.style.display = 'flex';
         mainView.style.display = 'none';
         initEmergencyListener();
-        initSecurityAlertsListener();
         return;
       }
 
@@ -4014,11 +3842,7 @@
       initPresenceListener();
       initEmergencyListener();
       initAnnouncementListener();
-      initSecurityAlertsListener();
       setupMyPresence();
-
-      // ★ ログイン時に自分の過去のアラートを消去（リロードで消える挙動）
-      await clearMySecurityAlerts();
 
       try {
         const snap = await get(ref(db, 'emergency'));
@@ -4074,144 +3898,9 @@
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
-       storyLikesUnsubscribe, storyViewsUnsubscribe, securityAlertsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
     });
-
-    /* ============================================================
-       ★ 検証ツール/ソースコード検知スクリプト（改良版）
-       - 入力欄やコピペを壊さない
-       - 検知時に Firebase にアラートを送信
-       - 全ユーザーに通知が届く
-       ============================================================ */
-    (() => {
-      'use strict';
-
-      let isReporting = false;
-
-      // ユーザー操作系ショートカットの検知
-      const detectShortcuts = (e) => {
-        const meta = e.metaKey;
-        const ctrl = e.ctrlKey;
-        const alt = e.altKey;
-        const shift = e.shiftKey;
-        const key = e.key ? e.key.toLowerCase() : '';
-        const code = e.code ? e.code.toLowerCase() : '';
-        const isCmdOrCtrl = meta || ctrl;
-
-        let detectedType = null;
-
-        // F12
-        if (e.key === 'F12' || code === 'f12') {
-          detectedType = 'devtools';
-        }
-        // Ctrl/Cmd + Shift + I/J/C/K/E/M/S/P
-        else if (isCmdOrCtrl && (shift || alt) && ['i', 'j', 'c', 'k', 'e', 'm', 's', 'p'].includes(key)) {
-          detectedType = 'devtools';
-        }
-        // Ctrl/Cmd + U（ソース表示）
-        else if (isCmdOrCtrl && key === 'u') {
-          detectedType = 'source';
-        }
-        // Ctrl/Cmd + S（保存）
-        else if (isCmdOrCtrl && key === 's') {
-          detectedType = 'shortcut';
-        }
-        // Shift + F2 / F5 / F7（Firefox系）
-        else if (shift && ['f2', 'f5', 'f7'].includes(key)) {
-          detectedType = 'shortcut';
-        }
-
-        if (detectedType) {
-          e.preventDefault();
-          e.stopPropagation();
-          // Firebaseにアラート送信
-          try {
-            reportSecurityAlert(detectedType, `shortcut: ${key}`);
-          } catch (err) {}
-          return false;
-        }
-      };
-
-      window.addEventListener('keydown', detectShortcuts, true);
-      window.addEventListener('keyup', detectShortcuts, true);
-      window.addEventListener('keypress', detectShortcuts, true);
-
-      // 右クリック（コンテキストメニュー）は既に無効化済み（contextmenu イベント）
-
-      // ドラッグ・テキスト選択・コピー（入力欄は保護）
-      document.addEventListener('DOMContentLoaded', () => {
-        document.addEventListener('dragstart', (e) => {
-          const t = e.target;
-          if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
-          if (t && t.tagName === 'IMG') {
-            e.preventDefault();
-          }
-        }, true);
-
-        document.addEventListener('selectstart', (e) => {
-          const t = e.target;
-          if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
-          e.preventDefault();
-        }, true);
-
-        document.addEventListener('copy', (e) => {
-          const t = e.target;
-          if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
-          e.preventDefault();
-          try {
-            reportSecurityAlert('source', 'copy attempt');
-          } catch (err) {}
-        }, true);
-
-        document.addEventListener('cut', (e) => {
-          const t = e.target;
-          if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
-          e.preventDefault();
-        }, true);
-      });
-
-      // 画面サイズ監視（DevToolsドッキング検知）
-      const threshold = 200;
-      let lastSizeAlert = 0;
-      const checkDevToolsSize = () => {
-        const widthDiff = window.outerWidth - window.innerWidth;
-        const heightDiff = window.outerHeight - window.innerHeight;
-        if (widthDiff > threshold || heightDiff > threshold) {
-          const now = Date.now();
-          if (now - lastSizeAlert > 15000) { // 15秒に1回まで
-            lastSizeAlert = now;
-            try {
-              reportSecurityAlert('devtools', 'window size diff');
-            } catch (err) {}
-          }
-        }
-      };
-      window.addEventListener('resize', checkDevToolsSize, true);
-
-      // コンソール検知（画像IDトリック）
-      try {
-        const dummyImg = new Image();
-        let triggered = false;
-        Object.defineProperty(dummyImg, 'id', {
-          get: function () {
-            if (!triggered) {
-              triggered = true;
-              try {
-                reportSecurityAlert('devtools', 'console eval');
-              } catch (err) {}
-            }
-            return '';
-          }
-        });
-        // 3秒ごとにチェック
-        setInterval(() => {
-          try {
-            console.log('%c', dummyImg);
-          } catch (e) {}
-        }, 3000);
-      } catch (e) {}
-    })();
   </script>
 </body>
 </html>
