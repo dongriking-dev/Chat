@@ -139,7 +139,6 @@
       padding: 16px 14px;
       background: #f9fafb;
       -webkit-overflow-scrolling: touch;
-      position: relative;
     }
     .chat-messages { display: flex; flex-direction: column; gap: 4px; }
 
@@ -626,6 +625,7 @@
       font-size: 26px; color: #6b7280;
     }
 
+    /* ★ ストーリー空状態 */
     .stories-empty {
       padding: 18px 20px;
       text-align: center;
@@ -691,6 +691,7 @@
       padding: 40px; font-size: 26px; font-weight: 700;
       color: #fff; text-align: center; word-break: break-word;
     }
+    /* ★ ストーリー視聴数・いいね数表示（自分のストーリー用） */
     .story-stats-overlay {
       position: absolute;
       bottom: 74px; left: 16px;
@@ -749,6 +750,9 @@
       color: #ef4444;
       animation: likePop 0.5s cubic-bezier(.34,1.56,.64,1);
     }
+    .story-like-btn.liked:active {
+      transform: scale(0.9);
+    }
     @keyframes likePop {
       0% { transform: scale(1); }
       40% { transform: scale(1.4); }
@@ -756,6 +760,7 @@
       100% { transform: scale(1); }
     }
 
+    /* ハートが浮かぶエフェクト */
     .heart-float {
       position: fixed;
       pointer-events: none;
@@ -903,6 +908,26 @@
       color: #1e40af;
       word-break: break-all;
     }
+    .eh-body .warn-box {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #991b1b;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .eh-body .info-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      color: #1e40af;
+      line-height: 1.6;
+      margin-top: 8px;
+    }
     .eh-footer {
       display: flex; justify-content: space-between; align-items: center;
       margin-top: 20px;
@@ -914,585 +939,6 @@
     .eh-footer-note { font-size: 11px; color: #9ca3af; }
     .eh-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    /* ========================================
-       ★ 画面共有（電話風）
-       ======================================== */
-    #screenShareCallBtn {
-      background: linear-gradient(135deg, #0891b2, #0369a1);
-      color: #fff;
-      border: 2px solid #075985;
-      border-radius: 8px;
-      padding: 7px 12px;
-      font-size: 12px;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(8,145,178,0.4);
-      transition: transform 0.15s, box-shadow 0.2s;
-      display: none;
-    }
-    #screenShareCallBtn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(8,145,178,0.6); }
-    #screenShareCallBtn.active {
-      background: linear-gradient(135deg, #dc2626, #991b1b);
-      border-color: #7f1d1d;
-    }
-
-    #incomingCallModal {
-      position: fixed;
-      inset: 0;
-      z-index: 80000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
-      color: #fff;
-      padding: 24px;
-      animation: callFadeIn 0.4s ease;
-    }
-    #incomingCallModal.show { display: flex; }
-    @keyframes callFadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    #incomingCallModal .call-ring {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 30px;
-    }
-    #incomingCallModal .call-ring::before,
-    #incomingCallModal .call-ring::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2px solid rgba(34,197,94,0.4);
-      animation: ringPulse 2s infinite;
-    }
-    #incomingCallModal .call-ring::after {
-      animation-delay: 1s;
-    }
-    @keyframes ringPulse {
-      0% { transform: scale(0.8); opacity: 1; }
-      100% { transform: scale(1.6); opacity: 0; }
-    }
-    #incomingCallModal .call-avatar {
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      border: 4px solid #22c55e;
-      object-fit: cover;
-      background: #1e293b;
-      position: relative;
-      z-index: 2;
-      animation: callBounce 1.5s ease-in-out infinite;
-    }
-    @keyframes callBounce {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-
-    #incomingCallModal .call-label {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-bottom: 6px;
-      letter-spacing: 0.1em;
-    }
-    #incomingCallModal .call-name {
-      font-size: 26px;
-      font-weight: 800;
-      margin-bottom: 8px;
-      text-align: center;
-      max-width: 90%;
-      word-break: break-word;
-    }
-    #incomingCallModal .call-sub {
-      font-size: 13px;
-      color: #cbd5e1;
-      margin-bottom: 40px;
-      text-align: center;
-      line-height: 1.6;
-      max-width: 320px;
-    }
-
-    #incomingCallModal .call-actions {
-      display: flex;
-      gap: 40px;
-      margin-top: 20px;
-    }
-    #incomingCallModal .call-action-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #fff;
-      font-family: inherit;
-    }
-    #incomingCallModal .call-action-btn .circle {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      transition: transform 0.15s, box-shadow 0.2s;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    }
-    #incomingCallModal .call-action-btn.accept .circle {
-      background: linear-gradient(135deg, #22c55e, #15803d);
-      animation: acceptPulse 1.5s infinite;
-    }
-    @keyframes acceptPulse {
-      0%, 100% { box-shadow: 0 8px 24px rgba(34,197,94,0.4); }
-      50% { box-shadow: 0 8px 36px rgba(34,197,94,0.8); }
-    }
-    #incomingCallModal .call-action-btn.decline .circle {
-      background: linear-gradient(135deg, #ef4444, #991b1b);
-    }
-    #incomingCallModal .call-action-btn:hover .circle { transform: scale(1.08); }
-    #incomingCallModal .call-action-btn:active .circle { transform: scale(0.95); }
-    #incomingCallModal .call-action-btn .label {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-    }
-    #incomingCallModal .call-timeout {
-      position: absolute;
-      bottom: 30px;
-      font-size: 11px;
-      color: #64748b;
-    }
-
-    #outgoingCallModal {
-      position: fixed;
-      inset: 0;
-      z-index: 80001;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      background: linear-gradient(180deg, #0f172a 0%, #020617 100%);
-      color: #fff;
-      padding: 24px;
-      animation: callFadeIn 0.4s ease;
-    }
-    #outgoingCallModal.show { display: flex; }
-    #outgoingCallModal .call-ring {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 30px;
-    }
-    #outgoingCallModal .call-ring::before,
-    #outgoingCallModal .call-ring::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      border: 2px solid rgba(59,130,246,0.5);
-      animation: ringPulse 2s infinite;
-    }
-    #outgoingCallModal .call-ring::after { animation-delay: 1s; }
-    #outgoingCallModal .call-avatar {
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      border: 4px solid #3b82f6;
-      object-fit: cover;
-      background: #1e293b;
-      position: relative;
-      z-index: 2;
-    }
-    #outgoingCallModal .call-label {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-bottom: 6px;
-      letter-spacing: 0.1em;
-    }
-    #outgoingCallModal .call-name {
-      font-size: 26px;
-      font-weight: 800;
-      margin-bottom: 8px;
-      text-align: center;
-      max-width: 90%;
-      word-break: break-word;
-    }
-    #outgoingCallModal .call-status {
-      font-size: 14px;
-      color: #93c5fd;
-      margin-bottom: 40px;
-    }
-    #outgoingCallModal .call-status .dots::after {
-      content: '...';
-      display: inline-block;
-      animation: sendingDots 1.4s steps(4, end) infinite;
-      overflow: hidden;
-      vertical-align: bottom;
-      width: 1.5em;
-      text-align: left;
-    }
-    #outgoingCallModal .call-cancel-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: #fff;
-      font-family: inherit;
-    }
-    #outgoingCallModal .call-cancel-btn .circle {
-      width: 68px;
-      height: 68px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #ef4444, #991b1b);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      box-shadow: 0 8px 24px rgba(239,68,68,0.4);
-      transition: transform 0.15s;
-    }
-    #outgoingCallModal .call-cancel-btn:hover .circle { transform: scale(1.08); }
-    #outgoingCallModal .call-cancel-btn:active .circle { transform: scale(0.95); }
-    #outgoingCallModal .call-cancel-btn .label {
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    #screenSharePanel {
-      position: absolute;
-      inset: 0;
-      background: #0a0e14;
-      z-index: 100;
-      display: none;
-      flex-direction: column;
-    }
-    #screenSharePanel.show { display: flex; }
-
-    .ss-header {
-      flex-shrink: 0;
-      background: rgba(0,0,0,0.7);
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      color: #fff;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-    .ss-header .ss-title {
-      font-size: 14px;
-      font-weight: 700;
-      flex: 1;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .ss-header .ss-title .call-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(34,197,94,0.2);
-      padding: 3px 10px;
-      border-radius: 9999px;
-      font-size: 11px;
-      color: #22c55e;
-    }
-    .ss-header .ss-title .call-indicator .dot {
-      width: 6px; height: 6px;
-      background: #22c55e;
-      border-radius: 50%;
-      animation: pulse 1.5s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-    .ss-header .ss-status {
-      font-size: 11px;
-      color: #cbd5e1;
-      flex-shrink: 0;
-    }
-    .ss-header-btn {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #fff;
-      font-size: 12px;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.15s;
-      flex-shrink: 0;
-    }
-    .ss-header-btn:hover { background: rgba(255,255,255,0.2); }
-
-    .ss-body {
-      flex: 1;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .ss-self-preview {
-      position: absolute;
-      bottom: 90px;
-      right: 16px;
-      width: 180px;
-      aspect-ratio: 16 / 9;
-      background: #000;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-radius: 8px;
-      overflow: hidden;
-      z-index: 5;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-    }
-    .ss-self-preview video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      background: #000;
-    }
-    .ss-self-preview .ss-self-label {
-      position: absolute;
-      bottom: 4px;
-      left: 6px;
-      font-size: 10px;
-      color: rgba(255,255,255,0.9);
-      background: rgba(0,0,0,0.6);
-      padding: 2px 6px;
-      border-radius: 4px;
-      pointer-events: none;
-    }
-    .ss-self-preview .ss-mosaic-overlay {
-      position: absolute;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,0.85);
-      color: #fff;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      pointer-events: none;
-      text-align: center;
-      padding: 8px;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .ss-self-preview .ss-mosaic-overlay.show { display: flex; }
-    .ss-mosaic-overlay .icon { font-size: 28px; }
-
-    .ss-grid {
-      width: 100%;
-      height: 100%;
-      padding: 12px;
-      display: grid;
-      gap: 12px;
-      grid-auto-rows: 1fr;
-      overflow: auto;
-    }
-    .ss-grid.grid-1 { grid-template-columns: 1fr; }
-    .ss-grid.grid-2 { grid-template-columns: 1fr 1fr; }
-    .ss-grid.grid-3 { grid-template-columns: 1fr 1fr 1fr; }
-    .ss-grid.grid-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
-    .ss-grid.grid-many { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-
-    .ss-tile {
-      position: relative;
-      background: #000;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
-      overflow: hidden;
-      min-height: 140px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .ss-tile video {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      background: #000;
-    }
-    .ss-tile .ss-tile-label {
-      position: absolute;
-      bottom: 8px;
-      left: 10px;
-      font-size: 12px;
-      color: #fff;
-      background: rgba(0,0,0,0.55);
-      padding: 3px 10px;
-      border-radius: 9999px;
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      max-width: calc(100% - 20px);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .ss-tile .ss-tile-label .online-dot {
-      border-color: rgba(0,0,0,0.5);
-      width: 8px; height: 8px;
-    }
-    .ss-tile .ss-tile-waiting {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-      color: #9ca3af;
-      font-size: 12px;
-      gap: 8px;
-      text-align: center;
-      padding: 12px;
-    }
-    .ss-tile .ss-tile-waiting .icon { font-size: 32px; opacity: 0.5; }
-
-    .ss-tile canvas, .ss-self-preview canvas {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: none;
-      background: #000;
-    }
-    .ss-tile.mosaic-mode video, .ss-self-preview.mosaic-mode video {
-      display: none;
-    }
-    .ss-tile.mosaic-mode canvas, .ss-self-preview.mosaic-mode canvas {
-      display: block;
-    }
-
-    .ss-controls {
-      flex-shrink: 0;
-      background: rgba(0,0,0,0.75);
-      padding: 12px 16px;
-      padding-bottom: max(12px, env(safe-area-inset-bottom));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      border-top: 1px solid rgba(255,255,255,0.1);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-    .ss-control-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 12px;
-      padding: 10px 18px;
-      color: #fff;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-family: inherit;
-      min-width: 90px;
-    }
-    .ss-control-btn:hover {
-      background: rgba(255,255,255,0.2);
-      transform: translateY(-2px);
-    }
-    .ss-control-btn:active { transform: translateY(0) scale(0.97); }
-    .ss-control-btn .icon { font-size: 22px; line-height: 1; }
-    .ss-control-btn .label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
-    }
-    .ss-control-btn.danger {
-      background: rgba(239,68,68,0.25);
-      border-color: rgba(239,68,68,0.5);
-    }
-    .ss-control-btn.danger:hover { background: rgba(239,68,68,0.4); }
-    .ss-control-btn.mosaic-active {
-      background: rgba(245,158,11,0.3);
-      border-color: rgba(245,158,11,0.6);
-    }
-    .ss-control-btn.mosaic-active:hover { background: rgba(245,158,11,0.45); }
-    .ss-control-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .ss-empty-state {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      color: #6b7280;
-      text-align: center;
-      padding: 40px 20px;
-    }
-    .ss-empty-state .icon { font-size: 64px; opacity: 0.4; }
-    .ss-empty-state .title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #d1d5db;
-    }
-    .ss-empty-state .desc {
-      font-size: 13px;
-      line-height: 1.7;
-      max-width: 400px;
-    }
-
-    /* ★ 相手退出通知トースト */
-    #peerLeftToast {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.8);
-      z-index: 90000;
-      background: rgba(15,23,42,0.95);
-      border: 2px solid #ef4444;
-      border-radius: 14px;
-      padding: 24px 40px;
-      color: #fff;
-      font-size: 16px;
-      font-weight: 700;
-      text-align: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s, transform 0.3s cubic-bezier(.34,1.56,.64,1);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    }
-    #peerLeftToast.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-    #peerLeftToast .icon {
-      font-size: 36px;
-      display: block;
-      margin-bottom: 8px;
-    }
-
     @media (max-width: 500px) {
       .header-title { font-size: 17px; }
       .chat-item { padding: 10px 12px; }
@@ -1503,17 +949,6 @@
       #messageInput { font-size: 14px; }
       .modal-content { padding: 18px; }
       .chat-messages-wrap { padding: 12px 10px; }
-      .ss-self-preview { width: 120px; bottom: 100px; right: 10px; }
-      .ss-control-btn { min-width: 76px; padding: 8px 12px; }
-      .ss-control-btn .label { font-size: 10px; }
-      .ss-grid.grid-3 { grid-template-columns: 1fr 1fr; }
-      .ss-grid.grid-4 { grid-template-columns: 1fr 1fr; }
-      #incomingCallModal .call-avatar,
-      #outgoingCallModal .call-avatar { width: 100px; height: 100px; }
-      #incomingCallModal .call-ring,
-      #outgoingCallModal .call-ring { width: 160px; height: 160px; }
-      #incomingCallModal .call-name,
-      #outgoingCallModal .call-name { font-size: 22px; }
     }
   </style>
 </head>
@@ -1552,47 +987,6 @@
   <div id="lightbox">
     <button class="lightbox-close" id="lightboxClose">✕</button>
     <img id="lightboxImg" src="" alt="">
-  </div>
-
-  <!-- ★ 相手退出トースト -->
-  <div id="peerLeftToast">
-    <span class="icon">👋</span>
-    <span id="peerLeftToastText">相手が退出しました</span>
-  </div>
-
-  <div id="incomingCallModal">
-    <div class="call-ring">
-      <img class="call-avatar" id="incomingCallAvatar" src="" alt="">
-    </div>
-    <div class="call-label">画面共有リクエスト</div>
-    <div class="call-name" id="incomingCallName">名無しさん</div>
-    <div class="call-sub">相手があなたと画面共有をしたいと考えています。<br>許可しますか？</div>
-    <div class="call-actions">
-      <button class="call-action-btn decline" id="incomingDeclineBtn">
-        <span class="circle">✕</span>
-        <span class="label">拒否</span>
-      </button>
-      <button class="call-action-btn accept" id="incomingAcceptBtn">
-        <span class="circle">📞</span>
-        <span class="label">許可する</span>
-      </button>
-    </div>
-    <div class="call-timeout" id="incomingCallTimeout">30秒後に自動キャンセル</div>
-  </div>
-
-  <div id="outgoingCallModal">
-    <div class="call-ring">
-      <img class="call-avatar" id="outgoingCallAvatar" src="" alt="">
-    </div>
-    <div class="call-label">呼び出し中</div>
-    <div class="call-name" id="outgoingCallName">名無しさん</div>
-    <div class="call-status">
-      <span class="dots">応答を待っています</span>
-    </div>
-    <button class="call-cancel-btn" id="outgoingCancelBtn">
-      <span class="circle">✕</span>
-      <span class="label">キャンセル</span>
-    </button>
   </div>
 
   <div id="appContainer">
@@ -1668,7 +1062,6 @@
               <div class="chat-header-name" id="currentChatName"></div>
               <div class="chat-header-meta" id="currentChatMeta"></div>
             </div>
-            <button id="screenShareCallBtn" title="画面共有を呼び出す">📞 画面共有</button>
           </div>
 
           <div class="chat-messages-wrap" id="chatMessagesWrap">
@@ -1701,44 +1094,6 @@
               <button type="submit" id="sendBtn" class="chat-send-btn" title="送信">➤</button>
             </div>
           </form>
-
-          <div id="screenSharePanel">
-            <div class="ss-header">
-              <div class="ss-title">
-                <span class="call-indicator"><span class="dot"></span>通話中</span>
-                <span>画面共有</span>
-              </div>
-              <div class="ss-status" id="ssPeerCount">0人接続</div>
-              <button class="ss-header-btn" id="ssMinimizeBtn">最小化</button>
-            </div>
-            <div class="ss-body">
-              <div class="ss-empty-state" id="ssEmptyState" style="display:none;">
-                <div class="icon">📺</div>
-                <div class="title">まだ誰も接続していません</div>
-                <div class="desc">あなたの画面共有を開始しました。<br>他の参加者が同じチャットルームを開くと自動的に接続されます。</div>
-              </div>
-              <div class="ss-grid" id="ssGrid"></div>
-              <div class="ss-self-preview" id="ssSelfPreview" style="display:none;">
-                <video id="ssSelfVideo" autoplay muted playsinline></video>
-                <canvas id="ssSelfCanvas"></canvas>
-                <div class="ss-self-label">あなた</div>
-                <div class="ss-mosaic-overlay" id="ssSelfMosaicOverlay">
-                  <div class="icon">🀫</div>
-                  <div>モザイク中</div>
-                </div>
-              </div>
-            </div>
-            <div class="ss-controls">
-              <button class="ss-control-btn" id="ssMosaicBtn">
-                <span class="icon">🀫</span>
-                <span class="label">モザイク</span>
-              </button>
-              <button class="ss-control-btn danger" id="ssStopBtn">
-                <span class="icon">🚪</span>
-                <span class="label">退出</span>
-              </button>
-            </div>
-          </div>
         </div>
       </main>
     </div>
@@ -1823,15 +1178,53 @@
       <div class="eh-section">
         <div class="eh-section-title">📖 概要</div>
         <div class="eh-body">
-          <p>緊急ボタンは、サイト全体を<strong>即座に停止</strong>させるための機能です。</p>
+          <p>緊急ボタンは、サイト全体を<strong>即座に停止</strong>させるための機能です。荒らし・不正アクセス・その他の緊急事態が発生した時に使用します。</p>
+          <p>ボタンを押すと、発動した瞬間から<strong>管理者以外のすべてのユーザー</strong>の画面が<strong>真っ黒</strong>になり、タイトルは「<strong>無</strong>」に、アイコンは黒一色に変わります。</p>
         </div>
       </div>
       <div class="eh-section">
         <div class="eh-section-title warn">👑 管理者（除外対象）</div>
         <div class="eh-body">
+          <p>以下のメールアドレスでログインしているユーザーは、緊急モード中でも<strong>通常通りサイトを操作できます</strong>：</p>
           <ul>
             <li><span class="email">katou.noel114514@gmail.com</span></li>
             <li><span class="email">18107@v.nakijin.ed.jp</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="eh-section">
+        <div class="eh-section-title warn">👥 一般ユーザーの扱い</div>
+        <div class="eh-body">
+          <ul>
+            <li>画面全体が真っ黒になる</li>
+            <li>タイトルが「無」に変わる</li>
+            <li>ブラウザのアイコンが黒一色になる</li>
+            <li>タブを閉じる or <code>about:blank</code> へ遷移を試みる</li>
+            <li>タブを開き直しても解除されるまで「無」画面が続く</li>
+          </ul>
+        </div>
+      </div>
+      <div class="eh-section">
+        <div class="eh-section-title">🔴 発動方法</div>
+        <div class="eh-body">
+          <ul>
+            <li>🚨 ボタンを<strong>1回クリック</strong>すると即座に発動</li>
+            <li>ボタンを<strong>1秒以上長押し</strong>すると、この説明が開く</li>
+          </ul>
+        </div>
+      </div>
+      <div class="eh-section">
+        <div class="eh-section-title info">✅ 解除方法</div>
+        <div class="eh-body">
+          <p>緊急モードを解除できるのは<strong>管理者のみ</strong>です。管理者の画面に表示される「✅ 緊急解除」ボタンを押してください。</p>
+        </div>
+      </div>
+      <div class="eh-section">
+        <div class="eh-section-title warn">⚠️ 注意事項</div>
+        <div class="eh-body">
+          <ul>
+            <li><strong>いたずらで押さないでください。</strong>全ユーザーが被害を受けます</li>
+            <li>発動した記録（メールアドレス・時刻）は管理者に通知されます</li>
           </ul>
         </div>
       </div>
@@ -1946,41 +1339,6 @@
       } catch (e) {}
     }
 
-    let ringInterval = null;
-    function startRingingSound() {
-      stopRingingSound();
-      const ring = () => {
-        try {
-          if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          if (audioCtx.state === 'suspended') audioCtx.resume();
-          const now = audioCtx.currentTime;
-          [0, 0.5].forEach((offset) => {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.value = offset === 0 ? 440 : 480;
-            const start = now + offset;
-            gain.gain.setValueAtTime(0, start);
-            gain.gain.linearRampToValueAtTime(0.12, start + 0.02);
-            gain.gain.setValueAtTime(0.12, start + 0.35);
-            gain.gain.exponentialRampToValueAtTime(0.001, start + 0.4);
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.start(start);
-            osc.stop(start + 0.45);
-          });
-        } catch (e) {}
-      };
-      ring();
-      ringInterval = setInterval(ring, 2500);
-    }
-    function stopRingingSound() {
-      if (ringInterval) {
-        clearInterval(ringInterval);
-        ringInterval = null;
-      }
-    }
-
     const firebaseConfig = {
       apiKey: "AIzaSyAexiMqMGTzd1r9IzHb4_aQomhPf-DCB6U",
       authDomain: "chat-d04a6.firebaseapp.com",
@@ -2085,8 +1443,8 @@
     let isNearBottom = true;
     let unreadInChat = 0;
 
-    const UNREAD_STORAGE_KEY = 'sikunai_unread_v7';
-    const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v7';
+    const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
+    const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v5';
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
     const ANNOUNCE_DISMISS_KEY = 'sikunai_dismissed_announcements_v1';
     function loadJson(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
@@ -2140,45 +1498,6 @@
     let emergencyHoldTimer = null;
     let emergencyHoldTriggered = false;
 
-    /* ============================================================
-       ★ 画面共有（電話風）用の状態
-       ============================================================ */
-    const RTC_CONFIG = {
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-        { urls: 'stun:stun3.l.google.com:19302' }
-      ]
-    };
-
-    let localStream = null;
-    let screenShareActive = false;
-    let isMosaic = false;
-    let peerConnections = new Map();
-    let peerStreams = new Map();
-    let peerStates = new Map();
-    let peerTiles = new Map();
-    let mosaicRAF = null;
-    let mosaicCanvasStream = null;
-    let mosaicOffscreenCanvas = null;
-    let mosaicSourceVideo = null;
-    let myShareSessionId = null;
-    let myViewerSessionId = null;
-    let currentSSUnsubscribers = [];
-
-    // 通話関連
-    let callState = 'idle';
-    let currentCallData = null;
-    let callTimeoutTimer = null;
-    const CALL_TIMEOUT_MS = 30000;
-
-    // ★ 退出検知用
-    let sharersWatchUnsubscribe = null;
-    let callsWatchUnsubscribe = null;
-    let callWatchUnsubscribe = null;
-    let lastKnownSharerUids = new Set();
-
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
     const mainView = document.getElementById('mainView');
@@ -2205,37 +1524,8 @@
     const lightboxImg = document.getElementById('lightboxImg');
     const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
     const scrollUnreadCount = document.getElementById('scrollUnreadCount');
-    const screenShareCallBtn = document.getElementById('screenShareCallBtn');
-    const screenSharePanel = document.getElementById('screenSharePanel');
-    const ssGrid = document.getElementById('ssGrid');
-    const ssSelfPreview = document.getElementById('ssSelfPreview');
-    const ssSelfVideo = document.getElementById('ssSelfVideo');
-    const ssSelfCanvas = document.getElementById('ssSelfCanvas');
-    const ssSelfMosaicOverlay = document.getElementById('ssSelfMosaicOverlay');
-    const ssEmptyState = document.getElementById('ssEmptyState');
-    const ssPeerCount = document.getElementById('ssPeerCount');
-    const ssMosaicBtn = document.getElementById('ssMosaicBtn');
-    const ssStopBtn = document.getElementById('ssStopBtn');
-    const ssMinimizeBtn = document.getElementById('ssMinimizeBtn');
-
-    const incomingCallModal = document.getElementById('incomingCallModal');
-    const incomingCallAvatar = document.getElementById('incomingCallAvatar');
-    const incomingCallName = document.getElementById('incomingCallName');
-    const incomingAcceptBtn = document.getElementById('incomingAcceptBtn');
-    const incomingDeclineBtn = document.getElementById('incomingDeclineBtn');
-    const incomingCallTimeout = document.getElementById('incomingCallTimeout');
-
-    const outgoingCallModal = document.getElementById('outgoingCallModal');
-    const outgoingCallAvatar = document.getElementById('outgoingCallAvatar');
-    const outgoingCallName = document.getElementById('outgoingCallName');
-    const outgoingCancelBtn = document.getElementById('outgoingCancelBtn');
-
-    const peerLeftToast = document.getElementById('peerLeftToast');
-    const peerLeftToastText = document.getElementById('peerLeftToastText');
-
     let bannerTimer = null;
     let announcementTimer = null;
-    let peerLeftToastTimer = null;
 
     function escapeHtml(str) {
       if (!str) return '';
@@ -2304,15 +1594,6 @@
       }, 3000);
     }
 
-    function showPeerLeftToast(msg) {
-      peerLeftToastText.textContent = msg || '相手が退出しました';
-      peerLeftToast.classList.add('show');
-      clearTimeout(peerLeftToastTimer);
-      peerLeftToastTimer = setTimeout(() => {
-        peerLeftToast.classList.remove('show');
-      }, 2500);
-    }
-
     function isUserOnline(uid) {
       if (!uid) return false;
       if (currentUser && uid === currentUser.uid) return true;
@@ -2322,6 +1603,9 @@
       return true;
     }
 
+    /* ============================================================
+       ★ チャット相手一覧を取得（ストーリー表示対象）
+       ============================================================ */
     function getChatPartnerUids() {
       const uids = new Set();
       if (!currentUser) return uids;
@@ -2346,7 +1630,6 @@
         el.classList.toggle('online', online);
       });
       updateChatHeaderPresence();
-      updateSSTileDots();
     }
 
     function initPresenceListener() {
@@ -2467,7 +1750,6 @@
         updateProfilesInExistingMessages();
         renderChatList();
         renderStories();
-        updateSSTileLabels();
       }, () => {});
     }
 
@@ -2501,6 +1783,7 @@
         chatsCache = snap.exists() ? snap.val() : {};
         renderChatList();
         initChatLatestListeners();
+        // ★ チャット一覧が更新されたらストーリー表示も更新（フィルタリングのため）
         renderStories();
       }, () => {});
     }
@@ -2608,10 +1891,6 @@
     }
 
     function openChat(chatId) {
-      if (currentChatId && currentChatId !== chatId) {
-        if (callState !== 'idle') endCall('画面共有を終了しました');
-      }
-
       currentChatId = chatId;
       const chat = chatsCache[chatId];
       if (!chat) return;
@@ -2648,22 +1927,12 @@
         }
       });
 
-      screenShareCallBtn.style.display = 'block';
-
-      // 着信リスナー開始
-      startCallListener(chatId);
-
       isNearBottom = true;
       updateScrollButton();
       loadMessages(chatId);
     }
 
     function backToChatList() {
-      if (callState !== 'idle') {
-        endCall('画面共有を終了しました');
-      }
-      stopCallListener();
-
       setMyTypingState(false);
       currentChatId = null;
       chatView.style.display = 'none';
@@ -3468,876 +2737,6 @@
       if (currentChatId) markChatAsRead(currentChatId);
     });
 
-    /* ============================================================
-       ★ 画面共有（電話風）機能
-       ============================================================ */
-
-    function drawMosaic(ctx, video, canvas, blockSize = 16) {
-      const w = canvas.width;
-      const h = canvas.height;
-      const sw = Math.max(2, Math.floor(w / blockSize));
-      const sh = Math.max(2, Math.floor(h / blockSize));
-
-      ctx.imageSmoothingEnabled = true;
-      ctx.drawImage(video, 0, 0, sw, sh);
-      ctx.drawImage(canvas, 0, 0, sw, sh, 0, 0, w, h);
-    }
-
-    function startMosaicStream() {
-      if (!localStream || !mosaicSourceVideo) return null;
-
-      const videoTrack = localStream.getVideoTracks()[0];
-      if (!videoTrack) return null;
-      const settings = videoTrack.getSettings();
-      const width = settings.width || 1280;
-      const height = settings.height || 720;
-
-      if (!mosaicOffscreenCanvas) {
-        mosaicOffscreenCanvas = document.createElement('canvas');
-      }
-      mosaicOffscreenCanvas.width = width;
-      mosaicOffscreenCanvas.height = height;
-      const ctx = mosaicOffscreenCanvas.getContext('2d');
-
-      if (mosaicRAF) cancelAnimationFrame(mosaicRAF);
-      const render = () => {
-        if (!mosaicSourceVideo || mosaicSourceVideo.readyState < 2) {
-          mosaicRAF = requestAnimationFrame(render);
-          return;
-        }
-        drawMosaic(ctx, mosaicSourceVideo, mosaicOffscreenCanvas, 20);
-        mosaicRAF = requestAnimationFrame(render);
-      };
-      render();
-
-      if (mosaicCanvasStream) {
-        mosaicCanvasStream.getTracks().forEach(t => t.stop());
-      }
-      mosaicCanvasStream = mosaicOffscreenCanvas.captureStream(15);
-      return mosaicCanvasStream;
-    }
-
-    function stopMosaicStream() {
-      if (mosaicRAF) {
-        cancelAnimationFrame(mosaicRAF);
-        mosaicRAF = null;
-      }
-      if (mosaicCanvasStream) {
-        mosaicCanvasStream.getTracks().forEach(t => t.stop());
-        mosaicCanvasStream = null;
-      }
-    }
-
-    async function applyMosaicToPeers() {
-      if (!localStream) return;
-
-      let newTrack = null;
-      if (isMosaic) {
-        const ms = startMosaicStream();
-        if (ms) newTrack = ms.getVideoTracks()[0];
-      } else {
-        newTrack = localStream.getVideoTracks()[0];
-      }
-      if (!newTrack) return;
-
-      peerConnections.forEach((pc, peerUid) => {
-        const sender = pc.getSenders().find(s => s.track && s.track.kind === 'video');
-        if (sender) {
-          sender.replaceTrack(newTrack).catch(err => {
-            console.warn('replaceTrack失敗:', peerUid, err);
-          });
-        }
-      });
-    }
-
-    function updateSelfPreview() {
-      if (!localStream) {
-        ssSelfPreview.style.display = 'none';
-        return;
-      }
-      ssSelfPreview.style.display = 'block';
-
-      ssSelfVideo.srcObject = localStream;
-      ssSelfVideo.play().catch(() => {});
-      mosaicSourceVideo = ssSelfVideo;
-
-      if (isMosaic) {
-        ssSelfPreview.classList.add('mosaic-mode');
-        ssSelfMosaicOverlay.classList.add('show');
-        const update = () => {
-          if (!isMosaic || !localStream) return;
-          const v = ssSelfVideo;
-          if (v.readyState < 2) {
-            requestAnimationFrame(update);
-            return;
-          }
-          const c = ssSelfCanvas;
-          const w = v.videoWidth || 640;
-          const h = v.videoHeight || 360;
-          if (c.width !== w) c.width = w;
-          if (c.height !== h) c.height = h;
-          const ctx = c.getContext('2d');
-          drawMosaic(ctx, v, c, 20);
-          requestAnimationFrame(update);
-        };
-        update();
-      } else {
-        ssSelfPreview.classList.remove('mosaic-mode');
-        ssSelfMosaicOverlay.classList.remove('show');
-      }
-    }
-
-    function createSSTile(peerUid) {
-      if (peerTiles.has(peerUid)) return peerTiles.get(peerUid);
-
-      const profile = getProfileForUid(peerUid);
-      const online = isUserOnline(peerUid);
-
-      const tile = document.createElement('div');
-      tile.className = 'ss-tile';
-      tile.dataset.peerUid = peerUid;
-      tile.innerHTML = `
-        <video autoplay playsinline></video>
-        <canvas></canvas>
-        <div class="ss-tile-waiting">
-          <div class="icon">⏳</div>
-          <div>接続中...</div>
-        </div>
-        <div class="ss-tile-label">
-          <span class="online-dot ${online ? 'online' : ''}" data-presence-tile-uid="${escapeHtml(peerUid)}"></span>
-          <span data-tile-name>${escapeHtml(profile.nickname)}</span>
-        </div>
-      `;
-
-      ssGrid.appendChild(tile);
-      peerTiles.set(peerUid, tile);
-      updateSSGridLayout();
-      return tile;
-    }
-
-    function updateSSTileLabels() {
-      peerTiles.forEach((tile, uid) => {
-        const p = getProfileForUid(uid);
-        const nameEl = tile.querySelector('[data-tile-name]');
-        if (nameEl) nameEl.textContent = p.nickname;
-      });
-    }
-
-    function updateSSTileDots() {
-      peerTiles.forEach((tile, uid) => {
-        const dot = tile.querySelector(`[data-presence-tile-uid="${uid}"]`);
-        if (dot) dot.classList.toggle('online', isUserOnline(uid));
-      });
-    }
-
-    function updateSSGridLayout() {
-      const count = peerTiles.size;
-      ssGrid.className = 'ss-grid';
-      if (count === 0) return;
-      if (count === 1) ssGrid.classList.add('grid-1');
-      else if (count === 2) ssGrid.classList.add('grid-2');
-      else if (count === 3) ssGrid.classList.add('grid-3');
-      else if (count === 4) ssGrid.classList.add('grid-4');
-      else ssGrid.classList.add('grid-many');
-
-      ssEmptyState.style.display = count === 0 ? 'flex' : 'none';
-    }
-
-    function removeSSTile(peerUid) {
-      const tile = peerTiles.get(peerUid);
-      if (tile && tile.parentNode) tile.parentNode.removeChild(tile);
-      peerTiles.delete(peerUid);
-
-      const pc = peerConnections.get(peerUid);
-      if (pc) {
-        try { pc.close(); } catch (e) {}
-        peerConnections.delete(peerUid);
-      }
-      peerStreams.delete(peerUid);
-      peerStates.delete(peerUid);
-
-      updateSSGridLayout();
-      updatePeerCount();
-    }
-
-    function updatePeerCount() {
-      const connected = Array.from(peerStates.values()).filter(s => s === 'connected').length;
-      ssPeerCount.textContent = `${connected}人接続`;
-    }
-
-    function createPeerConnection(peerUid, isInitiator) {
-      if (peerConnections.has(peerUid)) return peerConnections.get(peerUid);
-
-      const pc = new RTCPeerConnection(RTC_CONFIG);
-      peerConnections.set(peerUid, pc);
-      peerStates.set(peerUid, 'connecting');
-
-      if (localStream) {
-        let trackToSend = localStream.getVideoTracks()[0];
-        if (isMosaic && mosaicCanvasStream) {
-          trackToSend = mosaicCanvasStream.getVideoTracks()[0];
-        }
-        if (trackToSend) {
-          pc.addTrack(trackToSend, localStream);
-        }
-      }
-
-      pc.ontrack = (event) => {
-        peerStreams.set(peerUid, event.streams[0]);
-        const tile = createSSTile(peerUid);
-        const video = tile.querySelector('video');
-        video.srcObject = event.streams[0];
-        video.play().catch(() => {});
-
-        const waiting = tile.querySelector('.ss-tile-waiting');
-        if (waiting) waiting.style.display = 'none';
-      };
-
-      pc.onconnectionstatechange = () => {
-        const st = pc.connectionState;
-        if (st === 'connected') {
-          peerStates.set(peerUid, 'connected');
-          const tile = peerTiles.get(peerUid);
-          if (tile) {
-            const waiting = tile.querySelector('.ss-tile-waiting');
-            if (waiting) waiting.style.display = 'none';
-          }
-          updatePeerCount();
-        } else if (st === 'failed' || st === 'closed') {
-          peerStates.set(peerUid, 'failed');
-          updatePeerCount();
-          // タイルを削除して相手が退出した可能性を通知
-          removeSSTile(peerUid);
-          // 相手がまだオンラインなら再接続を試みる
-          setTimeout(() => {
-            if (screenShareActive && isUserOnline(peerUid) && peerConnections.size < getExpectedPeerCount()) {
-              negotiateWithPeer(peerUid, true);
-            }
-          }, 1500);
-        } else if (st === 'disconnected') {
-          peerStates.set(peerUid, 'disconnected');
-          updatePeerCount();
-          // 3秒待って復帰しなければfailed扱い
-          setTimeout(() => {
-            const currentPc = peerConnections.get(peerUid);
-            if (currentPc && currentPc.connectionState === 'disconnected') {
-              removeSSTile(peerUid);
-              if (screenShareActive && isUserOnline(peerUid)) {
-                negotiateWithPeer(peerUid, true);
-              }
-            }
-          }, 3000);
-        }
-      };
-
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          push(ref(db, `screenShare/${currentChatId}/signaling/${peerUid}/${myShareSessionId}/ice`), event.candidate.toJSON()).catch(() => {});
-        }
-      };
-
-      return pc;
-    }
-
-    function getExpectedPeerCount() {
-      if (!currentChatId) return 0;
-      const chat = chatsCache[currentChatId];
-      if (!chat) return 0;
-      return Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid).length;
-    }
-
-    async function negotiateWithPeer(peerUid, isInitiator) {
-      if (!currentChatId || !currentUser) return;
-      if (!myShareSessionId) return;
-      const pc = createPeerConnection(peerUid, isInitiator);
-
-      try {
-        if (isInitiator) {
-          const offer = await pc.createOffer();
-          await pc.setLocalDescription(offer);
-          await set(ref(db, `screenShare/${currentChatId}/signaling/${peerUid}/${myShareSessionId}/offer`), {
-            sdp: offer.sdp,
-            type: offer.type,
-            from: currentUser.uid,
-            fromSession: myShareSessionId
-          });
-        }
-      } catch (err) {
-        console.warn('negotiate失敗:', peerUid, err);
-      }
-    }
-
-    /* ============================================================
-       ★ 発信側：シグナリング受信（answer + ICE）
-       ============================================================ */
-    function startCallerSignalingListener(peerUid) {
-      // 発信側は自分が送った offer に対する answer を待つ
-      const sigRef = ref(db, `screenShare/${currentChatId}/signaling/${peerUid}/${myShareSessionId}`);
-      const unsub = onValue(sigRef, async (snap) => {
-        if (!snap.exists()) return;
-        const data = snap.val();
-        const pc = peerConnections.get(peerUid);
-        if (!pc) return;
-
-        if (data.answer && !pc.currentRemoteDescription) {
-          try {
-            await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
-          } catch (err) {
-            console.warn('setRemoteDescription(answer)失敗:', err);
-          }
-        }
-
-        if (data.ice) {
-          Object.values(data.ice).forEach(async (cand) => {
-            try {
-              if (cand) await pc.addIceCandidate(new RTCIceCandidate(cand));
-            } catch (err) {}
-          });
-        }
-      }, () => {});
-      currentSSUnsubscribers.push(unsub);
-    }
-
-    /* ============================================================
-       ★ 着信側：シグナリング受信（offer + ICE）
-       ============================================================ */
-    function startViewerSignalingListener(fromUid) {
-      // 着信側は相手からの offer を待ち、answer を返す
-      const sessionId = myViewerSessionId || ('v_' + currentUser.uid + '_' + Date.now());
-      myViewerSessionId = sessionId;
-
-      const sigRef = ref(db, `screenShare/${currentChatId}/signaling/${fromUid}/${sessionId}`);
-      const unsub = onValue(sigRef, async (snap) => {
-        if (!snap.exists()) return;
-        const data = snap.val();
-
-        let pc = peerConnections.get(fromUid);
-        if (!pc) {
-          pc = createPeerConnection(fromUid, false);
-        }
-
-        if (data.offer && !pc.currentRemoteDescription) {
-          try {
-            await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-            await update(ref(db, `screenShare/${currentChatId}/signaling/${fromUid}/${sessionId}`), {
-              answer: {
-                sdp: answer.sdp,
-                type: answer.type,
-                from: currentUser.uid
-              }
-            });
-          } catch (err) {
-            console.warn('offer処理エラー:', err);
-          }
-        }
-
-        if (data.ice) {
-          Object.values(data.ice).forEach(async (cand) => {
-            try {
-              if (cand) await pc.addIceCandidate(new RTCIceCandidate(cand));
-            } catch (err) {}
-          });
-        }
-      }, () => {});
-      currentSSUnsubscribers.push(unsub);
-    }
-
-    /* ============================================================
-       ★ 通話発信
-       ============================================================ */
-    async function startCall() {
-      if (!currentUser || !currentChatId) return;
-      if (callState !== 'idle') {
-        showBanner('既に通話中です', true);
-        return;
-      }
-
-      const chat = chatsCache[currentChatId];
-      if (!chat) return;
-
-      const otherUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
-      if (otherUids.length === 0) {
-        showBanner('通話相手がいません', true);
-        return;
-      }
-
-      const targetUid = otherUids[0];
-      const targetProfile = getProfileForUid(targetUid);
-
-      const callRef = push(ref(db, `screenShare/${currentChatId}/calls`));
-      const callId = callRef.key;
-
-      const callData = {
-        callId,
-        fromUid: currentUser.uid,
-        fromName: myProfile.nickname,
-        fromAvatar: myProfile.avatar,
-        toUid: targetUid,
-        chatId: currentChatId,
-        createdAt: Date.now(),
-        status: 'ringing',
-        fromSession: 's_' + currentUser.uid + '_' + Date.now()
-      };
-
-      try {
-        await set(callRef, callData);
-        callState = 'calling';
-        currentCallData = callData;
-
-        outgoingCallAvatar.src = targetProfile.avatar;
-        outgoingCallName.textContent = targetProfile.nickname;
-        outgoingCallModal.classList.add('show');
-
-        watchCallStatus(callId);
-
-        callTimeoutTimer = setTimeout(() => {
-          if (callState === 'calling') {
-            cancelCall('応答がありませんでした');
-          }
-        }, CALL_TIMEOUT_MS);
-      } catch (err) {
-        console.error('発信エラー:', err);
-        showBanner('発信に失敗しました', true);
-        callState = 'idle';
-        currentCallData = null;
-      }
-    }
-
-    function watchCallStatus(callId) {
-      if (callWatchUnsubscribe) { callWatchUnsubscribe(); callWatchUnsubscribe = null; }
-      const callStatusRef = ref(db, `screenShare/${currentChatId}/calls/${callId}`);
-      callWatchUnsubscribe = onValue(callStatusRef, async (snap) => {
-        if (!snap.exists()) return;
-        const data = snap.val();
-
-        if (data.status === 'accepted' && callState === 'calling') {
-          if (callTimeoutTimer) { clearTimeout(callTimeoutTimer); callTimeoutTimer = null; }
-          callState = 'active';
-          outgoingCallModal.classList.remove('show');
-          showBanner('通話が開始されました', false);
-
-          await startScreenShareAsCaller(data.fromSession);
-        } else if ((data.status === 'declined' || data.status === 'cancelled') && callState === 'calling') {
-          if (callTimeoutTimer) { clearTimeout(callTimeoutTimer); callTimeoutTimer = null; }
-          outgoingCallModal.classList.remove('show');
-          callState = 'idle';
-          currentCallData = null;
-          showBanner(data.status === 'declined' ? '相手が拒否しました' : '通話がキャンセルされました', true);
-          remove(callStatusRef).catch(() => {});
-        }
-      }, () => {});
-    }
-
-    async function startScreenShareAsCaller(sessionId) {
-      try {
-        const stream = await navigator.mediaDevices.getDisplayMedia({
-          video: { frameRate: { ideal: 30, max: 30 } },
-          audio: false
-        });
-        localStream = stream;
-        stream.getVideoTracks()[0].addEventListener('ended', () => {
-          endCall('画面共有を終了しました');
-        });
-
-        screenShareActive = true;
-        isMosaic = false;
-        myShareSessionId = sessionId || ('s_' + currentUser.uid + '_' + Date.now());
-
-        await set(ref(db, `screenShare/${currentChatId}/sharers/${myShareSessionId}`), {
-          uid: currentUser.uid,
-          nickname: myProfile.nickname,
-          startedAt: Date.now(),
-          ended: false
-        });
-        onDisconnect(ref(db, `screenShare/${currentChatId}/sharers/${myShareSessionId}`)).remove();
-
-        // 相手にofferを送る
-        const targetUid = currentCallData ? currentCallData.toUid : null;
-        if (targetUid) {
-          await negotiateWithPeer(targetUid, true);
-          startCallerSignalingListener(targetUid);
-        }
-
-        screenSharePanel.classList.add('show');
-        screenShareCallBtn.classList.add('active');
-        screenShareCallBtn.textContent = '📞 通話中';
-
-        updateSelfPreview();
-        updateMosaicBtnUI();
-        updatePeerCount();
-
-        // 退出検知監視開始
-        startSharerWatch();
-      } catch (err) {
-        console.warn('画面共有開始失敗:', err);
-        if (err.name !== 'NotAllowedError') {
-          showBanner('画面共有の開始に失敗しました', true);
-        }
-        endCall('画面共有がキャンセルされました');
-      }
-    }
-
-    /* ============================================================
-       ★ 着信リスナー
-       ============================================================ */
-    function startCallListener(chatId) {
-      stopCallListener();
-      const callsRef = ref(db, `screenShare/${chatId}/calls`);
-      callsWatchUnsubscribe = onValue(callsRef, (snap) => {
-        if (!snap.exists()) return;
-        const calls = snap.val();
-        Object.entries(calls).forEach(([callId, data]) => {
-          if (!data) return;
-          if (data.toUid === currentUser.uid && data.status === 'ringing' && callState === 'idle') {
-            showIncomingCall(callId, data);
-          }
-        });
-      }, () => {});
-    }
-
-    function stopCallListener() {
-      if (callsWatchUnsubscribe) { callsWatchUnsubscribe(); callsWatchUnsubscribe = null; }
-    }
-
-    function showIncomingCall(callId, data) {
-      callState = 'incoming';
-      currentCallData = { ...data, callId };
-
-      const fromProfile = getProfileForUid(data.fromUid);
-      incomingCallAvatar.src = fromProfile.avatar;
-      incomingCallName.textContent = fromProfile.nickname || data.fromName || '名無しさん';
-
-      incomingCallModal.classList.add('show');
-      startRingingSound();
-
-      if (callTimeoutTimer) clearTimeout(callTimeoutTimer);
-      let remaining = 30;
-      incomingCallTimeout.textContent = `${remaining}秒後に自動キャンセル`;
-      const tickInterval = setInterval(() => {
-        remaining--;
-        if (remaining <= 0) {
-          clearInterval(tickInterval);
-          if (callState === 'incoming') {
-            declineIncomingCall();
-          }
-        } else {
-          incomingCallTimeout.textContent = `${remaining}秒後に自動キャンセル`;
-        }
-      }, 1000);
-      callTimeoutTimer = setTimeout(() => {
-        clearInterval(tickInterval);
-        if (callState === 'incoming') declineIncomingCall();
-      }, 30000);
-    }
-
-    async function acceptIncomingCall() {
-      if (callState !== 'incoming' || !currentCallData) return;
-
-      stopRingingSound();
-      if (callTimeoutTimer) { clearTimeout(callTimeoutTimer); callTimeoutTimer = null; }
-      incomingCallModal.classList.remove('show');
-
-      const callId = currentCallData.callId;
-
-      try {
-        await update(ref(db, `screenShare/${currentChatId}/calls/${callId}`), {
-          status: 'accepted',
-          acceptedAt: Date.now(),
-          acceptedBy: currentUser.uid
-        });
-      } catch (err) {
-        console.warn('accept更新失敗:', err);
-      }
-
-      callState = 'active';
-
-      const wantShare = confirm('通話が接続されました。\nあなたも画面を共有しますか？\n\n「OK」= 自分の画面も共有する\n「キャンセル」= 相手の画面だけを見る');
-      if (wantShare) {
-        await startScreenShareAsCallee();
-      } else {
-        openScreenSharePanelAsViewer();
-        // 受信専用でも offer を受ける
-        startViewerSignalingListener(currentCallData.fromUid);
-        startSharerWatch();
-      }
-    }
-
-    async function startScreenShareAsCallee() {
-      try {
-        const stream = await navigator.mediaDevices.getDisplayMedia({
-          video: { frameRate: { ideal: 30, max: 30 } },
-          audio: false
-        });
-        localStream = stream;
-        stream.getVideoTracks()[0].addEventListener('ended', () => {
-          endCall('画面共有を終了しました');
-        });
-
-        screenShareActive = true;
-        isMosaic = false;
-        myShareSessionId = 's_' + currentUser.uid + '_' + Date.now();
-
-        await set(ref(db, `screenShare/${currentChatId}/sharers/${myShareSessionId}`), {
-          uid: currentUser.uid,
-          nickname: myProfile.nickname,
-          startedAt: Date.now(),
-          ended: false
-        });
-        onDisconnect(ref(db, `screenShare/${currentChatId}/sharers/${myShareSessionId}`)).remove();
-
-        screenSharePanel.classList.add('show');
-        screenShareCallBtn.classList.add('active');
-        screenShareCallBtn.textContent = '📞 通話中';
-
-        updateSelfPreview();
-        updateMosaicBtnUI();
-
-        // 相手からの offer を受信
-        startViewerSignalingListener(currentCallData.fromUid);
-        startSharerWatch();
-
-      } catch (err) {
-        console.warn('画面共有開始失敗:', err);
-        openScreenSharePanelAsViewer();
-        startViewerSignalingListener(currentCallData.fromUid);
-        startSharerWatch();
-      }
-    }
-
-    async function declineIncomingCall() {
-      stopRingingSound();
-      if (callTimeoutTimer) { clearTimeout(callTimeoutTimer); callTimeoutTimer = null; }
-      incomingCallModal.classList.remove('show');
-
-      if (!currentCallData) {
-        callState = 'idle';
-        return;
-      }
-
-      const callId = currentCallData.callId;
-
-      try {
-        await update(ref(db, `screenShare/${currentChatId}/calls/${callId}`), {
-          status: 'declined',
-          declinedAt: Date.now(),
-          declinedBy: currentUser.uid
-        });
-        setTimeout(() => {
-          remove(ref(db, `screenShare/${currentChatId}/calls/${callId}`)).catch(() => {});
-        }, 5000);
-      } catch (err) {}
-
-      callState = 'idle';
-      currentCallData = null;
-    }
-
-    async function cancelCall(reason) {
-      if (callState !== 'calling' || !currentCallData) return;
-
-      if (callTimeoutTimer) { clearTimeout(callTimeoutTimer); callTimeoutTimer = null; }
-      outgoingCallModal.classList.remove('show');
-
-      const callId = currentCallData.callId;
-      try {
-        await update(ref(db, `screenShare/${currentChatId}/calls/${callId}`), {
-          status: 'cancelled',
-          cancelledAt: Date.now(),
-          cancelledBy: currentUser.uid
-        });
-        setTimeout(() => {
-          remove(ref(db, `screenShare/${currentChatId}/calls/${callId}`)).catch(() => {});
-        }, 3000);
-      } catch (err) {}
-
-      callState = 'idle';
-      currentCallData = null;
-      if (reason) showBanner(reason, true);
-    }
-
-    /* ============================================================
-       ★ 退出検知：sharers の変化を監視
-       ============================================================ */
-    function startSharerWatch() {
-      if (sharersWatchUnsubscribe) { sharersWatchUnsubscribe(); sharersWatchUnsubscribe = null; }
-      if (!currentChatId) return;
-
-      const sharersRef = ref(db, `screenShare/${currentChatId}/sharers`);
-      sharersWatchUnsubscribe = onValue(sharersRef, (snap) => {
-        const sharers = snap.exists() ? snap.val() : {};
-        const currentSharerUids = new Set();
-        Object.entries(sharers).forEach(([sessionId, info]) => {
-          if (!info || info.ended) return;
-          if (info.uid) currentSharerUids.add(info.uid);
-        });
-
-        // 自分のUIDは含めない
-        currentSharerUids.delete(currentUser.uid);
-
-        // 以前はいたけど、今いない → 退出した
-        const leftUids = [];
-        lastKnownSharerUids.forEach(uid => {
-          if (!currentSharerUids.has(uid)) leftUids.push(uid);
-        });
-
-        // タイル削除 & 通知
-        leftUids.forEach(uid => {
-          const profile = getProfileForUid(uid);
-          removeSSTile(uid);
-          showPeerLeftToast(`${profile.nickname} が退出しました`);
-        });
-
-        lastKnownSharerUids = currentSharerUids;
-
-        // 自分以外のsharerが0人になった & 自分も配信していない & 通話状態 → 通話終了
-        if (currentSharerUids.size === 0 && callState === 'active') {
-          // 相手が全員退出した（2人の場合、相手が退出したことになる）
-          const others = Object.keys(chatsCache[currentChatId]?.members || {}).filter(uid => uid !== currentUser.uid);
-          if (others.length <= 1) {
-            // 2人のチャット
-            showPeerLeftToast('相手が退出したため通話を終了します');
-            setTimeout(() => {
-              endCall('相手が退出しました');
-            }, 1500);
-          }
-        }
-      }, () => {});
-    }
-
-    /* ============================================================
-       ★ 通話終了
-       ============================================================ */
-    async function endCall(reason) {
-      screenSharePanel.classList.remove('show');
-      screenShareCallBtn.classList.remove('active');
-      screenShareCallBtn.textContent = '📞 画面共有';
-
-      incomingCallModal.classList.remove('show');
-      outgoingCallModal.classList.remove('show');
-      stopRingingSound();
-      if (callTimeoutTimer) { clearTimeout(callTimeoutTimer); callTimeoutTimer = null; }
-
-      stopCallListener();
-
-      // sharerを削除
-      if (currentChatId && myShareSessionId) {
-        try {
-          await remove(ref(db, `screenShare/${currentChatId}/sharers/${myShareSessionId}`));
-        } catch (e) {}
-      }
-
-      // シグナリングをクリーンアップ
-      currentSSUnsubscribers.forEach(fn => { try { fn(); } catch (e) {} });
-      currentSSUnsubscribers = [];
-
-      // sharer watch 停止
-      if (sharersWatchUnsubscribe) { sharersWatchUnsubscribe(); sharersWatchUnsubscribe = null; }
-      if (callWatchUnsubscribe) { callWatchUnsubscribe(); callWatchUnsubscribe = null; }
-
-      // ピア接続を閉じる
-      peerConnections.forEach((pc) => { try { pc.close(); } catch (e) {} });
-      peerConnections.clear();
-      peerStreams.clear();
-      peerStates.clear();
-      Array.from(peerTiles.keys()).forEach(uid => removeSSTile(uid));
-
-      // 自分のストリーム停止
-      if (localStream) {
-        localStream.getTracks().forEach(t => t.stop());
-        localStream = null;
-      }
-
-      stopMosaicStream();
-      isMosaic = false;
-
-      ssSelfVideo.srcObject = null;
-      ssSelfPreview.style.display = 'none';
-
-      screenShareActive = false;
-      myShareSessionId = null;
-      myViewerSessionId = null;
-
-      // 通話データも掃除
-      if (currentCallData && currentChatId) {
-        const callId = currentCallData.callId;
-        if (callId) {
-          remove(ref(db, `screenShare/${currentChatId}/calls/${callId}`)).catch(() => {});
-        }
-      }
-
-      callState = 'idle';
-      currentCallData = null;
-      lastKnownSharerUids = new Set();
-
-      updateMosaicBtnUI();
-      updatePeerCount();
-
-      if (reason) showBanner(reason, false);
-    }
-
-    function openScreenSharePanelAsViewer() {
-      screenSharePanel.classList.add('show');
-      screenShareCallBtn.classList.add('active');
-      screenShareCallBtn.textContent = '👁 視聴中';
-      ssSelfPreview.style.display = 'none';
-      ssMosaicBtn.disabled = true;
-      ssMosaicBtn.style.opacity = '0.4';
-      ssStopBtn.querySelector('.label').textContent = '退出';
-    }
-
-    function updateMosaicBtnUI() {
-      if (isMosaic) {
-        ssMosaicBtn.classList.add('mosaic-active');
-        ssMosaicBtn.querySelector('.icon').textContent = '👁';
-        ssMosaicBtn.querySelector('.label').textContent = 'モザイク解除';
-      } else {
-        ssMosaicBtn.classList.remove('mosaic-active');
-        ssMosaicBtn.querySelector('.icon').textContent = '🀫';
-        ssMosaicBtn.querySelector('.label').textContent = 'モザイク';
-      }
-    }
-
-    async function toggleMosaic() {
-      if (!screenShareActive || !localStream) return;
-      isMosaic = !isMosaic;
-      await applyMosaicToPeers();
-      updateSelfPreview();
-      updateMosaicBtnUI();
-      showBanner(isMosaic ? 'モザイクをオンにしました' : 'モザイクをオフにしました', false);
-    }
-
-    /* ============================================================
-       ★ イベント登録
-       ============================================================ */
-    screenShareCallBtn.addEventListener('click', () => {
-      if (callState === 'idle') {
-        startCall();
-      } else if (screenShareActive) {
-        screenSharePanel.classList.add('show');
-      }
-    });
-
-    incomingAcceptBtn.addEventListener('click', acceptIncomingCall);
-    incomingDeclineBtn.addEventListener('click', declineIncomingCall);
-    outgoingCancelBtn.addEventListener('click', () => cancelCall('通話をキャンセルしました'));
-
-    ssMosaicBtn.addEventListener('click', toggleMosaic);
-    ssStopBtn.addEventListener('click', () => endCall('通話を終了しました'));
-    ssMinimizeBtn.addEventListener('click', () => {
-      screenSharePanel.classList.remove('show');
-    });
-
-    window.addEventListener('beforeunload', () => {
-      if (callState !== 'idle') {
-        try { endCall(); } catch (e) {}
-      }
-    });
-
-    /* ============================================================
-       新規チャット・プロフィール・ストーリー・その他（省略なし）
-       ============================================================ */
-
     const newChatModal = document.getElementById('newChatModal');
     const memberEmailInput = document.getElementById('memberEmailInput');
     const memberSearchMsg = document.getElementById('memberSearchMsg');
@@ -4537,7 +2936,11 @@
       }
     });
 
+    /* ============================================================
+       ストーリー
+       ============================================================ */
     const STORY_TTL = 24 * 60 * 60 * 1000;
+
     function initStoriesListener() {
       if (storiesUnsubscribe) storiesUnsubscribe();
       storiesUnsubscribe = onValue(ref(db, 'stories'), (snap) => {
@@ -4566,16 +2969,20 @@
       }, () => {});
     }
 
+    /* ★ ストーリー一覧描画（チャット相手のみ表示） */
     function renderStories() {
       const strip = document.getElementById('storiesStrip');
       strip.querySelectorAll('.story-bubble:not(#storyAddBtn)').forEach(el => el.remove());
       strip.querySelectorAll('.stories-empty').forEach(el => el.remove());
       if (!currentUser) return;
 
+      // チャット相手のUIDセット
       const chatPartnerUids = getChatPartnerUids();
 
+      // 自分のストーリーは常に表示
       const otherUids = Object.keys(storiesCache || {}).filter(uid => {
         if (uid === currentUser.uid) return false;
+        // ★ チャット相手のみ表示
         return chatPartnerUids.has(uid);
       });
 
@@ -4590,6 +2997,7 @@
       unreadSection.style.display = 'flex';
       unreadSection.style.gap = '12px';
 
+      // 自分のストーリー
       if (storiesCache[currentUser.uid]) {
         const p = getProfileForUid(currentUser.uid);
         const bubble = document.createElement('div');
@@ -4616,6 +3024,7 @@
         strip.appendChild(seenSection);
       }
 
+      // チャット相手が誰もいない & 自分のストーリーもない場合、案内を表示
       const hasAnyStory = unreadSection.children.length > 0 || seenUids.length > 0;
       if (!hasAnyStory) {
         const empty = document.createElement('div');
@@ -4691,6 +3100,9 @@
       }
     });
 
+    /* ============================================================
+       ストーリービューア
+       ============================================================ */
     const storyViewer = document.getElementById('storyViewer');
     const storyStageContent = document.getElementById('storyStageContent');
     const storyProgressBar = document.getElementById('storyProgressBar');
@@ -4704,6 +3116,7 @@
       const source = options.archiveMode ? myArchivedStories : storiesCache[uid];
       if (!source) return;
 
+      // ★ 他人のストーリーはチャット相手のみ
       if (!options.archiveMode && uid !== currentUser.uid) {
         const chatPartnerUids = getChatPartnerUids();
         if (!chatPartnerUids.has(uid)) {
@@ -4784,8 +3197,10 @@
         storyStageContent.appendChild(d);
       }
 
+      // ★ 自分のストーリーかどうかでUIを切替
       const isMine = currentStoryUserId === currentUser.uid;
 
+      // フッター（返信・いいね）は自分のストーリーでは非表示
       const storyFooter = document.querySelector('.story-footer');
       if (isMine) {
         storyFooter.style.display = 'none';
@@ -4795,12 +3210,14 @@
         storyStatsOverlay.style.display = 'none';
       }
 
+      // 閲覧記録
       if (!isMine && !currentStoryIsArchive) {
         mySeenStories[story.id] = Date.now();
         saveJson(SEEN_STORIES_KEY, mySeenStories);
         set(ref(db, `storyViews/${story.id}/${currentUser.uid}`), Date.now()).catch(() => {});
       }
 
+      // いいね監視
       if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
       storyLikesUnsubscribe = onValue(ref(db, `storyLikes/${story.id}`), (snap) => {
         currentStoryLikes = snap.exists() ? snap.val() : {};
@@ -4810,6 +3227,7 @@
         }
       }, () => {});
 
+      // 閲覧数監視（自分のストーリーのみ）
       if (storyViewsUnsubscribe) { storyViewsUnsubscribe(); storyViewsUnsubscribe = null; }
       if (isMine) {
         storyViewsUnsubscribe = onValue(ref(db, `storyViews/${story.id}`), (snap) => {
@@ -4865,6 +3283,7 @@
       }
     }
 
+    /* ★ いいねボタンの状態更新 */
     function updateStoryLikeBtn(storyId) {
       const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
       if (liked) {
@@ -4876,6 +3295,7 @@
       }
     }
 
+    /* ★ いいねボタンクリック */
     storyLikeBtn.addEventListener('click', async (e) => {
       if (!currentUser) return;
       if (currentStoryUserId === currentUser.uid) return;
@@ -4889,6 +3309,7 @@
           await remove(ref(db, `storyLikes/${story.id}/${currentUser.uid}`));
         } else {
           await set(ref(db, `storyLikes/${story.id}/${currentUser.uid}`), Date.now());
+          // ハートを浮かべるエフェクト
           const heart = document.createElement('div');
           heart.className = 'heart-float';
           heart.textContent = '❤️';
@@ -4902,9 +3323,11 @@
       }
     });
 
+    /* ★ 返信入力欄：フォーカスでストーリー停止、ブラーで再開 */
     storyReplyInput.addEventListener('focus', pauseStory);
     storyReplyInput.addEventListener('blur', resumeStory);
 
+    /* ★ 返信送信 */
     storyReplyInput.addEventListener('keydown', async (e) => {
       if (e.key !== 'Enter') return;
       if (e.isComposing || e.keyCode === 229) return;
@@ -4922,14 +3345,18 @@
       if (!story) return;
 
       const partnerUid = currentStoryUserId;
+
+      // チャット相手かチェック（念のため）
       const chatPartnerUids = getChatPartnerUids();
       if (!chatPartnerUids.has(partnerUid)) {
         showBanner('チャットしていない相手には返信できません', true);
         return;
       }
 
+      // 既存DMを探す
       let chatId = await findExistingDirectChat(partnerUid);
 
+      // なければ新規作成
       if (!chatId) {
         try {
           const newChatRef = push(ref(db, 'chatMessages'));
@@ -4958,6 +3385,7 @@
         }
       }
 
+      // ストーリーのプレビュー情報
       let previewType = story.type;
       let previewDataUrl = '';
       if (story.type === 'image' && story.file && story.file.dataUrl) {
@@ -4968,6 +3396,7 @@
       }
       let previewText = story.content || (story.type === 'image' ? '📷 画像' : '（テキストなし）');
 
+      // メッセージ送信
       const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
       try {
         const msgData = {
@@ -4989,6 +3418,7 @@
         const newRef = push(ref(db, `chatMessages/${chatId}`));
         await set(newRef, msgData);
 
+        // チャット一覧更新
         const memberUids = [currentUser.uid, partnerUid];
         const updates = {};
         memberUids.forEach(uid => {
@@ -5007,6 +3437,9 @@
       }
     });
 
+    /* ============================================================
+       ストーリーアーカイブ
+       ============================================================ */
     document.getElementById('myArchiveBtn').addEventListener('click', () => {
       const list = document.getElementById('archiveList');
       list.innerHTML = '';
@@ -5047,6 +3480,9 @@
       if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden');
     });
 
+    /* ============================================================
+       緊急モード
+       ============================================================ */
     function executeNothing() {
       emergencyOverlay.classList.add('show');
       document.title = '無';
@@ -5321,8 +3757,6 @@
       if (!confirm('ログアウトしますか？')) return;
       intentionalSignOut = true;
       try { await setMyTypingState(false); await setMyOffline(); } catch (e) {}
-      try { endCall(); } catch (e) {}
-      stopCallListener();
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
@@ -5461,7 +3895,6 @@
     });
 
     window.addEventListener('beforeunload', () => {
-      try { endCall(); } catch (e) {}
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
