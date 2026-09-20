@@ -717,7 +717,7 @@
       object-fit: contain;
       background: #000;
     }
-    /* ★ 音声ストーリー: 背景のみ表示（アイコン・波形なし） */
+    /* ★ 音声ストーリー: 背景のみ表示 */
     .story-audio-wrap {
       width: 100%; height: 100%;
       display: flex; flex-direction: column;
@@ -3550,15 +3550,20 @@
         /* ★ 動画表示（音声付きで確実に再生） */
         const wrap = document.createElement('div');
         wrap.className = 'story-video-wrap';
+
         const video = document.createElement('video');
         video.src = story.file.dataUrl;
         video.controls = true;
         video.playsInline = true;
         video.preload = 'auto';
-        video.volume = 1;
-        video.muted = false;
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
+        video.setAttribute('controlsList', 'nodownload');
+        /* 最初からミュート解除・音量最大で初期化 */
+        video.muted = false;
+        video.volume = 1;
+        video.defaultMuted = false;
+
         wrap.appendChild(video);
         storyStageContent.appendChild(wrap);
         currentStoryVideoEl = video;
@@ -3567,32 +3572,31 @@
           if (currentStoryVideoEl === video) currentStoryVideoEl = null;
           nextStory();
         });
-        video.addEventListener('play', pauseStory);
-        video.addEventListener('pause', () => {
-          if (!video.ended) pauseStory();
-        });
 
-        const tryPlay = () => {
-          video.muted = false;
-          video.volume = 1;
-          const playPromise = video.play();
-          if (playPromise && typeof playPromise.catch === 'function') {
-            playPromise.catch(() => {
-              const resumeOnInteraction = () => {
-                if (currentStoryVideoEl === video && video.paused) {
-                  video.muted = false;
-                  video.volume = 1;
-                  video.play().catch(() => {});
-                }
-                document.removeEventListener('click', resumeOnInteraction);
-                document.removeEventListener('touchstart', resumeOnInteraction);
-              };
-              document.addEventListener('click', resumeOnInteraction, { once: true });
-              document.addEventListener('touchstart', resumeOnInteraction, { once: true });
-            });
+        /* タイマーとの干渉を避けるため play/pause リスナーは付けない */
+
+        /* 音声付き自動再生を試みる */
+        const attemptPlay = async () => {
+          try {
+            video.muted = false;
+            video.volume = 1;
+            await video.play();
+          } catch (err) {
+            /* 自動再生がブロックされた場合、初回タップで音声付き再生を試行 */
+            const resumeOnInteraction = () => {
+              if (currentStoryVideoEl === video) {
+                video.muted = false;
+                video.volume = 1;
+                video.play().catch(() => {});
+              }
+              document.removeEventListener('click', resumeOnInteraction);
+              document.removeEventListener('touchstart', resumeOnInteraction);
+            };
+            document.addEventListener('click', resumeOnInteraction, { once: true });
+            document.addEventListener('touchstart', resumeOnInteraction, { once: true });
           }
         };
-        tryPlay();
+        attemptPlay();
       } else if (story.type === 'audio' && story.file) {
         /* ★ 音声ストーリー: 背景のみ、音声だけ流れる */
         const wrap = document.createElement('div');
@@ -3704,21 +3708,24 @@
       }
 
       /* 自動送り時間の設定 */
-      if ((story.type === 'audio' || story.type === 'video') && story.file) {
-        const tempMedia = story.type === 'video' ? document.createElement('video') : new Audio();
-        tempMedia.src = story.file.dataUrl;
+      if (story.type === 'audio' && story.file) {
+        const tempAudio = new Audio();
+        tempAudio.src = story.file.dataUrl;
         let timerStarted = false;
         const startWithDuration = (dur) => {
           if (timerStarted) return;
           timerStarted = true;
           startStoryTimer(Math.min(dur + 300, 120000));
         };
-        tempMedia.addEventListener('loadedmetadata', () => {
-          const dur = Math.max((tempMedia.duration || 5) * 1000, 1000);
+        tempAudio.addEventListener('loadedmetadata', () => {
+          const dur = Math.max((tempAudio.duration || 5) * 1000, 1000);
           startWithDuration(dur);
         });
-        tempMedia.addEventListener('error', () => startWithDuration(5000));
+        tempAudio.addEventListener('error', () => startWithDuration(5000));
         setTimeout(() => startWithDuration(5000), 3000);
+      } else if (story.type === 'video' && story.file) {
+        /* ★ 動画はユーザーが自由に見られるよう、自動送りしない */
+        startStoryTimer(24 * 60 * 60 * 1000);
       } else {
         startStoryTimer(5000);
       }
@@ -3747,11 +3754,9 @@
       if (storyPaused) return;
       storyPaused = true;
       storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime));
+      /* 音声(BGM)のみ一時停止。動画は controls でユーザー操作に任せる */
       if (currentStoryAudioEl && !currentStoryAudioEl.paused) {
         try { currentStoryAudioEl.pause(); } catch (e) {}
-      }
-      if (currentStoryVideoEl && !currentStoryVideoEl.paused) {
-        try { currentStoryVideoEl.pause(); } catch (e) {}
       }
     }
     function resumeStory() {
@@ -3762,12 +3767,6 @@
         currentStoryAudioEl.muted = false;
         currentStoryAudioEl.volume = 1;
         const p = currentStoryAudioEl.play();
-        if (p && typeof p.catch === 'function') p.catch(() => {});
-      }
-      if (currentStoryVideoEl && currentStoryVideoEl.paused) {
-        currentStoryVideoEl.muted = false;
-        currentStoryVideoEl.volume = 1;
-        const p = currentStoryVideoEl.play();
         if (p && typeof p.catch === 'function') p.catch(() => {});
       }
     }
@@ -3918,7 +3917,7 @@
       } else {
         previewType = 'text';
       }
-      let previewText = story.content || (story.type === 'image' ? '📷 画像' : story.type === 'audio' ? '音声' : story.type === 'video' ? '🎬 動画' : '（テキストなし）');
+      let previewText = story.content || (story.type === 'image' ? '📷 画像' : story.type === 'audio' ? '音声' : story.type === 'video' ? '動画' : '（テキストなし）');
 
       const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
       try {
