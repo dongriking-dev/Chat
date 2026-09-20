@@ -717,7 +717,7 @@
       object-fit: contain;
       background: #000;
     }
-    /* ★ 音声は見えないようにする（BGMとして再生） */
+    /* ★ 音声ストーリー: 背景のみ表示（アイコン・波形なし） */
     .story-audio-wrap {
       width: 100%; height: 100%;
       display: flex; flex-direction: column;
@@ -726,42 +726,14 @@
       background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
       position: relative;
     }
-    .story-audio-wrap .story-audio-icon {
-      font-size: 96px;
-      line-height: 1;
-      animation: audioPulse 1.8s ease-in-out infinite;
-      filter: drop-shadow(0 6px 20px rgba(0,0,0,0.4));
-    }
-    @keyframes audioPulse {
-      0%, 100% { transform: scale(1); opacity: 0.95; }
-      50% { transform: scale(1.08); opacity: 1; }
-    }
     .story-audio-wrap .story-audio-label {
-      color: #fff; font-size: 18px; font-weight: 700;
+      color: #fff; font-size: 20px; font-weight: 700;
       text-align: center; word-break: break-word;
-      max-width: 100%; line-height: 1.6;
+      max-width: 100%; line-height: 1.7;
       text-shadow: 0 2px 8px rgba(0,0,0,0.35);
     }
     .story-audio-wrap audio {
       display: none !important;
-    }
-    .story-audio-wrap .story-audio-visual {
-      display: flex; align-items: flex-end; gap: 5px;
-      height: 40px;
-    }
-    .story-audio-wrap .story-audio-visual span {
-      width: 5px; background: rgba(255,255,255,0.85);
-      border-radius: 3px;
-      animation: audioBar 0.9s ease-in-out infinite;
-    }
-    .story-audio-wrap .story-audio-visual span:nth-child(1) { animation-delay: 0s; }
-    .story-audio-wrap .story-audio-visual span:nth-child(2) { animation-delay: 0.1s; }
-    .story-audio-wrap .story-audio-visual span:nth-child(3) { animation-delay: 0.2s; }
-    .story-audio-wrap .story-audio-visual span:nth-child(4) { animation-delay: 0.3s; }
-    .story-audio-wrap .story-audio-visual span:nth-child(5) { animation-delay: 0.4s; }
-    @keyframes audioBar {
-      0%, 100% { height: 8px; opacity: 0.6; }
-      50% { height: 36px; opacity: 1; }
     }
     .story-stats-overlay {
       position: absolute;
@@ -1519,7 +1491,6 @@
     function fileToBase64Audio(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
       return new Promise((resolve, reject) => {
         if (!file) { resolve(null); return; }
-        const validTypes = ['audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/m4a', 'audio/x-m4a', 'audio/*'];
         const validExt = /\.(mp3|m4a)$/i.test(file.name);
         if (!validExt && !file.type.startsWith('audio/')) {
           reject(new Error('mp3 / m4a ファイルを選択してください'));
@@ -2473,9 +2444,9 @@
           if (s.previewType === 'image' && s.previewDataUrl) {
             thumb = `<img src="${s.previewDataUrl}" alt="">`;
           } else if (s.previewType === 'audio') {
-            thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;">🎵</div>`;
+            thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);flex-shrink:0;"></div>`;
           } else if (s.previewType === 'video') {
-            thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#000,#374151);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;">🎬</div>`;
+            thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#000,#374151);flex-shrink:0;"></div>`;
           } else {
             thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(45deg,#f09433,#bc1888);flex-shrink:0;"></div>`;
           }
@@ -3576,16 +3547,18 @@
         img.src = story.file.dataUrl;
         storyStageContent.appendChild(img);
       } else if (story.type === 'video' && story.file) {
-        // ★ 動画表示
+        /* ★ 動画表示（音声付きで確実に再生） */
         const wrap = document.createElement('div');
         wrap.className = 'story-video-wrap';
         const video = document.createElement('video');
         video.src = story.file.dataUrl;
         video.controls = true;
         video.playsInline = true;
+        video.preload = 'auto';
+        video.volume = 1;
+        video.muted = false;
         video.setAttribute('playsinline', '');
         video.setAttribute('webkit-playsinline', '');
-        video.preload = 'auto';
         wrap.appendChild(video);
         storyStageContent.appendChild(wrap);
         currentStoryVideoEl = video;
@@ -3599,39 +3572,45 @@
           if (!video.ended) pauseStory();
         });
 
-        const playPromise = video.play();
-        if (playPromise && typeof playPromise.catch === 'function') {
-          playPromise.catch(() => {});
-        }
+        const tryPlay = () => {
+          video.muted = false;
+          video.volume = 1;
+          const playPromise = video.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => {
+              const resumeOnInteraction = () => {
+                if (currentStoryVideoEl === video && video.paused) {
+                  video.muted = false;
+                  video.volume = 1;
+                  video.play().catch(() => {});
+                }
+                document.removeEventListener('click', resumeOnInteraction);
+                document.removeEventListener('touchstart', resumeOnInteraction);
+              };
+              document.addEventListener('click', resumeOnInteraction, { once: true });
+              document.addEventListener('touchstart', resumeOnInteraction, { once: true });
+            });
+          }
+        };
+        tryPlay();
       } else if (story.type === 'audio' && story.file) {
-        // ★ 音声は見えないBGMとして再生
+        /* ★ 音声ストーリー: 背景のみ、音声だけ流れる */
         const wrap = document.createElement('div');
         wrap.className = 'story-audio-wrap';
 
-        const icon = document.createElement('div');
-        icon.className = 'story-audio-icon';
-        icon.textContent = '🎵';
-
-        const visual = document.createElement('div');
-        visual.className = 'story-audio-visual';
-        for (let i = 0; i < 5; i++) {
-          const bar = document.createElement('span');
-          visual.appendChild(bar);
-        }
-
         const label = document.createElement('div');
         label.className = 'story-audio-label';
-        label.textContent = story.content || '音声ストーリー';
+        label.textContent = story.content || '';
 
         const audio = document.createElement('audio');
         audio.src = story.file.dataUrl;
         audio.preload = 'auto';
         audio.style.display = 'none';
+        audio.volume = 1;
+        audio.muted = false;
         audio.setAttribute('playsinline', '');
         audio.setAttribute('webkit-playsinline', '');
 
-        wrap.appendChild(icon);
-        wrap.appendChild(visual);
         wrap.appendChild(label);
         wrap.appendChild(audio);
         storyStageContent.appendChild(wrap);
@@ -3643,11 +3622,15 @@
         });
 
         const tryPlay = () => {
+          audio.muted = false;
+          audio.volume = 1;
           const playPromise = audio.play();
           if (playPromise && typeof playPromise.catch === 'function') {
             playPromise.catch(() => {
               const resumeOnInteraction = () => {
                 if (currentStoryAudioEl === audio && audio.paused) {
+                  audio.muted = false;
+                  audio.volume = 1;
                   audio.play().catch(() => {});
                 }
                 document.removeEventListener('click', resumeOnInteraction);
@@ -3776,10 +3759,14 @@
       storyPaused = false;
       storyStartTime = Date.now() - (storyDuration - storyRemainingMs);
       if (currentStoryAudioEl && currentStoryAudioEl.paused) {
+        currentStoryAudioEl.muted = false;
+        currentStoryAudioEl.volume = 1;
         const p = currentStoryAudioEl.play();
         if (p && typeof p.catch === 'function') p.catch(() => {});
       }
       if (currentStoryVideoEl && currentStoryVideoEl.paused) {
+        currentStoryVideoEl.muted = false;
+        currentStoryVideoEl.volume = 1;
         const p = currentStoryVideoEl.play();
         if (p && typeof p.catch === 'function') p.catch(() => {});
       }
@@ -3931,7 +3918,7 @@
       } else {
         previewType = 'text';
       }
-      let previewText = story.content || (story.type === 'image' ? '📷 画像' : story.type === 'audio' ? '🎵 音声' : story.type === 'video' ? '🎬 動画' : '（テキストなし）');
+      let previewText = story.content || (story.type === 'image' ? '📷 画像' : story.type === 'audio' ? '音声' : story.type === 'video' ? '🎬 動画' : '（テキストなし）');
 
       const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
       try {
@@ -3991,16 +3978,16 @@
           if (s.type === 'image' && s.file && s.file.dataUrl) {
             thumb = `<img src="${s.file.dataUrl}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;">`;
           } else if (s.type === 'audio') {
-            thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;">🎵</div>`;
+            thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);flex-shrink:0;"></div>`;
           } else if (s.type === 'video') {
-            thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#000,#374151);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;">🎬</div>`;
+            thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#000,#374151);flex-shrink:0;"></div>`;
           } else {
             thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;"></div>`;
           }
           item.innerHTML = `
             ${thumb}
             <div style="flex:1;min-width:0;cursor:pointer;" class="archive-view-btn">
-              <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || (s.type === 'image' ? '📷 画像' : s.type === 'audio' ? '🎵 音声' : s.type === 'video' ? '🎬 動画' : '（テキストなし）'))}</div>
+              <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || (s.type === 'image' ? '📷 画像' : s.type === 'audio' ? '音声' : s.type === 'video' ? '動画' : '（テキストなし）'))}</div>
               <div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div>
             </div>
             <button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">🗑️</button>
