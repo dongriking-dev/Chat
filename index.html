@@ -8,62 +8,37 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * { -webkit-tap-highlight-color: transparent; }
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-    }
+    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
     body {
       -webkit-user-select: none; user-select: none;
-      display: flex;
-      flex-direction: column;
+      display: flex; flex-direction: column;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif;
     }
     input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
 
     #appContainer {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      height: 100dvh;
-      max-width: 900px;
-      width: 100%;
-      margin: 0 auto;
-      background: #f3f4f6;
-      position: relative;
+      display: flex; flex-direction: column;
+      height: 100vh; height: 100dvh;
+      max-width: 900px; width: 100%;
+      margin: 0 auto; background: #f3f4f6; position: relative;
     }
-
     #appHeader {
-      flex-shrink: 0;
-      background: #fff;
+      flex-shrink: 0; background: #fff;
       border-bottom: 2px solid #1e40af;
       padding: 10px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      z-index: 50;
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 50;
     }
-
     #appMain {
-      flex: 1;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      position: relative;
+      flex: 1; overflow: hidden;
+      display: flex; flex-direction: column; position: relative;
     }
-
     .scroll-area {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
+      flex: 1; overflow-y: auto; overflow-x: hidden;
       padding: 12px 16px;
       -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      scrollbar-color: #cbd5e1 transparent;
+      scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent;
     }
     .scroll-area::-webkit-scrollbar { width: 8px; }
     .scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -80,108 +55,52 @@
     }
     .header-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
-    .avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      object-fit: cover; flex-shrink: 0;
-      border: 2px solid #e5e7eb; background: #f3f4f6;
-    }
-    .avatar-sm {
-      width: 28px; height: 28px; border-radius: 50%;
-      object-fit: cover; flex-shrink: 0;
-      border: 2px solid #e5e7eb; background: #f3f4f6;
-    }
-    .avatar-lg {
-      width: 96px; height: 96px; border-radius: 50%;
-      object-fit: cover; border: 3px solid #0284c7; background: #f3f4f6;
-    }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e5e7eb; background: #f3f4f6; }
+    .avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e5e7eb; background: #f3f4f6; }
+    .avatar-lg { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0284c7; background: #f3f4f6; }
 
     .online-dot {
-      display: inline-block;
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: #9ca3af;
-      border: 2px solid #fff;
-      flex-shrink: 0;
+      display: inline-block; width: 10px; height: 10px;
+      border-radius: 50%; background: #9ca3af;
+      border: 2px solid #fff; flex-shrink: 0;
       transition: background 0.3s ease;
     }
     .online-dot.online { background: #22c55e; }
-    .avatar-online-wrap {
-      position: relative;
-      display: inline-flex;
-      flex-shrink: 0;
-    }
-    .avatar-online-wrap .online-dot {
-      position: absolute;
-      right: -1px; bottom: -1px;
-      width: 13px; height: 13px;
-      border: 2px solid #fff;
-    }
-    .avatar-online-wrap .online-dot.small {
-      width: 10px; height: 10px;
-    }
-    .online-label {
-      display: inline-flex; align-items: center; gap: 4px;
-      font-size: 11px; color: #16a34a; font-weight: 600;
-    }
+    .avatar-online-wrap { position: relative; display: inline-flex; flex-shrink: 0; }
+    .avatar-online-wrap .online-dot { position: absolute; right: -1px; bottom: -1px; width: 13px; height: 13px; border: 2px solid #fff; }
+    .avatar-online-wrap .online-dot.small { width: 10px; height: 10px; }
+    .online-label { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #16a34a; font-weight: 600; }
     .online-label.offline { color: #9ca3af; }
-    .online-label .online-dot {
-      width: 8px; height: 8px; border-width: 1px;
-    }
+    .online-label .online-dot { width: 8px; height: 8px; border-width: 1px; }
 
-    .chat-list {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+    .chat-list { display: flex; flex-direction: column; gap: 2px; }
     .chat-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      display: flex; align-items: center; gap: 12px;
       padding: 12px 14px;
-      background: #fff;
-      border-radius: 10px;
+      background: #fff; border-radius: 10px;
       cursor: pointer;
-      transition: background 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
-      border: 1px solid transparent;
-      position: relative;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      border: 1px solid transparent; position: relative;
     }
-    .chat-item:hover {
-      background: #eff6ff;
-      border-color: #bfdbfe;
-    }
+    .chat-item:hover { background: #eff6ff; border-color: #bfdbfe; }
     .chat-item:active { transform: scale(0.99); }
-    .chat-item.unread {
-      background: #fefce8;
-      border-color: #fde68a;
-    }
+    .chat-item.unread { background: #fefce8; border-color: #fde68a; }
     .chat-item.unread:hover { background: #fef9c3; }
     .chat-item-avatar-wrap { position: relative; flex-shrink: 0; }
     .chat-item-avatar-wrap .unread-dot {
-      position: absolute;
-      top: -3px; left: 30px;
+      position: absolute; top: -3px; left: 30px;
       width: 12px; height: 12px;
-      background: #ef4444;
-      border: 2px solid #fff;
-      border-radius: 50%;
+      background: #ef4444; border: 2px solid #fff; border-radius: 50%;
     }
-    .chat-item-body {
-      flex: 1; min-width: 0;
-      display: flex; flex-direction: column; gap: 3px;
-    }
+    .chat-item-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
     .chat-item-name {
       font-size: 14px; font-weight: 700; color: #1e3a8a;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       display: flex; align-items: center; gap: 4px;
     }
-    .chat-item-last {
-      font-size: 12px; color: #6b7280;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
+    .chat-item-last { font-size: 12px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .chat-item.unread .chat-item-last { color: #b45309; font-weight: 600; }
-    .chat-item-side {
-      display: flex; flex-direction: column;
-      align-items: flex-end; gap: 4px; flex-shrink: 0;
-    }
+    .chat-item-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
     .chat-item-time { font-size: 10px; color: #9ca3af; white-space: nowrap; }
     .chat-item-badge {
       background: #ef4444; color: #fff;
@@ -196,18 +115,13 @@
     .group-avatars .avatar-sm:nth-child(2) { bottom: 0; right: 0; z-index: 2; }
     .group-avatars .avatar-sm:nth-child(3) { top: 0; right: 0; z-index: 1; width: 22px; height: 22px; }
 
-    #chatView {
-      display: flex; flex-direction: column;
-      height: 100%; position: relative;
-    }
+    #chatView { display: flex; flex-direction: column; height: 100%; position: relative; }
     .chat-header {
-      flex-shrink: 0;
-      background: #fff;
+      flex-shrink: 0; background: #fff;
       border-bottom: 1px solid #e5e7eb;
       padding: 10px 14px;
       display: flex; align-items: center; gap: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      z-index: 40;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 40;
     }
     .chat-header-body { flex: 1; min-width: 0; }
     .chat-header-name {
@@ -221,9 +135,7 @@
       margin-top: 1px;
     }
     .chat-messages-wrap {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
+      flex: 1; overflow-y: auto; overflow-x: hidden;
       padding: 16px 14px;
       background: #f9fafb;
       -webkit-overflow-scrolling: touch;
@@ -248,29 +160,15 @@
     }
 
     .msg-row {
-      display: flex;
-      gap: 8px;
-      align-items: flex-end;
-      margin-bottom: 6px;
-      max-width: 100%;
+      display: flex; gap: 8px; align-items: flex-end;
+      margin-bottom: 6px; max-width: 100%;
     }
     .msg-row.mine { flex-direction: row-reverse; }
     .msg-row.msg-grouped { margin-bottom: 2px; }
-    .msg-avatar-slot {
-      width: 32px; flex-shrink: 0;
-      display: flex; justify-content: center;
-    }
-    .msg-avatar-slot .avatar-sm {
-      width: 32px; height: 32px;
-      border: 2px solid #fff;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    }
+    .msg-avatar-slot { width: 32px; flex-shrink: 0; display: flex; justify-content: center; }
+    .msg-avatar-slot .avatar-sm { width: 32px; height: 32px; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
     .msg-avatar-slot.empty { visibility: hidden; height: 32px; }
-    .msg-body {
-      max-width: min(78%, 520px);
-      display: flex; flex-direction: column;
-      min-width: 0;
-    }
+    .msg-body { max-width: min(78%, 520px); display: flex; flex-direction: column; min-width: 0; }
     .msg-row.mine .msg-body { align-items: flex-end; }
     .msg-meta {
       font-size: 11px; color: #6b7280;
@@ -280,82 +178,51 @@
     .msg-row.mine .msg-meta { justify-content: flex-end; }
     .msg-meta .name { font-weight: 700; color: #1e40af; }
     .msg-meta .time { font-size: 10px; color: #9ca3af; }
-    .msg-bubble-wrap {
-      position: relative;
-      display: flex; align-items: flex-end;
-      gap: 6px; max-width: 100%;
-    }
+    .msg-bubble-wrap { position: relative; display: flex; align-items: flex-end; gap: 6px; max-width: 100%; }
     .msg-row.mine .msg-bubble-wrap { flex-direction: row-reverse; }
     .msg-bubble {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      padding: 9px 13px;
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 16px; padding: 9px 13px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-      word-break: break-word;
-      overflow-wrap: anywhere;
-      position: relative;
-      font-size: 14px;
-      line-height: 1.45;
-      color: #111827;
-      max-width: 100%;
+      word-break: break-word; overflow-wrap: anywhere;
+      position: relative; font-size: 14px; line-height: 1.45;
+      color: #111827; max-width: 100%;
     }
     .msg-row:not(.mine) .msg-bubble { border-bottom-left-radius: 4px; }
     .msg-row.mine .msg-bubble {
       background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
-      border-color: #60a5fa;
-      color: #1e3a8a;
+      border-color: #60a5fa; color: #1e3a8a;
       border-bottom-right-radius: 4px;
     }
     .msg-row.mine.msg-grouped .msg-bubble { border-bottom-right-radius: 16px; }
     .msg-row:not(.mine).msg-grouped .msg-bubble { border-bottom-left-radius: 16px; }
     .msg-content { white-space: pre-wrap; word-break: break-word; }
-    .msg-content a {
-      color: #2563eb; text-decoration: underline; word-break: break-all;
-    }
+    .msg-content a { color: #2563eb; text-decoration: underline; word-break: break-all; }
     .msg-row.mine .msg-content a { color: #1e3a8a; }
 
     .msg-file {
-      margin-top: 6px;
-      display: block;
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: zoom-in;
-      max-width: 100%;
-      border: 1px solid #e5e7eb;
-      background: #f9fafb;
+      margin-top: 6px; display: block; border-radius: 12px;
+      overflow: hidden; cursor: zoom-in; max-width: 100%;
+      border: 1px solid #e5e7eb; background: #f9fafb;
     }
-    .msg-file img {
-      display: block;
-      max-height: 280px;
-      max-width: 100%;
-      width: auto; height: auto;
-      object-fit: contain;
-    }
+    .msg-file img { display: block; max-height: 280px; max-width: 100%; width: auto; height: auto; object-fit: contain; }
     .msg-row.mine .msg-file { border-color: #93c5fd; }
     .msg-file.only-file { margin-top: 0; }
 
     .story-reply-context {
       background: rgba(0,0,0,0.04);
-      border-radius: 8px;
-      padding: 6px 8px;
-      margin-bottom: 6px;
-      font-size: 11px; color: #6b7280;
+      border-radius: 8px; padding: 6px 8px;
+      margin-bottom: 6px; font-size: 11px; color: #6b7280;
       display: flex; align-items: center; gap: 6px;
-      border-left: 3px solid #0284c7;
-      max-width: 100%;
+      border-left: 3px solid #0284c7; max-width: 100%;
     }
     .msg-row.mine .story-reply-context {
       background: rgba(0,0,0,0.06);
       border-left-color: #1e40af;
     }
-    .story-reply-context img {
-      width: 36px; height: 36px;
-      border-radius: 4px; object-fit: cover; flex-shrink: 0;
-    }
+    .story-reply-context img { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
     .story-reply-context .txt {
-      min-width: 0;
-      overflow: hidden;
+      min-width: 0; overflow: hidden;
       text-overflow: ellipsis;
       display: -webkit-box;
       -webkit-line-clamp: 2;
@@ -369,11 +236,12 @@
       display: flex; align-items: center; gap: 3px;
       justify-content: flex-end;
     }
-    .edited-label {
-      font-size: 10px; color: #9ca3af; font-style: italic;
-    }
+    .edited-label { font-size: 10px; color: #9ca3af; font-style: italic; }
     .sending-label {
-      font-size: 10px; color: #6b7280; font-style: italic;
+      font-size: 10px; color: #6b7280;
+      font-style: italic;
+      display: inline-flex;
+      align-items: center;
     }
     .sending-label::after {
       content: '';
@@ -382,6 +250,7 @@
       animation: sendingDots 1.2s steps(4, end) infinite;
       overflow: hidden;
       vertical-align: bottom;
+      text-align: left;
     }
     @keyframes sendingDots {
       0% { content: ''; }
@@ -390,39 +259,35 @@
       75% { content: '...'; }
       100% { content: ''; }
     }
+    .failed-label {
+      font-size: 10px; color: #ef4444;
+      font-style: italic; font-weight: 700;
+      margin-left: 4px;
+    }
 
     .msg-menu-btn {
-      width: 24px; height: 24px;
-      border-radius: 50%;
+      width: 24px; height: 24px; border-radius: 50%;
       background: rgba(255,255,255,0.95);
       border: 1px solid #e5e7eb;
-      color: #6b7280;
-      font-size: 14px; line-height: 1;
+      color: #6b7280; font-size: 14px; line-height: 1;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      opacity: 0;
-      transition: opacity 0.2s;
-      flex-shrink: 0;
-      align-self: center;
+      opacity: 0; transition: opacity 0.2s;
+      flex-shrink: 0; align-self: center;
     }
     .msg-bubble-wrap:hover .msg-menu-btn,
     .msg-menu-btn.open { opacity: 1; }
     .msg-menu-btn:hover { background: #eff6ff; color: #1e40af; }
     .msg-menu-popup {
-      position: fixed;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
+      position: fixed; background: #fff;
+      border: 1px solid #e5e7eb; border-radius: 10px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      min-width: 140px;
-      z-index: 30000;
-      overflow: hidden;
+      min-width: 140px; z-index: 30000; overflow: hidden;
     }
     .msg-menu-popup button {
       display: flex; align-items: center; gap: 8px;
       width: 100%; text-align: left;
-      padding: 10px 14px;
-      font-size: 13px;
+      padding: 10px 14px; font-size: 13px;
       background: none; border: none; cursor: pointer;
       color: #374151;
     }
@@ -430,35 +295,22 @@
     .msg-menu-popup button.danger { color: #ef4444; }
     .msg-menu-popup button.danger:hover { background: #fef2f2; }
 
-    #typingIndicatorSlot {
-      min-height: 0;
-      transition: min-height 0.2s ease;
-    }
-    #typingIndicatorSlot:not(:empty) {
-      min-height: 40px;
-      margin-bottom: 6px;
-    }
-    .typing-indicator-row {
-      display: flex; align-items: flex-end; gap: 8px;
-    }
+    #typingIndicatorSlot { min-height: 0; transition: min-height 0.2s ease; }
+    #typingIndicatorSlot:not(:empty) { min-height: 40px; margin-bottom: 6px; }
+    .typing-indicator-row { display: flex; align-items: flex-end; gap: 8px; }
     .typing-indicator-row .msg-avatar-slot { width: 32px; }
     .typing-bubble {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 16px;
-      border-bottom-left-radius: 4px;
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 16px; border-bottom-left-radius: 4px;
       padding: 10px 14px;
       display: inline-flex; align-items: center; gap: 6px;
       box-shadow: 0 1px 2px rgba(0,0,0,0.04);
     }
     .typing-bubble .typing-label { font-size: 12px; color: #6b7280; }
-    .typing-bubble .typing-dots {
-      display: inline-flex; gap: 3px; align-items: center;
-    }
+    .typing-bubble .typing-dots { display: inline-flex; gap: 3px; align-items: center; }
     .typing-bubble .typing-dots span {
-      width: 6px; height: 6px;
-      background: #0284c7; border-radius: 50%;
-      animation: typingBounce 1.2s infinite ease-in-out;
+      width: 6px; height: 6px; background: #0284c7;
+      border-radius: 50%; animation: typingBounce 1.2s infinite ease-in-out;
     }
     .typing-bubble .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
     .typing-bubble .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
@@ -468,100 +320,69 @@
     }
 
     .chat-input-form {
-      flex-shrink: 0;
-      background: #fff;
+      flex-shrink: 0; background: #fff;
       border-top: 1px solid #e5e7eb;
       padding: 10px 12px;
       padding-bottom: max(10px, env(safe-area-inset-bottom));
-      box-shadow: 0 -1px 3px rgba(0,0,0,0.04);
-      z-index: 40;
+      box-shadow: 0 -1px 3px rgba(0,0,0,0.04); z-index: 40;
     }
     .chat-input-row { display: flex; align-items: flex-end; gap: 8px; }
     .chat-input-wrap {
-      flex: 1; min-width: 0;
-      position: relative;
-      background: #f3f4f6;
-      border-radius: 20px;
+      flex: 1; min-width: 0; position: relative;
+      background: #f3f4f6; border-radius: 20px;
       border: 1px solid #e5e7eb;
       display: flex; align-items: flex-end;
       transition: border-color 0.2s, background 0.2s;
     }
     .chat-input-wrap:focus-within {
-      border-color: #93c5fd;
-      background: #fff;
+      border-color: #93c5fd; background: #fff;
       box-shadow: 0 0 0 3px rgba(147,197,253,0.2);
     }
     #messageInput {
-      flex: 1;
-      border: none; background: transparent;
-      padding: 9px 14px;
-      font-size: 15px;
-      line-height: 1.4;
-      outline: none;
-      resize: none;
-      min-height: 38px;
-      max-height: 140px;
-      font-family: inherit;
-      color: #111827;
-      width: 100%;
+      flex: 1; border: none; background: transparent;
+      padding: 9px 14px; font-size: 15px; line-height: 1.4;
+      outline: none; resize: none;
+      min-height: 38px; max-height: 140px;
+      font-family: inherit; color: #111827; width: 100%;
     }
     #messageInput::placeholder { color: #9ca3af; }
     .chat-input-icon-btn {
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: transparent; border: none;
-      cursor: pointer;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: transparent; border: none; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       color: #6b7280; font-size: 18px;
-      flex-shrink: 0;
-      transition: background 0.15s;
+      flex-shrink: 0; transition: background 0.15s;
     }
     .chat-input-icon-btn:hover { background: #e5e7eb; color: #1e40af; }
     .chat-send-btn {
       background: linear-gradient(135deg, #2563eb, #1e40af);
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 40px; height: 40px;
-      cursor: pointer;
+      color: #fff; border: none; border-radius: 50%;
+      width: 40px; height: 40px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
+      font-size: 18px; flex-shrink: 0;
       box-shadow: 0 2px 6px rgba(37,99,235,0.35);
       transition: transform 0.15s, box-shadow 0.2s;
     }
-    .chat-send-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(37,99,235,0.5);
-    }
+    .chat-send-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.5); }
     .chat-send-btn:active { transform: scale(0.95); }
     .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
     .msg-preview {
-      margin-bottom: 10px;
-      padding: 10px;
+      margin-bottom: 10px; padding: 10px;
       background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 10px;
-      display: none;
-      position: relative;
+      border: 1px solid #bfdbfe; border-radius: 10px;
+      display: none; position: relative;
     }
     .msg-preview.show { display: flex; gap: 10px; align-items: center; }
     .msg-preview img {
-      width: 60px; height: 60px;
-      border-radius: 8px; object-fit: cover;
-      border: 1px solid #93c5fd; background: #f3f4f6;
-      flex-shrink: 0;
+      width: 60px; height: 60px; border-radius: 8px;
+      object-fit: cover; border: 1px solid #93c5fd;
+      background: #f3f4f6; flex-shrink: 0;
     }
-    .msg-preview-info {
-      flex: 1; min-width: 0;
-      font-size: 12px; color: #1e40af;
-      word-break: break-all;
-    }
+    .msg-preview-info { flex: 1; min-width: 0; font-size: 12px; color: #1e40af; word-break: break-all; }
     .msg-preview-remove {
       position: absolute; top: 4px; right: 4px;
-      width: 22px; height: 22px;
-      border-radius: 50%;
+      width: 22px; height: 22px; border-radius: 50%;
       background: #ef4444; color: #fff;
       border: 2px solid #fff;
       font-size: 12px; line-height: 1;
@@ -570,40 +391,30 @@
     }
 
     .modal-backdrop {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.55);
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55);
       display: flex; align-items: center; justify-content: center;
-      z-index: 20000;
-      padding: 16px;
+      z-index: 20000; padding: 16px;
       backdrop-filter: blur(3px);
       -webkit-backdrop-filter: blur(3px);
     }
     .modal-backdrop.hidden { display: none; }
     .modal-content {
-      background: #fff;
-      border-radius: 14px;
-      padding: 22px;
-      max-width: 520px;
-      width: 100%;
+      background: #fff; border-radius: 14px;
+      padding: 22px; max-width: 520px; width: 100%;
       box-shadow: 0 20px 50px rgba(0,0,0,0.35);
-      max-height: 90vh;
-      overflow-y: auto;
+      max-height: 90vh; overflow-y: auto;
     }
 
     #lightbox {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.92);
-      z-index: 40000;
-      display: none;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+      z-index: 40000; display: none;
       align-items: center; justify-content: center;
-      padding: 24px;
-      cursor: zoom-out;
+      padding: 24px; cursor: zoom-out;
     }
     #lightbox.show { display: flex; }
     #lightbox img {
       max-width: 100%; max-height: 100%;
-      object-fit: contain;
-      border-radius: 8px;
+      object-fit: contain; border-radius: 8px;
       box-shadow: 0 8px 40px rgba(0,0,0,0.6);
     }
     #lightbox .lightbox-close {
@@ -616,11 +427,9 @@
     }
 
     #statusBanner {
-      position: fixed;
-      top: 12px; left: 50%;
+      position: fixed; top: 12px; left: 50%;
       transform: translate(-50%, -150%);
-      z-index: 25000;
-      padding: 10px 20px;
+      z-index: 25000; padding: 10px 20px;
       font-size: 13px; font-weight: 600;
       border-radius: 9999px;
       transition: transform 0.35s cubic-bezier(.21,1.02,.73,1), opacity 0.3s;
@@ -634,10 +443,8 @@
     #statusBanner.show { transform: translate(-50%, 0); opacity: 1; }
 
     #bootOverlay {
-      position: fixed; inset: 0;
-      background: #111827;
-      z-index: 99997;
-      display: flex; align-items: center; justify-content: center;
+      position: fixed; inset: 0; background: #111827;
+      z-index: 99997; display: flex; align-items: center; justify-content: center;
       color: #fff; flex-direction: column; gap: 16px;
     }
     #bootOverlay.hidden { display: none; }
@@ -650,21 +457,17 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .loading-spinner {
-      display: inline-block;
-      width: 1rem; height: 1rem;
+      display: inline-block; width: 1rem; height: 1rem;
       border: 2px solid #e5e7eb;
       border-top: 2px solid #2563eb;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      vertical-align: middle;
-      margin-right: 6px;
+      vertical-align: middle; margin-right: 6px;
     }
 
     #banOverlay {
-      position: fixed; inset: 0;
-      background: #000;
-      z-index: 99999;
-      display: none;
+      position: fixed; inset: 0; background: #000;
+      z-index: 99999; display: none;
       align-items: center; justify-content: center;
       color: #fff; text-align: center;
       flex-direction: column; padding: 20px;
@@ -672,31 +475,25 @@
     #banOverlay.show { display: flex; }
 
     #emergencyOverlay {
-      position: fixed; inset: 0;
-      z-index: 2147483647;
-      background: #000;
-      display: none;
-      cursor: none;
+      position: fixed; inset: 0; z-index: 2147483647;
+      background: #000; display: none; cursor: none;
     }
     #emergencyOverlay.show { display: block; }
 
     #emergencyAdminBanner {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 9998;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 9998;
       background: linear-gradient(90deg, #7f1d1d, #dc2626, #7f1d1d);
       background-size: 200% 100%;
       animation: bannerSlide 2s linear infinite;
       color: #fff; padding: 10px 16px;
       font-size: 13px; font-weight: 700;
-      text-align: center;
-      display: none;
+      text-align: center; display: none;
     }
     #emergencyAdminBanner.show { display: block; }
     @keyframes bannerSlide { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 
     #adminEmergencyPanel {
-      position: fixed;
-      top: 60px; left: 50%;
+      position: fixed; top: 60px; left: 50%;
       transform: translateX(-50%);
       z-index: 9999;
       background: linear-gradient(135deg, #1f2937, #111827);
@@ -704,10 +501,8 @@
       border-radius: 14px;
       padding: 20px 24px;
       box-shadow: 0 20px 60px rgba(220,38,38,0.5);
-      color: #fff;
-      max-width: 420px;
-      width: calc(100% - 32px);
-      display: none;
+      color: #fff; max-width: 420px;
+      width: calc(100% - 32px); display: none;
     }
     #adminEmergencyPanel.show { display: block; }
     #adminEmergencyPanel .ap-title {
@@ -723,83 +518,59 @@
       font-size: 13px; line-height: 1.7;
     }
     #adminEmergencyPanel .ap-trigger strong { color: #fca5a5; }
-    #adminEmergencyPanel .ap-trigger .ap-email {
-      color: #fff; font-weight: 700; word-break: break-all;
-    }
+    #adminEmergencyPanel .ap-trigger .ap-email { color: #fff; font-weight: 700; word-break: break-all; }
 
     .emergency-btn {
       background: linear-gradient(135deg, #dc2626, #991b1b);
-      color: #fff;
-      border: 2px solid #7f1d1d;
-      border-radius: 8px;
-      padding: 7px 12px;
+      color: #fff; border: 2px solid #7f1d1d;
+      border-radius: 8px; padding: 7px 12px;
       font-size: 12px; font-weight: 900;
       cursor: pointer;
       box-shadow: 0 2px 6px rgba(220,38,38,0.4);
       transition: transform 0.15s, box-shadow 0.2s;
     }
-    .emergency-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(220,38,38,0.6);
-    }
+    .emergency-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220,38,38,0.6); }
     .admin-btn {
       background: linear-gradient(135deg, #7c3aed, #5b21b6);
-      color: #fff;
-      border: none; border-radius: 8px;
-      padding: 7px 12px;
-      font-size: 12px; font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(124,58,237,0.4);
+      color: #fff; border: none; border-radius: 8px;
+      padding: 7px 12px; font-size: 12px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 2px 6px rgba(124,58,237,0.4);
     }
     .admin-btn:hover { transform: translateY(-1px); }
     .icon-btn {
-      background: #f3f4f6;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      padding: 7px 11px;
-      cursor: pointer;
-      font-size: 12px; color: #374151; font-weight: 600;
+      background: #f3f4f6; border: 1px solid #d1d5db;
+      border-radius: 8px; padding: 7px 11px;
+      cursor: pointer; font-size: 12px;
+      color: #374151; font-weight: 600;
       transition: background 0.15s, transform 0.15s;
     }
     .icon-btn:hover { background: #e5e7eb; transform: translateY(-1px); }
     .primary-btn {
       background: linear-gradient(135deg, #2563eb, #1e40af);
-      color: #fff;
-      border: none; border-radius: 8px;
-      padding: 9px 16px;
-      font-size: 13px; font-weight: 700;
-      cursor: pointer;
-      transition: transform 0.15s, box-shadow 0.2s;
+      color: #fff; border: none; border-radius: 8px;
+      padding: 9px 16px; font-size: 13px; font-weight: 700;
+      cursor: pointer; transition: transform 0.15s, box-shadow 0.2s;
     }
-    .primary-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(37,99,235,0.4);
-    }
+    .primary-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(37,99,235,0.4); }
     .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     .secondary-btn {
-      background: #6b7280;
-      color: #fff;
+      background: #6b7280; color: #fff;
       border: none; border-radius: 8px;
-      padding: 9px 16px;
-      font-size: 13px; font-weight: 700;
+      padding: 9px 16px; font-size: 13px; font-weight: 700;
       cursor: pointer;
     }
     .secondary-btn:hover { background: #4b5563; }
 
     .stories-strip {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding: 10px 4px;
+      display: flex; gap: 12px;
+      overflow-x: auto; padding: 10px 4px;
       scrollbar-width: none;
     }
     .stories-strip::-webkit-scrollbar { display: none; }
     .story-bubble {
-      display: flex; flex-direction: column; align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      flex-shrink: 0;
-      width: 68px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      cursor: pointer; flex-shrink: 0; width: 68px;
     }
     .story-ring {
       width: 62px; height: 62px;
@@ -811,9 +582,9 @@
     .story-ring.seen { background: #d1d5db; }
     .story-ring.mine { background: linear-gradient(45deg, #0284c7, #7c3aed); }
     .story-ring img {
-      width: 100%; height: 100%;
-      border-radius: 50%; object-fit: cover;
-      border: 3px solid #fff; background: #f3f4f6;
+      width: 100%; height: 100%; border-radius: 50%;
+      object-fit: cover; border: 3px solid #fff;
+      background: #f3f4f6;
     }
     .story-name {
       font-size: 11px; color: #374151;
@@ -822,8 +593,7 @@
     }
     .story-bubble.seen .story-name { color: #9ca3af; }
     .story-add {
-      width: 62px; height: 62px;
-      border-radius: 50%;
+      width: 62px; height: 62px; border-radius: 50%;
       border: 2px dashed #9ca3af;
       background: #f9fafb;
       display: flex; align-items: center; justify-content: center;
@@ -831,18 +601,14 @@
     }
 
     #storyViewer {
-      position: fixed; inset: 0;
-      z-index: 20000;
-      background: #000;
-      display: none;
+      position: fixed; inset: 0; z-index: 20000;
+      background: #000; display: none;
       align-items: center; justify-content: center;
     }
     #storyViewer.show { display: flex; }
     #storyViewer .story-stage {
-      position: relative;
-      width: 100%; max-width: 420px;
-      height: 100vh; max-height: 780px;
-      background: #111;
+      position: relative; width: 100%; max-width: 420px;
+      height: 100vh; max-height: 780px; background: #111;
       overflow: hidden;
       display: flex; align-items: center; justify-content: center;
     }
@@ -851,36 +617,28 @@
       display: flex; gap: 3px; z-index: 5;
     }
     .story-segment {
-      flex: 1; height: 3px;
-      background: rgba(255,255,255,0.3);
+      flex: 1; height: 3px; background: rgba(255,255,255,0.3);
       border-radius: 2px; overflow: hidden;
     }
-    .story-segment > div {
-      height: 100%; width: 0%; background: #fff;
-    }
+    .story-segment > div { height: 100%; width: 0%; background: #fff; }
     .story-header {
-      position: absolute;
-      top: 20px; left: 12px; right: 12px;
+      position: absolute; top: 20px; left: 12px; right: 12px;
       display: flex; align-items: center; gap: 10px;
       z-index: 5; color: #fff;
     }
     .story-header img {
-      width: 36px; height: 36px;
-      border-radius: 50%; border: 2px solid #fff;
-      object-fit: cover;
+      width: 36px; height: 36px; border-radius: 50%;
+      border: 2px solid #fff; object-fit: cover;
     }
     .story-close-btn {
-      margin-left: auto;
-      background: rgba(0,0,0,0.4);
-      border: none; color: #fff;
-      font-size: 20px;
-      width: 32px; height: 32px;
-      border-radius: 50%; cursor: pointer;
+      margin-left: auto; background: rgba(0,0,0,0.4);
+      border: none; color: #fff; font-size: 20px;
+      width: 32px; height: 32px; border-radius: 50%;
+      cursor: pointer;
       display: flex; align-items: center; justify-content: center;
     }
     .story-nav-left, .story-nav-right {
-      position: absolute;
-      top: 60px; bottom: 90px;
+      position: absolute; top: 60px; bottom: 90px;
       width: 30%; z-index: 3; cursor: pointer;
     }
     .story-nav-left { left: 0; }
@@ -895,25 +653,19 @@
     #storyStageContent .story-text-content {
       width: 100%; height: 100%;
       display: flex; align-items: center; justify-content: center;
-      padding: 40px;
-      font-size: 26px; font-weight: 700;
-      color: #fff; text-align: center;
-      word-break: break-word;
+      padding: 40px; font-size: 26px; font-weight: 700;
+      color: #fff; text-align: center; word-break: break-word;
     }
     .story-footer {
-      position: absolute;
-      bottom: 12px; left: 12px; right: 12px;
-      display: flex; align-items: center; gap: 8px;
-      z-index: 5;
+      position: absolute; bottom: 12px; left: 12px; right: 12px;
+      display: flex; align-items: center; gap: 8px; z-index: 5;
     }
     .story-footer input {
-      flex: 1;
-      border-radius: 9999px;
+      flex: 1; border-radius: 9999px;
       padding: 10px 16px;
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.4);
-      color: #fff; font-size: 13px;
-      outline: none;
+      color: #fff; font-size: 13px; outline: none;
     }
     .story-footer input::placeholder { color: rgba(255,255,255,0.6); }
     .story-like-btn {
@@ -923,31 +675,23 @@
     .story-like-btn.liked { color: #ef4444; }
 
     .preset-avatar {
-      width: 52px; height: 52px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 3px solid transparent;
+      width: 52px; height: 52px; border-radius: 50%;
+      cursor: pointer; border: 3px solid transparent;
       object-fit: cover; background: #f3f4f6;
       transition: transform 0.2s, border-color 0.2s;
     }
     .preset-avatar:hover { transform: scale(1.08); }
-    .preset-avatar.selected {
-      border-color: #0284c7;
-      transform: scale(1.05);
-    }
+    .preset-avatar.selected { border-color: #0284c7; transform: scale(1.05); }
 
     .member-chip {
       display: inline-flex; align-items: center; gap: 4px;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
+      background: #eff6ff; border: 1px solid #bfdbfe;
       border-radius: 9999px;
       padding: 2px 8px 2px 2px;
       font-size: 12px; color: #1e40af;
       margin: 2px;
     }
-    .member-chip img {
-      width: 20px; height: 20px; border-radius: 50%;
-    }
+    .member-chip img { width: 20px; height: 20px; border-radius: 50%; }
     .member-chip .remove-x {
       cursor: pointer; color: #ef4444;
       font-weight: bold; margin-left: 2px;
@@ -955,16 +699,13 @@
     }
 
     #announcementBanner {
-      position: fixed;
-      top: 0; left: 0; right: 0;
+      position: fixed; top: 0; left: 0; right: 0;
       z-index: 9997;
       background: linear-gradient(90deg, #0284c7, #7c3aed, #0284c7);
       background-size: 200% 100%;
       animation: bannerSlide 4s linear infinite;
-      color: #fff;
-      padding: 12px 44px 12px 16px;
-      font-size: 14px;
-      display: none;
+      color: #fff; padding: 12px 44px 12px 16px;
+      font-size: 14px; display: none;
       box-shadow: 0 4px 16px rgba(0,0,0,0.25);
       text-align: center; font-weight: 700;
     }
@@ -973,21 +714,16 @@
       position: absolute; right: 12px; top: 50%;
       transform: translateY(-50%);
       background: rgba(0,0,0,0.25);
-      border: none; color: #fff;
-      font-size: 16px;
-      width: 26px; height: 26px;
-      border-radius: 50%; cursor: pointer; line-height: 1;
+      border: none; color: #fff; font-size: 16px;
+      width: 26px; height: 26px; border-radius: 50%;
+      cursor: pointer; line-height: 1;
     }
 
     #scrollToBottomBtn {
-      position: absolute;
-      bottom: 90px; right: 20px;
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      background: #2563eb;
-      color: #fff; border: none;
-      cursor: pointer;
-      display: none;
+      position: absolute; bottom: 90px; right: 20px;
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #2563eb; color: #fff; border: none;
+      cursor: pointer; display: none;
       align-items: center; justify-content: center;
       font-size: 18px;
       box-shadow: 0 4px 12px rgba(37,99,235,0.4);
@@ -995,12 +731,9 @@
     }
     #scrollToBottomBtn.show { display: flex; }
     #scrollToBottomBtn .unread-dot-inner {
-      position: absolute;
-      top: -2px; right: -2px;
-      width: 14px; height: 14px;
-      background: #ef4444;
-      border: 2px solid #fff;
-      border-radius: 50%;
+      position: absolute; top: -2px; right: -2px;
+      width: 14px; height: 14px; background: #ef4444;
+      border: 2px solid #fff; border-radius: 50%;
       font-size: 9px; font-weight: 700;
       display: flex; align-items: center; justify-content: center;
     }
@@ -1424,18 +1157,19 @@
     let announcementUnsubscribe = null;
     let chatLatestListeners = {};
 
-    // ★ 楽観的メッセージ（送信中メッセージ）管理
-    // Map<tempId, { data, realKey }>  realKeyがセットされたら本物と紐付け
-    let optimisticMessages = new Map();
-    // Map<realKey, tempId>  本物のキー → 仮のキー
-    let optimisticByRealKey = new Map();
-    let tempIdCounter = 0;
+    // ★ 楽観的メッセージ管理
+    // clientMsgId をキーにして本物と紐付ける（Firebaseにも保存する）
+    let optimisticMessages = new Map();   // clientMsgId → { data, realKey }
+    let optimisticByRealKey = new Map();  // realKey → clientMsgId
+
+    // ★ 送信済み clientMsgId のセット（重複防止）
+    let sentClientMsgIds = new Set();
 
     let isNearBottom = true;
     let unreadInChat = 0;
 
-    const UNREAD_STORAGE_KEY = 'sikunai_unread_v3';
-    const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v3';
+    const UNREAD_STORAGE_KEY = 'sikunai_unread_v4';
+    const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v4';
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
     const ANNOUNCE_DISMISS_KEY = 'sikunai_dismissed_announcements_v1';
     function loadJson(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
@@ -1583,9 +1317,6 @@
       }, 3000);
     }
 
-    /* ============================================================
-       プレゼンス
-       ============================================================ */
     function isUserOnline(uid) {
       if (!uid) return false;
       if (currentUser && uid === currentUser.uid) return true;
@@ -1638,9 +1369,6 @@
       } catch (e) {}
     }
 
-    /* ============================================================
-       未読
-       ============================================================ */
     function getTotalUnread() {
       return Object.values(unreadCounts).reduce((a, b) => a + (b || 0), 0);
     }
@@ -1705,9 +1433,6 @@
       });
     }
 
-    /* ============================================================
-       プロフィール
-       ============================================================ */
     function getProfileForUid(uid) {
       if (!uid) return { nickname: '名無しさん', avatar: DEFAULT_AVATAR };
       const p = profilesCache[uid];
@@ -1747,9 +1472,6 @@
       });
     }
 
-    /* ============================================================
-       BAN
-       ============================================================ */
     function executeBan() {
       banOverlay.classList.add('show');
       document.body.style.background = '#000';
@@ -1762,9 +1484,6 @@
       }, () => {});
     }
 
-    /* ============================================================
-       チャット一覧
-       ============================================================ */
     function initChatsListener() {
       if (chatsUnsubscribe) chatsUnsubscribe();
       if (!currentUser) return;
@@ -1877,9 +1596,6 @@
       });
     }
 
-    /* ============================================================
-       チャット画面
-       ============================================================ */
     function openChat(chatId) {
       currentChatId = chatId;
       const chat = chatsCache[chatId];
@@ -1909,6 +1625,15 @@
       messagesContainer.innerHTML = '';
       typingIndicatorSlot.innerHTML = '';
       typingCache = {};
+
+      // ★ このチャットの楽観メッセージだけ再セット
+      // （他チャットのものは optimisticMessages に残しつつ、DOM上には出さない）
+      optimisticMessages.forEach((info, key) => {
+        if (info.data.chatId !== chatId) {
+          optimisticMessages.delete(key);
+          if (info.realKey) optimisticByRealKey.delete(info.realKey);
+        }
+      });
 
       isNearBottom = true;
       updateScrollButton();
@@ -2053,61 +1778,54 @@
     }
 
     /* ============================================================
-       ★ メッセージ更新（楽観的メッセージの置換を改善）
+       ★ メッセージ更新（clientMsgId ベースの重複防止）
        ============================================================ */
     function handleMessagesUpdate(newMessages) {
-      // 本物のメッセージで「楽観的メッセージと紐付いたもの」を探して置換
       const newMessageKeys = new Set(newMessages.map(m => m.key));
+      // clientMsgId セット
+      const newClientMsgIds = new Set();
+      newMessages.forEach(m => {
+        if (m.clientMsgId) newClientMsgIds.add(m.clientMsgId);
+      });
 
-      // 楽観的メッセージのうち、本物が届いたものを処理
-      // optimisticByRealKey: realKey → tempId
-      const toRemoveTempIds = [];
-      optimisticByRealKey.forEach((tempId, realKey) => {
-        if (newMessageKeys.has(realKey)) {
-          // 本物が届いた → DOM上の楽観メッセージを削除（置換扱い）
-          const tempEl = messagesContainer.querySelector(`[data-msg-key="${tempId}"]`);
+      // 楽観的メッセージの処理
+      // clientMsgId が一致する本物が届いたら、楽観メッセージをDOMから削除
+      const toRemoveOptimisticIds = [];
+      optimisticMessages.forEach((info, clientMsgId) => {
+        if (newClientMsgIds.has(clientMsgId)) {
+          // 本物が届いた
+          const tempEl = messagesContainer.querySelector(`[data-client-msg-id="${clientMsgId}"]`);
           if (tempEl) tempEl.remove();
-          toRemoveTempIds.push(tempId);
+          toRemoveOptimisticIds.push(clientMsgId);
         }
       });
-      toRemoveTempIds.forEach(tempId => {
-        const info = optimisticMessages.get(tempId);
+      toRemoveOptimisticIds.forEach(clientMsgId => {
+        const info = optimisticMessages.get(clientMsgId);
         if (info && info.realKey) optimisticByRealKey.delete(info.realKey);
-        optimisticMessages.delete(tempId);
+        optimisticMessages.delete(clientMsgId);
       });
 
-      // 楽観的メッセージ（まだ本物が届いていないもの）を取得
-      const pendingOptimistic = Array.from(optimisticMessages.values())
-        .filter(m => m.chatId === currentChatId);
-
-      // メッセージ全体（キャッシュ + まだ確定していない楽観）
-      const oldMessagesCache = messagesCache;
+      // キャッシュ更新
       messagesCache = newMessages;
 
       // 削除チェック
-      const oldKeys = new Set(oldMessagesCache.map(m => m.key));
-      const hasDeletions = oldMessagesCache.some(m => !newMessageKeys.has(m.key));
-
-      // 初回 or 大幅な変動 → 全体再構築
       const currentDomKeys = new Set();
       messagesContainer.querySelectorAll('[data-msg-key]').forEach(el => {
-        if (!el.dataset.msgKey.startsWith('temp_')) currentDomKeys.add(el.dataset.msgKey);
+        currentDomKeys.add(el.dataset.msgKey);
       });
-      const domMissing = oldMessagesCache.some(m => !currentDomKeys.has(m.key));
+      const hasDeletions = Array.from(currentDomKeys).some(k => !k.startsWith('temp_') && !newMessageKeys.has(k));
 
-      if (hasDeletions || domMissing || messagesContainer.children.length === 0) {
+      // 初回 or 削除あり → 全体再構築
+      if (hasDeletions || messagesContainer.children.length === 0 || messagesContainer.querySelector('.loading-spinner')) {
         fullRenderMessages();
         return;
       }
 
       // 差分更新
-      // 1) 編集済みの更新
       updateEditedFlags();
-
-      // 2) 既読の更新
       updateReadReceipts();
 
-      // 3) 新規追加（既にDOMにないメッセージ）
+      // 新規追加
       const lastRenderedMsg = getLastRenderedMessageKey();
       const newMsgs = [];
       let foundLast = !lastRenderedMsg;
@@ -2127,7 +1845,6 @@
     }
 
     function getLastRenderedMessageKey() {
-      // 楽観的メッセージは除外
       const els = Array.from(messagesContainer.querySelectorAll('[data-msg-key]'))
         .filter(el => !el.dataset.msgKey.startsWith('temp_'));
       if (els.length === 0) return null;
@@ -2181,15 +1898,13 @@
     function appendMessages(messages) {
       const fragment = document.createDocumentFragment();
 
-      // 現在の最後のメッセージ（楽観的も含む）
       const lastEl = messagesContainer.lastElementChild;
       let lastRenderedMsg = null;
       if (lastEl && lastEl.dataset.msgKey) {
         const key = lastEl.dataset.msgKey;
         if (key.startsWith('temp_')) {
-          // 楽観的メッセージ
-          const opt = optimisticMessages.get(key);
-          if (opt) lastRenderedMsg = opt;
+          const opt = optimisticMessages.get(lastEl.dataset.clientMsgId);
+          if (opt) lastRenderedMsg = opt.data;
         } else {
           const found = messagesCache.find(m => m.key === key);
           if (found) lastRenderedMsg = found;
@@ -2199,7 +1914,12 @@
 
       messages.forEach((msg) => {
         const isOptimistic = msg.optimistic === true;
-        const key = msg.key || msg.tempId;
+        const key = msg.key || ('temp_' + msg.clientMsgId);
+        const clientMsgId = msg.clientMsgId || key;
+
+        // ★ 重複防止：既にDOMに同じclientMsgIdまたはkeyがあればスキップ
+        if (messagesContainer.querySelector(`[data-msg-key="${key}"]`)) return;
+        if (clientMsgId && messagesContainer.querySelector(`[data-client-msg-id="${clientMsgId}"]`)) return;
 
         if (!lastDateForDivider || !isSameDay(lastDateForDivider, msg.createdAt)) {
           const divider = document.createElement('div');
@@ -2221,6 +1941,7 @@
         const row = document.createElement('div');
         row.className = 'msg-row' + (isMine ? ' mine' : '') + (isGrouped ? ' msg-grouped' : '');
         row.dataset.msgKey = key;
+        row.dataset.clientMsgId = clientMsgId;
         row.dataset.msgAuthorUid = msg.authorUid;
 
         let metaHtml = '';
@@ -2273,7 +1994,6 @@
           readHtml = `<div class="read-receipt">✓ 既読</div>`;
         }
 
-        // 楽観的メッセージにはメニューボタンを付けない
         const menuBtnHtml = (!isOptimistic && isMine)
           ? `<button class="msg-menu-btn" data-key="${key}">⋯</button>`
           : '';
@@ -2342,10 +2062,15 @@
 
       // キャッシュ + まだ本物が届いていない楽観メッセージ
       const pendingOptimistic = Array.from(optimisticMessages.values())
-        .filter(m => m.chatId === currentChatId && !m.realKey)
+        .filter(info => info.data.chatId === currentChatId && !info.realKey)
+        .map(info => info.data)
         .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
 
-      const allMessages = [...messagesCache, ...pendingOptimistic];
+      // ★ 重複除去：既にmessagesCacheに同じclientMsgIdがあれば楽観側を除外
+      const cacheClientIds = new Set(messagesCache.map(m => m.clientMsgId).filter(Boolean));
+      const filteredOptimistic = pendingOptimistic.filter(o => !cacheClientIds.has(o.clientMsgId));
+
+      const allMessages = [...messagesCache, ...filteredOptimistic];
 
       if (allMessages.length === 0) {
         messagesContainer.innerHTML = `
@@ -2444,9 +2169,6 @@
       } catch (e) {}
     }
 
-    /* ============================================================
-       メニュー
-       ============================================================ */
     function outsideClickHandler(e) {
       if (!e.target.closest('.msg-menu-popup') && !e.target.closest('.msg-menu-btn')) {
         closeAllMenus();
@@ -2507,9 +2229,6 @@
       }, 0);
     }
 
-    /* ============================================================
-       メッセージ編集
-       ============================================================ */
     const editMsgModal = document.getElementById('editMsgModal');
     const editMsgInput = document.getElementById('editMsgInput');
 
@@ -2554,9 +2273,6 @@
       }
     });
 
-    /* ============================================================
-       メッセージ送信
-       ============================================================ */
     const messageInput = document.getElementById('messageInput');
     const messageFileInput = document.getElementById('messageFileInput');
     const messagePreviewBox = document.getElementById('messagePreviewBox');
@@ -2632,14 +2348,18 @@
       const sendBtn = document.getElementById('sendBtn');
       sendBtn.disabled = true;
 
-      // ★ 楽観的メッセージ作成
-      tempIdCounter++;
-      const tempId = 'temp_' + Date.now() + '_' + tempIdCounter;
-      const optimistic = {
-        tempId,
-        key: tempId,
+      // ★ clientMsgId を生成（ユニーク）
+      const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+      sentClientMsgIds.add(clientMsgId);
+
+      const chatIdAtSend = currentChatId;
+
+      // ★ 楽観的メッセージ
+      const optimisticData = {
+        key: 'temp_' + clientMsgId,
+        clientMsgId,
         optimistic: true,
-        chatId: currentChatId,
+        chatId: chatIdAtSend,
         authorUid: currentUser.uid,
         authorName: myProfile.nickname,
         authorAvatar: myProfile.avatar,
@@ -2648,7 +2368,7 @@
         createdAt: Date.now(),
         storyReplyTo: null
       };
-      optimisticMessages.set(tempId, optimistic);
+      optimisticMessages.set(clientMsgId, { data: optimisticData, realKey: null });
 
       // 入力欄クリア
       messageInput.value = '';
@@ -2659,20 +2379,19 @@
       clearTimeout(typingTimeout);
       setMyTypingState(false);
 
-      // ★ 楽観メッセージをDOMに追加（削除しない！）
-      appendMessages([optimistic]);
+      // 楽観メッセージをDOMに追加
+      appendMessages([optimisticData]);
 
-      // 最下部へ
       requestAnimationFrame(() => {
         chatMessagesWrap.scrollTop = chatMessagesWrap.scrollHeight;
         isNearBottom = true;
         updateScrollButton();
       });
 
-      const chatIdAtSend = currentChatId;
-
       try {
+        // ★ clientMsgId も一緒に保存（重複防止の要）
         const msgData = {
+          clientMsgId,
           content: content || '',
           file: file || null,
           authorUid: currentUser.uid,
@@ -2683,15 +2402,13 @@
         const newRef = push(ref(db, `chatMessages/${chatIdAtSend}`));
         await set(newRef, msgData);
 
-        // ★ 本物のキーを楽観メッセージに紐付け（DOMは削除しない）
         const realKey = newRef.key;
-        const opt = optimisticMessages.get(tempId);
-        if (opt) {
-          opt.realKey = realKey;
-          optimisticByRealKey.set(realKey, tempId);
+        const info = optimisticMessages.get(clientMsgId);
+        if (info) {
+          info.realKey = realKey;
+          optimisticByRealKey.set(realKey, clientMsgId);
         }
 
-        // チャット一覧の最終メッセージ更新
         const chat = chatsCache[chatIdAtSend];
         if (chat) {
           const memberUids = Object.keys(chat.members || {});
@@ -2707,14 +2424,11 @@
 
         if (currentChatId === chatIdAtSend) markChatAsRead(chatIdAtSend);
 
-        // ここで楽観メッセージを削除しない！
-        // handleMessagesUpdate が本物を受け取った時に置換する
-
       } catch (err) {
         console.error('送信エラー:', err);
         // 失敗時のみ楽観メッセージを削除
-        optimisticMessages.delete(tempId);
-        const tempEl = messagesContainer.querySelector(`[data-msg-key="${tempId}"]`);
+        optimisticMessages.delete(clientMsgId);
+        const tempEl = messagesContainer.querySelector(`[data-client-msg-id="${clientMsgId}"]`);
         if (tempEl) tempEl.remove();
         showBanner('送信失敗: ' + (err.message || ''), true);
         if (!messageInput.value) {
@@ -2726,9 +2440,6 @@
       }
     });
 
-    /* ============================================================
-       スクロール管理
-       ============================================================ */
     chatMessagesWrap.addEventListener('scroll', () => {
       const threshold = 80;
       const distance = chatMessagesWrap.scrollHeight - chatMessagesWrap.scrollTop - chatMessagesWrap.clientHeight;
@@ -2758,9 +2469,6 @@
       if (currentChatId) markChatAsRead(currentChatId);
     });
 
-    /* ============================================================
-       新規チャット
-       ============================================================ */
     const newChatModal = document.getElementById('newChatModal');
     const memberEmailInput = document.getElementById('memberEmailInput');
     const memberSearchMsg = document.getElementById('memberSearchMsg');
@@ -2916,9 +2624,6 @@
       } catch (e) { return null; }
     }
 
-    /* ============================================================
-       プロフィール設定
-       ============================================================ */
     const profileModal = document.getElementById('profileModal');
     document.getElementById('profileBtn').addEventListener('click', () => {
       document.getElementById('nicknameInput').value = myProfile.nickname || '';
@@ -2963,9 +2668,6 @@
       }
     });
 
-    /* ============================================================
-       ストーリー
-       ============================================================ */
     const STORY_TTL = 24 * 60 * 60 * 1000;
     function initStoriesListener() {
       if (storiesUnsubscribe) storiesUnsubscribe();
@@ -3099,9 +2801,6 @@
       }
     });
 
-    /* ============================================================
-       ストーリービューア
-       ============================================================ */
     const storyViewer = document.getElementById('storyViewer');
     const storyStageContent = document.getElementById('storyStageContent');
     const storyProgressBar = document.getElementById('storyProgressBar');
@@ -3239,9 +2938,6 @@
       } catch (e) {}
     });
 
-    /* ============================================================
-       ストーリーアーカイブ
-       ============================================================ */
     document.getElementById('myArchiveBtn').addEventListener('click', () => {
       const list = document.getElementById('archiveList');
       list.innerHTML = '';
@@ -3282,9 +2978,6 @@
       if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden');
     });
 
-    /* ============================================================
-       緊急モード
-       ============================================================ */
     function executeNothing() {
       emergencyOverlay.classList.add('show');
       document.title = '無';
@@ -3424,9 +3117,6 @@
       }
     });
 
-    /* ============================================================
-       アナウンス
-       ============================================================ */
     function initAnnouncementListener() {
       if (announcementUnsubscribe) announcementUnsubscribe();
       announcementUnsubscribe = onValue(ref(db, 'announcement'), (snap) => {
@@ -3493,9 +3183,6 @@
       await sendAnnouncement(text, dur);
     });
 
-    /* ============================================================
-       認証
-       ============================================================ */
     document.getElementById('googleLoginBtn').addEventListener('click', async () => {
       try { await signInWithPopup(auth, provider); }
       catch (err) {
@@ -3601,9 +3288,6 @@
       } catch (e) {}
     });
 
-    /* ============================================================
-       その他
-       ============================================================ */
     window.addEventListener('online', () => setConnection(true));
     window.addEventListener('offline', () => setConnection(false));
 
