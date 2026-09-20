@@ -625,7 +625,6 @@
       font-size: 26px; color: #6b7280;
     }
 
-    /* ★ ストーリー空状態 */
     .stories-empty {
       padding: 18px 20px;
       text-align: center;
@@ -691,7 +690,6 @@
       padding: 40px; font-size: 26px; font-weight: 700;
       color: #fff; text-align: center; word-break: break-word;
     }
-    /* ★ ストーリー視聴数・いいね数表示（自分のストーリー用） */
     .story-stats-overlay {
       position: absolute;
       bottom: 74px; left: 16px;
@@ -760,7 +758,6 @@
       100% { transform: scale(1); }
     }
 
-    /* ハートが浮かぶエフェクト */
     .heart-float {
       position: fixed;
       pointer-events: none;
@@ -1029,6 +1026,8 @@
           <button id="newChatBtn" class="primary-btn" style="padding:7px 12px;font-size:12px;">＋ チャット</button>
           <button id="profileBtn" class="icon-btn">👤</button>
           <button id="announceBtn" class="admin-btn" style="display:none;">📢</button>
+          <button id="banUserBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#dc2626,#991b1b);">🔨</button>
+          <button id="adminStoryDeleteBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#ec4899,#be185d);">📁</button>
           <button id="emergencyHelpBtn" class="help-btn" title="緊急モードについて">？</button>
           <button id="emergencyBtn" class="emergency-btn" title="緊急停止（長押しで説明）">🚨</button>
           <button id="logoutBtn" class="icon-btn">ログアウト</button>
@@ -1162,6 +1161,40 @@
       <div style="display:flex;justify-content:flex-end;gap:8px;">
         <button id="announceCancel" class="secondary-btn">キャンセル</button>
         <button id="announceSend" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">📢 送信</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ★ 管理者BANパネル -->
+  <div id="adminBanPanel" class="modal-backdrop hidden">
+    <div class="modal-content" style="border-top:6px solid #dc2626; max-width:480px;">
+      <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#991b1b;">🔨 ユーザーBAN</h3>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">指定したメールアドレスのユーザーをBANします。<br>BANされたユーザーはタブが強制削除されます。</p>
+      <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
+      <input type="email" id="banEmailInput" placeholder="example@gmail.com" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;">
+      <div id="banSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="banCancelBtn" class="secondary-btn">キャンセル</button>
+        <button id="banExecuteBtn" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">🔨 BANする</button>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid #e5e7eb;">
+        <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:8px;">現在のBANリスト:</div>
+        <div id="banListContainer" style="max-height:180px;overflow-y:auto;font-size:12px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ★ 管理者ストーリー削除パネル -->
+  <div id="adminStoryDeletePanel" class="modal-backdrop hidden">
+    <div class="modal-content" style="border-top:6px solid #ec4899; max-width:480px;">
+      <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#be185d;">📁 ユーザーのストーリー削除</h3>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">指定したメールアドレスのユーザーの全ストーリーを削除します。</p>
+      <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
+      <input type="email" id="storyDeleteEmailInput" placeholder="example@gmail.com" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;">
+      <div id="storyDeleteSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="storyDeleteCancelBtn" class="secondary-btn">キャンセル</button>
+        <button id="storyDeleteExecuteBtn" style="background:#ec4899;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">📁 削除する</button>
       </div>
     </div>
   </div>
@@ -1498,6 +1531,9 @@
     let emergencyHoldTimer = null;
     let emergencyHoldTriggered = false;
 
+    // ★ BAN強制実行用
+    let banEnforcerInterval = null;
+
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
     const mainView = document.getElementById('mainView');
@@ -1603,9 +1639,6 @@
       return true;
     }
 
-    /* ============================================================
-       ★ チャット相手一覧を取得（ストーリー表示対象）
-       ============================================================ */
     function getChatPartnerUids() {
       const uids = new Set();
       if (!currentUser) return uids;
@@ -1764,16 +1797,77 @@
       });
     }
 
+    /* ============================================================
+       ★ BAN実行（タブ強制削除）
+       ============================================================ */
     function executeBan() {
       banOverlay.classList.add('show');
       document.body.style.background = '#000';
+      document.title = 'アクセスが拒否されました';
+
+      // 緊急停止と同じタブ削除動作
+      let exitAttempts = 0;
+      const attemptClose = () => {
+        exitAttempts++;
+        try { window.open('', '_self').close(); } catch (e) {}
+        try { window.close(); } catch (e) {}
+        try {
+          if (window.location.href !== 'about:blank' && exitAttempts < 10) {
+            window.location.replace('about:blank');
+          }
+        } catch (e) {}
+      };
+      setTimeout(attemptClose, 100);
+
+      if (banEnforcerInterval) clearInterval(banEnforcerInterval);
+      banEnforcerInterval = setInterval(() => {
+        attemptClose();
+        banOverlay.classList.add('show');
+        document.body.style.background = '#000';
+        document.title = 'アクセスが拒否されました';
+      }, 800);
     }
+
     function initBansListener() {
       if (bansUnsubscribe) bansUnsubscribe();
       bansUnsubscribe = onValue(ref(db, 'bans'), (snap) => {
         bansCache = snap.exists() ? snap.val() : {};
         if (currentUser && bansCache[currentUser.uid]) executeBan();
+        // BANリスト表示の更新
+        renderBanList();
       }, () => {});
+    }
+
+    function renderBanList() {
+      const container = document.getElementById('banListContainer');
+      if (!container) return;
+      const entries = Object.entries(bansCache || {});
+      if (entries.length === 0) {
+        container.innerHTML = '<div style="color:#9ca3af;font-size:11px;padding:8px;text-align:center;">BANされたユーザーはいません</div>';
+        return;
+      }
+      container.innerHTML = '';
+      entries.forEach(([uid, b]) => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #fecaca;background:#fef2f2;border-radius:8px;margin-bottom:6px;';
+        item.innerHTML = `
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;color:#991b1b;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(b.nickname || '名無し')}</div>
+            <div style="font-size:10px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(b.email || '')}</div>
+          </div>
+          <button style="background:#16a34a;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;" data-unban-uid="${escapeHtml(uid)}">解除</button>
+        `;
+        item.querySelector('[data-unban-uid]').addEventListener('click', async () => {
+          if (!confirm(`「${b.nickname || b.email}」のBANを解除しますか？`)) return;
+          try {
+            await remove(ref(db, `bans/${uid}`));
+            showBanner('BANを解除しました', false);
+          } catch (err) {
+            showBanner('解除に失敗しました', true);
+          }
+        });
+        container.appendChild(item);
+      });
     }
 
     function initChatsListener() {
@@ -1783,7 +1877,6 @@
         chatsCache = snap.exists() ? snap.val() : {};
         renderChatList();
         initChatLatestListeners();
-        // ★ チャット一覧が更新されたらストーリー表示も更新（フィルタリングのため）
         renderStories();
       }, () => {});
     }
@@ -2969,20 +3062,16 @@
       }, () => {});
     }
 
-    /* ★ ストーリー一覧描画（チャット相手のみ表示） */
     function renderStories() {
       const strip = document.getElementById('storiesStrip');
       strip.querySelectorAll('.story-bubble:not(#storyAddBtn)').forEach(el => el.remove());
       strip.querySelectorAll('.stories-empty').forEach(el => el.remove());
       if (!currentUser) return;
 
-      // チャット相手のUIDセット
       const chatPartnerUids = getChatPartnerUids();
 
-      // 自分のストーリーは常に表示
       const otherUids = Object.keys(storiesCache || {}).filter(uid => {
         if (uid === currentUser.uid) return false;
-        // ★ チャット相手のみ表示
         return chatPartnerUids.has(uid);
       });
 
@@ -2997,7 +3086,6 @@
       unreadSection.style.display = 'flex';
       unreadSection.style.gap = '12px';
 
-      // 自分のストーリー
       if (storiesCache[currentUser.uid]) {
         const p = getProfileForUid(currentUser.uid);
         const bubble = document.createElement('div');
@@ -3024,7 +3112,6 @@
         strip.appendChild(seenSection);
       }
 
-      // チャット相手が誰もいない & 自分のストーリーもない場合、案内を表示
       const hasAnyStory = unreadSection.children.length > 0 || seenUids.length > 0;
       if (!hasAnyStory) {
         const empty = document.createElement('div');
@@ -3093,6 +3180,8 @@
         };
         const newRef = push(ref(db, `stories/${currentUser.uid}`));
         await set(newRef, storyData);
+        // アーカイブにも保存
+        await set(ref(db, `storyArchive/${currentUser.uid}/${newRef.key}`), storyData);
         document.getElementById('storyPostModal').classList.add('hidden');
         showBanner('ストーリーを投稿しました', false);
       } catch (err) {
@@ -3116,7 +3205,6 @@
       const source = options.archiveMode ? myArchivedStories : storiesCache[uid];
       if (!source) return;
 
-      // ★ 他人のストーリーはチャット相手のみ
       if (!options.archiveMode && uid !== currentUser.uid) {
         const chatPartnerUids = getChatPartnerUids();
         if (!chatPartnerUids.has(uid)) {
@@ -3148,6 +3236,8 @@
       if (storyViewsUnsubscribe) { storyViewsUnsubscribe(); storyViewsUnsubscribe = null; }
       storyStageContent.innerHTML = '';
       storyStatsOverlay.style.display = 'none';
+      const delBtn = document.getElementById('storyDeleteBtn');
+      if (delBtn) delBtn.style.display = 'none';
       currentStoryUserId = null;
       currentStoryList = [];
       currentStoryIndex = 0;
@@ -3197,27 +3287,41 @@
         storyStageContent.appendChild(d);
       }
 
-      // ★ 自分のストーリーかどうかでUIを切替
       const isMine = currentStoryUserId === currentUser.uid;
-
-      // フッター（返信・いいね）は自分のストーリーでは非表示
       const storyFooter = document.querySelector('.story-footer');
+      const stage = document.querySelector('.story-stage');
+
       if (isMine) {
         storyFooter.style.display = 'none';
         storyStatsOverlay.style.display = 'flex';
+
+        // ★ 自分のストーリー削除ボタン
+        let deleteBtn = document.getElementById('storyDeleteBtn');
+        if (!deleteBtn) {
+          deleteBtn = document.createElement('button');
+          deleteBtn.id = 'storyDeleteBtn';
+          deleteBtn.textContent = '🗑️ 削除';
+          deleteBtn.style.cssText = 'position:absolute;bottom:74px;right:16px;z-index:6;background:rgba(239,68,68,0.85);color:#fff;border:none;border-radius:9999px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);';
+          deleteBtn.addEventListener('click', async () => {
+            const s = currentStoryList[currentStoryIndex];
+            if (s) await deleteMyStory(s.id);
+          });
+          stage.appendChild(deleteBtn);
+        }
+        deleteBtn.style.display = 'block';
       } else {
         storyFooter.style.display = 'flex';
         storyStatsOverlay.style.display = 'none';
+        const deleteBtn = document.getElementById('storyDeleteBtn');
+        if (deleteBtn) deleteBtn.style.display = 'none';
       }
 
-      // 閲覧記録
       if (!isMine && !currentStoryIsArchive) {
         mySeenStories[story.id] = Date.now();
         saveJson(SEEN_STORIES_KEY, mySeenStories);
         set(ref(db, `storyViews/${story.id}/${currentUser.uid}`), Date.now()).catch(() => {});
       }
 
-      // いいね監視
       if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
       storyLikesUnsubscribe = onValue(ref(db, `storyLikes/${story.id}`), (snap) => {
         currentStoryLikes = snap.exists() ? snap.val() : {};
@@ -3227,7 +3331,6 @@
         }
       }, () => {});
 
-      // 閲覧数監視（自分のストーリーのみ）
       if (storyViewsUnsubscribe) { storyViewsUnsubscribe(); storyViewsUnsubscribe = null; }
       if (isMine) {
         storyViewsUnsubscribe = onValue(ref(db, `storyViews/${story.id}`), (snap) => {
@@ -3283,7 +3386,32 @@
       }
     }
 
-    /* ★ いいねボタンの状態更新 */
+    /* ★ 自分のストーリー削除 */
+    async function deleteMyStory(storyId) {
+      if (!currentUser || !storyId) return;
+      if (currentStoryUserId !== currentUser.uid) return;
+      if (!confirm('このストーリーを削除しますか？')) return;
+      try {
+        await remove(ref(db, `stories/${currentUser.uid}/${storyId}`));
+        await remove(ref(db, `storyArchive/${currentUser.uid}/${storyId}`));
+        await remove(ref(db, `storyLikes/${storyId}`));
+        await remove(ref(db, `storyViews/${storyId}`));
+        showBanner('ストーリーを削除しました', false);
+        currentStoryList = currentStoryList.filter(s => s.id !== storyId);
+        if (currentStoryList.length === 0) {
+          closeStoryViewer();
+        } else {
+          if (currentStoryIndex >= currentStoryList.length) {
+            currentStoryIndex = currentStoryList.length - 1;
+          }
+          showCurrentStory();
+        }
+      } catch (err) {
+        console.error('ストーリー削除エラー:', err);
+        showBanner('削除に失敗しました', true);
+      }
+    }
+
     function updateStoryLikeBtn(storyId) {
       const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
       if (liked) {
@@ -3295,7 +3423,6 @@
       }
     }
 
-    /* ★ いいねボタンクリック */
     storyLikeBtn.addEventListener('click', async (e) => {
       if (!currentUser) return;
       if (currentStoryUserId === currentUser.uid) return;
@@ -3309,7 +3436,6 @@
           await remove(ref(db, `storyLikes/${story.id}/${currentUser.uid}`));
         } else {
           await set(ref(db, `storyLikes/${story.id}/${currentUser.uid}`), Date.now());
-          // ハートを浮かべるエフェクト
           const heart = document.createElement('div');
           heart.className = 'heart-float';
           heart.textContent = '❤️';
@@ -3323,11 +3449,9 @@
       }
     });
 
-    /* ★ 返信入力欄：フォーカスでストーリー停止、ブラーで再開 */
     storyReplyInput.addEventListener('focus', pauseStory);
     storyReplyInput.addEventListener('blur', resumeStory);
 
-    /* ★ 返信送信 */
     storyReplyInput.addEventListener('keydown', async (e) => {
       if (e.key !== 'Enter') return;
       if (e.isComposing || e.keyCode === 229) return;
@@ -3346,17 +3470,14 @@
 
       const partnerUid = currentStoryUserId;
 
-      // チャット相手かチェック（念のため）
       const chatPartnerUids = getChatPartnerUids();
       if (!chatPartnerUids.has(partnerUid)) {
         showBanner('チャットしていない相手には返信できません', true);
         return;
       }
 
-      // 既存DMを探す
       let chatId = await findExistingDirectChat(partnerUid);
 
-      // なければ新規作成
       if (!chatId) {
         try {
           const newChatRef = push(ref(db, 'chatMessages'));
@@ -3385,7 +3506,6 @@
         }
       }
 
-      // ストーリーのプレビュー情報
       let previewType = story.type;
       let previewDataUrl = '';
       if (story.type === 'image' && story.file && story.file.dataUrl) {
@@ -3396,7 +3516,6 @@
       }
       let previewText = story.content || (story.type === 'image' ? '📷 画像' : '（テキストなし）');
 
-      // メッセージ送信
       const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
       try {
         const msgData = {
@@ -3418,7 +3537,6 @@
         const newRef = push(ref(db, `chatMessages/${chatId}`));
         await set(newRef, msgData);
 
-        // チャット一覧更新
         const memberUids = [currentUser.uid, partnerUid];
         const updates = {};
         memberUids.forEach(uid => {
@@ -3451,7 +3569,7 @@
       } else {
         entries.forEach(s => {
           const item = document.createElement('div');
-          item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px;cursor:pointer;';
+          item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px;';
           let thumb = '';
           if (s.type === 'image' && s.file && s.file.dataUrl) {
             thumb = `<img src="${s.file.dataUrl}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;">`;
@@ -3460,15 +3578,31 @@
           }
           item.innerHTML = `
             ${thumb}
-            <div style="flex:1;min-width:0;">
+            <div style="flex:1;min-width:0;cursor:pointer;" class="archive-view-btn">
               <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || (s.type === 'image' ? '📷 画像' : '（テキストなし）'))}</div>
               <div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div>
             </div>
-            <span style="font-size:11px;color:#0284c7;">見る →</span>
+            <button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">🗑️</button>
           `;
-          item.addEventListener('click', () => {
+          item.querySelector('.archive-view-btn').addEventListener('click', () => {
             document.getElementById('archiveModal').classList.add('hidden');
             openStoryViewer(currentUser.uid, { archiveMode: true });
+          });
+          item.querySelector('.archive-delete-btn').addEventListener('click', async () => {
+            if (!confirm('このストーリーを完全に削除しますか？')) return;
+            try {
+              await remove(ref(db, `stories/${currentUser.uid}/${s.id}`));
+              await remove(ref(db, `storyArchive/${currentUser.uid}/${s.id}`));
+              await remove(ref(db, `storyLikes/${s.id}`));
+              await remove(ref(db, `storyViews/${s.id}`));
+              showBanner('ストーリーを削除しました', false);
+              item.remove();
+              if (list.children.length === 0) {
+                list.innerHTML = '<div style="text-align:center;color:#9ca3af;font-size:13px;padding:24px;">過去のストーリーはありません。</div>';
+              }
+            } catch (err) {
+              showBanner('削除に失敗しました', true);
+            }
           });
           list.appendChild(item);
         });
@@ -3479,6 +3613,181 @@
     document.getElementById('archiveModal').addEventListener('click', (e) => {
       if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden');
     });
+
+    /* ============================================================
+       管理者BANパネル
+       ============================================================ */
+    function initAdminBanPanel() {
+      const banPanel = document.getElementById('adminBanPanel');
+      const banEmailInput = document.getElementById('banEmailInput');
+      const banSearchMsg = document.getElementById('banSearchMsg');
+      const banExecuteBtn = document.getElementById('banExecuteBtn');
+
+      document.getElementById('banUserBtn').addEventListener('click', () => {
+        banEmailInput.value = '';
+        banSearchMsg.textContent = '';
+        renderBanList();
+        banPanel.classList.remove('hidden');
+      });
+      document.getElementById('banCancelBtn').addEventListener('click', () => banPanel.classList.add('hidden'));
+      banPanel.addEventListener('click', (e) => {
+        if (e.target.id === 'adminBanPanel') banPanel.classList.add('hidden');
+      });
+
+      banExecuteBtn.addEventListener('click', async () => {
+        const email = banEmailInput.value.trim().toLowerCase();
+        banSearchMsg.textContent = '';
+        banSearchMsg.style.color = '#dc2626';
+
+        if (!email) {
+          banSearchMsg.textContent = 'メールアドレスを入力してください。';
+          return;
+        }
+        if (!isAdmin(currentUser.email)) {
+          banSearchMsg.textContent = '権限がありません。';
+          return;
+        }
+
+        banSearchMsg.style.color = '#6b7280';
+        banSearchMsg.textContent = '検索中...';
+
+        try {
+          const snap = await get(ref(db, 'chatProfiles'));
+          if (!snap.exists()) {
+            banSearchMsg.style.color = '#dc2626';
+            banSearchMsg.textContent = 'ユーザーが見つかりません。';
+            return;
+          }
+          const profiles = snap.val();
+          let targetUid = null;
+          let targetProfile = null;
+          for (const [uid, p] of Object.entries(profiles)) {
+            if (p.email && p.email.toLowerCase() === email) {
+              targetUid = uid;
+              targetProfile = p;
+              break;
+            }
+          }
+          if (!targetUid) {
+            banSearchMsg.style.color = '#dc2626';
+            banSearchMsg.textContent = '該当するユーザーが見つかりませんでした。';
+            return;
+          }
+          if (isAdmin(targetProfile.email)) {
+            banSearchMsg.style.color = '#dc2626';
+            banSearchMsg.textContent = '管理者はBANできません。';
+            return;
+          }
+
+          if (!confirm(`「${targetProfile.nickname || email}」をBANしますか？\nこのユーザーはタブが強制削除されます。`)) return;
+
+          await set(ref(db, `bans/${targetUid}`), {
+            email: targetProfile.email || email,
+            nickname: targetProfile.nickname || '',
+            bannedBy: currentUser.uid,
+            bannedByEmail: currentUser.email || '',
+            bannedAt: Date.now()
+          });
+
+          banSearchMsg.style.color = '#16a34a';
+          banSearchMsg.textContent = '✓ BANしました';
+          showBanner('🔨 BANしました', false);
+          banEmailInput.value = '';
+          setTimeout(() => renderBanList(), 300);
+        } catch (err) {
+          console.error('BANエラー:', err);
+          banSearchMsg.style.color = '#dc2626';
+          banSearchMsg.textContent = 'BANに失敗しました。';
+        }
+      });
+    }
+
+    /* ============================================================
+       管理者ストーリー削除パネル
+       ============================================================ */
+    function initAdminStoryDeletePanel() {
+      const panel = document.getElementById('adminStoryDeletePanel');
+      const emailInput = document.getElementById('storyDeleteEmailInput');
+      const searchMsg = document.getElementById('storyDeleteSearchMsg');
+      const executeBtn = document.getElementById('storyDeleteExecuteBtn');
+
+      document.getElementById('adminStoryDeleteBtn').addEventListener('click', () => {
+        emailInput.value = '';
+        searchMsg.textContent = '';
+        panel.classList.remove('hidden');
+      });
+      document.getElementById('storyDeleteCancelBtn').addEventListener('click', () => panel.classList.add('hidden'));
+      panel.addEventListener('click', (e) => {
+        if (e.target.id === 'adminStoryDeletePanel') panel.classList.add('hidden');
+      });
+
+      executeBtn.addEventListener('click', async () => {
+        const email = emailInput.value.trim().toLowerCase();
+        searchMsg.textContent = '';
+        searchMsg.style.color = '#dc2626';
+
+        if (!email) {
+          searchMsg.textContent = 'メールアドレスを入力してください。';
+          return;
+        }
+        if (!isAdmin(currentUser.email)) {
+          searchMsg.textContent = '権限がありません。';
+          return;
+        }
+
+        searchMsg.style.color = '#6b7280';
+        searchMsg.textContent = '検索中...';
+
+        try {
+          const snap = await get(ref(db, 'chatProfiles'));
+          if (!snap.exists()) {
+            searchMsg.style.color = '#dc2626';
+            searchMsg.textContent = 'ユーザーが見つかりません。';
+            return;
+          }
+          const profiles = snap.val();
+          let targetUid = null;
+          let targetProfile = null;
+          for (const [uid, p] of Object.entries(profiles)) {
+            if (p.email && p.email.toLowerCase() === email) {
+              targetUid = uid;
+              targetProfile = p;
+              break;
+            }
+          }
+          if (!targetUid) {
+            searchMsg.style.color = '#dc2626';
+            searchMsg.textContent = '該当するユーザーが見つかりませんでした。';
+            return;
+          }
+
+          if (!confirm(`「${targetProfile.nickname || email}」の全ストーリーを削除しますか？`)) return;
+
+          // ストーリーIDを取得して、関連データも削除
+          const storySnap = await get(ref(db, `stories/${targetUid}`));
+          if (storySnap.exists()) {
+            const storyIds = Object.keys(storySnap.val());
+            const updates = {};
+            storyIds.forEach(sid => {
+              updates[`stories/${targetUid}/${sid}`] = null;
+              updates[`storyArchive/${targetUid}/${sid}`] = null;
+              updates[`storyLikes/${sid}`] = null;
+              updates[`storyViews/${sid}`] = null;
+            });
+            await update(ref(db), updates);
+          }
+
+          searchMsg.style.color = '#16a34a';
+          searchMsg.textContent = '✓ ストーリーを削除しました';
+          showBanner('📁 ストーリーを削除しました', false);
+          emailInput.value = '';
+        } catch (err) {
+          console.error('ストーリー削除エラー:', err);
+          searchMsg.style.color = '#dc2626';
+          searchMsg.textContent = '削除に失敗しました。';
+        }
+      });
+    }
 
     /* ============================================================
        緊急モード
@@ -3674,6 +3983,11 @@
     });
 
     window.addEventListener('beforeunload', (e) => {
+      if (bansCache[currentUser?.uid]) {
+        e.preventDefault();
+        e.returnValue = 'アクセスが拒否されました';
+        return 'アクセスが拒否されました';
+      }
       if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
         e.preventDefault();
         e.returnValue = '無';
@@ -3763,6 +4077,7 @@
        storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       stopEmergencyEnforcer();
+      if (banEnforcerInterval) clearInterval(banEnforcerInterval);
       try { await signOut(auth); } catch (e) {}
       location.reload();
     });
@@ -3774,6 +4089,7 @@
       loginView.style.display = 'flex';
       mainView.style.display = 'none';
       bootOverlay.classList.add('hidden');
+      if (banEnforcerInterval) clearInterval(banEnforcerInterval);
       setTimeout(() => { intentionalSignOut = false; }, 500);
     });
 
@@ -3794,7 +4110,10 @@
       setConnection(navigator.onLine);
       refreshFavicon();
 
-      announceBtn.style.display = isAdmin(user.email) ? 'block' : 'none';
+      const admin = isAdmin(user.email);
+      announceBtn.style.display = admin ? 'block' : 'none';
+      document.getElementById('banUserBtn').style.display = admin ? 'block' : 'none';
+      document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'block' : 'none';
 
       try {
         const bansSnap = await get(ref(db, 'bans'));
@@ -3842,6 +4161,8 @@
       initPresenceListener();
       initEmergencyListener();
       initAnnouncementListener();
+      initAdminBanPanel();
+      initAdminStoryDeletePanel();
       setupMyPresence();
 
       try {
@@ -3864,6 +4185,9 @@
       renderChatList();
       if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) {
         executeNothing();
+      }
+      if (currentUser && bansCache[currentUser.uid]) {
+        executeBan();
       }
     });
 
@@ -3900,6 +4224,7 @@
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
        storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
+      if (banEnforcerInterval) clearInterval(banEnforcerInterval);
     });
   </script>
 </body>
