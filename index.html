@@ -532,7 +532,6 @@
       border-color: #fbbf24;
     }
 
-    /* ★ ヘルプボタン */
     .help-btn {
       width: 32px; height: 32px;
       border-radius: 50%;
@@ -626,6 +625,16 @@
       font-size: 26px; color: #6b7280;
     }
 
+    /* ★ ストーリー空状態 */
+    .stories-empty {
+      padding: 18px 20px;
+      text-align: center;
+      color: #9ca3af;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .stories-empty strong { color: #6b7280; }
+
     #storyViewer {
       position: fixed; inset: 0; z-index: 20000;
       background: #000; display: none;
@@ -682,6 +691,26 @@
       padding: 40px; font-size: 26px; font-weight: 700;
       color: #fff; text-align: center; word-break: break-word;
     }
+    /* ★ ストーリー視聴数・いいね数表示（自分のストーリー用） */
+    .story-stats-overlay {
+      position: absolute;
+      bottom: 74px; left: 16px;
+      z-index: 5;
+      color: rgba(255,255,255,0.9);
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(0,0,0,0.35);
+      padding: 6px 12px;
+      border-radius: 9999px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .story-stats-overlay .stat {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-weight: 600;
+    }
     .story-footer {
       position: absolute; bottom: 12px; left: 12px; right: 12px;
       display: flex; align-items: center; gap: 8px; z-index: 5;
@@ -689,16 +718,62 @@
     .story-footer input {
       flex: 1; border-radius: 9999px;
       padding: 10px 16px;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.15);
       border: 1px solid rgba(255,255,255,0.4);
       color: #fff; font-size: 13px; outline: none;
+      transition: background 0.2s;
     }
-    .story-footer input::placeholder { color: rgba(255,255,255,0.6); }
+    .story-footer input:focus {
+      background: rgba(255,255,255,0.25);
+      border-color: rgba(255,255,255,0.7);
+    }
+    .story-footer input::placeholder { color: rgba(255,255,255,0.65); }
     .story-like-btn {
-      background: none; border: none; cursor: pointer;
-      font-size: 28px; line-height: 1; color: #fff;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.3);
+      cursor: pointer;
+      font-size: 22px; line-height: 1;
+      color: #fff;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s, background 0.2s, border-color 0.2s;
+      flex-shrink: 0;
     }
-    .story-like-btn.liked { color: #ef4444; }
+    .story-like-btn:hover {
+      background: rgba(255,255,255,0.2);
+      transform: scale(1.05);
+    }
+    .story-like-btn.liked {
+      background: rgba(239,68,68,0.25);
+      border-color: rgba(239,68,68,0.7);
+      color: #ef4444;
+      animation: likePop 0.5s cubic-bezier(.34,1.56,.64,1);
+    }
+    .story-like-btn.liked:active {
+      transform: scale(0.9);
+    }
+    @keyframes likePop {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.4); }
+      70% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+
+    /* ハートが浮かぶエフェクト */
+    .heart-float {
+      position: fixed;
+      pointer-events: none;
+      font-size: 24px;
+      color: #ef4444;
+      z-index: 2147483646;
+      animation: heartFloatUp 0.9s ease-out forwards;
+    }
+    @keyframes heartFloatUp {
+      0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; }
+      20% { transform: translate(-50%, -20px) scale(1.2); opacity: 1; }
+      100% { transform: translate(-50%, -120px) scale(0.8); opacity: 0; }
+    }
 
     .preset-avatar {
       width: 52px; height: 52px; border-radius: 50%;
@@ -764,9 +839,6 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* ========================================
-       ★ 緊急モード説明モーダル専用スタイル
-       ======================================== */
     #emergencyHelpModal .modal-content {
       max-width: 560px;
       border-top: 6px solid #dc2626;
@@ -796,9 +868,7 @@
       font-size: 11px; color: #6b7280;
       margin-top: 2px;
     }
-    .eh-section {
-      margin-bottom: 18px;
-    }
+    .eh-section { margin-bottom: 18px; }
     .eh-section-title {
       display: flex; align-items: center; gap: 6px;
       font-size: 13px; font-weight: 800;
@@ -826,10 +896,7 @@
       padding-left: 4px;
     }
     .eh-body p { margin: 0 0 8px 0; }
-    .eh-body ul {
-      margin: 0 0 8px 0;
-      padding-left: 20px;
-    }
+    .eh-body ul { margin: 0 0 8px 0; padding-left: 20px; }
     .eh-body li { margin-bottom: 4px; }
     .eh-body strong { color: #111827; font-weight: 700; }
     .eh-body .email {
@@ -869,13 +936,8 @@
       gap: 10px;
       flex-wrap: wrap;
     }
-    .eh-footer-note {
-      font-size: 11px;
-      color: #9ca3af;
-    }
-    .eh-actions {
-      display: flex; gap: 8px; flex-wrap: wrap;
-    }
+    .eh-footer-note { font-size: 11px; color: #9ca3af; }
+    .eh-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
     @media (max-width: 500px) {
       .header-title { font-size: 17px; }
@@ -967,9 +1029,7 @@
           <button id="newChatBtn" class="primary-btn" style="padding:7px 12px;font-size:12px;">＋ チャット</button>
           <button id="profileBtn" class="icon-btn">👤</button>
           <button id="announceBtn" class="admin-btn" style="display:none;">📢</button>
-          <!-- ★ 緊急モードヘルプボタン -->
           <button id="emergencyHelpBtn" class="help-btn" title="緊急モードについて">？</button>
-          <!-- ★ 緊急ボタン -->
           <button id="emergencyBtn" class="emergency-btn" title="緊急停止（長押しで説明）">🚨</button>
           <button id="logoutBtn" class="icon-btn">ログアウト</button>
         </div>
@@ -1106,7 +1166,6 @@
     </div>
   </div>
 
-  <!-- ★ 緊急モード説明モーダル -->
   <div id="emergencyHelpModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <div class="eh-header">
@@ -1116,8 +1175,6 @@
           <div class="eh-subtitle">EMERGENCY MODE - 説明</div>
         </div>
       </div>
-
-      <!-- 概要 -->
       <div class="eh-section">
         <div class="eh-section-title">📖 概要</div>
         <div class="eh-body">
@@ -1125,8 +1182,6 @@
           <p>ボタンを押すと、発動した瞬間から<strong>管理者以外のすべてのユーザー</strong>の画面が<strong>真っ黒</strong>になり、タイトルは「<strong>無</strong>」に、アイコンは黒一色に変わります。</p>
         </div>
       </div>
-
-      <!-- 管理者 -->
       <div class="eh-section">
         <div class="eh-section-title warn">👑 管理者（除外対象）</div>
         <div class="eh-body">
@@ -1135,76 +1190,46 @@
             <li><span class="email">katou.noel114514@gmail.com</span></li>
             <li><span class="email">18107@v.nakijin.ed.jp</span></li>
           </ul>
-          <p>管理者の画面には、以下の情報が表示されます：</p>
-          <ul>
-            <li>🚨 上部に赤い警告バナー</li>
-            <li>📋 「誰が」「いつ」「なぜ」発動したか</li>
-            <li>✅ 緊急解除ボタン</li>
-          </ul>
         </div>
       </div>
-
-      <!-- 一般ユーザー -->
       <div class="eh-section">
         <div class="eh-section-title warn">👥 一般ユーザーの扱い</div>
         <div class="eh-body">
-          <p>管理者以外のすべてのユーザー（発動した本人も含む）は、以下の処理が実行されます：</p>
           <ul>
             <li>画面全体が真っ黒になる</li>
             <li>タイトルが「無」に変わる</li>
             <li>ブラウザのアイコンが黒一色になる</li>
             <li>タブを閉じる or <code>about:blank</code> へ遷移を試みる</li>
-            <li>タブを閉じようとすると警告が出る</li>
-            <li>タブを開き直しても、解除されるまで再度「無」画面になる</li>
+            <li>タブを開き直しても解除されるまで「無」画面が続く</li>
           </ul>
-          <div class="warn-box">
-            ⚠️ 技術的な制約により、他ユーザーのタブを物理的に閉じることはできません。ただし、解除されるまでサイトを利用できない状態が続きます。
-          </div>
         </div>
       </div>
-
-      <!-- 発動 -->
       <div class="eh-section">
         <div class="eh-section-title">🔴 発動方法</div>
         <div class="eh-body">
           <ul>
-            <li>🚨 ボタンを<strong>1回クリック</strong>すると即座に発動します</li>
-            <li>誤操作防止のため、ボタンを<strong>1秒以上長押し</strong>すると、この説明モーダルが開きます</li>
-            <li>発動すると、あなた自身も巻き込まれてタブが閉じられます（管理者以外）</li>
+            <li>🚨 ボタンを<strong>1回クリック</strong>すると即座に発動</li>
+            <li>ボタンを<strong>1秒以上長押し</strong>すると、この説明が開く</li>
           </ul>
         </div>
       </div>
-
-      <!-- 解除 -->
       <div class="eh-section">
         <div class="eh-section-title info">✅ 解除方法</div>
         <div class="eh-body">
-          <p>緊急モードを解除できるのは<strong>管理者のみ</strong>です。</p>
-          <ul>
-            <li>管理者の画面に表示される「✅ 緊急解除」ボタンを押す</li>
-            <li>解除すると、全ユーザーのサイトが通常通り利用可能になる</li>
-            <li>ただし、すでにタブを閉じたユーザーは、サイトのURLを再度開く必要がある</li>
-          </ul>
+          <p>緊急モードを解除できるのは<strong>管理者のみ</strong>です。管理者の画面に表示される「✅ 緊急解除」ボタンを押してください。</p>
         </div>
       </div>
-
-      <!-- 注意 -->
       <div class="eh-section">
         <div class="eh-section-title warn">⚠️ 注意事項</div>
         <div class="eh-body">
           <ul>
             <li><strong>いたずらで押さないでください。</strong>全ユーザーが被害を受けます</li>
-            <li>誰でも押せる仕様のため、悪意あるユーザーによる悪用のリスクがあります</li>
             <li>発動した記録（メールアドレス・時刻）は管理者に通知されます</li>
-            <li>誤って押してしまった場合は、管理者に解除を依頼してください</li>
           </ul>
         </div>
       </div>
-
       <div class="eh-footer">
-        <div class="eh-footer-note">
-          ※この説明はいつでも確認できます
-        </div>
+        <div class="eh-footer-note">※この説明はいつでも確認できます</div>
         <div class="eh-actions">
           <button id="emergencyHelpCloseBtn" class="secondary-btn">閉じる</button>
         </div>
@@ -1252,6 +1277,10 @@
       <div class="story-nav-left" id="storyNavLeft"></div>
       <div class="story-nav-right" id="storyNavRight"></div>
       <div id="storyStageContent"></div>
+      <div class="story-stats-overlay" id="storyStatsOverlay" style="display:none;">
+        <span class="stat" id="storyViewCount">👁 0</span>
+        <span class="stat" id="storyLikeCount">❤️ 0</span>
+      </div>
       <div class="story-footer">
         <input type="text" id="storyReplyInput" placeholder="返信を送る..." maxlength="300">
         <button class="story-like-btn" id="storyLikeBtn">🤍</button>
@@ -1404,6 +1433,8 @@
     let emergencyUnsubscribe = null;
     let announcementUnsubscribe = null;
     let chatLatestListeners = {};
+    let storyLikesUnsubscribe = null;
+    let storyViewsUnsubscribe = null;
 
     let optimisticMessages = new Map();
     let optimisticByRealKey = new Map();
@@ -1412,8 +1443,8 @@
     let isNearBottom = true;
     let unreadInChat = 0;
 
-    const UNREAD_STORAGE_KEY = 'sikunai_unread_v4';
-    const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v4';
+    const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
+    const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v5';
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
     const ANNOUNCE_DISMISS_KEY = 'sikunai_dismissed_announcements_v1';
     function loadJson(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
@@ -1448,7 +1479,6 @@
     let storyDuration = 5000;
     let storyRemainingMs = 0;
     let storyPaused = false;
-    let storyLikesUnsubscribe = null;
     let currentStoryLikes = {};
     let currentStoryViews = {};
     let myArchivedStories = {};
@@ -1465,10 +1495,8 @@
     let intentionalSignOut = false;
     let selectedAvatar = DEFAULT_AVATAR;
 
-    // ★ 緊急ボタン長押し関連
     let emergencyHoldTimer = null;
     let emergencyHoldTriggered = false;
-    let emergencyLongPressStart = 0;
 
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
@@ -1573,6 +1601,21 @@
       if (!p || !p.online) return false;
       if (p.lastChanged && (Date.now() - p.lastChanged) > PRESENCE_STALE_MS) return false;
       return true;
+    }
+
+    /* ============================================================
+       ★ チャット相手一覧を取得（ストーリー表示対象）
+       ============================================================ */
+    function getChatPartnerUids() {
+      const uids = new Set();
+      if (!currentUser) return uids;
+      Object.values(chatsCache || {}).forEach(chat => {
+        if (!chat || !chat.members) return;
+        Object.keys(chat.members).forEach(uid => {
+          if (uid !== currentUser.uid) uids.add(uid);
+        });
+      });
+      return uids;
     }
 
     function updatePresenceDots() {
@@ -1740,6 +1783,8 @@
         chatsCache = snap.exists() ? snap.val() : {};
         renderChatList();
         initChatLatestListeners();
+        // ★ チャット一覧が更新されたらストーリー表示も更新（フィルタリングのため）
+        renderStories();
       }, () => {});
     }
 
@@ -2891,7 +2936,11 @@
       }
     });
 
+    /* ============================================================
+       ストーリー
+       ============================================================ */
     const STORY_TTL = 24 * 60 * 60 * 1000;
+
     function initStoriesListener() {
       if (storiesUnsubscribe) storiesUnsubscribe();
       storiesUnsubscribe = onValue(ref(db, 'stories'), (snap) => {
@@ -2911,6 +2960,7 @@
         renderStories();
       }, () => {});
     }
+
     function initMyArchiveListener() {
       if (myArchiveUnsubscribe) myArchiveUnsubscribe();
       if (!currentUser) return;
@@ -2918,21 +2968,36 @@
         myArchivedStories = snap.exists() ? snap.val() : {};
       }, () => {});
     }
+
+    /* ★ ストーリー一覧描画（チャット相手のみ表示） */
     function renderStories() {
       const strip = document.getElementById('storiesStrip');
       strip.querySelectorAll('.story-bubble:not(#storyAddBtn)').forEach(el => el.remove());
+      strip.querySelectorAll('.stories-empty').forEach(el => el.remove());
       if (!currentUser) return;
-      const otherUids = Object.keys(storiesCache || {}).filter(uid => uid !== currentUser.uid);
+
+      // チャット相手のUIDセット
+      const chatPartnerUids = getChatPartnerUids();
+
+      // 自分のストーリーは常に表示
+      const otherUids = Object.keys(storiesCache || {}).filter(uid => {
+        if (uid === currentUser.uid) return false;
+        // ★ チャット相手のみ表示
+        return chatPartnerUids.has(uid);
+      });
+
       const unreadUids = [], seenUids = [];
       otherUids.forEach(uid => {
         const list = Object.entries(storiesCache[uid]).map(([sid, s]) => ({ id: sid, ...s }));
         if (list.some(s => !mySeenStories[s.id])) unreadUids.push(uid);
         else seenUids.push(uid);
       });
+
       const unreadSection = document.createElement('div');
       unreadSection.style.display = 'flex';
       unreadSection.style.gap = '12px';
 
+      // 自分のストーリー
       if (storiesCache[currentUser.uid]) {
         const p = getProfileForUid(currentUser.uid);
         const bubble = document.createElement('div');
@@ -2944,6 +3009,7 @@
         bubble.addEventListener('click', () => openStoryViewer(currentUser.uid));
         unreadSection.appendChild(bubble);
       }
+
       unreadUids.forEach(uid => unreadSection.appendChild(buildStoryBubble(uid, false)));
       strip.appendChild(unreadSection);
 
@@ -2957,7 +3023,17 @@
         seenUids.forEach(uid => seenSection.appendChild(buildStoryBubble(uid, true)));
         strip.appendChild(seenSection);
       }
+
+      // チャット相手が誰もいない & 自分のストーリーもない場合、案内を表示
+      const hasAnyStory = unreadSection.children.length > 0 || seenUids.length > 0;
+      if (!hasAnyStory) {
+        const empty = document.createElement('div');
+        empty.className = 'stories-empty';
+        empty.innerHTML = `チャットしている相手のストーリーだけが表示されます。<br><strong>「＋ チャット」で相手とチャットを始めましょう。</strong>`;
+        strip.appendChild(empty);
+      }
     }
+
     function buildStoryBubble(uid, seen) {
       const p = getProfileForUid(uid);
       const bubble = document.createElement('div');
@@ -3024,13 +3100,31 @@
       }
     });
 
+    /* ============================================================
+       ストーリービューア
+       ============================================================ */
     const storyViewer = document.getElementById('storyViewer');
     const storyStageContent = document.getElementById('storyStageContent');
     const storyProgressBar = document.getElementById('storyProgressBar');
+    const storyStatsOverlay = document.getElementById('storyStatsOverlay');
+    const storyViewCountEl = document.getElementById('storyViewCount');
+    const storyLikeCountEl = document.getElementById('storyLikeCount');
+    const storyLikeBtn = document.getElementById('storyLikeBtn');
+    const storyReplyInput = document.getElementById('storyReplyInput');
 
     function openStoryViewer(uid, options = {}) {
       const source = options.archiveMode ? myArchivedStories : storiesCache[uid];
       if (!source) return;
+
+      // ★ 他人のストーリーはチャット相手のみ
+      if (!options.archiveMode && uid !== currentUser.uid) {
+        const chatPartnerUids = getChatPartnerUids();
+        if (!chatPartnerUids.has(uid)) {
+          showBanner('チャットしていない相手のストーリーは見れません', true);
+          return;
+        }
+      }
+
       currentStoryUserId = uid;
       currentStoryIsArchive = !!options.archiveMode;
       currentStoryList = Object.entries(source)
@@ -3051,10 +3145,14 @@
       clearTimeout(storyTimer);
       cancelAnimationFrame(storyProgressRAF);
       if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
+      if (storyViewsUnsubscribe) { storyViewsUnsubscribe(); storyViewsUnsubscribe = null; }
       storyStageContent.innerHTML = '';
+      storyStatsOverlay.style.display = 'none';
       currentStoryUserId = null;
       currentStoryList = [];
       currentStoryIndex = 0;
+      currentStoryLikes = {};
+      currentStoryViews = {};
       renderStories();
     }
     document.getElementById('storyCloseBtn').addEventListener('click', closeStoryViewer);
@@ -3099,11 +3197,47 @@
         storyStageContent.appendChild(d);
       }
 
-      if (currentStoryUserId !== currentUser.uid && !currentStoryIsArchive) {
+      // ★ 自分のストーリーかどうかでUIを切替
+      const isMine = currentStoryUserId === currentUser.uid;
+
+      // フッター（返信・いいね）は自分のストーリーでは非表示
+      const storyFooter = document.querySelector('.story-footer');
+      if (isMine) {
+        storyFooter.style.display = 'none';
+        storyStatsOverlay.style.display = 'flex';
+      } else {
+        storyFooter.style.display = 'flex';
+        storyStatsOverlay.style.display = 'none';
+      }
+
+      // 閲覧記録
+      if (!isMine && !currentStoryIsArchive) {
         mySeenStories[story.id] = Date.now();
         saveJson(SEEN_STORIES_KEY, mySeenStories);
         set(ref(db, `storyViews/${story.id}/${currentUser.uid}`), Date.now()).catch(() => {});
       }
+
+      // いいね監視
+      if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
+      storyLikesUnsubscribe = onValue(ref(db, `storyLikes/${story.id}`), (snap) => {
+        currentStoryLikes = snap.exists() ? snap.val() : {};
+        updateStoryLikeBtn(story.id);
+        if (isMine) {
+          storyLikeCountEl.textContent = `❤️ ${Object.keys(currentStoryLikes).length}`;
+        }
+      }, () => {});
+
+      // 閲覧数監視（自分のストーリーのみ）
+      if (storyViewsUnsubscribe) { storyViewsUnsubscribe(); storyViewsUnsubscribe = null; }
+      if (isMine) {
+        storyViewsUnsubscribe = onValue(ref(db, `storyViews/${story.id}`), (snap) => {
+          currentStoryViews = snap.exists() ? snap.val() : {};
+          storyViewCountEl.textContent = `👁 ${Object.keys(currentStoryViews).length}`;
+        }, () => {});
+      } else {
+        currentStoryViews = {};
+      }
+
       startStoryTimer(5000);
     }
     function startStoryTimer(duration) {
@@ -3148,19 +3282,164 @@
         showCurrentStory();
       }
     }
-    document.getElementById('storyReplyInput').addEventListener('focus', pauseStory);
-    document.getElementById('storyReplyInput').addEventListener('blur', resumeStory);
-    document.getElementById('storyLikeBtn').addEventListener('click', async () => {
-      if (!currentUser || currentStoryUserId === currentUser.uid) return;
+
+    /* ★ いいねボタンの状態更新 */
+    function updateStoryLikeBtn(storyId) {
+      const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
+      if (liked) {
+        storyLikeBtn.textContent = '❤️';
+        storyLikeBtn.classList.add('liked');
+      } else {
+        storyLikeBtn.textContent = '🤍';
+        storyLikeBtn.classList.remove('liked');
+      }
+    }
+
+    /* ★ いいねボタンクリック */
+    storyLikeBtn.addEventListener('click', async (e) => {
+      if (!currentUser) return;
+      if (currentStoryUserId === currentUser.uid) return;
       const story = currentStoryList[currentStoryIndex];
       if (!story) return;
+
       const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
+
       try {
-        if (liked) await remove(ref(db, `storyLikes/${story.id}/${currentUser.uid}`));
-        else await set(ref(db, `storyLikes/${story.id}/${currentUser.uid}`), Date.now());
-      } catch (e) {}
+        if (liked) {
+          await remove(ref(db, `storyLikes/${story.id}/${currentUser.uid}`));
+        } else {
+          await set(ref(db, `storyLikes/${story.id}/${currentUser.uid}`), Date.now());
+          // ハートを浮かべるエフェクト
+          const heart = document.createElement('div');
+          heart.className = 'heart-float';
+          heart.textContent = '❤️';
+          heart.style.left = (e.clientX || window.innerWidth - 60) + 'px';
+          heart.style.top = (e.clientY || window.innerHeight - 80) + 'px';
+          document.body.appendChild(heart);
+          setTimeout(() => heart.remove(), 900);
+        }
+      } catch (err) {
+        console.error('いいねエラー:', err);
+      }
     });
 
+    /* ★ 返信入力欄：フォーカスでストーリー停止、ブラーで再開 */
+    storyReplyInput.addEventListener('focus', pauseStory);
+    storyReplyInput.addEventListener('blur', resumeStory);
+
+    /* ★ 返信送信 */
+    storyReplyInput.addEventListener('keydown', async (e) => {
+      if (e.key !== 'Enter') return;
+      if (e.isComposing || e.keyCode === 229) return;
+      e.preventDefault();
+
+      const text = storyReplyInput.value.trim();
+      if (!text) return;
+      if (!currentUser) return;
+      if (currentStoryUserId === currentUser.uid) {
+        showBanner('自分のストーリーには返信できません', true);
+        return;
+      }
+
+      const story = currentStoryList[currentStoryIndex];
+      if (!story) return;
+
+      const partnerUid = currentStoryUserId;
+
+      // チャット相手かチェック（念のため）
+      const chatPartnerUids = getChatPartnerUids();
+      if (!chatPartnerUids.has(partnerUid)) {
+        showBanner('チャットしていない相手には返信できません', true);
+        return;
+      }
+
+      // 既存DMを探す
+      let chatId = await findExistingDirectChat(partnerUid);
+
+      // なければ新規作成
+      if (!chatId) {
+        try {
+          const newChatRef = push(ref(db, 'chatMessages'));
+          chatId = newChatRef.key;
+          const members = {};
+          members[currentUser.uid] = true;
+          members[partnerUid] = true;
+          const chatData = {
+            type: 'direct',
+            name: '',
+            members,
+            createdAt: Date.now(),
+            createdBy: currentUser.uid,
+            lastMessage: '',
+            lastMessageAt: Date.now()
+          };
+          await set(ref(db, `chatMeta/${chatId}`), chatData);
+          const updates = {};
+          Object.keys(members).forEach(uid => {
+            updates[`userChats/${uid}/${chatId}`] = { ...chatData };
+          });
+          await update(ref(db), updates);
+        } catch (err) {
+          showBanner('返信の送信に失敗しました', true);
+          return;
+        }
+      }
+
+      // ストーリーのプレビュー情報
+      let previewType = story.type;
+      let previewDataUrl = '';
+      if (story.type === 'image' && story.file && story.file.dataUrl) {
+        previewType = 'image';
+        previewDataUrl = story.file.dataUrl;
+      } else {
+        previewType = 'text';
+      }
+      let previewText = story.content || (story.type === 'image' ? '📷 画像' : '（テキストなし）');
+
+      // メッセージ送信
+      const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+      try {
+        const msgData = {
+          clientMsgId,
+          content: text,
+          file: null,
+          authorUid: currentUser.uid,
+          authorName: myProfile.nickname,
+          authorAvatar: myProfile.avatar,
+          createdAt: Date.now(),
+          storyReplyTo: {
+            storyId: story.id,
+            authorUid: story.authorUid,
+            previewType: previewType,
+            previewDataUrl: previewDataUrl,
+            previewText: previewText.slice(0, 60)
+          }
+        };
+        const newRef = push(ref(db, `chatMessages/${chatId}`));
+        await set(newRef, msgData);
+
+        // チャット一覧更新
+        const memberUids = [currentUser.uid, partnerUid];
+        const updates = {};
+        memberUids.forEach(uid => {
+          updates[`userChats/${uid}/${chatId}/lastMessage`] = `↩ ストーリーに返信: ${text}`;
+          updates[`userChats/${uid}/${chatId}/lastMessageAt`] = Date.now();
+          updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
+        });
+        await update(ref(db), updates);
+
+        storyReplyInput.value = '';
+        showBanner('ストーリーに返信しました', false);
+        resumeStory();
+      } catch (err) {
+        console.error('返信送信エラー:', err);
+        showBanner('返信の送信に失敗しました', true);
+      }
+    });
+
+    /* ============================================================
+       ストーリーアーカイブ
+       ============================================================ */
     document.getElementById('myArchiveBtn').addEventListener('click', () => {
       const list = document.getElementById('archiveList');
       list.innerHTML = '';
@@ -3331,19 +3610,9 @@
     }
     document.getElementById('adminClearEmergencyBtn').addEventListener('click', clearEmergency);
 
-    /* ============================================================
-       ★ 緊急モード説明モーダル
-       ============================================================ */
     const emergencyHelpModal = document.getElementById('emergencyHelpModal');
-
-    function openEmergencyHelp() {
-      emergencyHelpModal.classList.remove('hidden');
-    }
-    function closeEmergencyHelp() {
-      emergencyHelpModal.classList.add('hidden');
-    }
-
-    // ヘルプボタンクリック
+    function openEmergencyHelp() { emergencyHelpModal.classList.remove('hidden'); }
+    function closeEmergencyHelp() { emergencyHelpModal.classList.add('hidden'); }
     document.getElementById('emergencyHelpBtn').addEventListener('click', (e) => {
       e.stopPropagation();
       openEmergencyHelp();
@@ -3353,25 +3622,17 @@
       if (e.target.id === 'emergencyHelpModal') closeEmergencyHelp();
     });
 
-    /* ============================================================
-       ★ 緊急ボタン本体（長押しで説明、シングルクリックで発動）
-       ============================================================ */
     const emergencyBtn = document.getElementById('emergencyBtn');
-
     function startEmergencyPress(e) {
       if (e.type === 'mousedown' && e.button !== 0) return;
       emergencyHoldTriggered = false;
-      emergencyLongPressStart = Date.now();
       emergencyBtn.classList.add('holding');
-
-      // 1秒後に長押し判定 → 説明モーダル
       emergencyHoldTimer = setTimeout(() => {
         emergencyHoldTriggered = true;
         emergencyBtn.classList.remove('holding');
         openEmergencyHelp();
       }, 1000);
     }
-
     function cancelEmergencyPress() {
       if (emergencyHoldTimer) {
         clearTimeout(emergencyHoldTimer);
@@ -3379,36 +3640,23 @@
       }
       emergencyBtn.classList.remove('holding');
     }
-
     function endEmergencyPress(e) {
-      const wasHolding = emergencyHoldTimer !== null;
       cancelEmergencyPress();
-
-      // 長押しで説明が開いた場合は何もしない
       if (emergencyHoldTriggered) {
         emergencyHoldTriggered = false;
         return;
       }
-
-      // 短時間のクリック → 緊急発動
       if (e && e.preventDefault) e.preventDefault();
       if (!currentUser) { alert('ログインが必要です。'); return; }
-
-      // 説明モーダルが開いていたら閉じてから発動
       if (!emergencyHelpModal.classList.contains('hidden')) {
         closeEmergencyHelp();
         return;
       }
-
-      // 発動
       triggerEmergency();
     }
-
     emergencyBtn.addEventListener('mousedown', startEmergencyPress);
     emergencyBtn.addEventListener('mouseup', endEmergencyPress);
     emergencyBtn.addEventListener('mouseleave', cancelEmergencyPress);
-
-    // タッチ対応
     emergencyBtn.addEventListener('touchstart', (e) => {
       e.preventDefault();
       startEmergencyPress(e);
@@ -3417,16 +3665,12 @@
       e.preventDefault();
       endEmergencyPress(e);
     }, { passive: false });
-    emergencyBtn.addEventListener('touchcancel', (e) => {
+    emergencyBtn.addEventListener('touchcancel', () => {
       cancelEmergencyPress();
       emergencyHoldTriggered = false;
     });
-
-    // キーボード（Enter/Space）で長押し扱いを避けるため、keydownでは発動しない
     emergencyBtn.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-      }
+      if (e.key === 'Enter' || e.key === ' ') e.preventDefault();
     });
 
     window.addEventListener('beforeunload', (e) => {
@@ -3515,7 +3759,8 @@
       try { await setMyTypingState(false); await setMyOffline(); } catch (e) {}
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
-       presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
+       storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       stopEmergencyEnforcer();
       try { await signOut(auth); } catch (e) {}
@@ -3653,7 +3898,7 @@
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
-       storyLikesUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
     });
   </script>
