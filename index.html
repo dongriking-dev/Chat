@@ -705,6 +705,64 @@
       padding: 40px; font-size: 26px; font-weight: 700;
       color: #fff; text-align: center; word-break: break-word;
     }
+    /* ★ 動画表示 */
+    #storyStageContent .story-video-wrap {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background: #000;
+      position: relative;
+    }
+    #storyStageContent .story-video-wrap video {
+      width: 100%; height: 100%;
+      object-fit: contain;
+      background: #000;
+    }
+    /* ★ 音声は見えないようにする（BGMとして再生） */
+    .story-audio-wrap {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 24px; padding: 40px;
+      background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
+      position: relative;
+    }
+    .story-audio-wrap .story-audio-icon {
+      font-size: 96px;
+      line-height: 1;
+      animation: audioPulse 1.8s ease-in-out infinite;
+      filter: drop-shadow(0 6px 20px rgba(0,0,0,0.4));
+    }
+    @keyframes audioPulse {
+      0%, 100% { transform: scale(1); opacity: 0.95; }
+      50% { transform: scale(1.08); opacity: 1; }
+    }
+    .story-audio-wrap .story-audio-label {
+      color: #fff; font-size: 18px; font-weight: 700;
+      text-align: center; word-break: break-word;
+      max-width: 100%; line-height: 1.6;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+    .story-audio-wrap audio {
+      display: none !important;
+    }
+    .story-audio-wrap .story-audio-visual {
+      display: flex; align-items: flex-end; gap: 5px;
+      height: 40px;
+    }
+    .story-audio-wrap .story-audio-visual span {
+      width: 5px; background: rgba(255,255,255,0.85);
+      border-radius: 3px;
+      animation: audioBar 0.9s ease-in-out infinite;
+    }
+    .story-audio-wrap .story-audio-visual span:nth-child(1) { animation-delay: 0s; }
+    .story-audio-wrap .story-audio-visual span:nth-child(2) { animation-delay: 0.1s; }
+    .story-audio-wrap .story-audio-visual span:nth-child(3) { animation-delay: 0.2s; }
+    .story-audio-wrap .story-audio-visual span:nth-child(4) { animation-delay: 0.3s; }
+    .story-audio-wrap .story-audio-visual span:nth-child(5) { animation-delay: 0.4s; }
+    @keyframes audioBar {
+      0%, 100% { height: 8px; opacity: 0.6; }
+      50% { height: 36px; opacity: 1; }
+    }
     .story-stats-overlay {
       position: absolute;
       bottom: 74px; left: 16px;
@@ -930,32 +988,6 @@
     }
     .eh-footer-note { font-size: 11px; color: #9ca3af; }
     .eh-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-
-    .story-audio-wrap {
-      width: 100%; height: 100%;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 20px; padding: 30px;
-      background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
-    }
-    .story-audio-wrap .story-audio-icon {
-      font-size: 72px;
-      line-height: 1;
-      animation: audioPulse 1.6s ease-in-out infinite;
-    }
-    @keyframes audioPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-    .story-audio-wrap audio {
-      width: 100%; max-width: 320px;
-      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
-    }
-    .story-audio-wrap .story-audio-label {
-      color: #fff; font-size: 16px; font-weight: 700;
-      text-align: center; word-break: break-word;
-      max-width: 100%;
-    }
 
     @media (max-width: 500px) {
       .header-title { font-size: 17px; }
@@ -1316,9 +1348,12 @@
       <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">画像を選択:</label>
       <input type="file" id="storyFileInput" accept="image/*" style="width:100%;border:1px solid #d1d5db;padding:8px;border-radius:8px;font-size:12px;margin-bottom:8px;">
       <div id="storyUploadPreview" style="display:none;margin-top:8px;text-align:center;"></div>
-      <label style="display:block;font-size:11px;color:#6b7280;margin:8px 0 4px;">または音声ファイル（mp3 / mp4 / m4a）:</label>
-      <input type="file" id="storyAudioInput" accept="audio/mpeg,audio/mp3,audio/mp4,video/mp4,audio/*,.mp3,.mp4,.m4a" style="width:100%;border:1px solid #d1d5db;padding:8px;border-radius:8px;font-size:12px;margin-bottom:8px;">
+      <label style="display:block;font-size:11px;color:#6b7280;margin:8px 0 4px;">または音声（mp3 / m4a）:</label>
+      <input type="file" id="storyAudioInput" accept="audio/mpeg,audio/mp3,audio/*,.mp3,.m4a" style="width:100%;border:1px solid #d1d5db;padding:8px;border-radius:8px;font-size:12px;margin-bottom:8px;">
       <div id="storyAudioPreview" style="display:none;margin-top:8px;text-align:center;"></div>
+      <label style="display:block;font-size:11px;color:#6b7280;margin:8px 0 4px;">または動画（mp4）:</label>
+      <input type="file" id="storyVideoInput" accept="video/mp4,video/*,.mp4" style="width:100%;border:1px solid #d1d5db;padding:8px;border-radius:8px;font-size:12px;margin-bottom:8px;">
+      <div id="storyVideoPreview" style="display:none;margin-top:8px;text-align:center;"></div>
       <div id="storyUploadInfo" style="font-size:11px;color:#6b7280;margin-bottom:12px;"></div>
       <div id="storyPostMsg" style="font-size:12px;margin-bottom:8px;min-height:16px;"></div>
       <div style="display:flex;justify-content:flex-end;gap:8px;">
@@ -1436,6 +1471,7 @@
     const IMAGE_MAX_HEIGHT = 1200;
     const IMAGE_QUALITY = 0.8;
     const IMAGE_MAX_BASE64_SIZE = 400 * 1024;
+    const MEDIA_MAX_BASE64_SIZE = 800 * 1024;
 
     function fileToBase64Image(file, maxW = IMAGE_MAX_WIDTH, maxH = IMAGE_MAX_HEIGHT, maxSize = IMAGE_MAX_BASE64_SIZE) {
       return new Promise((resolve, reject) => {
@@ -1480,14 +1516,13 @@
       });
     }
 
-    /* ★ 音声ファイルをBase64化する関数 */
-    function fileToBase64Audio(file, maxSize = 800 * 1024) {
+    function fileToBase64Audio(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
       return new Promise((resolve, reject) => {
         if (!file) { resolve(null); return; }
-        const validTypes = ['audio/mpeg', 'audio/mp3', 'audio/mp4', 'video/mp4', 'audio/m4a', 'audio/x-m4a'];
-        const validExt = /\.(mp3|mp4|m4a)$/i.test(file.name);
-        if (!validTypes.includes(file.type) && !validExt) {
-          reject(new Error('mp3 / mp4 / m4a ファイルを選択してください'));
+        const validTypes = ['audio/mpeg', 'audio/mp3', 'audio/mp4', 'audio/m4a', 'audio/x-m4a', 'audio/*'];
+        const validExt = /\.(mp3|m4a)$/i.test(file.name);
+        if (!validExt && !file.type.startsWith('audio/')) {
+          reject(new Error('mp3 / m4a ファイルを選択してください'));
           return;
         }
         const reader = new FileReader();
@@ -1502,6 +1537,33 @@
             dataUrl,
             name: file.name,
             type: file.type || 'audio/mpeg',
+            size: dataUrl.length
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function fileToBase64Video(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
+      return new Promise((resolve, reject) => {
+        if (!file) { resolve(null); return; }
+        const validExt = /\.mp4$/i.test(file.name) || file.type === 'video/mp4';
+        if (!validExt) {
+          reject(new Error('mp4 ファイルを選択してください'));
+          return;
+        }
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
+        reader.onload = (e) => {
+          const dataUrl = e.target.result;
+          if (dataUrl.length > maxSize) {
+            reject(new Error('動画ファイルが大きすぎます（800KB以下にしてください）'));
+            return;
+          }
+          resolve({
+            dataUrl,
+            name: file.name,
+            type: 'video/mp4',
             size: dataUrl.length
           });
         };
@@ -1592,10 +1654,10 @@
     let currentStoryViews = {};
     let myArchivedStories = {};
     let pendingStoryFile = null;
-    /* ★ 追加: 音声ストーリー用の保留変数 */
     let pendingStoryAudio = null;
-    /* ★ 追加: 現在再生中のオーディオ要素 */
+    let pendingStoryVideo = null;
     let currentStoryAudioEl = null;
+    let currentStoryVideoEl = null;
 
     let typingTimeout = null;
     let isCurrentlyTyping = false;
@@ -2412,6 +2474,8 @@
             thumb = `<img src="${s.previewDataUrl}" alt="">`;
           } else if (s.previewType === 'audio') {
             thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;">🎵</div>`;
+          } else if (s.previewType === 'video') {
+            thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#000,#374151);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;">🎬</div>`;
           } else {
             thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(45deg,#f09433,#bc1888);flex-shrink:0;"></div>`;
           }
@@ -3288,17 +3352,22 @@
       document.getElementById('storyTextInput').value = '';
       document.getElementById('storyFileInput').value = '';
       document.getElementById('storyAudioInput').value = '';
+      document.getElementById('storyVideoInput').value = '';
       pendingStoryFile = null;
       pendingStoryAudio = null;
+      pendingStoryVideo = null;
       document.getElementById('storyUploadPreview').style.display = 'none';
       document.getElementById('storyUploadPreview').innerHTML = '';
       document.getElementById('storyAudioPreview').style.display = 'none';
       document.getElementById('storyAudioPreview').innerHTML = '';
+      document.getElementById('storyVideoPreview').style.display = 'none';
+      document.getElementById('storyVideoPreview').innerHTML = '';
       document.getElementById('storyUploadInfo').textContent = '';
       document.getElementById('storyPostMsg').textContent = '';
       document.getElementById('storyPostModal').classList.remove('hidden');
     });
     document.getElementById('storyPostCancelBtn').addEventListener('click', () => document.getElementById('storyPostModal').classList.add('hidden'));
+
     document.getElementById('storyFileInput').addEventListener('change', async () => {
       const f = document.getElementById('storyFileInput').files[0];
       const preview = document.getElementById('storyUploadPreview');
@@ -3317,7 +3386,6 @@
       }
     });
 
-    /* ★ 音声ファイル選択ハンドラ */
     document.getElementById('storyAudioInput').addEventListener('change', async () => {
       const f = document.getElementById('storyAudioInput').files[0];
       const preview = document.getElementById('storyAudioPreview');
@@ -3336,17 +3404,38 @@
       }
     });
 
+    document.getElementById('storyVideoInput').addEventListener('change', async () => {
+      const f = document.getElementById('storyVideoInput').files[0];
+      const preview = document.getElementById('storyVideoPreview');
+      if (!f) { pendingStoryVideo = null; preview.style.display = 'none'; return; }
+      preview.style.display = 'block';
+      preview.innerHTML = '<div style="font-size:12px;color:#6b7280;padding:8px;"><span class="loading-spinner"></span>処理中...</div>';
+      try {
+        const r = await fileToBase64Video(f);
+        pendingStoryVideo = r;
+        preview.innerHTML = `<video controls src="${r.dataUrl}" style="width:100%;max-width:300px;border-radius:8px;"></video>`;
+        document.getElementById('storyUploadInfo').textContent = `${f.name}（${formatSize(r.size)}）`;
+      } catch (err) {
+        pendingStoryVideo = null;
+        preview.style.display = 'none';
+        document.getElementById('storyPostMsg').innerHTML = `<span style="color:#dc2626;">${escapeHtml(err.message)}</span>`;
+      }
+    });
+
     document.getElementById('storyPostBtn').addEventListener('click', async () => {
       if (!currentUser) return;
       const text = document.getElementById('storyTextInput').value.trim();
-      if (!text && !pendingStoryFile && !pendingStoryAudio) {
-        document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">テキスト・画像・音声のいずれかを選択してください。</span>';
+      if (!text && !pendingStoryFile && !pendingStoryAudio && !pendingStoryVideo) {
+        document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">テキスト・画像・音声・動画のいずれかを選択してください。</span>';
         return;
       }
       try {
         let storyType = 'text';
         let storyFile = null;
-        if (pendingStoryAudio) {
+        if (pendingStoryVideo) {
+          storyType = 'video';
+          storyFile = pendingStoryVideo;
+        } else if (pendingStoryAudio) {
           storyType = 'audio';
           storyFile = pendingStoryAudio;
         } else if (pendingStoryFile) {
@@ -3368,6 +3457,7 @@
         document.getElementById('storyPostModal').classList.add('hidden');
         pendingStoryFile = null;
         pendingStoryAudio = null;
+        pendingStoryVideo = null;
         showBanner('ストーリーを投稿しました', false);
       } catch (err) {
         document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">投稿失敗</span>';
@@ -3421,6 +3511,10 @@
         try { currentStoryAudioEl.pause(); } catch (e) {}
         currentStoryAudioEl = null;
       }
+      if (currentStoryVideoEl) {
+        try { currentStoryVideoEl.pause(); } catch (e) {}
+        currentStoryVideoEl = null;
+      }
       if (storyLikesUnsubscribe) { storyLikesUnsubscribe(); storyLikesUnsubscribe = null; }
       if (storyViewsUnsubscribe) { storyViewsUnsubscribe(); storyViewsUnsubscribe = null; }
       storyStageContent.innerHTML = '';
@@ -3438,13 +3532,21 @@
     document.getElementById('storyNavLeft').addEventListener('click', () => prevStory());
     document.getElementById('storyNavRight').addEventListener('click', () => nextStory());
 
-    function showCurrentStory() {
-      clearTimeout(storyTimer);
-      cancelAnimationFrame(storyProgressRAF);
+    function stopCurrentMedia() {
       if (currentStoryAudioEl) {
         try { currentStoryAudioEl.pause(); } catch (e) {}
         currentStoryAudioEl = null;
       }
+      if (currentStoryVideoEl) {
+        try { currentStoryVideoEl.pause(); } catch (e) {}
+        currentStoryVideoEl = null;
+      }
+    }
+
+    function showCurrentStory() {
+      clearTimeout(storyTimer);
+      cancelAnimationFrame(storyProgressRAF);
+      stopCurrentMedia();
       storyStageContent.innerHTML = '';
       storyPaused = false;
 
@@ -3468,38 +3570,95 @@
         storyProgressBar.appendChild(seg);
       });
 
-      /* ★ 表示分岐: 画像 / 音声 / テキスト */
+      /* 表示分岐: 画像 / 音声(BGM) / 動画 / テキスト */
       if (story.type === 'image' && story.file) {
         const img = document.createElement('img');
         img.src = story.file.dataUrl;
         storyStageContent.appendChild(img);
-      } else if (story.type === 'audio' && story.file) {
+      } else if (story.type === 'video' && story.file) {
+        // ★ 動画表示
         const wrap = document.createElement('div');
-        wrap.className = 'story-audio-wrap';
-        const icon = document.createElement('div');
-        icon.className = 'story-audio-icon';
-        icon.textContent = '🎵';
-        const audio = document.createElement('audio');
-        audio.controls = true;
-        audio.src = story.file.dataUrl;
-        audio.style.width = '100%';
-        audio.style.maxWidth = '320px';
-        const label = document.createElement('div');
-        label.className = 'story-audio-label';
-        label.textContent = story.content || '音声ストーリー';
-        wrap.appendChild(icon);
-        wrap.appendChild(audio);
-        wrap.appendChild(label);
+        wrap.className = 'story-video-wrap';
+        const video = document.createElement('video');
+        video.src = story.file.dataUrl;
+        video.controls = true;
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.preload = 'auto';
+        wrap.appendChild(video);
         storyStageContent.appendChild(wrap);
-        currentStoryAudioEl = audio;
-        audio.addEventListener('play', pauseStory);
-        audio.addEventListener('pause', () => { if (!audio.ended) pauseStory(); });
-        audio.addEventListener('ended', () => { resumeStory(); nextStory(); });
-        // 自動再生を試みる
-        const playPromise = audio.play();
+        currentStoryVideoEl = video;
+
+        video.addEventListener('ended', () => {
+          if (currentStoryVideoEl === video) currentStoryVideoEl = null;
+          nextStory();
+        });
+        video.addEventListener('play', pauseStory);
+        video.addEventListener('pause', () => {
+          if (!video.ended) pauseStory();
+        });
+
+        const playPromise = video.play();
         if (playPromise && typeof playPromise.catch === 'function') {
           playPromise.catch(() => {});
         }
+      } else if (story.type === 'audio' && story.file) {
+        // ★ 音声は見えないBGMとして再生
+        const wrap = document.createElement('div');
+        wrap.className = 'story-audio-wrap';
+
+        const icon = document.createElement('div');
+        icon.className = 'story-audio-icon';
+        icon.textContent = '🎵';
+
+        const visual = document.createElement('div');
+        visual.className = 'story-audio-visual';
+        for (let i = 0; i < 5; i++) {
+          const bar = document.createElement('span');
+          visual.appendChild(bar);
+        }
+
+        const label = document.createElement('div');
+        label.className = 'story-audio-label';
+        label.textContent = story.content || '音声ストーリー';
+
+        const audio = document.createElement('audio');
+        audio.src = story.file.dataUrl;
+        audio.preload = 'auto';
+        audio.style.display = 'none';
+        audio.setAttribute('playsinline', '');
+        audio.setAttribute('webkit-playsinline', '');
+
+        wrap.appendChild(icon);
+        wrap.appendChild(visual);
+        wrap.appendChild(label);
+        wrap.appendChild(audio);
+        storyStageContent.appendChild(wrap);
+        currentStoryAudioEl = audio;
+
+        audio.addEventListener('ended', () => {
+          if (currentStoryAudioEl === audio) currentStoryAudioEl = null;
+          nextStory();
+        });
+
+        const tryPlay = () => {
+          const playPromise = audio.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => {
+              const resumeOnInteraction = () => {
+                if (currentStoryAudioEl === audio && audio.paused) {
+                  audio.play().catch(() => {});
+                }
+                document.removeEventListener('click', resumeOnInteraction);
+                document.removeEventListener('touchstart', resumeOnInteraction);
+              };
+              document.addEventListener('click', resumeOnInteraction, { once: true });
+              document.addEventListener('touchstart', resumeOnInteraction, { once: true });
+            });
+          }
+        };
+        tryPlay();
       } else {
         const d = document.createElement('div');
         d.className = 'story-text-content';
@@ -3561,21 +3720,21 @@
         currentStoryViews = {};
       }
 
-      /* ★ 音声の場合は長さを取得して自動送り時間を設定 */
-      if (story.type === 'audio' && story.file) {
-        const tempAudio = new Audio(story.file.dataUrl);
+      /* 自動送り時間の設定 */
+      if ((story.type === 'audio' || story.type === 'video') && story.file) {
+        const tempMedia = story.type === 'video' ? document.createElement('video') : new Audio();
+        tempMedia.src = story.file.dataUrl;
         let timerStarted = false;
         const startWithDuration = (dur) => {
           if (timerStarted) return;
           timerStarted = true;
-          startStoryTimer(Math.min(dur, 60000));
+          startStoryTimer(Math.min(dur + 300, 120000));
         };
-        tempAudio.addEventListener('loadedmetadata', () => {
-          const dur = Math.max((tempAudio.duration || 5) * 1000, 1000);
+        tempMedia.addEventListener('loadedmetadata', () => {
+          const dur = Math.max((tempMedia.duration || 5) * 1000, 1000);
           startWithDuration(dur);
         });
-        tempAudio.addEventListener('error', () => startWithDuration(5000));
-        // フォールバック: 3秒以内にメタデータが来なければデフォルト
+        tempMedia.addEventListener('error', () => startWithDuration(5000));
         setTimeout(() => startWithDuration(5000), 3000);
       } else {
         startStoryTimer(5000);
@@ -3605,27 +3764,35 @@
       if (storyPaused) return;
       storyPaused = true;
       storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime));
+      if (currentStoryAudioEl && !currentStoryAudioEl.paused) {
+        try { currentStoryAudioEl.pause(); } catch (e) {}
+      }
+      if (currentStoryVideoEl && !currentStoryVideoEl.paused) {
+        try { currentStoryVideoEl.pause(); } catch (e) {}
+      }
     }
     function resumeStory() {
       if (!storyPaused) return;
       storyPaused = false;
       storyStartTime = Date.now() - (storyDuration - storyRemainingMs);
+      if (currentStoryAudioEl && currentStoryAudioEl.paused) {
+        const p = currentStoryAudioEl.play();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      }
+      if (currentStoryVideoEl && currentStoryVideoEl.paused) {
+        const p = currentStoryVideoEl.play();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+      }
     }
     function nextStory() {
-      if (currentStoryAudioEl) {
-        try { currentStoryAudioEl.pause(); } catch (e) {}
-        currentStoryAudioEl = null;
-      }
+      stopCurrentMedia();
       if (currentStoryIndex + 1 < currentStoryList.length) {
         currentStoryIndex++;
         showCurrentStory();
       } else closeStoryViewer();
     }
     function prevStory() {
-      if (currentStoryAudioEl) {
-        try { currentStoryAudioEl.pause(); } catch (e) {}
-        currentStoryAudioEl = null;
-      }
+      stopCurrentMedia();
       if (currentStoryIndex > 0) {
         currentStoryIndex--;
         showCurrentStory();
@@ -3758,10 +3925,13 @@
       } else if (story.type === 'audio' && story.file && story.file.dataUrl) {
         previewType = 'audio';
         previewDataUrl = story.file.dataUrl;
+      } else if (story.type === 'video' && story.file && story.file.dataUrl) {
+        previewType = 'video';
+        previewDataUrl = story.file.dataUrl;
       } else {
         previewType = 'text';
       }
-      let previewText = story.content || (story.type === 'image' ? '📷 画像' : story.type === 'audio' ? '🎵 音声' : '（テキストなし）');
+      let previewText = story.content || (story.type === 'image' ? '📷 画像' : story.type === 'audio' ? '🎵 音声' : story.type === 'video' ? '🎬 動画' : '（テキストなし）');
 
       const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
       try {
@@ -3822,13 +3992,15 @@
             thumb = `<img src="${s.file.dataUrl}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;">`;
           } else if (s.type === 'audio') {
             thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;">🎵</div>`;
+          } else if (s.type === 'video') {
+            thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#000,#374151);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;">🎬</div>`;
           } else {
             thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;"></div>`;
           }
           item.innerHTML = `
             ${thumb}
             <div style="flex:1;min-width:0;cursor:pointer;" class="archive-view-btn">
-              <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || (s.type === 'image' ? '📷 画像' : s.type === 'audio' ? '🎵 音声' : '（テキストなし）'))}</div>
+              <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || (s.type === 'image' ? '📷 画像' : s.type === 'audio' ? '🎵 音声' : s.type === 'video' ? '🎬 動画' : '（テキストなし）'))}</div>
               <div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div>
             </div>
             <button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">🗑️</button>
@@ -3864,7 +4036,7 @@
     });
 
     /* ============================================================
-       ログイン通知（管理者向け + Discord Webhook）
+       ログイン通知
        ============================================================ */
     async function sendDiscordNotification(payload) {
       try {
