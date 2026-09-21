@@ -1213,26 +1213,10 @@
   <div id="adminBanPanel" class="modal-backdrop hidden">
     <div class="modal-content" style="border-top:6px solid #dc2626; max-width:480px;">
       <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#991b1b;">🔨 ユーザーBAN</h3>
-      <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">指定したメールアドレス or UID のユーザーをBANします。<br>BANされたユーザーはタブが強制削除されます。</p>
-      
-      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-        <button id="banTabEmail" class="primary-btn" style="padding:6px 12px;font-size:11px;background:linear-gradient(135deg,#dc2626,#991b1b);">📧 メールで検索</button>
-        <button id="banTabUid" class="secondary-btn" style="padding:6px 12px;font-size:11px;">🆔 UIDを直接入力</button>
-      </div>
-
-      <div id="banEmailSection">
-        <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
-        <input type="email" id="banEmailInput" placeholder="example@gmail.com" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;">
-        <div id="banSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
-      </div>
-
-      <div id="banUidSection" style="display:none;">
-        <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">UID（ログイン済みでなくてもOK）:</label>
-        <input type="text" id="banUidInput" placeholder="例: AbCdEf123456..." style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;font-family:monospace;">
-        <div style="font-size:11px;color:#6b7280;margin-bottom:10px;">※ UIDはFirebase Authentication のUIDです。<br>まだログインしていないユーザーでもUIDを指定してBANできます。</div>
-        <div id="banUidMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
-      </div>
-
+      <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">指定したメールアドレスのユーザーをBANします。<br>ログイン履歴がないユーザーでもメールBANできます。<br>BANされたユーザーはタブが強制削除されます。</p>
+      <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
+      <input type="email" id="banEmailInput" placeholder="example@gmail.com" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;">
+      <div id="banSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
       <div style="display:flex;justify-content:flex-end;gap:8px;">
         <button id="banCancelBtn" class="secondary-btn">キャンセル</button>
         <button id="banExecuteBtn" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">🔨 BANする</button>
@@ -1579,6 +1563,12 @@
       return (bytes / 1024 / 1024).toFixed(2) + ' MB';
     }
 
+    /* ★ メールアドレスをFirebaseキーとして安全にする */
+    function sanitizeEmailKey(email) {
+      if (!email) return '';
+      return String(email).toLowerCase().replace(/[.@#$\[\]]/g, '_');
+    }
+
     let currentUser = null;
     let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
 
@@ -1587,6 +1577,7 @@
     let messagesCache = [];
     let profilesCache = {};
     let bansCache = {};
+    let emailBansCache = {};
     let readsCache = {};
     let typingCache = {};
     let presenceCache = {};
@@ -1678,9 +1669,6 @@
     let notificationsCache = {};
     let lastSeenNotificationCount = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0', 10);
     let lastNotifIds = new Set();
-
-    // ★ BANタブ切り替え用
-    let banTabMode = 'email'; // 'email' or 'uid'
 
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
@@ -1972,6 +1960,7 @@
       }, 800);
     }
 
+    /* ★ UID BAN とメールBAN の両方を監視 */
     function initBansListener() {
       if (bansUnsubscribe) bansUnsubscribe();
       bansUnsubscribe = onValue(ref(db, 'bans'), (snap) => {
@@ -1979,37 +1968,67 @@
         if (currentUser && bansCache[currentUser.uid]) executeBan();
         renderBanList();
       }, () => {});
+
+      onValue(ref(db, 'emailBans'), (snap) => {
+        emailBansCache = snap.exists() ? snap.val() : {};
+        if (currentUser && currentUser.email) {
+          const emailKey = sanitizeEmailKey(currentUser.email);
+          if (emailBansCache[emailKey]) executeBan();
+        }
+        renderBanList();
+      }, () => {});
     }
 
+    /* ★ BANリスト描画（UID BAN + メールBAN） */
     function renderBanList() {
       const container = document.getElementById('banListContainer');
       if (!container) return;
-      const entries = Object.entries(bansCache || {});
-      if (entries.length === 0) {
+      const uidEntries = Object.entries(bansCache || {});
+      const emailEntries = Object.entries(emailBansCache || {});
+      const total = uidEntries.length + emailEntries.length;
+      if (total === 0) {
         container.innerHTML = '<div style="color:#9ca3af;font-size:11px;padding:8px;text-align:center;">BANされたユーザーはいません</div>';
         return;
       }
       container.innerHTML = '';
-      entries.forEach(([uid, b]) => {
+
+      uidEntries.forEach(([uid, b]) => {
         const item = document.createElement('div');
         item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #fecaca;background:#fef2f2;border-radius:8px;margin-bottom:6px;';
-        const profileExists = !!profilesCache[uid];
         item.innerHTML = `
           <div style="flex:1;min-width:0;">
-            <div style="font-weight:700;color:#991b1b;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-              ${escapeHtml(b.nickname || (profileExists ? '名無し' : '未ログインユーザー'))}
-              ${!profileExists ? '<span style="font-size:9px;color:#9ca3af;font-weight:400;">（未ログイン）</span>' : ''}
-            </div>
-            <div style="font-size:10px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(b.email || uid)}</div>
-            <div style="font-size:9px;color:#9ca3af;font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">UID: ${escapeHtml(uid)}</div>
+            <div style="font-weight:700;color:#991b1b;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(b.nickname || '名無し')} <span style="background:#dc2626;color:#fff;font-size:9px;padding:1px 5px;border-radius:9999px;margin-left:4px;">UID</span></div>
+            <div style="font-size:10px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(b.email || '')}</div>
           </div>
           <button style="background:#16a34a;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;" data-unban-uid="${escapeHtml(uid)}">解除</button>
         `;
         item.querySelector('[data-unban-uid]').addEventListener('click', async () => {
-          if (!confirm(`「${b.nickname || b.email || uid}」のBANを解除しますか？`)) return;
+          if (!confirm(`「${b.nickname || b.email}」のUID BANを解除しますか？`)) return;
           try {
             await remove(ref(db, `bans/${uid}`));
-            showBanner('BANを解除しました', false);
+            showBanner('UID BANを解除しました', false);
+          } catch (err) {
+            showBanner('解除に失敗しました', true);
+          }
+        });
+        container.appendChild(item);
+      });
+
+      emailEntries.forEach(([emailKey, b]) => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #fed7aa;background:#fff7ed;border-radius:8px;margin-bottom:6px;';
+        item.innerHTML = `
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;color:#9a3412;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(b.email || '')} <span style="background:#ea580c;color:#fff;font-size:9px;padding:1px 5px;border-radius:9999px;margin-left:4px;">メール</span></div>
+            <div style="font-size:10px;color:#6b7280;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(b.nickname || '(未ログイン)')} / ${formatTime(b.bannedAt)}</div>
+          </div>
+          <button style="background:#16a34a;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;" data-unban-email="${escapeHtml(emailKey)}">解除</button>
+        `;
+        item.querySelector('[data-unban-email]').addEventListener('click', async () => {
+          if (!confirm(`「${b.email}」のメールBANを解除しますか？`)) return;
+          try {
+            await remove(ref(db, `emailBans/${emailKey}`));
+            showBanner('メールBANを解除しました', false);
           } catch (err) {
             showBanner('解除に失敗しました', true);
           }
@@ -4300,54 +4319,17 @@
     }
 
     /* ============================================================
-       管理者BANパネル（UID直接入力対応版）
+       管理者BANパネル（メールBAN対応版）
        ============================================================ */
     function initAdminBanPanel() {
       const banPanel = document.getElementById('adminBanPanel');
       const banEmailInput = document.getElementById('banEmailInput');
-      const banUidInput = document.getElementById('banUidInput');
       const banSearchMsg = document.getElementById('banSearchMsg');
-      const banUidMsg = document.getElementById('banUidMsg');
       const banExecuteBtn = document.getElementById('banExecuteBtn');
-      const banTabEmail = document.getElementById('banTabEmail');
-      const banTabUid = document.getElementById('banTabUid');
-      const banEmailSection = document.getElementById('banEmailSection');
-      const banUidSection = document.getElementById('banUidSection');
-
-      // タブ切り替え
-      function switchBanTab(mode) {
-        banTabMode = mode;
-        if (mode === 'email') {
-          banEmailSection.style.display = 'block';
-          banUidSection.style.display = 'none';
-          banTabEmail.style.background = 'linear-gradient(135deg,#dc2626,#991b1b)';
-          banTabEmail.style.color = '#fff';
-          banTabEmail.className = 'primary-btn';
-          banTabUid.style.background = '#6b7280';
-          banTabUid.style.color = '#fff';
-          banTabUid.className = 'secondary-btn';
-        } else {
-          banEmailSection.style.display = 'none';
-          banUidSection.style.display = 'block';
-          banTabEmail.style.background = '#6b7280';
-          banTabEmail.style.color = '#fff';
-          banTabEmail.className = 'secondary-btn';
-          banTabUid.style.background = 'linear-gradient(135deg,#dc2626,#991b1b)';
-          banTabUid.style.color = '#fff';
-          banTabUid.className = 'primary-btn';
-        }
-        banSearchMsg.textContent = '';
-        banUidMsg.textContent = '';
-      }
-      banTabEmail.addEventListener('click', () => switchBanTab('email'));
-      banTabUid.addEventListener('click', () => switchBanTab('uid'));
 
       document.getElementById('banUserBtn').addEventListener('click', () => {
         banEmailInput.value = '';
-        banUidInput.value = '';
         banSearchMsg.textContent = '';
-        banUidMsg.textContent = '';
-        switchBanTab('email');
         renderBanList();
         banPanel.classList.remove('hidden');
       });
@@ -4356,8 +4338,7 @@
         if (e.target.id === 'adminBanPanel') banPanel.classList.add('hidden');
       });
 
-      // メールアドレス検索によるBAN（既存ロジック）
-      async function executeBanByEmail() {
+      banExecuteBtn.addEventListener('click', async () => {
         const email = banEmailInput.value.trim().toLowerCase();
         banSearchMsg.textContent = '';
         banSearchMsg.style.color = '#dc2626';
@@ -4370,156 +4351,71 @@
           banSearchMsg.textContent = '権限がありません。';
           return;
         }
+        if (isAdmin(email)) {
+          banSearchMsg.textContent = '管理者はBANできません。';
+          return;
+        }
 
         banSearchMsg.style.color = '#6b7280';
         banSearchMsg.textContent = '検索中...';
 
         try {
           const snap = await get(ref(db, 'chatProfiles'));
-          if (!snap.exists()) {
-            banSearchMsg.style.color = '#dc2626';
-            banSearchMsg.textContent = 'ユーザーが見つかりません。';
-            return;
-          }
-          const profiles = snap.val();
           let targetUid = null;
           let targetProfile = null;
-          for (const [uid, p] of Object.entries(profiles)) {
-            if (p.email && p.email.toLowerCase() === email) {
-              targetUid = uid;
-              targetProfile = p;
-              break;
+          if (snap.exists()) {
+            const profiles = snap.val();
+            for (const [uid, p] of Object.entries(profiles)) {
+              if (p.email && p.email.toLowerCase() === email) {
+                targetUid = uid;
+                targetProfile = p;
+                break;
+              }
             }
           }
-          if (!targetUid) {
-            banSearchMsg.style.color = '#dc2626';
-            banSearchMsg.textContent = '該当するユーザーが見つかりませんでした。UIDタブから直接BANできます。';
-            return;
+
+          const emailKey = sanitizeEmailKey(email);
+
+          if (targetUid) {
+            /* プロフィールが存在する（ログイン経験あり）→ UID BAN + メールBAN 両方 */
+            if (!confirm(`「${targetProfile.nickname || email}」をBANしますか？\nUID BAN + メールBAN の両方が適用されます。`)) return;
+            await set(ref(db, `bans/${targetUid}`), {
+              email: targetProfile.email || email,
+              nickname: targetProfile.nickname || '',
+              bannedBy: currentUser.uid,
+              bannedByEmail: currentUser.email || '',
+              bannedAt: Date.now()
+            });
+            await set(ref(db, `emailBans/${emailKey}`), {
+              email: email,
+              nickname: targetProfile.nickname || '',
+              bannedBy: currentUser.uid,
+              bannedByEmail: currentUser.email || '',
+              bannedAt: Date.now()
+            });
+            banSearchMsg.style.color = '#16a34a';
+            banSearchMsg.textContent = '✓ UID BAN + メールBAN を適用しました';
+            showBanner('🔨 BANしました（UID + メール）', false);
+          } else {
+            /* プロフィールが存在しない（未ログイン）→ メールBANのみ */
+            if (!confirm(`「${email}」はまだログイン履歴がありません。\n未ログインユーザーとしてメールBANしますか？\n（このメールで今後ログインしようとするとBANされます）`)) return;
+            await set(ref(db, `emailBans/${emailKey}`), {
+              email: email,
+              nickname: '',
+              bannedBy: currentUser.uid,
+              bannedByEmail: currentUser.email || '',
+              bannedAt: Date.now()
+            });
+            banSearchMsg.style.color = '#16a34a';
+            banSearchMsg.textContent = '✓ 未ログインユーザーをメールBANしました';
+            showBanner('🔨 メールBANしました（未ログイン）', false);
           }
-          if (isAdmin(targetProfile.email)) {
-            banSearchMsg.style.color = '#dc2626';
-            banSearchMsg.textContent = '管理者はBANできません。';
-            return;
-          }
-
-          if (!confirm(`「${targetProfile.nickname || email}」をBANしますか？\nこのユーザーはタブが強制削除されます。`)) return;
-
-          await set(ref(db, `bans/${targetUid}`), {
-            email: targetProfile.email || email,
-            nickname: targetProfile.nickname || '',
-            bannedBy: currentUser.uid,
-            bannedByEmail: currentUser.email || '',
-            bannedAt: Date.now()
-          });
-
-          banSearchMsg.style.color = '#16a34a';
-          banSearchMsg.textContent = '✓ BANしました';
-          showBanner('🔨 BANしました', false);
           banEmailInput.value = '';
           setTimeout(() => renderBanList(), 300);
         } catch (err) {
           console.error('BANエラー:', err);
           banSearchMsg.style.color = '#dc2626';
           banSearchMsg.textContent = 'BANに失敗しました。';
-        }
-      }
-
-      // UID直接入力によるBAN（未ログインユーザー対応）
-      async function executeBanByUid() {
-        const uid = banUidInput.value.trim();
-        banUidMsg.textContent = '';
-        banUidMsg.style.color = '#dc2626';
-
-        if (!uid) {
-          banUidMsg.textContent = 'UIDを入力してください。';
-          return;
-        }
-        if (!isAdmin(currentUser.email)) {
-          banUidMsg.textContent = '権限がありません。';
-          return;
-        }
-        // 自分のUIDはBANできない
-        if (uid === currentUser.uid) {
-          banUidMsg.textContent = '自分自身はBANできません。';
-          return;
-        }
-
-        // UIDの形式チェック（Firebase Auth UIDは通常28文字前後の英数字）
-        if (!/^[A-Za-z0-9_-]{10,}$/.test(uid)) {
-          banUidMsg.textContent = 'UIDの形式が正しくないようです（10文字以上の英数字）。';
-          return;
-        }
-
-        // 既にBANされているかチェック
-        if (bansCache[uid]) {
-          banUidMsg.textContent = 'このUIDはすでにBANされています。';
-          return;
-        }
-
-        // プロフィールが存在するか確認（存在しなくてもBAN可能）
-        let targetNickname = '';
-        let targetEmail = '';
-        try {
-          const profileSnap = await get(ref(db, `chatProfiles/${uid}`));
-          if (profileSnap.exists()) {
-            const p = profileSnap.val();
-            targetNickname = p.nickname || '';
-            targetEmail = p.email || '';
-            if (isAdmin(targetEmail)) {
-              banUidMsg.textContent = '管理者はBANできません。';
-              return;
-            }
-          }
-        } catch (e) {}
-
-        const displayInfo = targetNickname || targetEmail || uid;
-        const confirmMsg = targetNickname || targetEmail
-          ? `「${displayInfo}」をBANしますか？\nこのユーザーはタブが強制削除されます。`
-          : `UID「${uid}」をBANしますか？\n（このユーザーはまだログインしていない可能性があります）\n次回ログイン時に強制削除されます。`;
-
-        if (!confirm(confirmMsg)) return;
-
-        try {
-          await set(ref(db, `bans/${uid}`), {
-            email: targetEmail,
-            nickname: targetNickname,
-            bannedBy: currentUser.uid,
-            bannedByEmail: currentUser.email || '',
-            bannedAt: Date.now(),
-            note: targetNickname || targetEmail ? '' : '未ログインユーザー（UID直接指定）'
-          });
-
-          banUidMsg.style.color = '#16a34a';
-          banUidMsg.textContent = '✓ BANしました';
-          showBanner('🔨 BANしました', false);
-          banUidInput.value = '';
-          setTimeout(() => renderBanList(), 300);
-        } catch (err) {
-          console.error('BANエラー:', err);
-          banUidMsg.style.color = '#dc2626';
-          banUidMsg.textContent = 'BANに失敗しました。';
-        }
-      }
-
-      banExecuteBtn.addEventListener('click', () => {
-        if (banTabMode === 'email') {
-          executeBanByEmail();
-        } else {
-          executeBanByUid();
-        }
-      });
-
-      // Enterキーで実行
-      banEmailInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.isComposing) {
-          e.preventDefault();
-          executeBanByEmail();
-        }
-      });
-      banUidInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.isComposing) {
-          e.preventDefault();
-          executeBanByUid();
         }
       });
     }
@@ -4804,7 +4700,12 @@
     });
 
     window.addEventListener('beforeunload', (e) => {
-      if (bansCache[currentUser?.uid]) {
+      if (currentUser && bansCache[currentUser.uid]) {
+        e.preventDefault();
+        e.returnValue = 'アクセスが拒否されました';
+        return 'アクセスが拒否されました';
+      }
+      if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) {
         e.preventDefault();
         e.returnValue = 'アクセスが拒否されました';
         return 'アクセスが拒否されました';
@@ -4937,10 +4838,20 @@
       document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'block' : 'none';
       document.getElementById('notificationBtn').style.display = admin ? 'block' : 'none';
 
+      /* ★ UID BAN とメールBAN の両方をチェック */
       try {
         const bansSnap = await get(ref(db, 'bans'));
         bansCache = bansSnap.exists() ? bansSnap.val() : {};
         if (bansCache[user.uid]) { executeBan(); return; }
+      } catch (e) {}
+
+      try {
+        const emailBansSnap = await get(ref(db, 'emailBans'));
+        emailBansCache = emailBansSnap.exists() ? emailBansSnap.val() : {};
+        if (user.email) {
+          const emailKey = sanitizeEmailKey(user.email);
+          if (emailBansCache[emailKey]) { executeBan(); return; }
+        }
       } catch (e) {}
 
       try {
@@ -5017,6 +4928,9 @@
         executeNothing();
       }
       if (currentUser && bansCache[currentUser.uid]) {
+        executeBan();
+      }
+      if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) {
         executeBan();
       }
     });
