@@ -577,6 +577,38 @@
     }
     #banOverlay.show { display: flex; }
 
+    /* 承認待ちオーバーレイ */
+    #pendingApprovalOverlay {
+      position: fixed; inset: 0; background: linear-gradient(135deg, #1e3a8a, #0f172a);
+      z-index: 99998; display: none;
+      align-items: center; justify-content: center;
+      color: #fff; flex-direction: column; padding: 24px;
+      text-align: center;
+    }
+    #pendingApprovalOverlay.show { display: flex; }
+    #pendingApprovalOverlay .pa-icon {
+      font-size: 64px; margin-bottom: 16px;
+      animation: paPulse 2s ease-in-out infinite;
+    }
+    @keyframes paPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.7; }
+    }
+    #pendingApprovalOverlay .pa-title {
+      font-size: 22px; font-weight: 800; margin-bottom: 8px;
+    }
+    #pendingApprovalOverlay .pa-desc {
+      font-size: 13px; color: #cbd5e1; line-height: 1.7;
+      max-width: 420px;
+    }
+    #pendingApprovalOverlay .pa-email {
+      font-family: monospace; font-size: 12px;
+      background: rgba(255,255,255,0.1);
+      padding: 4px 10px; border-radius: 6px;
+      margin-top: 12px; display: inline-block;
+      word-break: break-all;
+    }
+
     #emergencyOverlay {
       position: fixed; inset: 0; z-index: 2147483647;
       background: #000; display: none; cursor: none;
@@ -799,7 +831,6 @@
       padding: 40px; font-size: 26px; font-weight: 700;
       color: #fff; text-align: center; word-break: break-word;
     }
-    /* ★ 動画表示 */
     #storyStageContent .story-video-wrap {
       width: 100%; height: 100%;
       display: flex; align-items: center; justify-content: center;
@@ -811,7 +842,6 @@
       object-fit: contain;
       background: #000;
     }
-    /* ★ 音声ストーリー: 背景のみ表示 */
     .story-audio-wrap {
       width: 100%; height: 100%;
       display: flex; flex-direction: column;
@@ -829,7 +859,6 @@
     .story-audio-wrap audio {
       display: none !important;
     }
-    /* ★ 画像＋音声の合成表示 */
     #storyStageContent .story-image-audio-wrap {
       width: 100%; height: 100%;
       position: relative;
@@ -1123,6 +1152,43 @@
     }
     .game-score span { color: #7c3aed; }
 
+    /* 承認リクエストパネル */
+    .approval-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px; border: 1px solid #e5e7eb;
+      border-radius: 10px; margin-bottom: 8px;
+      background: #f9fafb;
+    }
+    .approval-item .ap-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      object-fit: cover; flex-shrink: 0;
+      border: 2px solid #e5e7eb;
+    }
+    .approval-item .ap-info { flex: 1; min-width: 0; }
+    .approval-item .ap-email {
+      font-size: 12px; font-weight: 700; color: #0e7490;
+      word-break: break-all;
+    }
+    .approval-item .ap-nickname {
+      font-size: 11px; color: #374151; margin-top: 2px;
+    }
+    .approval-item .ap-time {
+      font-size: 10px; color: #9ca3af; margin-top: 2px;
+    }
+    .approval-item .ap-actions {
+      display: flex; gap: 6px; flex-shrink: 0;
+    }
+    .approval-item .ap-approve {
+      background: #16a34a; color: #fff; border: none;
+      border-radius: 6px; padding: 6px 12px;
+      font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+    .approval-item .ap-reject {
+      background: #dc2626; color: #fff; border: none;
+      border-radius: 6px; padding: 6px 12px;
+      font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+
     @media (max-width: 500px) {
       .header-title { font-size: 17px; }
       .chat-item { padding: 10px 12px; }
@@ -1143,6 +1209,20 @@
   <div id="bootOverlay">
     <div class="boot-spinner"></div>
     <div style="font-size:14px;color:#9ca3af;">アカウントを確認しています...</div>
+  </div>
+
+  <div id="pendingApprovalOverlay">
+    <div class="pa-icon">⏳</div>
+    <div class="pa-title">管理者の承認待ちです</div>
+    <div class="pa-desc">
+      このサイトを利用するには管理者の承認が必要です。<br>
+      承認されると自動的にチャットが利用可能になります。<br>
+      しばらくお待ちください。
+    </div>
+    <div class="pa-email" id="pendingApprovalEmail"></div>
+    <div style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+      <button id="pendingApprovalLogoutBtn" style="background:#ef4444;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">ログアウト</button>
+    </div>
   </div>
 
   <div id="emergencyOverlay"></div>
@@ -1183,7 +1263,7 @@
         <div style="font-size:48px; margin-bottom:12px;">💬</div>
         <h1 style="font-size:26px; font-weight:800; color:#1e3a8a; margin:0 0 8px;">69CT</h1>
         <p style="font-size:13px; color:#6b7280; margin:0 0 6px; line-height:1.6;">ご利用にはGoogleアカウントでのログインが必要です。</p>
-        <p style="font-size:12px; color:#9ca3af; margin:0 0 24px;">安全のためです。</p>
+        <p style="font-size:12px; color:#9ca3af; margin:0 0 24px;">ログイン後、管理者の承認が必要です。</p>
         <button id="googleLoginBtn" style="background:#fff; border:1.5px solid #d1d5db; border-radius:10px; padding:12px 20px; font-size:14px; font-weight:700; color:#374151; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; width:100%;">
           <svg width="20" height="20" viewBox="0 0 48 48">
             <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
@@ -1222,6 +1302,10 @@
           <button id="notificationBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#0891b2,#0e7490);">
             🔔
             <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9999px;border:2px solid #fff;">0</span>
+          </button>
+          <button id="approvalBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#16a34a,#15803d);">
+            ✅
+            <span id="approvalBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9999px;border:2px solid #fff;">0</span>
           </button>
           <button id="emergencyHelpBtn" class="help-btn" title="緊急モードについて">？</button>
           <button id="emergencyBtn" class="emergency-btn" title="緊急停止（長押しで説明）">🚨</button>
@@ -1370,7 +1454,7 @@
   <div id="adminBanPanel" class="modal-backdrop hidden">
     <div class="modal-content" style="border-top:6px solid #dc2626; max-width:480px;">
       <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#991b1b;">🔨 ユーザーBAN</h3>
-      <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">指定したメールアドレスのユーザーをBANします。<br>ログイン履歴がないユーザーでもメールBANできます。<br>BANされたユーザーはタブが強制削除されます。</p>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">指定したメールアドレスのユーザーをBANします。</p>
       <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
       <input type="email" id="banEmailInput" placeholder="example@gmail.com" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;">
       <div id="banSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
@@ -1399,13 +1483,28 @@
     </div>
   </div>
 
+  <!-- 承認リクエストパネル -->
+  <div id="approvalPanel" class="modal-backdrop hidden">
+    <div class="modal-content" style="border-top:6px solid #16a34a; max-width:560px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <h3 style="font-size:17px;font-weight:700;margin:0;color:#166534;">✅ 承認リクエスト</h3>
+        <button id="approvalClearAllBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">全削除</button>
+      </div>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 14px;">新規ログインしたユーザーの承認待ち一覧です。<br>承認するとユーザーはサイトを利用できます。</p>
+      <div id="approvalList" style="max-height:55vh;overflow-y:auto;"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+        <button id="approvalCloseBtn" class="secondary-btn">閉じる</button>
+      </div>
+    </div>
+  </div>
+
   <div id="notificationPanel" class="modal-backdrop hidden">
     <div class="modal-content" style="border-top:6px solid #0891b2; max-width:560px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <h3 style="font-size:17px;font-weight:700;margin:0;color:#0e7490;">🔔 ログイン通知</h3>
         <button id="notifClearAllBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">全削除</button>
       </div>
-      <p style="font-size:11px;color:#6b7280;margin:0 0 14px;">新規ログインがあったユーザーの通知です。<br>Discord Webhook にも同時送信されています。</p>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 14px;">新規ログインがあったユーザーの通知です。</p>
       <div id="notificationList" style="max-height:55vh;overflow-y:auto;"></div>
       <div style="display:flex;justify-content:flex-end;margin-top:16px;">
         <button id="notificationCloseBtn" class="secondary-btn">閉じる</button>
@@ -1425,29 +1524,15 @@
       <div class="eh-section">
         <div class="eh-section-title">📖 概要</div>
         <div class="eh-body">
-          <p>緊急ボタンは、サイト全体を<strong>即座に停止</strong>させるための機能です。荒らし・不正アクセス・その他の緊急事態が発生した時に使用します。</p>
-          <p>ボタンを押すと、発動した瞬間から<strong>管理者以外のすべてのユーザー</strong>の画面が<strong>真っ黒</strong>になり、タイトルは「<strong>無</strong>」に、アイコンは黒一色に変わります。</p>
+          <p>緊急ボタンは、サイト全体を<strong>即座に停止</strong>させるための機能です。</p>
         </div>
       </div>
       <div class="eh-section">
         <div class="eh-section-title warn">👑 管理者（除外対象）</div>
         <div class="eh-body">
-          <p>以下のメールアドレスでログインしているユーザーは、緊急モード中でも<strong>通常通りサイトを操作できます</strong>：</p>
           <ul>
             <li><span class="email">katou.noel114514@gmail.com</span></li>
             <li><span class="email">18107@v.nakijin.ed.jp</span></li>
-          </ul>
-        </div>
-      </div>
-      <div class="eh-section">
-        <div class="eh-section-title warn">👥 一般ユーザーの扱い</div>
-        <div class="eh-body">
-          <ul>
-            <li>画面全体が真っ黒になる</li>
-            <li>タイトルが「無」に変わる</li>
-            <li>ブラウザのアイコンが黒一色になる</li>
-            <li>タブを閉じる or <code>about:blank</code> へ遷移を試みる</li>
-            <li>タブを開き直しても解除されるまで「無」画面が続く</li>
           </ul>
         </div>
       </div>
@@ -1457,21 +1542,6 @@
           <ul>
             <li>🚨 ボタンを<strong>1回クリック</strong>すると即座に発動</li>
             <li>ボタンを<strong>1秒以上長押し</strong>すると、この説明が開く</li>
-          </ul>
-        </div>
-      </div>
-      <div class="eh-section">
-        <div class="eh-section-title info">✅ 解除方法</div>
-        <div class="eh-body">
-          <p>緊急モードを解除できるのは<strong>管理者のみ</strong>です。管理者の画面に表示される「✅ 緊急解除」ボタンを押してください。</p>
-        </div>
-      </div>
-      <div class="eh-section">
-        <div class="eh-section-title warn">⚠️ 注意事項</div>
-        <div class="eh-body">
-          <ul>
-            <li><strong>いたずらで押さないでください。</strong>全ユーザーが被害を受けます</li>
-            <li>発動した記録（メールアドレス・時刻）は管理者に通知されます</li>
           </ul>
         </div>
       </div>
@@ -1789,6 +1859,7 @@
     let messagesUnsubscribe = null;
     let profilesUnsubscribe = null;
     let bansUnsubscribe = null;
+    let emailBansUnsubscribe = null;
     let readsUnsubscribe = null;
     let typingUnsubscribe = null;
     let storiesUnsubscribe = null;
@@ -1798,6 +1869,8 @@
     let announcementUnsubscribe = null;
     let notificationsUnsubscribe = null;
     let reactionsUnsubscribe = null;
+    let approvalUnsubscribe = null;
+    let myApprovalUnsubscribe = null;
     let chatLatestListeners = {};
     let storyLikesUnsubscribe = null;
     let storyViewsUnsubscribe = null;
@@ -1814,6 +1887,7 @@
     const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
     const ANNOUNCE_DISMISS_KEY = 'sikunai_dismissed_announcements_v1';
     const NOTIF_SEEN_KEY = 'sikunai_notif_seen_v1';
+    const APPROVAL_SEEN_KEY = 'sikunai_approval_seen_v1';
     function loadJson(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
     function saveJson(key, obj) { try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {} }
 
@@ -1874,8 +1948,12 @@
     let lastSeenNotificationCount = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0', 10);
     let lastNotifIds = new Set();
 
-    /* 返信・リアクション・ゲーム用 */
-    let replyingTo = null; // {key, authorUid, authorName, content, file}
+    let approvalsCache = {};
+    let lastSeenApprovalCount = parseInt(localStorage.getItem(APPROVAL_SEEN_KEY) || '0', 10);
+    let lastApprovalIds = new Set();
+    let myApprovalStatus = null; // null | 'pending' | 'approved' | 'rejected'
+
+    let replyingTo = null;
     let currentReactionPicker = null;
     let currentGameMessage = null;
     let gameState = null;
@@ -1884,6 +1962,7 @@
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
     const mainView = document.getElementById('mainView');
+    const pendingApprovalOverlay = document.getElementById('pendingApprovalOverlay');
     const chatListView = document.getElementById('chatListView');
     const chatView = document.getElementById('chatView');
     const chatListContainer = document.getElementById('chatListContainer');
@@ -2179,7 +2258,8 @@
         renderBanList();
       }, () => {});
 
-      onValue(ref(db, 'emailBans'), (snap) => {
+      if (emailBansUnsubscribe) emailBansUnsubscribe();
+      emailBansUnsubscribe = onValue(ref(db, 'emailBans'), (snap) => {
         emailBansCache = snap.exists() ? snap.val() : {};
         if (currentUser && currentUser.email) {
           const emailKey = sanitizeEmailKey(currentUser.email);
@@ -2372,7 +2452,6 @@
       clearTimeout(typingTimeout);
       unreadInChat = 0;
 
-      // 返信状態をリセット
       replyingTo = null;
       document.getElementById('replyPreviewBox').classList.remove('show');
 
@@ -2548,7 +2627,6 @@
       });
     }
 
-    /* ★ リアクションリスナー */
     function initReactionsListener(chatId) {
       if (reactionsUnsubscribe) reactionsUnsubscribe();
       reactionsUnsubscribe = onValue(ref(db, `chatReactions/${chatId}`), (snap) => {
@@ -2566,7 +2644,6 @@
 
     function updateReactionsForMessage(row, key) {
       const reactions = reactionsCache[key] || {};
-      // 絵文字ごとに集計
       const counts = {};
       const mine = {};
       Object.entries(reactions).forEach(([uid, emoji]) => {
@@ -2771,10 +2848,8 @@
       });
     }
 
-    /* 絵文字が含まれるか判定 */
     function containsEmoji(str) {
       if (!str) return false;
-      // ざっくり判定：絵文字範囲を含む
       return /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F02F}\u{1F0A0}-\u{1F0FF}\u{1F100}-\u{1F1FF}\u{1F200}-\u{1F2FF}\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}]/u.test(str);
     }
 
@@ -2866,7 +2941,6 @@
           `;
         }
 
-        /* ★ 返信引用 */
         let replyQuoteHtml = '';
         if (msg.replyTo && msg.replyTo.msgKey) {
           const r = msg.replyTo;
@@ -2893,7 +2967,6 @@
           contentHtml = `<div class="msg-content">${formatContent(msg.content)}</div>`;
         }
 
-        /* ★ ミニゲーム起動ボタン */
         let gameBtnHtml = '';
         if (!isOptimistic && msg.content && containsEmoji(msg.content)) {
           gameBtnHtml = `<button class="game-launch-btn" data-game-msg-key="${key}">🎮 絵文字で遊ぶ</button>`;
@@ -2936,7 +3009,6 @@
           </div>
         `;
 
-        // メニューボタン
         const menuBtn = row.querySelector('.msg-menu-btn');
         if (menuBtn) {
           menuBtn.addEventListener('click', (e) => {
@@ -2950,7 +3022,6 @@
           });
         }
 
-        // ライトボックス
         const lightboxTarget = row.querySelector('[data-lightbox]');
         if (lightboxTarget) {
           lightboxTarget.addEventListener('click', () => {
@@ -2959,7 +3030,6 @@
           });
         }
 
-        // 返信引用クリックでスクロール
         const replyQuote = row.querySelector('.reply-quote');
         if (replyQuote) {
           replyQuote.addEventListener('click', () => {
@@ -2967,7 +3037,6 @@
             const targetRow = messagesContainer.querySelector(`[data-msg-key="${targetKey}"]`);
             if (targetRow) {
               targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-              targetRow.style.transition = 'background 0.5s';
               const bubble = targetRow.querySelector('.msg-bubble');
               if (bubble) {
                 const orig = bubble.style.background;
@@ -2978,7 +3047,6 @@
           });
         }
 
-        // ゲーム起動
         const gameBtn = row.querySelector('.game-launch-btn');
         if (gameBtn) {
           gameBtn.addEventListener('click', (e) => {
@@ -2995,7 +3063,6 @@
 
       messagesContainer.appendChild(fragment);
 
-      // リアクションを反映
       requestAnimationFrame(() => {
         messagesContainer.querySelectorAll('[data-msg-key]').forEach(row => {
           updateReactionsForMessage(row, row.dataset.msgKey);
@@ -3211,7 +3278,6 @@
       }, 0);
     }
 
-    /* ★ 返信開始 */
     function startReply(key) {
       const msg = messagesCache.find(m => m.key === key);
       if (!msg) return;
@@ -3875,9 +3941,8 @@
       else if (type === 'slot') startSlotGame();
     }
 
-    /* 1. 絵文字神経衰弱 */
     function startMemoryGame() {
-      const size = 4; // 4x4 = 16枚 = 8ペア
+      const size = 4;
       const pairs = 8;
       const emojis = [...EMOJI_POOL].sort(() => Math.random() - 0.5).slice(0, pairs);
       const deck = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
@@ -3941,7 +4006,6 @@
       gameStatusText.textContent = `揃ったペア: 0/${pairs}`;
     }
 
-    /* 2. 絵文字タップ */
     function startTapGame() {
       const duration = 15;
       const targetEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
@@ -3997,7 +4061,6 @@
       }, 1000);
     }
 
-    /* 3. 絵文字記憶（順番） */
     function startSequenceGame() {
       let round = 1;
       let maxRounds = 5;
@@ -4085,7 +4148,6 @@
       startRound();
     }
 
-    /* 4. 絵文字じゃんけん */
     function startJankenGame() {
       const hands = [
         { emoji: '✊', name: 'グー', beats: '✌️' },
@@ -4133,7 +4195,6 @@
       }
     }
 
-    /* 5. 絵文字スロット */
     function startSlotGame() {
       let coins = 5;
       let spinning = false;
@@ -5170,6 +5231,301 @@
       });
     }
 
+    /* ============================================================
+       承認システム
+       ============================================================ */
+    async function createApprovalRequest(user, nickname) {
+      if (!user || !user.email) return;
+      const emailKey = sanitizeEmailKey(user.email);
+      const reqRef = ref(db, `approvalRequests/${emailKey}`);
+      try {
+        const existing = await get(reqRef);
+        if (existing.exists()) {
+          const data = existing.val();
+          if (data.status === 'approved') {
+            myApprovalStatus = 'approved';
+            return;
+          } else if (data.status === 'rejected') {
+            myApprovalStatus = 'rejected';
+            return;
+          }
+          myApprovalStatus = 'pending';
+          return;
+        }
+        const payload = {
+          uid: user.uid,
+          email: user.email || '',
+          nickname: nickname || user.displayName || '名無しさん',
+          requestedAt: Date.now(),
+          status: 'pending'
+        };
+        await set(reqRef, payload);
+        myApprovalStatus = 'pending';
+        sendDiscordApprovalNotification(payload);
+      } catch (e) {
+        console.warn('承認リクエスト作成失敗:', e);
+      }
+    }
+
+    async function sendDiscordApprovalNotification(payload) {
+      try {
+        const embed = {
+          title: '🆕 新規ユーザー承認リクエスト',
+          color: 0x16a34a,
+          fields: [
+            { name: 'メールアドレス', value: payload.email || '(不明)', inline: false },
+            { name: 'ニックネーム', value: payload.nickname || '(未設定)', inline: true },
+            { name: 'UID', value: payload.uid || '(不明)', inline: true },
+            { name: '申請時刻', value: new Date(payload.requestedAt).toLocaleString('ja-JP'), inline: false }
+          ],
+          timestamp: new Date(payload.requestedAt).toISOString(),
+          footer: { text: '69CT 承認リクエスト - 管理画面から承認してください' }
+        };
+        await fetch(DISCORD_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: '🆕 **新規ユーザー承認リクエスト** が届きました',
+            embeds: [embed]
+          })
+        });
+      } catch (err) {
+        console.warn('Discord承認通知失敗:', err);
+      }
+    }
+
+    function initMyApprovalListener(user) {
+      if (myApprovalUnsubscribe) myApprovalUnsubscribe();
+      if (!user || !user.email) return;
+      const emailKey = sanitizeEmailKey(user.email);
+      myApprovalUnsubscribe = onValue(ref(db, `approvalRequests/${emailKey}`), (snap) => {
+        if (!snap.exists()) {
+          myApprovalStatus = 'pending';
+          showPendingApproval();
+          return;
+        }
+        const data = snap.val();
+        myApprovalStatus = data.status || 'pending';
+        if (myApprovalStatus === 'approved') {
+          hidePendingApproval();
+          startApprovedSession();
+        } else if (myApprovalStatus === 'rejected') {
+          showRejectedScreen();
+        } else {
+          showPendingApproval();
+        }
+      }, () => {});
+    }
+
+    function showPendingApproval() {
+      pendingApprovalOverlay.classList.add('show');
+      mainView.style.display = 'none';
+      document.getElementById('pendingApprovalEmail').textContent = currentUser?.email || '';
+    }
+    function hidePendingApproval() {
+      pendingApprovalOverlay.classList.remove('show');
+    }
+    function showRejectedScreen() {
+      pendingApprovalOverlay.classList.remove('show');
+      banOverlay.classList.add('show');
+      document.getElementById('banOverlayMsg').textContent = 'アクセスが拒否されました';
+      document.getElementById('banOverlaySub').textContent = '管理者によって承認が拒否されました。';
+      document.body.style.background = '#000';
+      document.title = 'アクセスが拒否されました';
+    }
+
+    let approvedSessionStarted = false;
+    function startApprovedSession() {
+      if (approvedSessionStarted) return;
+      approvedSessionStarted = true;
+      mainView.style.display = 'flex';
+      pendingApprovalOverlay.classList.remove('show');
+      bootOverlay.classList.add('hidden');
+
+      // 既に初期化済みのリスナーがあればスキップ
+      if (!profilesUnsubscribe) initProfilesListener();
+      if (!bansUnsubscribe) initBansListener();
+      if (!chatsUnsubscribe) initChatsListener();
+      if (!storiesUnsubscribe) initStoriesListener();
+      if (!myArchiveUnsubscribe) initMyArchiveListener();
+      if (!presenceUnsubscribe) initPresenceListener();
+      if (!announcementUnsubscribe) initAnnouncementListener();
+      setupMyPresence();
+    }
+
+    function initAdminApprovalPanel() {
+      const btn = document.getElementById('approvalBtn');
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        renderApprovalList();
+        document.getElementById('approvalPanel').classList.remove('hidden');
+        lastSeenApprovalCount = Object.keys(approvalsCache).length;
+        localStorage.setItem(APPROVAL_SEEN_KEY, String(lastSeenApprovalCount));
+        updateApprovalBadge();
+      });
+      document.getElementById('approvalCloseBtn').addEventListener('click', () => {
+        document.getElementById('approvalPanel').classList.add('hidden');
+      });
+      document.getElementById('approvalPanel').addEventListener('click', (e) => {
+        if (e.target.id === 'approvalPanel') {
+          document.getElementById('approvalPanel').classList.add('hidden');
+        }
+      });
+      document.getElementById('approvalClearAllBtn').addEventListener('click', async () => {
+        if (!confirm('全ての承認リクエストを削除しますか？')) return;
+        try {
+          await remove(ref(db, 'approvalRequests'));
+          showBanner('承認リクエストを全削除しました', false);
+        } catch (e) {
+          showBanner('削除に失敗しました', true);
+        }
+      });
+    }
+
+    function initApprovalListenerForAdmin() {
+      if (approvalUnsubscribe) approvalUnsubscribe();
+      if (!currentUser || !isAdmin(currentUser.email)) return;
+      approvalUnsubscribe = onValue(ref(db, 'approvalRequests'), (snap) => {
+        const prevIds = new Set(lastApprovalIds);
+        approvalsCache = snap.exists() ? snap.val() : {};
+        const currentIds = new Set(Object.keys(approvalsCache));
+
+        if (prevIds.size > 0) {
+          currentIds.forEach(id => {
+            if (!prevIds.has(id)) {
+              const req = approvalsCache[id];
+              if (req.status === 'pending') showApprovalToast(req);
+            }
+          });
+        }
+        lastApprovalIds = currentIds;
+
+        renderApprovalList();
+        updateApprovalBadge();
+      }, () => {});
+    }
+
+    function showApprovalToast(req) {
+      const container = document.getElementById('loginToastContainer');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        background: linear-gradient(135deg, #16a34a, #15803d);
+        color: #fff;
+        border-radius: 12px;
+        padding: 12px 14px;
+        box-shadow: 0 8px 24px rgba(22,163,74,0.45);
+        display: flex; align-items: flex-start; gap: 10px;
+        pointer-events: auto;
+        animation: toastSlideIn 0.35s cubic-bezier(.21,1.02,.73,1);
+        border-left: 4px solid #86efac;
+      `;
+      toast.innerHTML = `
+        <div style="font-size: 22px; line-height: 1;">🆕</div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-size: 11px; font-weight: 700; opacity: 0.85; letter-spacing: 0.05em;">承認リクエスト</div>
+          <div style="font-size: 12px; font-weight: 700; margin-top: 2px; word-break: break-all;">${escapeHtml(req.email || '(不明)')}</div>
+          <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">${escapeHtml(req.nickname || '名無しさん')}</div>
+        </div>
+        <button style="background: rgba(255,255,255,0.2); border: none; color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 12px; line-height: 1; flex-shrink: 0;">✕</button>
+      `;
+      toast.querySelector('button').addEventListener('click', () => toast.remove());
+      container.appendChild(toast);
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.style.transition = 'opacity 0.4s, transform 0.4s';
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(20px)';
+          setTimeout(() => toast.remove(), 400);
+        }
+      }, 10000);
+    }
+
+    function updateApprovalBadge() {
+      const badge = document.getElementById('approvalBadge');
+      if (!badge) return;
+      const pendingCount = Object.values(approvalsCache || {}).filter(r => r.status === 'pending').length;
+      const unread = pendingCount;
+      if (unread > 0) {
+        badge.style.display = 'block';
+        badge.textContent = unread > 99 ? '99+' : unread;
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function renderApprovalList() {
+      const list = document.getElementById('approvalList');
+      if (!list) return;
+      const entries = Object.entries(approvalsCache || {})
+        .map(([id, r]) => ({ id, ...r }))
+        .sort((a, b) => (b.requestedAt || 0) - (a.requestedAt || 0));
+      if (entries.length === 0) {
+        list.innerHTML = '<div style="text-align:center;color:#9ca3af;font-size:13px;padding:32px;">承認リクエストはありません</div>';
+        return;
+      }
+      list.innerHTML = '';
+      entries.forEach(r => {
+        const item = document.createElement('div');
+        item.className = 'approval-item';
+        const statusLabel = r.status === 'approved' ? '<span style="color:#16a34a;font-weight:700;">✓ 承認済み</span>'
+          : r.status === 'rejected' ? '<span style="color:#dc2626;font-weight:700;">✕ 拒否</span>'
+          : '<span style="color:#d97706;font-weight:700;">⏳ 承認待ち</span>';
+        item.innerHTML = `
+          <img class="ap-avatar" src="${DEFAULT_AVATAR}" alt="">
+          <div class="ap-info">
+            <div class="ap-email">${escapeHtml(r.email || '(不明)')}</div>
+            <div class="ap-nickname">${escapeHtml(r.nickname || '名無しさん')}</div>
+            <div class="ap-time">${formatTime(r.requestedAt)} ${statusLabel}</div>
+          </div>
+          <div class="ap-actions">
+            ${r.status === 'pending' ? `
+              <button class="ap-approve" data-id="${escapeHtml(r.id)}">承認</button>
+              <button class="ap-reject" data-id="${escapeHtml(r.id)}">拒否</button>
+            ` : ''}
+          </div>
+        `;
+        const ap = item.querySelector('.ap-approve');
+        const rj = item.querySelector('.ap-reject');
+        if (ap) {
+          ap.addEventListener('click', async () => {
+            if (!confirm(`「${r.email}」を承認しますか？`)) return;
+            try {
+              await update(ref(db, `approvalRequests/${r.id}`), {
+                status: 'approved',
+                approvedAt: Date.now(),
+                approvedBy: currentUser.uid,
+                approvedByEmail: currentUser.email || ''
+              });
+              showBanner('✅ 承認しました', false);
+            } catch (e) {
+              showBanner('承認に失敗しました', true);
+            }
+          });
+        }
+        if (rj) {
+          rj.addEventListener('click', async () => {
+            if (!confirm(`「${r.email}」を拒否しますか？`)) return;
+            try {
+              await update(ref(db, `approvalRequests/${r.id}`), {
+                status: 'rejected',
+                rejectedAt: Date.now(),
+                rejectedBy: currentUser.uid,
+                rejectedByEmail: currentUser.email || ''
+              });
+              showBanner('拒否しました', false);
+            } catch (e) {
+              showBanner('拒否に失敗しました', true);
+            }
+          });
+        }
+        list.appendChild(item);
+      });
+    }
+
+    /* ============================================================
+       管理者BANパネル
+       ============================================================ */
     function initAdminBanPanel() {
       const banPanel = document.getElementById('adminBanPanel');
       const banEmailInput = document.getElementById('banEmailInput');
@@ -5245,7 +5601,7 @@
             banSearchMsg.textContent = '✓ UID BAN + メールBAN を適用しました';
             showBanner('🔨 BANしました（UID + メール）', false);
           } else {
-            if (!confirm(`「${email}」はまだログイン履歴がありません。\n未ログインユーザーとしてメールBANしますか？\n（このメールで今後ログインしようとするとBANされます）`)) return;
+            if (!confirm(`「${email}」はまだログイン履歴がありません。\n未ログインユーザーとしてメールBANしますか？`)) return;
             await set(ref(db, `emailBans/${emailKey}`), {
               email: email,
               nickname: '',
@@ -5634,14 +5990,24 @@
       if (!confirm('ログアウトしますか？')) return;
       intentionalSignOut = true;
       try { await setMyTypingState(false); await setMyOffline(); } catch (e) {}
-      [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
+      [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe, emailBansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
-       notificationsUnsubscribe, reactionsUnsubscribe, storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       notificationsUnsubscribe, reactionsUnsubscribe, approvalUnsubscribe, myApprovalUnsubscribe,
+       storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       stopEmergencyEnforcer();
       if (banEnforcerInterval) clearInterval(banEnforcerInterval);
       try { await signOut(auth); } catch (e) {}
+      location.reload();
+    });
+    document.getElementById('pendingApprovalLogoutBtn').addEventListener('click', async () => {
+      intentionalSignOut = true;
+      try { await setMyOffline(); await signOut(auth); } catch (e) {}
+      pendingApprovalOverlay.classList.remove('show');
+      loginView.style.display = 'flex';
+      mainView.style.display = 'none';
+      bootOverlay.classList.add('hidden');
       location.reload();
     });
     document.getElementById('switchAccountBtn').addEventListener('click', async () => {
@@ -5664,21 +6030,23 @@
       if (!user) {
         loginView.style.display = 'flex';
         mainView.style.display = 'none';
+        pendingApprovalOverlay.classList.remove('show');
         initEmergencyListener();
         return;
       }
 
       loginView.style.display = 'none';
-      mainView.style.display = 'flex';
-      setConnection(navigator.onLine);
       refreshFavicon();
+      setConnection(navigator.onLine);
 
       const admin = isAdmin(user.email);
       announceBtn.style.display = admin ? 'block' : 'none';
       document.getElementById('banUserBtn').style.display = admin ? 'block' : 'none';
       document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'block' : 'none';
       document.getElementById('notificationBtn').style.display = admin ? 'block' : 'none';
+      document.getElementById('approvalBtn').style.display = admin ? 'block' : 'none';
 
+      // BANチェック（最優先）
       try {
         const bansSnap = await get(ref(db, 'bans'));
         bansCache = bansSnap.exists() ? bansSnap.val() : {};
@@ -5694,6 +6062,7 @@
         }
       } catch (e) {}
 
+      // プロフィール取得
       try {
         const profileSnap = await get(ref(db, `chatProfiles/${user.uid}`));
         if (profileSnap.exists()) {
@@ -5726,26 +6095,42 @@
       }
 
       updateMyProfileUI();
+
+      // 共通リスナー初期化
       initProfilesListener();
       initBansListener();
-      initChatsListener();
-      initStoriesListener();
-      initMyArchiveListener();
-      initPresenceListener();
       initEmergencyListener();
       initAnnouncementListener();
-      initAdminBanPanel();
-      initAdminStoryDeletePanel();
-      setupMyPresence();
 
+      // 管理者の場合、承認パネル・通知パネルを初期化
       if (admin) {
         lastNotifIds = new Set();
+        lastApprovalIds = new Set();
         initNotificationsListener();
         initNotificationPanel();
+        initApprovalListenerForAdmin();
+        initAdminApprovalPanel();
+        initAdminBanPanel();
+        initAdminStoryDeletePanel();
+        // 管理者は即時承認済みとして扱う
+        myApprovalStatus = 'approved';
+        startApprovedSession();
       } else {
+        // 一般ユーザーは承認リクエスト作成
+        await createApprovalRequest(user, myProfile.nickname);
+        initMyApprovalListener(user);
+        // 承認状況に応じて画面切り替え
+        if (myApprovalStatus === 'approved') {
+          startApprovedSession();
+        } else if (myApprovalStatus === 'rejected') {
+          showRejectedScreen();
+        } else {
+          showPendingApproval();
+        }
         notifyLogin(user, myProfile.nickname);
       }
 
+      // 緊急モードの初期確認
       try {
         const snap = await get(ref(db, 'emergency'));
         if (snap.exists() && snap.val().active) {
@@ -5803,10 +6188,11 @@
     });
 
     window.addEventListener('beforeunload', () => {
-      [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
+      [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe, emailBansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
-       notificationsUnsubscribe, reactionsUnsubscribe, storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       notificationsUnsubscribe, reactionsUnsubscribe, approvalUnsubscribe, myApprovalUnsubscribe,
+       storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       if (banEnforcerInterval) clearInterval(banEnforcerInterval);
     });
