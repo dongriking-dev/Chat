@@ -202,6 +202,56 @@
     .msg-content a { color: #2563eb; text-decoration: underline; word-break: break-all; }
     .msg-row.mine .msg-content a { color: #1e3a8a; }
 
+    /* 返信引用 */
+    .reply-quote {
+      background: rgba(0,0,0,0.05);
+      border-left: 3px solid #0284c7;
+      border-radius: 6px;
+      padding: 5px 8px;
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: #4b5563;
+      cursor: pointer;
+      max-width: 100%;
+    }
+    .reply-quote:hover { background: rgba(0,0,0,0.09); }
+    .reply-quote .reply-name { font-weight: 700; color: #0284c7; }
+    .msg-row.mine .reply-quote { background: rgba(0,0,0,0.06); border-left-color: #1e40af; }
+    .msg-row.mine .reply-quote .reply-name { color: #1e40af; }
+
+    /* リアクション */
+    .msg-reactions {
+      display: flex; flex-wrap: wrap; gap: 4px;
+      margin-top: 4px; padding: 0 4px;
+    }
+    .msg-row.mine .msg-reactions { justify-content: flex-end; }
+    .reaction-chip {
+      display: inline-flex; align-items: center; gap: 3px;
+      background: #fff; border: 1px solid #e5e7eb;
+      border-radius: 9999px;
+      padding: 2px 8px; font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .reaction-chip:hover { transform: scale(1.08); background: #eff6ff; }
+    .reaction-chip.mine { background: #dbeafe; border-color: #60a5fa; }
+    .reaction-chip .reaction-count { font-size: 11px; font-weight: 700; color: #6b7280; }
+    .reaction-chip.mine .reaction-count { color: #1e40af; }
+
+    /* ゲーム起動ボタン */
+    .game-launch-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-top: 6px;
+      background: linear-gradient(135deg, #f59e0b, #ef4444);
+      color: #fff; border: none; border-radius: 9999px;
+      padding: 5px 12px; font-size: 11px; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(239,68,68,0.3);
+      transition: transform 0.15s;
+    }
+    .game-launch-btn:hover { transform: translateY(-1px) scale(1.03); }
+
     .msg-file {
       margin-top: 6px; display: block; border-radius: 12px;
       overflow: hidden; cursor: zoom-in; max-width: 100%;
@@ -282,7 +332,7 @@
       position: fixed; background: #fff;
       border: 1px solid #e5e7eb; border-radius: 10px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      min-width: 140px; z-index: 30000; overflow: hidden;
+      min-width: 170px; z-index: 30000; overflow: hidden;
     }
     .msg-menu-popup button {
       display: flex; align-items: center; gap: 8px;
@@ -294,6 +344,23 @@
     .msg-menu-popup button:hover { background: #f3f4f6; }
     .msg-menu-popup button.danger { color: #ef4444; }
     .msg-menu-popup button.danger:hover { background: #fef2f2; }
+
+    /* リアクションピッカー */
+    .reaction-picker {
+      position: fixed; background: #fff;
+      border: 1px solid #e5e7eb; border-radius: 9999px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      display: flex; gap: 2px;
+      padding: 6px 8px; z-index: 31000;
+    }
+    .reaction-picker button {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: none; border: none; cursor: pointer;
+      font-size: 20px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .reaction-picker button:hover { transform: scale(1.25); background: #f3f4f6; }
 
     #typingIndicatorSlot { min-height: 0; transition: min-height 0.2s ease; }
     #typingIndicatorSlot:not(:empty) { min-height: 40px; margin-bottom: 6px; }
@@ -387,6 +454,31 @@
       border: 2px solid #fff;
       font-size: 12px; line-height: 1;
       cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* 返信プレビュー（入力欄上） */
+    .reply-preview {
+      margin-bottom: 8px; padding: 8px 10px;
+      background: #eff6ff;
+      border-left: 4px solid #0284c7;
+      border-radius: 8px;
+      display: none; align-items: center; gap: 8px;
+      font-size: 12px; color: #4b5563;
+      position: relative;
+    }
+    .reply-preview.show { display: flex; }
+    .reply-preview .reply-preview-body { flex: 1; min-width: 0; }
+    .reply-preview .reply-preview-name { font-weight: 700; color: #0284c7; }
+    .reply-preview .reply-preview-text {
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 11px; color: #6b7280;
+    }
+    .reply-preview .reply-preview-close {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #ef4444; color: #fff;
+      border: none; font-size: 12px; line-height: 1;
+      cursor: pointer; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
     }
 
@@ -976,6 +1068,61 @@
     .eh-footer-note { font-size: 11px; color: #9ca3af; }
     .eh-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
+    /* ゲームモーダル */
+    #gameSelectModal .modal-content { border-top: 6px solid #f59e0b; }
+    .game-select-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: 10px; margin-top: 8px;
+    }
+    .game-select-card {
+      background: linear-gradient(135deg, #fef3c7, #fed7aa);
+      border: 2px solid #fbbf24;
+      border-radius: 12px;
+      padding: 14px 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .game-select-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(251,191,36,0.4);
+    }
+    .game-select-card .game-icon { font-size: 28px; margin-bottom: 6px; }
+    .game-select-card .game-title { font-size: 13px; font-weight: 800; color: #92400e; }
+    .game-select-card .game-desc { font-size: 10px; color: #a16207; margin-top: 3px; }
+
+    #gamePlayModal .modal-content {
+      border-top: 6px solid #7c3aed;
+      max-width: 480px;
+    }
+    .game-board {
+      display: grid; gap: 8px;
+      margin: 16px 0;
+      justify-content: center;
+    }
+    .game-cell {
+      background: #eff6ff; border: 2px solid #bfdbfe;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+      aspect-ratio: 1;
+      user-select: none;
+    }
+    .game-cell:hover { background: #dbeafe; transform: scale(1.05); }
+    .game-cell.matched { background: #dcfce7; border-color: #86efac; cursor: default; opacity: 0.6; }
+    .game-cell.selected { background: #fef3c7; border-color: #fbbf24; }
+    .game-status {
+      text-align: center; font-size: 14px; font-weight: 700;
+      color: #4c1d95; margin: 8px 0;
+    }
+    .game-score {
+      display: flex; justify-content: space-around;
+      font-size: 13px; font-weight: 700; color: #6b7280;
+      margin: 8px 0;
+    }
+    .game-score span { color: #7c3aed; }
+
     @media (max-width: 500px) {
       .header-title { font-size: 17px; }
       .chat-item { padding: 10px 12px; }
@@ -987,6 +1134,7 @@
       .modal-content { padding: 18px; }
       .chat-messages-wrap { padding: 12px 10px; }
       #loginToastContainer { right: 8px; left: 8px; max-width: none; }
+      .game-select-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -1121,6 +1269,13 @@
           </button>
 
           <form class="chat-input-form" id="messageForm">
+            <div class="reply-preview" id="replyPreviewBox">
+              <div class="reply-preview-body">
+                <div class="reply-preview-name" id="replyPreviewName"></div>
+                <div class="reply-preview-text" id="replyPreviewText"></div>
+              </div>
+              <button type="button" class="reply-preview-close" id="replyPreviewCloseBtn">✕</button>
+            </div>
             <div class="msg-preview" id="messagePreviewBox">
               <img id="messagePreviewImg" src="" alt="">
               <div class="msg-preview-info">
@@ -1362,6 +1517,62 @@
     </div>
   </div>
 
+  <div id="gameSelectModal" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#92400e;">🎮 絵文字で遊ぶ</h3>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">ゲームを選んでください</p>
+      <div class="game-select-grid">
+        <div class="game-select-card" data-game="memory">
+          <div class="game-icon">🧠</div>
+          <div class="game-title">絵文字神経衰弱</div>
+          <div class="game-desc">ペアを揃えよう</div>
+        </div>
+        <div class="game-select-card" data-game="tap">
+          <div class="game-icon">👆</div>
+          <div class="game-title">絵文字タップ</div>
+          <div class="game-desc">指定を素早くタップ</div>
+        </div>
+        <div class="game-select-card" data-game="sequence">
+          <div class="game-icon">🔢</div>
+          <div class="game-title">絵文字記憶</div>
+          <div class="game-desc">順番を覚えよう</div>
+        </div>
+        <div class="game-select-card" data-game="janken">
+          <div class="game-icon">✊</div>
+          <div class="game-title">絵文字じゃんけん</div>
+          <div class="game-desc">相手と対決</div>
+        </div>
+        <div class="game-select-card" data-game="slot">
+          <div class="game-icon">🎰</div>
+          <div class="game-title">絵文字スロット</div>
+          <div class="game-desc">3つ揃えて当たり</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+        <button id="gameSelectCancelBtn" class="secondary-btn">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gamePlayModal" class="modal-backdrop hidden">
+    <div class="modal-content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <h3 style="font-size:16px;font-weight:700;margin:0;color:#5b21b6;" id="gamePlayTitle">ゲーム</h3>
+        <button id="gamePlayCloseBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">閉じる</button>
+      </div>
+      <div class="game-score" id="gameScoreBar" style="display:none;">
+        <div>スコア: <span id="gameScoreVal">0</span></div>
+        <div>時間: <span id="gameTimeVal">0</span>s</div>
+      </div>
+      <div class="game-status" id="gameStatusText"></div>
+      <div id="gameBoardArea"></div>
+      <div style="display:flex;justify-content:center;gap:8px;margin-top:12px;">
+        <button id="gameRestartBtn" class="primary-btn" style="display:none;">もう一度</button>
+        <button id="gameSendResultBtn" class="secondary-btn" style="display:none;">結果をチャットに送る</button>
+      </div>
+    </div>
+  </div>
+
   <div id="storyViewer">
     <div class="story-stage">
       <div class="story-progress-bar" id="storyProgressBar"></div>
@@ -1520,12 +1731,7 @@
             reject(new Error('音声ファイルが大きすぎます（800KB以下にしてください）'));
             return;
           }
-          resolve({
-            dataUrl,
-            name: file.name,
-            type: file.type || 'audio/mpeg',
-            size: dataUrl.length
-          });
+          resolve({ dataUrl, name: file.name, type: file.type || 'audio/mpeg', size: dataUrl.length });
         };
         reader.readAsDataURL(file);
       });
@@ -1547,12 +1753,7 @@
             reject(new Error('動画ファイルが大きすぎます（800KB以下にしてください）'));
             return;
           }
-          resolve({
-            dataUrl,
-            name: file.name,
-            type: 'video/mp4',
-            size: dataUrl.length
-          });
+          resolve({ dataUrl, name: file.name, type: 'video/mp4', size: dataUrl.length });
         };
         reader.readAsDataURL(file);
       });
@@ -1565,7 +1766,6 @@
       return (bytes / 1024 / 1024).toFixed(2) + ' MB';
     }
 
-    /* ★ メールアドレスをFirebaseキーとして安全にする */
     function sanitizeEmailKey(email) {
       if (!email) return '';
       return String(email).toLowerCase().replace(/[.@#$\[\]]/g, '_');
@@ -1583,6 +1783,7 @@
     let readsCache = {};
     let typingCache = {};
     let presenceCache = {};
+    let reactionsCache = {};
 
     let chatsUnsubscribe = null;
     let messagesUnsubscribe = null;
@@ -1596,6 +1797,7 @@
     let emergencyUnsubscribe = null;
     let announcementUnsubscribe = null;
     let notificationsUnsubscribe = null;
+    let reactionsUnsubscribe = null;
     let chatLatestListeners = {};
     let storyLikesUnsubscribe = null;
     let storyViewsUnsubscribe = null;
@@ -1671,6 +1873,13 @@
     let notificationsCache = {};
     let lastSeenNotificationCount = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0', 10);
     let lastNotifIds = new Set();
+
+    /* 返信・リアクション・ゲーム用 */
+    let replyingTo = null; // {key, authorUid, authorName, content, file}
+    let currentReactionPicker = null;
+    let currentGameMessage = null;
+    let gameState = null;
+    let gameTimerInterval = null;
 
     const bootOverlay = document.getElementById('bootOverlay');
     const loginView = document.getElementById('loginView');
@@ -1962,7 +2171,6 @@
       }, 800);
     }
 
-    /* ★ UID BAN とメールBAN の両方を監視 */
     function initBansListener() {
       if (bansUnsubscribe) bansUnsubscribe();
       bansUnsubscribe = onValue(ref(db, 'bans'), (snap) => {
@@ -1981,7 +2189,6 @@
       }, () => {});
     }
 
-    /* ★ BANリスト描画（UID BAN + メールBAN） */
     function renderBanList() {
       const container = document.getElementById('banListContainer');
       if (!container) return;
@@ -2160,9 +2367,14 @@
       markChatAsRead(chatId);
       initReadsListener(chatId);
       initTypingListener(chatId);
+      initReactionsListener(chatId);
       isCurrentlyTyping = false;
       clearTimeout(typingTimeout);
       unreadInChat = 0;
+
+      // 返信状態をリセット
+      replyingTo = null;
+      document.getElementById('replyPreviewBox').classList.remove('show');
 
       const isGroup = chat.type === 'group';
       let displayName;
@@ -2202,11 +2414,16 @@
       if (messagesUnsubscribe) { messagesUnsubscribe(); messagesUnsubscribe = null; }
       if (readsUnsubscribe) { readsUnsubscribe(); readsUnsubscribe = null; }
       if (typingUnsubscribe) { typingUnsubscribe(); typingUnsubscribe = null; }
+      if (reactionsUnsubscribe) { reactionsUnsubscribe(); reactionsUnsubscribe = null; }
       messagesCache = [];
       readsCache = {};
       typingCache = {};
+      reactionsCache = {};
       unreadInChat = 0;
+      replyingTo = null;
+      document.getElementById('replyPreviewBox').classList.remove('show');
       closeAllMenus();
+      closeReactionPicker();
       renderChatList();
     }
 
@@ -2331,6 +2548,125 @@
       });
     }
 
+    /* ★ リアクションリスナー */
+    function initReactionsListener(chatId) {
+      if (reactionsUnsubscribe) reactionsUnsubscribe();
+      reactionsUnsubscribe = onValue(ref(db, `chatReactions/${chatId}`), (snap) => {
+        reactionsCache = snap.exists() ? snap.val() : {};
+        requestAnimationFrame(updateAllReactionsInDOM);
+      }, () => {});
+    }
+
+    function updateAllReactionsInDOM() {
+      messagesContainer.querySelectorAll('[data-msg-key]').forEach(row => {
+        const key = row.dataset.msgKey;
+        updateReactionsForMessage(row, key);
+      });
+    }
+
+    function updateReactionsForMessage(row, key) {
+      const reactions = reactionsCache[key] || {};
+      // 絵文字ごとに集計
+      const counts = {};
+      const mine = {};
+      Object.entries(reactions).forEach(([uid, emoji]) => {
+        if (!emoji) return;
+        counts[emoji] = (counts[emoji] || 0) + 1;
+        if (currentUser && uid === currentUser.uid) mine[emoji] = true;
+      });
+
+      let container = row.querySelector('.msg-reactions');
+      const body = row.querySelector('.msg-body');
+      if (!body) return;
+
+      if (Object.keys(counts).length === 0) {
+        if (container) container.remove();
+        return;
+      }
+
+      if (!container) {
+        container = document.createElement('div');
+        container.className = 'msg-reactions';
+        body.appendChild(container);
+      }
+      container.innerHTML = '';
+      Object.entries(counts).forEach(([emoji, count]) => {
+        const chip = document.createElement('span');
+        chip.className = 'reaction-chip' + (mine[emoji] ? ' mine' : '');
+        chip.innerHTML = `<span>${emoji}</span><span class="reaction-count">${count}</span>`;
+        chip.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleReaction(key, emoji);
+        });
+        container.appendChild(chip);
+      });
+    }
+
+    async function toggleReaction(msgKey, emoji) {
+      if (!currentUser || !currentChatId) return;
+      const msg = messagesCache.find(m => m.key === msgKey);
+      if (!msg || msg.optimistic) return;
+
+      const reactionRef = ref(db, `chatReactions/${currentChatId}/${msgKey}/${currentUser.uid}`);
+      const existingSnap = await get(reactionRef);
+      const existing = existingSnap.exists() ? existingSnap.val() : null;
+
+      try {
+        if (existing === emoji) {
+          await remove(reactionRef);
+        } else {
+          await set(reactionRef, emoji);
+        }
+      } catch (err) {
+        showBanner('リアクションに失敗しました', true);
+      }
+    }
+
+    function closeReactionPicker() {
+      if (currentReactionPicker && currentReactionPicker.parentNode) {
+        currentReactionPicker.parentNode.removeChild(currentReactionPicker);
+      }
+      currentReactionPicker = null;
+      document.removeEventListener('click', outsideReactionPickerHandler);
+    }
+    function outsideReactionPickerHandler(e) {
+      if (!e.target.closest('.reaction-picker')) {
+        closeReactionPicker();
+      }
+    }
+    function openReactionPicker(anchorEl, msgKey) {
+      closeReactionPicker();
+      const picker = document.createElement('div');
+      picker.className = 'reaction-picker';
+      const emojis = ['👍', '❤️', '😂', '😮', '😢', '🎉', '🔥', '👏'];
+      emojis.forEach(emoji => {
+        const btn = document.createElement('button');
+        btn.textContent = emoji;
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleReaction(msgKey, emoji);
+          closeReactionPicker();
+        });
+        picker.appendChild(btn);
+      });
+      document.body.appendChild(picker);
+      currentReactionPicker = picker;
+
+      const rect = anchorEl.getBoundingClientRect();
+      const pw = picker.offsetWidth || 320;
+      let left = rect.left - pw / 2 + rect.width / 2;
+      let top = rect.top - 50;
+      if (left < 8) left = 8;
+      if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+      if (top < 8) top = rect.bottom + 8;
+      picker.style.left = left + 'px';
+      picker.style.top = top + 'px';
+
+      setTimeout(() => {
+        document.addEventListener('click', outsideReactionPickerHandler);
+      }, 0);
+    }
+
     function handleMessagesUpdate(newMessages) {
       const newMessageKeys = new Set(newMessages.map(m => m.key));
       const newClientMsgIds = new Set();
@@ -2367,6 +2703,7 @@
 
       updateEditedFlags();
       updateReadReceipts();
+      updateAllReactionsInDOM();
 
       const lastRenderedMsg = getLastRenderedMessageKey();
       const newMsgs = [];
@@ -2432,6 +2769,13 @@
           }
         }
       });
+    }
+
+    /* 絵文字が含まれるか判定 */
+    function containsEmoji(str) {
+      if (!str) return false;
+      // ざっくり判定：絵文字範囲を含む
+      return /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F02F}\u{1F0A0}-\u{1F0FF}\u{1F100}-\u{1F1FF}\u{1F200}-\u{1F2FF}\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}]/u.test(str);
     }
 
     function appendMessages(messages) {
@@ -2522,10 +2866,23 @@
           `;
         }
 
+        /* ★ 返信引用 */
+        let replyQuoteHtml = '';
+        if (msg.replyTo && msg.replyTo.msgKey) {
+          const r = msg.replyTo;
+          const previewText = (r.content || '').slice(0, 80) + ((r.content || '').length > 80 ? '…' : '');
+          replyQuoteHtml = `
+            <div class="reply-quote" data-reply-target="${escapeHtml(r.msgKey)}">
+              <div class="reply-name">↩ ${escapeHtml(r.authorName || '名無しさん')}</div>
+              <div style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(previewText || (r.hasFile ? '📷 画像' : ''))}</div>
+            </div>
+          `;
+        }
+
         let fileHtml = '';
         if (msg.file && msg.file.dataUrl) {
           fileHtml = `
-            <div class="msg-file ${!msg.content && !storyContextHtml ? 'only-file' : ''}" data-lightbox="${msg.file.dataUrl}">
+            <div class="msg-file ${!msg.content && !storyContextHtml && !replyQuoteHtml ? 'only-file' : ''}" data-lightbox="${msg.file.dataUrl}">
               <img src="${msg.file.dataUrl}" alt="${escapeHtml(msg.file.name || '画像')}" loading="lazy">
             </div>
           `;
@@ -2534,6 +2891,12 @@
         let contentHtml = '';
         if (msg.content) {
           contentHtml = `<div class="msg-content">${formatContent(msg.content)}</div>`;
+        }
+
+        /* ★ ミニゲーム起動ボタン */
+        let gameBtnHtml = '';
+        if (!isOptimistic && msg.content && containsEmoji(msg.content)) {
+          gameBtnHtml = `<button class="game-launch-btn" data-game-msg-key="${key}">🎮 絵文字で遊ぶ</button>`;
         }
 
         let readHtml = '';
@@ -2562,15 +2925,18 @@
             <div class="msg-bubble-wrap">
               ${menuBtnHtml}
               <div class="msg-bubble">
+                ${replyQuoteHtml}
                 ${storyContextHtml}
                 ${contentHtml}
                 ${fileHtml}
               </div>
             </div>
+            ${gameBtnHtml}
             ${readHtml}
           </div>
         `;
 
+        // メニューボタン
         const menuBtn = row.querySelector('.msg-menu-btn');
         if (menuBtn) {
           menuBtn.addEventListener('click', (e) => {
@@ -2583,6 +2949,8 @@
             }
           });
         }
+
+        // ライトボックス
         const lightboxTarget = row.querySelector('[data-lightbox]');
         if (lightboxTarget) {
           lightboxTarget.addEventListener('click', () => {
@@ -2591,11 +2959,48 @@
           });
         }
 
+        // 返信引用クリックでスクロール
+        const replyQuote = row.querySelector('.reply-quote');
+        if (replyQuote) {
+          replyQuote.addEventListener('click', () => {
+            const targetKey = replyQuote.dataset.replyTarget;
+            const targetRow = messagesContainer.querySelector(`[data-msg-key="${targetKey}"]`);
+            if (targetRow) {
+              targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              targetRow.style.transition = 'background 0.5s';
+              const bubble = targetRow.querySelector('.msg-bubble');
+              if (bubble) {
+                const orig = bubble.style.background;
+                bubble.style.background = '#fef3c7';
+                setTimeout(() => { bubble.style.background = orig; }, 1200);
+              }
+            }
+          });
+        }
+
+        // ゲーム起動
+        const gameBtn = row.querySelector('.game-launch-btn');
+        if (gameBtn) {
+          gameBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const gameKey = gameBtn.dataset.gameMsgKey;
+            const targetMsg = messagesCache.find(m => m.key === gameKey);
+            if (targetMsg) openGameSelect(targetMsg);
+          });
+        }
+
         fragment.appendChild(row);
         lastRenderedMsg = msg;
       });
 
       messagesContainer.appendChild(fragment);
+
+      // リアクションを反映
+      requestAnimationFrame(() => {
+        messagesContainer.querySelectorAll('[data-msg-key]').forEach(row => {
+          updateReactionsForMessage(row, row.dataset.msgKey);
+        });
+      });
 
       if (isNearBottom) {
         requestAnimationFrame(() => {
@@ -2730,6 +3135,7 @@
     }
     function openMenu(btn, key) {
       closeAllMenus();
+      closeReactionPicker();
       openMenuKey = key;
       btn.classList.add('open');
 
@@ -2738,7 +3144,11 @@
       const popup = document.createElement('div');
       popup.className = 'msg-menu-popup';
 
-      let menuHtml = `<button class="copy-action">📋 コピー</button>`;
+      let menuHtml = `
+        <button class="reply-action">↩️ 返信</button>
+        <button class="react-action">😊 リアクション</button>
+        <button class="copy-action">📋 コピー</button>
+      `;
       if (isMine) {
         menuHtml += `
           <button class="edit-action">✏️ 編集</button>
@@ -2765,6 +3175,18 @@
         await copyMessageToClipboard(key);
       });
 
+      popup.querySelector('.reply-action').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllMenus();
+        startReply(key);
+      });
+
+      popup.querySelector('.react-action').addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllMenus();
+        openReactionPicker(btn, key);
+      });
+
       if (isMine) {
         popup.querySelector('.edit-action').addEventListener('click', (e) => {
           e.stopPropagation();
@@ -2789,6 +3211,30 @@
       }, 0);
     }
 
+    /* ★ 返信開始 */
+    function startReply(key) {
+      const msg = messagesCache.find(m => m.key === key);
+      if (!msg) return;
+      const p = getProfileForUid(msg.authorUid);
+      replyingTo = {
+        msgKey: key,
+        authorUid: msg.authorUid,
+        authorName: p.nickname,
+        content: msg.content || '',
+        hasFile: !!(msg.file && msg.file.dataUrl)
+      };
+      document.getElementById('replyPreviewName').textContent = `↩ ${p.nickname} に返信`;
+      const previewText = (msg.content || '').slice(0, 80) + ((msg.content || '').length > 80 ? '…' : '');
+      document.getElementById('replyPreviewText').textContent = previewText || (msg.file ? '📷 画像' : '(メッセージ)');
+      document.getElementById('replyPreviewBox').classList.add('show');
+      document.getElementById('messageInput').focus();
+    }
+
+    document.getElementById('replyPreviewCloseBtn').addEventListener('click', () => {
+      replyingTo = null;
+      document.getElementById('replyPreviewBox').classList.remove('show');
+    });
+
     async function copyMessageToClipboard(key) {
       const msg = messagesCache.find(m => m.key === key);
       if (msg) {
@@ -2812,6 +3258,9 @@
       const parts = [];
       if (msg.storyReplyTo && msg.storyReplyTo.previewText) {
         parts.push(`↩ ストーリーに返信: ${msg.storyReplyTo.previewText}`);
+      }
+      if (msg.replyTo && msg.replyTo.content) {
+        parts.push(`↩ ${msg.replyTo.authorName}: ${msg.replyTo.content}`);
       }
       if (msg.content) parts.push(msg.content);
       if (msg.file && msg.file.dataUrl) parts.push('[画像]');
@@ -2955,6 +3404,7 @@
       e.preventDefault();
       const content = messageInput.value.trim();
       const file = pendingFile;
+      const reply = replyingTo;
 
       if (!content && !file) return;
       if (!currentUser || !currentChatId) return;
@@ -2978,7 +3428,14 @@
         content: content || '',
         file: file || null,
         createdAt: Date.now(),
-        storyReplyTo: null
+        storyReplyTo: null,
+        replyTo: reply ? {
+          msgKey: reply.msgKey,
+          authorUid: reply.authorUid,
+          authorName: reply.authorName,
+          content: reply.content,
+          hasFile: reply.hasFile
+        } : null
       };
       optimisticMessages.set(clientMsgId, { data: optimisticData, realKey: null });
 
@@ -2987,6 +3444,8 @@
       pendingFile = null;
       messageFileInput.value = '';
       messagePreviewBox.classList.remove('show');
+      replyingTo = null;
+      document.getElementById('replyPreviewBox').classList.remove('show');
       clearTimeout(typingTimeout);
       setMyTypingState(false);
 
@@ -3008,6 +3467,15 @@
           authorAvatar: myProfile.avatar,
           createdAt: Date.now()
         };
+        if (reply) {
+          msgData.replyTo = {
+            msgKey: reply.msgKey,
+            authorUid: reply.authorUid,
+            authorName: reply.authorName,
+            content: (reply.content || '').slice(0, 200),
+            hasFile: reply.hasFile
+          };
+        }
         const newRef = push(ref(db, `chatMessages/${chatIdAtSend}`));
         await set(newRef, msgData);
 
@@ -3277,6 +3745,481 @@
     });
 
     /* ============================================================
+       ミニゲーム
+       ============================================================ */
+    const EMOJI_POOL = ['😀','😎','🔥','🌟','🍀','🌸','🐱','🐶','🦊','🐼','🎮','☕','🍎','🍕','⚽','🎵','💎','🚀','🌈','🍩'];
+
+    const gameSelectModal = document.getElementById('gameSelectModal');
+    const gamePlayModal = document.getElementById('gamePlayModal');
+    const gameBoardArea = document.getElementById('gameBoardArea');
+    const gameStatusText = document.getElementById('gameStatusText');
+    const gameScoreBar = document.getElementById('gameScoreBar');
+    const gameScoreVal = document.getElementById('gameScoreVal');
+    const gameTimeVal = document.getElementById('gameTimeVal');
+    const gameRestartBtn = document.getElementById('gameRestartBtn');
+    const gameSendResultBtn = document.getElementById('gameSendResultBtn');
+
+    function openGameSelect(msg) {
+      currentGameMessage = msg;
+      gameSelectModal.classList.remove('hidden');
+    }
+    document.getElementById('gameSelectCancelBtn').addEventListener('click', () => {
+      gameSelectModal.classList.add('hidden');
+      currentGameMessage = null;
+    });
+    gameSelectModal.addEventListener('click', (e) => {
+      if (e.target.id === 'gameSelectModal') {
+        gameSelectModal.classList.add('hidden');
+        currentGameMessage = null;
+      }
+    });
+    document.querySelectorAll('.game-select-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const game = card.dataset.game;
+        gameSelectModal.classList.add('hidden');
+        openGamePlay(game);
+      });
+    });
+    document.getElementById('gamePlayCloseBtn').addEventListener('click', () => {
+      closeGamePlay();
+    });
+    gamePlayModal.addEventListener('click', (e) => {
+      if (e.target.id === 'gamePlayModal') closeGamePlay();
+    });
+    gameRestartBtn.addEventListener('click', () => {
+      if (!gameState) return;
+      startGame(gameState.type);
+    });
+    gameSendResultBtn.addEventListener('click', async () => {
+      if (!gameState) return;
+      const resultText = gameState.resultText || 'ゲーム終了';
+      await sendGameResult(resultText);
+      closeGamePlay();
+    });
+
+    function closeGamePlay() {
+      gamePlayModal.classList.add('hidden');
+      if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
+      gameState = null;
+      gameBoardArea.innerHTML = '';
+      gameStatusText.textContent = '';
+      gameScoreBar.style.display = 'none';
+      gameRestartBtn.style.display = 'none';
+      gameSendResultBtn.style.display = 'none';
+    }
+
+    function openGamePlay(game) {
+      gamePlayModal.classList.remove('hidden');
+      gameBoardArea.innerHTML = '';
+      gameStatusText.textContent = '';
+      gameScoreBar.style.display = 'none';
+      gameRestartBtn.style.display = 'none';
+      gameSendResultBtn.style.display = 'none';
+      startGame(game);
+    }
+
+    async function sendGameResult(text) {
+      if (!currentUser || !currentChatId) return;
+      const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+      try {
+        const msgData = {
+          clientMsgId,
+          content: text,
+          file: null,
+          authorUid: currentUser.uid,
+          authorName: myProfile.nickname,
+          authorAvatar: myProfile.avatar,
+          createdAt: Date.now(),
+          gameResult: true
+        };
+        const newRef = push(ref(db, `chatMessages/${currentChatId}`));
+        await set(newRef, msgData);
+        const chat = chatsCache[currentChatId];
+        if (chat) {
+          const memberUids = Object.keys(chat.members || {});
+          const updates = {};
+          memberUids.forEach(uid => {
+            updates[`userChats/${uid}/${currentChatId}/lastMessage`] = text;
+            updates[`userChats/${uid}/${currentChatId}/lastMessageAt`] = Date.now();
+            updates[`userChats/${uid}/${currentChatId}/lastSenderUid`] = currentUser.uid;
+          });
+          await update(ref(db), updates);
+        }
+        showBanner('結果を送信しました', false);
+      } catch (err) {
+        showBanner('送信に失敗しました', true);
+      }
+    }
+
+    function startGame(type) {
+      if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
+      gameBoardArea.innerHTML = '';
+      gameStatusText.textContent = '';
+      gameRestartBtn.style.display = 'inline-block';
+      gameSendResultBtn.style.display = 'none';
+      gameScoreBar.style.display = 'none';
+      gameState = { type, score: 0, resultText: '' };
+
+      document.getElementById('gamePlayTitle').textContent = {
+        memory: '🧠 絵文字神経衰弱',
+        tap: '👆 絵文字タップ',
+        sequence: '🔢 絵文字記憶',
+        janken: '✊ 絵文字じゃんけん',
+        slot: '🎰 絵文字スロット'
+      }[type] || 'ゲーム';
+
+      if (type === 'memory') startMemoryGame();
+      else if (type === 'tap') startTapGame();
+      else if (type === 'sequence') startSequenceGame();
+      else if (type === 'janken') startJankenGame();
+      else if (type === 'slot') startSlotGame();
+    }
+
+    /* 1. 絵文字神経衰弱 */
+    function startMemoryGame() {
+      const size = 4; // 4x4 = 16枚 = 8ペア
+      const pairs = 8;
+      const emojis = [...EMOJI_POOL].sort(() => Math.random() - 0.5).slice(0, pairs);
+      const deck = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
+      let firstCard = null;
+      let lock = false;
+      let matched = 0;
+      let tries = 0;
+
+      gameBoardArea.innerHTML = '';
+      const board = document.createElement('div');
+      board.className = 'game-board';
+      board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+      board.style.maxWidth = '360px';
+      board.style.margin = '0 auto';
+
+      deck.forEach((emoji, idx) => {
+        const cell = document.createElement('div');
+        cell.className = 'game-cell';
+        cell.textContent = '';
+        cell.dataset.emoji = emoji;
+        cell.dataset.idx = idx;
+        cell.addEventListener('click', () => {
+          if (lock || cell.classList.contains('matched') || cell === firstCard) return;
+          cell.textContent = emoji;
+          cell.classList.add('selected');
+          if (!firstCard) {
+            firstCard = cell;
+          } else {
+            tries++;
+            if (firstCard.dataset.emoji === cell.dataset.emoji) {
+              firstCard.classList.add('matched');
+              cell.classList.add('matched');
+              firstCard.classList.remove('selected');
+              cell.classList.remove('selected');
+              firstCard = null;
+              matched++;
+              if (matched === pairs) {
+                gameState.score = Math.max(1, 100 - tries * 2);
+                gameState.resultText = `🧠 絵文字神経衰弱 クリア！ スコア: ${gameState.score} (${tries}回で完成)`;
+                gameStatusText.textContent = `🎉 クリア！ スコア: ${gameState.score}`;
+                gameSendResultBtn.style.display = 'inline-block';
+              }
+            } else {
+              lock = true;
+              const f = firstCard;
+              setTimeout(() => {
+                f.textContent = '';
+                cell.textContent = '';
+                f.classList.remove('selected');
+                cell.classList.remove('selected');
+                firstCard = null;
+                lock = false;
+              }, 700);
+            }
+          }
+          gameStatusText.textContent = `揃ったペア: ${matched}/${pairs}`;
+        });
+        board.appendChild(cell);
+      });
+      gameBoardArea.appendChild(board);
+      gameStatusText.textContent = `揃ったペア: 0/${pairs}`;
+    }
+
+    /* 2. 絵文字タップ */
+    function startTapGame() {
+      const duration = 15;
+      const targetEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
+      let score = 0;
+      let timeLeft = duration;
+
+      gameScoreBar.style.display = 'flex';
+      gameScoreVal.textContent = '0';
+      gameTimeVal.textContent = timeLeft;
+      gameStatusText.innerHTML = `「${targetEmoji}」をタップ！`;
+
+      const board = document.createElement('div');
+      board.className = 'game-board';
+      board.style.gridTemplateColumns = 'repeat(4, 1fr)';
+      board.style.maxWidth = '360px';
+      board.style.margin = '0 auto';
+
+      for (let i = 0; i < 16; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'game-cell';
+        const emoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
+        cell.textContent = emoji;
+        cell.dataset.emoji = emoji;
+        cell.addEventListener('click', () => {
+          if (timeLeft <= 0) return;
+          if (emoji === targetEmoji) {
+            score += 10;
+            gameScoreVal.textContent = score;
+            cell.style.background = '#dcfce7';
+            setTimeout(() => { cell.style.background = ''; }, 200);
+          } else {
+            score = Math.max(0, score - 5);
+            gameScoreVal.textContent = score;
+            cell.style.background = '#fee2e2';
+            setTimeout(() => { cell.style.background = ''; }, 200);
+          }
+        });
+        board.appendChild(cell);
+      }
+      gameBoardArea.appendChild(board);
+
+      gameTimerInterval = setInterval(() => {
+        timeLeft--;
+        gameTimeVal.textContent = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(gameTimerInterval);
+          gameTimerInterval = null;
+          gameState.score = score;
+          gameState.resultText = `👆 絵文字タップ スコア: ${score}点！`;
+          gameStatusText.textContent = `⏰ 終了！ スコア: ${score}`;
+          gameSendResultBtn.style.display = 'inline-block';
+        }
+      }, 1000);
+    }
+
+    /* 3. 絵文字記憶（順番） */
+    function startSequenceGame() {
+      let round = 1;
+      let maxRounds = 5;
+      let sequence = [];
+      let inputIndex = 0;
+
+      gameStatusText.textContent = 'よく見て覚えよう！';
+
+      const board = document.createElement('div');
+      board.style.display = 'grid';
+      board.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      board.style.gap = '10px';
+      board.style.maxWidth = '300px';
+      board.style.margin = '0 auto';
+      const choices = EMOJI_POOL.slice(0, 6);
+      const cells = [];
+      choices.forEach(emoji => {
+        const cell = document.createElement('div');
+        cell.className = 'game-cell';
+        cell.textContent = emoji;
+        cell.dataset.emoji = emoji;
+        cell.style.fontSize = '32px';
+        cell.addEventListener('click', () => handleSequenceClick(emoji));
+        board.appendChild(cell);
+        cells.push(cell);
+      });
+      gameBoardArea.appendChild(board);
+
+      function startRound() {
+        sequence = [];
+        inputIndex = 0;
+        for (let i = 0; i < round + 2; i++) {
+          sequence.push(choices[Math.floor(Math.random() * choices.length)]);
+        }
+        playSequence();
+      }
+
+      function playSequence() {
+        gameStatusText.textContent = `ラウンド ${round}: よく見て！`;
+        let i = 0;
+        const interval = setInterval(() => {
+          if (i >= sequence.length) {
+            clearInterval(interval);
+            gameStatusText.textContent = `ラウンド ${round}: 順番にタップ！`;
+            inputIndex = 0;
+            return;
+          }
+          const emoji = sequence[i];
+          const cell = cells.find(c => c.dataset.emoji === emoji);
+          if (cell) {
+            cell.style.transform = 'scale(1.3)';
+            cell.style.background = '#fef3c7';
+            setTimeout(() => {
+              cell.style.transform = '';
+              cell.style.background = '';
+            }, 400);
+          }
+          i++;
+        }, 700);
+      }
+
+      function handleSequenceClick(emoji) {
+        if (inputIndex >= sequence.length) return;
+        if (sequence[inputIndex] === emoji) {
+          inputIndex++;
+          if (inputIndex === sequence.length) {
+            if (round >= maxRounds) {
+              gameState.score = maxRounds * 20;
+              gameState.resultText = `🔢 絵文字記憶 全${maxRounds}ラウンドクリア！ スコア: ${gameState.score}`;
+              gameStatusText.textContent = `🎉 全ラウンドクリア！`;
+              gameSendResultBtn.style.display = 'inline-block';
+            } else {
+              round++;
+              setTimeout(startRound, 800);
+            }
+          }
+        } else {
+          gameState.score = (round - 1) * 20;
+          gameState.resultText = `🔢 絵文字記憶 ラウンド${round}で失敗… スコア: ${gameState.score}`;
+          gameStatusText.textContent = `❌ 違うよ！ スコア: ${gameState.score}`;
+          gameSendResultBtn.style.display = 'inline-block';
+        }
+      }
+
+      startRound();
+    }
+
+    /* 4. 絵文字じゃんけん */
+    function startJankenGame() {
+      const hands = [
+        { emoji: '✊', name: 'グー', beats: '✌️' },
+        { emoji: '✌️', name: 'チョキ', beats: '✋' },
+        { emoji: '✋', name: 'パー', beats: '✊' }
+      ];
+      let wins = 0, losses = 0, draws = 0;
+
+      gameBoardArea.innerHTML = '';
+      gameStatusText.textContent = '手を選んでね！';
+      const board = document.createElement('div');
+      board.style.display = 'grid';
+      board.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      board.style.gap = '12px';
+      board.style.maxWidth = '320px';
+      board.style.margin = '0 auto';
+      hands.forEach(h => {
+        const cell = document.createElement('div');
+        cell.className = 'game-cell';
+        cell.style.fontSize = '40px';
+        cell.textContent = h.emoji;
+        cell.addEventListener('click', () => playJanken(h));
+        board.appendChild(cell);
+      });
+      gameBoardArea.appendChild(board);
+
+      const scoreDiv = document.createElement('div');
+      scoreDiv.style.cssText = 'text-align:center;margin-top:12px;font-size:13px;color:#6b7280;';
+      scoreDiv.id = 'jankenScore';
+      scoreDiv.textContent = '勝ち: 0 / 負け: 0 / 引き分け: 0';
+      gameBoardArea.appendChild(scoreDiv);
+
+      function playJanken(myHand) {
+        const oppHand = hands[Math.floor(Math.random() * hands.length)];
+        let result;
+        if (myHand.emoji === oppHand.emoji) { result = 'draw'; draws++; }
+        else if (myHand.beats === oppHand.emoji) { result = 'win'; wins++; }
+        else { result = 'lose'; losses++; }
+        document.getElementById('jankenScore').textContent = `勝ち: ${wins} / 負け: ${losses} / 引き分け: ${draws}`;
+        const resultText = result === 'win' ? '🎉 勝ち！' : result === 'lose' ? '😢 負け…' : '🤝 引き分け';
+        gameStatusText.innerHTML = `あなた: ${myHand.emoji} vs 相手: ${oppHand.emoji}<br><strong style="font-size:18px;">${resultText}</strong>`;
+        gameState.score = wins * 10 - losses * 5;
+        gameState.resultText = `✊ 絵文字じゃんけん 勝ち:${wins} 負け:${losses} 引き分け:${draws}`;
+        gameSendResultBtn.style.display = 'inline-block';
+      }
+    }
+
+    /* 5. 絵文字スロット */
+    function startSlotGame() {
+      let coins = 5;
+      let spinning = false;
+
+      gameStatusText.textContent = 'コインを5枚持ってるよ！';
+      gameScoreBar.style.display = 'flex';
+      gameScoreVal.textContent = coins;
+      gameTimeVal.parentElement.style.display = 'none';
+
+      gameBoardArea.innerHTML = '';
+      const slotDisplay = document.createElement('div');
+      slotDisplay.style.cssText = 'display:flex;justify-content:center;gap:12px;font-size:48px;margin:20px 0;';
+      const reels = [];
+      for (let i = 0; i < 3; i++) {
+        const reel = document.createElement('div');
+        reel.style.cssText = 'width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:#f3f4f6;border:2px solid #d1d5db;border-radius:12px;';
+        reel.textContent = '❓';
+        slotDisplay.appendChild(reel);
+        reels.push(reel);
+      }
+      gameBoardArea.appendChild(slotDisplay);
+
+      const spinBtn = document.createElement('button');
+      spinBtn.className = 'primary-btn';
+      spinBtn.textContent = '🎰 スピン (コイン1枚)';
+      spinBtn.style.display = 'block';
+      spinBtn.style.margin = '0 auto';
+      spinBtn.addEventListener('click', () => {
+        if (spinning || coins <= 0) return;
+        spinning = true;
+        coins--;
+        gameScoreVal.textContent = coins;
+        spinBtn.disabled = true;
+        spinBtn.textContent = 'スピン中...';
+
+        const results = [];
+        let count = 0;
+        const spinInterval = setInterval(() => {
+          reels.forEach(r => {
+            r.textContent = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
+          });
+          count++;
+          if (count > 15) {
+            clearInterval(spinInterval);
+            for (let i = 0; i < 3; i++) {
+              const e = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
+              reels[i].textContent = e;
+              results.push(e);
+            }
+            spinning = false;
+            spinBtn.disabled = false;
+            spinBtn.textContent = '🎰 スピン (コイン1枚)';
+
+            if (results[0] === results[1] && results[1] === results[2]) {
+              coins += 10;
+              gameScoreVal.textContent = coins;
+              gameStatusText.textContent = `🎉 大当たり！ +10コイン (${results.join(' ')})`;
+            } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
+              coins += 2;
+              gameScoreVal.textContent = coins;
+              gameStatusText.textContent = `✨ 2つ揃い！ +2コイン (${results.join(' ')})`;
+            } else {
+              gameStatusText.textContent = `😢 ハズレ… (${results.join(' ')})`;
+            }
+
+            if (coins <= 0) {
+              gameState.score = 0;
+              gameState.resultText = `🎰 絵文字スロット コインを使い切りました…`;
+              gameStatusText.textContent = '💸 コインがなくなりました…';
+              spinBtn.disabled = true;
+              gameSendResultBtn.style.display = 'inline-block';
+            } else if (coins >= 20) {
+              gameState.score = coins;
+              gameState.resultText = `🎰 絵文字スロット ${coins}コイン獲得！`;
+              gameSendResultBtn.style.display = 'inline-block';
+            }
+          }
+        }, 80);
+      });
+      gameBoardArea.appendChild(spinBtn);
+
+      gameState.score = coins;
+      gameState.resultText = `🎰 絵文字スロット 開始！`;
+    }
+
+    /* ============================================================
        ストーリー
        ============================================================ */
     const STORY_TTL = 24 * 60 * 60 * 1000;
@@ -3465,7 +4408,6 @@
         let storyType = 'text';
         let storyFile = null;
         let storyAudioFile = null;
-        // 画像 + 音声 の同時添付
         if (pendingStoryFile && pendingStoryAudio) {
           storyType = 'image_audio';
           storyFile = pendingStoryFile;
@@ -3503,9 +4445,6 @@
       }
     });
 
-    /* ============================================================
-       ストーリービューア
-       ============================================================ */
     const storyViewer = document.getElementById('storyViewer');
     const storyStageContent = document.getElementById('storyStageContent');
     const storyProgressBar = document.getElementById('storyProgressBar');
@@ -3609,16 +4548,12 @@
         storyProgressBar.appendChild(seg);
       });
 
-      /* 表示分岐: 画像 / 画像+音声 / 音声(BGM) / 動画 / テキスト */
       if (story.type === 'image_audio' && story.file && story.audioFile) {
-        /* ★ 画像＋音声の同時再生 */
         const wrap = document.createElement('div');
         wrap.className = 'story-image-audio-wrap';
-
         const img = document.createElement('img');
         img.src = story.file.dataUrl;
         img.alt = story.content || '';
-
         const audio = document.createElement('audio');
         audio.src = story.audioFile.dataUrl;
         audio.preload = 'auto';
@@ -3626,98 +4561,44 @@
         audio.volume = 1;
         audio.muted = false;
         audio.setAttribute('playsinline', '');
-        audio.setAttribute('webkit-playsinline', '');
-
         wrap.appendChild(img);
         wrap.appendChild(audio);
         storyStageContent.appendChild(wrap);
         currentStoryAudioEl = audio;
-
         audio.addEventListener('ended', () => {
           if (currentStoryAudioEl === audio) currentStoryAudioEl = null;
           nextStory();
         });
-
-        const tryPlay = () => {
-          audio.muted = false;
-          audio.volume = 1;
-          const playPromise = audio.play();
-          if (playPromise && typeof playPromise.catch === 'function') {
-            playPromise.catch(() => {
-              const resumeOnInteraction = () => {
-                if (currentStoryAudioEl === audio && audio.paused) {
-                  audio.muted = false;
-                  audio.volume = 1;
-                  audio.play().catch(() => {});
-                }
-                document.removeEventListener('click', resumeOnInteraction);
-                document.removeEventListener('touchstart', resumeOnInteraction);
-              };
-              document.addEventListener('click', resumeOnInteraction, { once: true });
-              document.addEventListener('touchstart', resumeOnInteraction, { once: true });
-            });
-          }
-        };
-        tryPlay();
+        audio.play().catch(() => {});
       } else if (story.type === 'image' && story.file) {
         const img = document.createElement('img');
         img.src = story.file.dataUrl;
         storyStageContent.appendChild(img);
       } else if (story.type === 'video' && story.file) {
-        /* ★ 動画表示（音声付きで確実に再生） */
         const wrap = document.createElement('div');
         wrap.className = 'story-video-wrap';
-
         const video = document.createElement('video');
         video.src = story.file.dataUrl;
         video.controls = true;
         video.playsInline = true;
         video.preload = 'auto';
         video.setAttribute('playsinline', '');
-        video.setAttribute('webkit-playsinline', '');
-        video.setAttribute('controlsList', 'nodownload');
         video.muted = false;
         video.volume = 1;
-        video.defaultMuted = false;
-
         wrap.appendChild(video);
         storyStageContent.appendChild(wrap);
         currentStoryVideoEl = video;
-
         video.addEventListener('ended', () => {
           if (currentStoryVideoEl === video) currentStoryVideoEl = null;
           nextStory();
         });
-
-        const attemptPlay = async () => {
-          try {
-            video.muted = false;
-            video.volume = 1;
-            await video.play();
-          } catch (err) {
-            const resumeOnInteraction = () => {
-              if (currentStoryVideoEl === video) {
-                video.muted = false;
-                video.volume = 1;
-                video.play().catch(() => {});
-              }
-              document.removeEventListener('click', resumeOnInteraction);
-              document.removeEventListener('touchstart', resumeOnInteraction);
-            };
-            document.addEventListener('click', resumeOnInteraction, { once: true });
-            document.addEventListener('touchstart', resumeOnInteraction, { once: true });
-          }
-        };
-        attemptPlay();
+        video.play().catch(() => {});
       } else if (story.type === 'audio' && story.file) {
-        /* ★ 音声ストーリー: 背景のみ、音声だけ流れる */
         const wrap = document.createElement('div');
         wrap.className = 'story-audio-wrap';
-
         const label = document.createElement('div');
         label.className = 'story-audio-label';
         label.textContent = story.content || '';
-
         const audio = document.createElement('audio');
         audio.src = story.file.dataUrl;
         audio.preload = 'auto';
@@ -3725,39 +4606,15 @@
         audio.volume = 1;
         audio.muted = false;
         audio.setAttribute('playsinline', '');
-        audio.setAttribute('webkit-playsinline', '');
-
         wrap.appendChild(label);
         wrap.appendChild(audio);
         storyStageContent.appendChild(wrap);
         currentStoryAudioEl = audio;
-
         audio.addEventListener('ended', () => {
           if (currentStoryAudioEl === audio) currentStoryAudioEl = null;
           nextStory();
         });
-
-        const tryPlay = () => {
-          audio.muted = false;
-          audio.volume = 1;
-          const playPromise = audio.play();
-          if (playPromise && typeof playPromise.catch === 'function') {
-            playPromise.catch(() => {
-              const resumeOnInteraction = () => {
-                if (currentStoryAudioEl === audio && audio.paused) {
-                  audio.muted = false;
-                  audio.volume = 1;
-                  audio.play().catch(() => {});
-                }
-                document.removeEventListener('click', resumeOnInteraction);
-                document.removeEventListener('touchstart', resumeOnInteraction);
-              };
-              document.addEventListener('click', resumeOnInteraction, { once: true });
-              document.addEventListener('touchstart', resumeOnInteraction, { once: true });
-            });
-          }
-        };
-        tryPlay();
+        audio.play().catch(() => {});
       } else {
         const d = document.createElement('div');
         d.className = 'story-text-content';
@@ -3819,7 +4676,6 @@
         currentStoryViews = {};
       }
 
-      /* 自動送り時間の設定 */
       if ((story.type === 'audio' || story.type === 'image_audio') && (story.file || story.audioFile)) {
         const audioUrl = story.type === 'image_audio' ? story.audioFile.dataUrl : story.file.dataUrl;
         const tempAudio = new Audio();
@@ -4074,9 +4930,6 @@
       }
     });
 
-    /* ============================================================
-       ストーリーアーカイブ
-       ============================================================ */
     document.getElementById('myArchiveBtn').addEventListener('click', () => {
       const list = document.getElementById('archiveList');
       list.innerHTML = '';
@@ -4139,9 +4992,6 @@
       if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden');
     });
 
-    /* ============================================================
-       ログイン通知
-       ============================================================ */
     async function sendDiscordNotification(payload) {
       try {
         const embed = {
@@ -4320,9 +5170,6 @@
       });
     }
 
-    /* ============================================================
-       管理者BANパネル（メールBAN対応版）
-       ============================================================ */
     function initAdminBanPanel() {
       const banPanel = document.getElementById('adminBanPanel');
       const banEmailInput = document.getElementById('banEmailInput');
@@ -4379,7 +5226,6 @@
           const emailKey = sanitizeEmailKey(email);
 
           if (targetUid) {
-            /* プロフィールが存在する（ログイン経験あり）→ UID BAN + メールBAN 両方 */
             if (!confirm(`「${targetProfile.nickname || email}」をBANしますか？\nUID BAN + メールBAN の両方が適用されます。`)) return;
             await set(ref(db, `bans/${targetUid}`), {
               email: targetProfile.email || email,
@@ -4399,7 +5245,6 @@
             banSearchMsg.textContent = '✓ UID BAN + メールBAN を適用しました';
             showBanner('🔨 BANしました（UID + メール）', false);
           } else {
-            /* プロフィールが存在しない（未ログイン）→ メールBANのみ */
             if (!confirm(`「${email}」はまだログイン履歴がありません。\n未ログインユーザーとしてメールBANしますか？\n（このメールで今後ログインしようとするとBANされます）`)) return;
             await set(ref(db, `emailBans/${emailKey}`), {
               email: email,
@@ -4422,9 +5267,6 @@
       });
     }
 
-    /* ============================================================
-       管理者ストーリー削除パネル
-       ============================================================ */
     function initAdminStoryDeletePanel() {
       const panel = document.getElementById('adminStoryDeletePanel');
       const emailInput = document.getElementById('storyDeleteEmailInput');
@@ -4508,9 +5350,6 @@
       });
     }
 
-    /* ============================================================
-       緊急モード
-       ============================================================ */
     function executeNothing() {
       emergencyOverlay.classList.add('show');
       document.title = '無';
@@ -4798,7 +5637,7 @@
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
-       notificationsUnsubscribe, storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       notificationsUnsubscribe, reactionsUnsubscribe, storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       stopEmergencyEnforcer();
       if (banEnforcerInterval) clearInterval(banEnforcerInterval);
@@ -4840,7 +5679,6 @@
       document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'block' : 'none';
       document.getElementById('notificationBtn').style.display = admin ? 'block' : 'none';
 
-      /* ★ UID BAN とメールBAN の両方をチェック */
       try {
         const bansSnap = await get(ref(db, 'bans'));
         bansCache = bansSnap.exists() ? bansSnap.val() : {};
@@ -4968,7 +5806,7 @@
       [chatsUnsubscribe, messagesUnsubscribe, profilesUnsubscribe, bansUnsubscribe,
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
-       notificationsUnsubscribe, storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       notificationsUnsubscribe, reactionsUnsubscribe, storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       if (banEnforcerInterval) clearInterval(banEnforcerInterval);
     });
