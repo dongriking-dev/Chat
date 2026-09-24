@@ -202,7 +202,6 @@
     .msg-content a { color: #2563eb; text-decoration: underline; word-break: break-all; }
     .msg-row.mine .msg-content a { color: #1e3a8a; }
 
-    /* システムメッセージ */
     .system-message {
       text-align: center; margin: 12px 0;
     }
@@ -352,7 +351,6 @@
     .msg-menu-popup button.danger { color: #ef4444; }
     .msg-menu-popup button.danger:hover { background: #fef2f2; }
 
-    /* チャットヘッダーメニュー */
     .chat-header-menu-btn {
       background: #f3f4f6; border: 1px solid #d1d5db;
       border-radius: 8px; padding: 7px 11px;
@@ -377,7 +375,6 @@
     .chat-header-menu-popup button.danger { color: #ef4444; }
     .chat-header-menu-popup button.danger:hover { background: #fef2f2; }
 
-    /* リアクションピッカー */
     .reaction-picker {
       position: fixed; background: #fff;
       border: 1px solid #e5e7eb; border-radius: 9999px;
@@ -1127,7 +1124,6 @@
     .eh-footer-note { font-size: 11px; color: #9ca3af; }
     .eh-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    /* ゲーム */
     #gameSelectModal .modal-content { border-top: 6px solid #f59e0b; }
     .game-select-grid {
       display: grid; grid-template-columns: repeat(2, 1fr);
@@ -1209,10 +1205,6 @@
     .game-status {
       text-align: center; font-size: 14px; font-weight: 700;
       color: #4c1d95; margin: 8px 0;
-    }
-    .game-waiting {
-      text-align: center; padding: 24px; color: #6b7280;
-      font-size: 13px; line-height: 1.7;
     }
     .game-result-banner {
       text-align: center; padding: 16px;
@@ -1342,7 +1334,7 @@
         <div style="font-size:48px; margin-bottom:12px;">💬</div>
         <h1 style="font-size:26px; font-weight:800; color:#1e3a8a; margin:0 0 8px;">69CT</h1>
         <p style="font-size:13px; color:#6b7280; margin:0 0 6px; line-height:1.6;">ご利用にはGoogleアカウントでのログインが必要です。</p>
-        <p style="font-size:12px; color:#9ca3af; margin:0 0 24px;">ログイン後、管理者の承認が必要です。</p>
+        <p style="font-size:12px; color:#9ca3af; margin:0 0 24px;">初回ログイン時は管理者の承認が必要です。</p>
         <button id="googleLoginBtn" style="background:#fff; border:1.5px solid #d1d5db; border-radius:10px; padding:12px 20px; font-size:14px; font-weight:700; color:#374151; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; width:100%;">
           <svg width="20" height="20" viewBox="0 0 48 48">
             <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
@@ -1589,7 +1581,7 @@
         <h3 style="font-size:17px;font-weight:700;margin:0;color:#166534;">✅ 承認リクエスト</h3>
         <button id="approvalClearAllBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">全削除</button>
       </div>
-      <p style="font-size:11px;color:#6b7280;margin:0 0 14px;">新規ログインしたユーザーの承認待ち一覧です。</p>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 14px;">新規ログインしたユーザーの承認待ち一覧です。<br>※承認済みユーザーは <code style="background:#f3f4f6;padding:1px 4px;border-radius:3px;">approvedUsers</code> に記録され、再ログイン時は承認不要になります。</p>
       <div id="approvalList" style="max-height:55vh;overflow-y:auto;"></div>
       <div style="display:flex;justify-content:flex-end;margin-top:16px;">
         <button id="approvalCloseBtn" class="secondary-btn">閉じる</button>
@@ -2081,10 +2073,9 @@
     let replyingTo = null;
     let currentReactionPicker = null;
 
-    /* ゲーム関連 */
     let currentGameMessage = null;
     let pendingGameType = null;
-    let currentGameSession = null; // {sessionId, type, ...}
+    let currentGameSession = null;
     let gameSessionUnsubscribe = null;
     let gameState = null;
     let gameTimerInterval = null;
@@ -2339,7 +2330,6 @@
         updateProfilesInExistingMessages();
         renderChatList();
         renderStories();
-        // ゲームのVSヘッダーも更新
         if (currentGameSession) updateGameVsHeader();
       }, () => {});
     }
@@ -3011,7 +3001,6 @@
         if (messagesContainer.querySelector(`[data-msg-key="${key}"]`)) return;
         if (clientMsgId && messagesContainer.querySelector(`[data-client-msg-id="${clientMsgId}"]`)) return;
 
-        // システムメッセージ
         if (msg.system) {
           const sys = document.createElement('div');
           sys.className = 'system-message';
@@ -3023,7 +3012,6 @@
           return;
         }
 
-        // ゲーム招待メッセージ
         if (msg.gameInvite) {
           const inv = document.createElement('div');
           inv.className = 'msg-row';
@@ -3060,7 +3048,6 @@
           return;
         }
 
-        // 通常メッセージ
         if (!lastDateForDivider || !isSameDay(lastDateForDivider, msg.createdAt)) {
           const divider = document.createElement('div');
           divider.className = 'date-divider';
@@ -3866,9 +3853,7 @@
 
       const chatId = currentChatId;
       try {
-        // 自分の userChats から削除
         await remove(ref(db, `userChats/${currentUser.uid}/${chatId}`));
-        // システムメッセージ投稿
         const sysRef = push(ref(db, `chatMessages/${chatId}`));
         await set(sysRef, {
           system: true,
@@ -3876,7 +3861,6 @@
           authorUid: currentUser.uid,
           createdAt: Date.now()
         });
-        // 残メンバーを取得
         const membersSnap = await get(ref(db, `chatMeta/${chatId}/members`));
         if (membersSnap.exists()) {
           const members = membersSnap.val();
@@ -3884,14 +3868,12 @@
           await set(ref(db, `chatMeta/${chatId}/members`), members);
           const remainingUids = Object.keys(members);
           if (remainingUids.length === 0) {
-            // 最後の1人 → チャット自体を削除
             await remove(ref(db, `chatMeta/${chatId}`));
             await remove(ref(db, `chatMessages/${chatId}`));
             await remove(ref(db, `chatReactions/${chatId}`));
             await remove(ref(db, `chatReads/${chatId}`));
             await remove(ref(db, `chatTyping/${chatId}`));
           } else {
-            // 他メンバーの userChats の lastMessage を更新
             const updates = {};
             remainingUids.forEach(uid => {
               updates[`userChats/${uid}/${chatId}/lastMessage`] = `${myProfile.nickname} が退出しました`;
@@ -3968,7 +3950,6 @@
       const chat = chatsCache[currentChatId];
       if (!chat) return;
       const memberUids = Object.keys(chat.members || {});
-      // 既存メンバーチェック
       for (const uid of memberUids) {
         const p = profilesCache[uid];
         if (p && p.email && p.email.toLowerCase() === email) {
@@ -4037,9 +4018,7 @@
       if (!chat) return;
 
       try {
-        // chatMeta/members 更新
         await update(ref(db, `chatMeta/${chatId}/members`), { [newUid]: true });
-        // 新メンバーの userChats に追加
         const chatData = {
           type: chat.type,
           name: chat.name || '',
@@ -4051,7 +4030,6 @@
           lastSenderUid: currentUser.uid
         };
         await set(ref(db, `userChats/${newUid}/${chatId}`), chatData);
-        // 既存メンバーの members も更新
         const updates = {};
         Object.keys(chat.members || {}).forEach(uid => {
           if (uid === newUid) return;
@@ -4061,7 +4039,6 @@
           updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
         });
         await update(ref(db), updates);
-        // システムメッセージ
         const sysRef = push(ref(db, `chatMessages/${chatId}`));
         await set(sysRef, {
           system: true,
@@ -4303,7 +4280,6 @@
       if (!currentChatId) return;
       const chat = chatsCache[currentChatId];
       if (!chat) return;
-      // 1対1チャットのみ対戦可能
       if (chat.type !== 'direct') {
         showBanner('対戦は1対1チャットでのみ可能です', true);
         return;
@@ -4369,7 +4345,7 @@
           type: gameType,
           createdBy: currentUser.uid,
           opponentUid,
-          status: 'inviting', // inviting | playing | finished
+          status: 'inviting',
           createdAt: Date.now(),
           players: {
             [currentUser.uid]: { name: myProfile.nickname, avatar: myProfile.avatar, score: 0 },
@@ -4379,7 +4355,6 @@
         };
         await set(ref(db, `gameSessions/${chatId}/${sessionId}`), session);
 
-        // チャットに招待メッセージ投稿
         const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
         const msgRef = push(ref(db, `chatMessages/${chatId}`));
         await set(msgRef, {
@@ -4397,7 +4372,6 @@
           }
         });
 
-        // チャット一覧の最終メッセージ更新
         const memberUids = Object.keys(chat.members || {});
         const updates = {};
         memberUids.forEach(uid => {
@@ -4424,7 +4398,6 @@
         const session = snap.val();
         if (session.status === 'finished') { showBanner('この対戦は終了しています', true); return; }
 
-        // 自分の承認を記録
         await update(sessRef, {
           status: 'playing',
           [`players/${currentUser.uid}/joined`]: true,
@@ -4543,23 +4516,19 @@
       }
     }
 
-    /* セッション更新ハンドラ（ゲームタイプ別） */
     function handleGameSessionUpdate(session) {
       if (!currentGameSession || !session) return;
       const gameType = session.type;
       const myUid = currentUser.uid;
 
       if (gameState && gameState.type === gameType && gameState.sessionId === currentGameSession.sessionId) {
-        // 既にプレイ中 → 状態同期
         syncGameState(session);
         return;
       }
 
-      // 初回：ゲーム開始
       if (session.status === 'playing') {
         startGame(gameType);
       } else if (session.status === 'inviting') {
-        // 自分が招待した側なら待機、相手なら参加ボタンは既にチャットで押している
         if (session.createdBy === myUid) {
           gameStatusText.textContent = '相手の参加を待っています...';
         }
@@ -4587,7 +4556,6 @@
       else if (type === 'slot') startSlotGame();
     }
 
-    /* ゲームセッションの自分の状態を更新 */
     async function updateSessionState(partial) {
       if (!currentGameSession) return;
       try {
@@ -4596,21 +4564,18 @@
     }
 
     function syncGameState(session) {
-      // 各ゲームの同期処理（簡易版：スコアのみ反映）
       const players = session.players || {};
       const myScore = players[currentUser.uid]?.score || 0;
       const oppUid = Object.keys(players).find(u => u !== currentUser.uid);
       const oppScore = oppUid ? (players[oppUid]?.score || 0) : 0;
 
       if (gameState.type === 'tap') {
-        // タップは同時進行なので、相手のスコアをVSヘッダーに表示
         gameVsP2.querySelector('.score').textContent = oppScore;
         gameVsP1.querySelector('.score').textContent = myScore;
       } else if (gameState.type === 'janken') {
         gameVsP2.querySelector('.score').textContent = oppScore;
         gameVsP1.querySelector('.score').textContent = myScore;
       } else if (gameState.type === 'memory' || gameState.type === 'slot') {
-        // ターン制
         const turn = session.state?.turnUid;
         if (turn) {
           if (turn === currentUser.uid) {
@@ -4622,12 +4587,10 @@
       }
     }
 
-    /* ============ ゲーム1: 神経衰弱（ターン制） ============ */
     function startMemoryGame() {
       const pairs = 8;
       const emojis = [...EMOJI_POOL].sort(() => Math.random() - 0.5).slice(0, pairs);
       const deck = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
-      // セッションにデッキを保存（両者で共有）
       updateSessionState({
         deck,
         revealed: {},
@@ -4692,19 +4655,14 @@
       const firstCard = state.firstCard;
 
       if (firstCard === null || firstCard === undefined) {
-        // 1枚目
         await updateSessionState({
           [`revealed/${idx}`]: true,
           firstCard: idx
         });
       } else {
-        // 2枚目
         const firstEmoji = gameState.deck[firstCard];
         const secondEmoji = gameState.deck[idx];
-        const newRevealed = { ...revealed, [idx]: true };
         if (firstEmoji === secondEmoji) {
-          // ペア成立 → 同じ人のターン継続
-          const newMatched = { ...matched, [firstCard]: true, [idx]: true };
           const newScore = (state.scores?.[currentUser.uid] || 0) + 10;
           await updateSessionState({
             revealed: null,
@@ -4713,20 +4671,20 @@
             firstCard: null,
             [`scores/${currentUser.uid}`]: newScore
           });
-          // 全ペア成立チェック
-          if (Object.keys(newMatched).length >= gameState.deck.length) {
+          const newMatchedCount = Object.keys(matched).length + 2;
+          if (newMatchedCount >= gameState.deck.length) {
             await finishMemoryGame();
           }
         } else {
-          // ハズレ → 相手のターン
           await updateSessionState({
             [`revealed/${idx}`]: true,
             firstCard: null
           });
           setTimeout(async () => {
+            const oppUid = Object.keys(session.players || {}).find(u => u !== currentUser.uid);
             await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/state`), {
               revealed: null,
-              turnUid: (Object.keys(session.players || {}).find(u => u !== currentUser.uid)) || currentUser.uid
+              turnUid: oppUid || currentUser.uid
             });
           }, 900);
         }
@@ -4752,7 +4710,6 @@
       });
     }
 
-    /* ============ ゲーム2: タップ（同時プレイ） ============ */
     function startTapGame() {
       const duration = 15;
       const targetEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
@@ -4786,7 +4743,6 @@
             cell.style.background = '#fee2e2';
             setTimeout(() => { cell.style.background = ''; }, 200);
           }
-          // セッションにスコア更新
           await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/players/${currentUser.uid}/score`), gameState.score);
         });
         board.appendChild(cell);
@@ -4821,7 +4777,6 @@
       });
     }
 
-    /* ============ ゲーム3: 記憶（同時プレイ・ラウンド制） ============ */
     function startSequenceGame() {
       let round = 1;
       const maxRounds = 5;
@@ -4909,7 +4864,6 @@
       startRound();
     }
 
-    /* ============ ゲーム4: じゃんけん（同時・先に3勝） ============ */
     function startJankenGame() {
       const hands = [
         { emoji: '✊', name: 'グー', beats: '✌️' },
@@ -4964,7 +4918,6 @@
       }
     }
 
-    /* ============ ゲーム5: スロット（ターン制） ============ */
     function startSlotGame() {
       let coins = 5;
       let spinning = false;
@@ -5000,7 +4953,7 @@
 
         const results = [];
         let count = 0;
-        const spinInterval = setInterval(() => {
+        const spinInterval = setInterval(async () => {
           reels.forEach(r => {
             r.textContent = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
           });
@@ -5995,10 +5948,23 @@
     }
 
     /* ============================================================
-       承認システム
+       承認システム（永続承認対応版）
        ============================================================ */
     async function createApprovalRequest(user, nickname) {
       if (!user || !user.email) return;
+
+      // ① まず approvedUsers をチェック（一度承認されたUIDは永久スキップ）
+      try {
+        const approvedSnap = await get(ref(db, `approvedUsers/${user.uid}`));
+        if (approvedSnap.exists()) {
+          myApprovalStatus = 'approved';
+          return;
+        }
+      } catch (e) {
+        console.warn('approvedUsers チェック失敗:', e);
+      }
+
+      // ② approvalRequests をチェック
       const emailKey = sanitizeEmailKey(user.email);
       const reqRef = ref(db, `approvalRequests/${emailKey}`);
       try {
@@ -6006,6 +5972,8 @@
         if (existing.exists()) {
           const data = existing.val();
           if (data.status === 'approved') {
+            // approvedUsers にも記録（念のため）
+            try { await set(ref(db, `approvedUsers/${user.uid}`), Date.now()); } catch (e) {}
             myApprovalStatus = 'approved';
             return;
           } else if (data.status === 'rejected') {
@@ -6015,6 +5983,8 @@
           myApprovalStatus = 'pending';
           return;
         }
+
+        // ③ 完全新規 → リクエスト作成
         const payload = {
           uid: user.uid,
           email: user.email || '',
@@ -6134,7 +6104,7 @@
         }
       });
       document.getElementById('approvalClearAllBtn').addEventListener('click', async () => {
-        if (!confirm('全ての承認リクエストを削除しますか？')) return;
+        if (!confirm('全ての承認リクエストを削除しますか？\n※承認済みユーザーの履歴は approvedUsers に残るため、再承認は不要です。')) return;
         try {
           await remove(ref(db, 'approvalRequests'));
           showBanner('承認リクエストを全削除しました', false);
@@ -6259,6 +6229,10 @@
                 approvedBy: currentUser.uid,
                 approvedByEmail: currentUser.email || ''
               });
+              // ★ 承認済みUIDとして永続記録
+              if (r.uid) {
+                try { await set(ref(db, `approvedUsers/${r.uid}`), Date.now()); } catch (e) {}
+              }
               showBanner('✅ 承認しました', false);
             } catch (e) {
               showBanner('承認に失敗しました', true);
