@@ -202,7 +202,16 @@
     .msg-content a { color: #2563eb; text-decoration: underline; word-break: break-all; }
     .msg-row.mine .msg-content a { color: #1e3a8a; }
 
-    /* 返信引用 */
+    /* システムメッセージ */
+    .system-message {
+      text-align: center; margin: 12px 0;
+    }
+    .system-message span {
+      background: #f3f4f6; color: #6b7280;
+      font-size: 11px; padding: 4px 12px;
+      border-radius: 9999px;
+    }
+
     .reply-quote {
       background: rgba(0,0,0,0.05);
       border-left: 3px solid #0284c7;
@@ -219,7 +228,6 @@
     .msg-row.mine .reply-quote { background: rgba(0,0,0,0.06); border-left-color: #1e40af; }
     .msg-row.mine .reply-quote .reply-name { color: #1e40af; }
 
-    /* リアクション */
     .msg-reactions {
       display: flex; flex-wrap: wrap; gap: 4px;
       margin-top: 4px; padding: 0 4px;
@@ -239,7 +247,6 @@
     .reaction-chip .reaction-count { font-size: 11px; font-weight: 700; color: #6b7280; }
     .reaction-chip.mine .reaction-count { color: #1e40af; }
 
-    /* ゲーム起動ボタン */
     .game-launch-btn {
       display: inline-flex; align-items: center; gap: 4px;
       margin-top: 6px;
@@ -344,6 +351,31 @@
     .msg-menu-popup button:hover { background: #f3f4f6; }
     .msg-menu-popup button.danger { color: #ef4444; }
     .msg-menu-popup button.danger:hover { background: #fef2f2; }
+
+    /* チャットヘッダーメニュー */
+    .chat-header-menu-btn {
+      background: #f3f4f6; border: 1px solid #d1d5db;
+      border-radius: 8px; padding: 7px 11px;
+      cursor: pointer; font-size: 14px;
+      color: #374151; font-weight: 700;
+    }
+    .chat-header-menu-btn:hover { background: #e5e7eb; }
+    .chat-header-menu-popup {
+      position: fixed; background: #fff;
+      border: 1px solid #e5e7eb; border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      min-width: 200px; z-index: 30000; overflow: hidden;
+    }
+    .chat-header-menu-popup button {
+      display: flex; align-items: center; gap: 8px;
+      width: 100%; text-align: left;
+      padding: 11px 14px; font-size: 13px;
+      background: none; border: none; cursor: pointer;
+      color: #374151;
+    }
+    .chat-header-menu-popup button:hover { background: #f3f4f6; }
+    .chat-header-menu-popup button.danger { color: #ef4444; }
+    .chat-header-menu-popup button.danger:hover { background: #fef2f2; }
 
     /* リアクションピッカー */
     .reaction-picker {
@@ -457,7 +489,6 @@
       display: flex; align-items: center; justify-content: center;
     }
 
-    /* 返信プレビュー（入力欄上） */
     .reply-preview {
       margin-bottom: 8px; padding: 8px 10px;
       background: #eff6ff;
@@ -577,7 +608,6 @@
     }
     #banOverlay.show { display: flex; }
 
-    /* 承認待ちオーバーレイ */
     #pendingApprovalOverlay {
       position: fixed; inset: 0; background: linear-gradient(135deg, #1e3a8a, #0f172a);
       z-index: 99998; display: none;
@@ -1097,7 +1127,7 @@
     .eh-footer-note { font-size: 11px; color: #9ca3af; }
     .eh-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-    /* ゲームモーダル */
+    /* ゲーム */
     #gameSelectModal .modal-content { border-top: 6px solid #f59e0b; }
     .game-select-grid {
       display: grid; grid-template-columns: repeat(2, 1fr);
@@ -1119,14 +1149,48 @@
     .game-select-card .game-icon { font-size: 28px; margin-bottom: 6px; }
     .game-select-card .game-title { font-size: 13px; font-weight: 800; color: #92400e; }
     .game-select-card .game-desc { font-size: 10px; color: #a16207; margin-top: 3px; }
+    .game-select-card.vs-badge { position: relative; }
+    .game-select-card.vs-badge::after {
+      content: '対戦'; position: absolute; top: 6px; right: 6px;
+      background: #ef4444; color: #fff; font-size: 9px;
+      font-weight: 700; padding: 2px 6px; border-radius: 9999px;
+    }
 
     #gamePlayModal .modal-content {
       border-top: 6px solid #7c3aed;
-      max-width: 480px;
+      max-width: 520px;
+    }
+    .game-vs-header {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin-bottom: 12px;
+      padding: 10px; background: #f5f3ff; border-radius: 10px;
+    }
+    .game-vs-player {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 4px; flex: 1; min-width: 0;
+    }
+    .game-vs-player img {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 2px solid #ddd6fe; object-fit: cover;
+    }
+    .game-vs-player .name {
+      font-size: 11px; font-weight: 700; color: #4c1d95;
+      max-width: 100%; overflow: hidden;
+      text-overflow: ellipsis; white-space: nowrap;
+    }
+    .game-vs-player .score {
+      font-size: 18px; font-weight: 900; color: #7c3aed;
+    }
+    .game-vs-player.active img {
+      border-color: #7c3aed; box-shadow: 0 0 0 3px rgba(124,58,237,0.3);
+    }
+    .game-vs-vs {
+      font-size: 16px; font-weight: 900; color: #dc2626;
+      flex-shrink: 0;
     }
     .game-board {
       display: grid; gap: 8px;
-      margin: 16px 0;
+      margin: 12px 0;
       justify-content: center;
     }
     .game-cell {
@@ -1141,18 +1205,33 @@
     .game-cell:hover { background: #dbeafe; transform: scale(1.05); }
     .game-cell.matched { background: #dcfce7; border-color: #86efac; cursor: default; opacity: 0.6; }
     .game-cell.selected { background: #fef3c7; border-color: #fbbf24; }
+    .game-cell.disabled { cursor: not-allowed; opacity: 0.5; }
     .game-status {
       text-align: center; font-size: 14px; font-weight: 700;
       color: #4c1d95; margin: 8px 0;
     }
-    .game-score {
-      display: flex; justify-content: space-around;
-      font-size: 13px; font-weight: 700; color: #6b7280;
-      margin: 8px 0;
+    .game-waiting {
+      text-align: center; padding: 24px; color: #6b7280;
+      font-size: 13px; line-height: 1.7;
     }
-    .game-score span { color: #7c3aed; }
+    .game-result-banner {
+      text-align: center; padding: 16px;
+      border-radius: 12px; margin: 12px 0;
+      font-weight: 800;
+    }
+    .game-result-banner.win {
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      color: #166534;
+    }
+    .game-result-banner.lose {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: #991b1b;
+    }
+    .game-result-banner.draw {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+    }
 
-    /* 承認リクエストパネル */
     .approval-item {
       display: flex; align-items: center; gap: 10px;
       padding: 10px; border: 1px solid #e5e7eb;
@@ -1340,6 +1419,7 @@
               <div class="chat-header-name" id="currentChatName"></div>
               <div class="chat-header-meta" id="currentChatMeta"></div>
             </div>
+            <button id="chatHeaderMenuBtn" class="chat-header-menu-btn">⋮</button>
           </div>
 
           <div class="chat-messages-wrap" id="chatMessagesWrap">
@@ -1402,6 +1482,26 @@
       <div style="display:flex;justify-content:flex-end;gap:8px;">
         <button id="newChatCancelBtn" class="secondary-btn">キャンセル</button>
         <button id="newChatCreateBtn" class="primary-btn">チャットを開始</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="addMemberModal" class="modal-backdrop hidden">
+    <div class="modal-content" style="border-top:6px solid #0891b2;">
+      <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#0e7490;">👥 メンバーを追加</h3>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 16px;">グループに追加するメンバーのメールアドレスを入力してください。</p>
+      <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <input type="email" id="addMemberEmailInput" placeholder="example@gmail.com" style="flex:1;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;outline:none;">
+        <button id="addMemberSearchBtn" type="button" class="primary-btn" style="padding:9px 14px;">検索</button>
+      </div>
+      <div id="addMemberSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
+      <div id="addMemberResultBox" style="min-height:44px;border:1px dashed #d1d5db;border-radius:8px;padding:8px;margin-bottom:14px;">
+        <span style="font-size:11px;color:#9ca3af;">メールアドレスを入力して検索してください</span>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="addMemberCancelBtn" class="secondary-btn">キャンセル</button>
+        <button id="addMemberConfirmBtn" class="primary-btn">追加</button>
       </div>
     </div>
   </div>
@@ -1483,14 +1583,13 @@
     </div>
   </div>
 
-  <!-- 承認リクエストパネル -->
   <div id="approvalPanel" class="modal-backdrop hidden">
     <div class="modal-content" style="border-top:6px solid #16a34a; max-width:560px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
         <h3 style="font-size:17px;font-weight:700;margin:0;color:#166534;">✅ 承認リクエスト</h3>
         <button id="approvalClearAllBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">全削除</button>
       </div>
-      <p style="font-size:11px;color:#6b7280;margin:0 0 14px;">新規ログインしたユーザーの承認待ち一覧です。<br>承認するとユーザーはサイトを利用できます。</p>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 14px;">新規ログインしたユーザーの承認待ち一覧です。</p>
       <div id="approvalList" style="max-height:55vh;overflow-y:auto;"></div>
       <div style="display:flex;justify-content:flex-end;margin-top:16px;">
         <button id="approvalCloseBtn" class="secondary-btn">閉じる</button>
@@ -1589,33 +1688,33 @@
 
   <div id="gameSelectModal" class="modal-backdrop hidden">
     <div class="modal-content">
-      <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#92400e;">🎮 絵文字で遊ぶ</h3>
-      <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">ゲームを選んでください</p>
+      <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#92400e;">🎮 対戦ゲーム</h3>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">相手に申し込みを送って対戦します。ゲームを選んでください。</p>
       <div class="game-select-grid">
-        <div class="game-select-card" data-game="memory">
+        <div class="game-select-card vs-badge" data-game="memory">
           <div class="game-icon">🧠</div>
           <div class="game-title">絵文字神経衰弱</div>
-          <div class="game-desc">ペアを揃えよう</div>
+          <div class="game-desc">ターン制でペアを揃えよう</div>
         </div>
-        <div class="game-select-card" data-game="tap">
+        <div class="game-select-card vs-badge" data-game="tap">
           <div class="game-icon">👆</div>
           <div class="game-title">絵文字タップ</div>
-          <div class="game-desc">指定を素早くタップ</div>
+          <div class="game-desc">15秒でスコア勝負</div>
         </div>
-        <div class="game-select-card" data-game="sequence">
+        <div class="game-select-card vs-badge" data-game="sequence">
           <div class="game-icon">🔢</div>
           <div class="game-title">絵文字記憶</div>
-          <div class="game-desc">順番を覚えよう</div>
+          <div class="game-desc">順番を当てて勝負</div>
         </div>
-        <div class="game-select-card" data-game="janken">
+        <div class="game-select-card vs-badge" data-game="janken">
           <div class="game-icon">✊</div>
           <div class="game-title">絵文字じゃんけん</div>
-          <div class="game-desc">相手と対決</div>
+          <div class="game-desc">先に3勝で勝利</div>
         </div>
-        <div class="game-select-card" data-game="slot">
+        <div class="game-select-card vs-badge" data-game="slot">
           <div class="game-icon">🎰</div>
           <div class="game-title">絵文字スロット</div>
-          <div class="game-desc">3つ揃えて当たり</div>
+          <div class="game-desc">交互にスピンしてコイン勝負</div>
         </div>
       </div>
       <div style="display:flex;justify-content:flex-end;margin-top:16px;">
@@ -1627,18 +1726,42 @@
   <div id="gamePlayModal" class="modal-backdrop hidden">
     <div class="modal-content">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <h3 style="font-size:16px;font-weight:700;margin:0;color:#5b21b6;" id="gamePlayTitle">ゲーム</h3>
+        <h3 style="font-size:16px;font-weight:700;margin:0;color:#5b21b6;" id="gamePlayTitle">対戦ゲーム</h3>
         <button id="gamePlayCloseBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">閉じる</button>
       </div>
-      <div class="game-score" id="gameScoreBar" style="display:none;">
-        <div>スコア: <span id="gameScoreVal">0</span></div>
-        <div>時間: <span id="gameTimeVal">0</span>s</div>
+      <div class="game-vs-header" id="gameVsHeader" style="display:none;">
+        <div class="game-vs-player" id="gameVsP1">
+          <img src="" alt="">
+          <div class="name"></div>
+          <div class="score">0</div>
+        </div>
+        <div class="game-vs-vs">VS</div>
+        <div class="game-vs-player" id="gameVsP2">
+          <img src="" alt="">
+          <div class="name"></div>
+          <div class="score">0</div>
+        </div>
       </div>
       <div class="game-status" id="gameStatusText"></div>
       <div id="gameBoardArea"></div>
       <div style="display:flex;justify-content:center;gap:8px;margin-top:12px;">
         <button id="gameRestartBtn" class="primary-btn" style="display:none;">もう一度</button>
         <button id="gameSendResultBtn" class="secondary-btn" style="display:none;">結果をチャットに送る</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gameInviteModal" class="modal-backdrop hidden">
+    <div class="modal-content" style="border-top:6px solid #f59e0b; max-width:460px;">
+      <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#92400e;">🎮 対戦申し込み</h3>
+      <p style="font-size:11px;color:#6b7280;margin:0 0 16px;">以下の内容で対戦を申し込みます。</p>
+      <div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px;margin-bottom:16px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:6px;" id="gameInviteIcon">🎮</div>
+        <div style="font-size:14px;font-weight:800;color:#92400e;" id="gameInviteName"></div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;">
+        <button id="gameInviteCancelBtn" class="secondary-btn">キャンセル</button>
+        <button id="gameInviteSendBtn" class="primary-btn">申し込む</button>
       </div>
     </div>
   </div>
@@ -1871,6 +1994,7 @@
     let reactionsUnsubscribe = null;
     let approvalUnsubscribe = null;
     let myApprovalUnsubscribe = null;
+    let gameSessionsUnsubscribe = null;
     let chatLatestListeners = {};
     let storyLikesUnsubscribe = null;
     let storyViewsUnsubscribe = null;
@@ -1937,6 +2061,7 @@
     let editingMsgKey = null;
     let openMenuKey = null;
     let openMenuEl = null;
+    let openChatHeaderMenuEl = null;
     let intentionalSignOut = false;
     let selectedAvatar = DEFAULT_AVATAR;
 
@@ -1951,11 +2076,16 @@
     let approvalsCache = {};
     let lastSeenApprovalCount = parseInt(localStorage.getItem(APPROVAL_SEEN_KEY) || '0', 10);
     let lastApprovalIds = new Set();
-    let myApprovalStatus = null; // null | 'pending' | 'approved' | 'rejected'
+    let myApprovalStatus = null;
 
     let replyingTo = null;
     let currentReactionPicker = null;
+
+    /* ゲーム関連 */
     let currentGameMessage = null;
+    let pendingGameType = null;
+    let currentGameSession = null; // {sessionId, type, ...}
+    let gameSessionUnsubscribe = null;
     let gameState = null;
     let gameTimerInterval = null;
 
@@ -2209,6 +2339,8 @@
         updateProfilesInExistingMessages();
         renderChatList();
         renderStories();
+        // ゲームのVSヘッダーも更新
+        if (currentGameSession) updateGameVsHeader();
       }, () => {});
     }
 
@@ -2503,6 +2635,7 @@
       document.getElementById('replyPreviewBox').classList.remove('show');
       closeAllMenus();
       closeReactionPicker();
+      closeChatHeaderMenu();
       renderChatList();
     }
 
@@ -2878,6 +3011,56 @@
         if (messagesContainer.querySelector(`[data-msg-key="${key}"]`)) return;
         if (clientMsgId && messagesContainer.querySelector(`[data-client-msg-id="${clientMsgId}"]`)) return;
 
+        // システムメッセージ
+        if (msg.system) {
+          const sys = document.createElement('div');
+          sys.className = 'system-message';
+          sys.dataset.msgKey = key;
+          sys.innerHTML = `<span>${escapeHtml(msg.content || '')}</span>`;
+          fragment.appendChild(sys);
+          lastRenderedMsg = msg;
+          lastDateForDivider = msg.createdAt;
+          return;
+        }
+
+        // ゲーム招待メッセージ
+        if (msg.gameInvite) {
+          const inv = document.createElement('div');
+          inv.className = 'msg-row';
+          inv.dataset.msgKey = key;
+          inv.dataset.clientMsgId = clientMsgId;
+          inv.dataset.msgAuthorUid = msg.authorUid;
+          const profile = getProfileForUid(msg.authorUid);
+          const isMine = currentUser && msg.authorUid === currentUser.uid;
+          inv.innerHTML = `
+            <div class="msg-avatar-slot">
+              <img class="avatar-sm" src="${escapeHtml(profile.avatar)}" alt="">
+            </div>
+            <div class="msg-body">
+              <div class="msg-meta">
+                <span class="name">${escapeHtml(profile.nickname)}</span>
+                <span class="time">${formatTime(msg.createdAt)}</span>
+              </div>
+              <div class="msg-bubble" style="background:linear-gradient(135deg,#fef3c7,#fed7aa);border-color:#fbbf24;cursor:pointer;" data-game-invite="${escapeHtml(msg.gameInvite.sessionId)}">
+                <div style="font-size:12px;color:#92400e;font-weight:700;">🎮 対戦申し込み</div>
+                <div style="font-size:14px;font-weight:800;color:#78350f;margin-top:4px;">${escapeHtml(msg.gameInvite.gameName || '')}</div>
+                <div style="font-size:11px;color:#a16207;margin-top:4px;">${isMine ? '相手の返答を待っています...' : 'タップして参加！'}</div>
+              </div>
+            </div>
+          `;
+          const inviteBubble = inv.querySelector('[data-game-invite]');
+          if (inviteBubble && !isMine) {
+            inviteBubble.addEventListener('click', () => {
+              joinGameSession(msg.gameInvite.sessionId);
+            });
+          }
+          fragment.appendChild(inv);
+          lastRenderedMsg = msg;
+          lastDateForDivider = msg.createdAt;
+          return;
+        }
+
+        // 通常メッセージ
         if (!lastDateForDivider || !isSameDay(lastDateForDivider, msg.createdAt)) {
           const divider = document.createElement('div');
           divider.className = 'date-divider';
@@ -2969,7 +3152,7 @@
 
         let gameBtnHtml = '';
         if (!isOptimistic && msg.content && containsEmoji(msg.content)) {
-          gameBtnHtml = `<button class="game-launch-btn" data-game-msg-key="${key}">🎮 絵文字で遊ぶ</button>`;
+          gameBtnHtml = `<button class="game-launch-btn" data-game-msg-key="${key}">🎮 対戦を申し込む</button>`;
         }
 
         let readHtml = '';
@@ -3203,6 +3386,7 @@
     function openMenu(btn, key) {
       closeAllMenus();
       closeReactionPicker();
+      closeChatHeaderMenu();
       openMenuKey = key;
       btn.classList.add('open');
 
@@ -3611,6 +3795,288 @@
       if (currentChatId) markChatAsRead(currentChatId);
     });
 
+    /* ============================================================
+       チャットヘッダーメニュー（退出・メンバー追加）
+       ============================================================ */
+    function closeChatHeaderMenu() {
+      if (openChatHeaderMenuEl && openChatHeaderMenuEl.parentNode) {
+        openChatHeaderMenuEl.parentNode.removeChild(openChatHeaderMenuEl);
+      }
+      openChatHeaderMenuEl = null;
+      document.removeEventListener('click', outsideChatHeaderMenuHandler);
+    }
+    function outsideChatHeaderMenuHandler(e) {
+      if (!e.target.closest('.chat-header-menu-popup') && !e.target.closest('.chat-header-menu-btn')) {
+        closeChatHeaderMenu();
+      }
+    }
+    document.getElementById('chatHeaderMenuBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (openChatHeaderMenuEl) {
+        closeChatHeaderMenu();
+        return;
+      }
+      closeAllMenus();
+      closeReactionPicker();
+      const chat = chatsCache[currentChatId];
+      if (!chat) return;
+      const isGroup = chat.type === 'group';
+
+      const popup = document.createElement('div');
+      popup.className = 'chat-header-menu-popup';
+
+      let html = '';
+      if (isGroup) {
+        html += `<button class="add-member-action">👥 メンバーを追加</button>`;
+        html += `<button class="danger leave-action">🚪 グループを退出</button>`;
+      } else {
+        html += `<button class="danger delete-action">🗑️ チャットを削除</button>`;
+      }
+      popup.innerHTML = html;
+      document.body.appendChild(popup);
+      openChatHeaderMenuEl = popup;
+
+      const rect = e.currentTarget.getBoundingClientRect();
+      const pr = popup.getBoundingClientRect();
+      let left = rect.right - pr.width;
+      let top = rect.bottom + 6;
+      if (left < 8) left = 8;
+      if (left + pr.width > window.innerWidth - 8) left = window.innerWidth - pr.width - 8;
+      if (top + pr.height > window.innerHeight - 8) top = rect.top - pr.height - 6;
+      popup.style.left = left + 'px';
+      popup.style.top = top + 'px';
+
+      const addBtn = popup.querySelector('.add-member-action');
+      if (addBtn) addBtn.addEventListener('click', () => { closeChatHeaderMenu(); openAddMemberModal(); });
+      const leaveBtn = popup.querySelector('.leave-action');
+      if (leaveBtn) leaveBtn.addEventListener('click', () => { closeChatHeaderMenu(); leaveGroup(); });
+      const delBtn = popup.querySelector('.delete-action');
+      if (delBtn) delBtn.addEventListener('click', () => { closeChatHeaderMenu(); deleteDirectChat(); });
+
+      setTimeout(() => {
+        document.addEventListener('click', outsideChatHeaderMenuHandler);
+      }, 0);
+    });
+
+    async function leaveGroup() {
+      if (!currentUser || !currentChatId) return;
+      const chat = chatsCache[currentChatId];
+      if (!chat || chat.type !== 'group') return;
+      if (!confirm('このグループを退出しますか？\n（自分の画面からチャットが消えます）')) return;
+
+      const chatId = currentChatId;
+      try {
+        // 自分の userChats から削除
+        await remove(ref(db, `userChats/${currentUser.uid}/${chatId}`));
+        // システムメッセージ投稿
+        const sysRef = push(ref(db, `chatMessages/${chatId}`));
+        await set(sysRef, {
+          system: true,
+          content: `${myProfile.nickname} が退出しました`,
+          authorUid: currentUser.uid,
+          createdAt: Date.now()
+        });
+        // 残メンバーを取得
+        const membersSnap = await get(ref(db, `chatMeta/${chatId}/members`));
+        if (membersSnap.exists()) {
+          const members = membersSnap.val();
+          delete members[currentUser.uid];
+          await set(ref(db, `chatMeta/${chatId}/members`), members);
+          const remainingUids = Object.keys(members);
+          if (remainingUids.length === 0) {
+            // 最後の1人 → チャット自体を削除
+            await remove(ref(db, `chatMeta/${chatId}`));
+            await remove(ref(db, `chatMessages/${chatId}`));
+            await remove(ref(db, `chatReactions/${chatId}`));
+            await remove(ref(db, `chatReads/${chatId}`));
+            await remove(ref(db, `chatTyping/${chatId}`));
+          } else {
+            // 他メンバーの userChats の lastMessage を更新
+            const updates = {};
+            remainingUids.forEach(uid => {
+              updates[`userChats/${uid}/${chatId}/lastMessage`] = `${myProfile.nickname} が退出しました`;
+              updates[`userChats/${uid}/${chatId}/lastMessageAt`] = Date.now();
+              updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
+            });
+            await update(ref(db), updates);
+          }
+        }
+        showBanner('グループを退出しました', false);
+        backToChatList();
+      } catch (err) {
+        console.error('退出エラー:', err);
+        showBanner('退出に失敗しました', true);
+      }
+    }
+
+    async function deleteDirectChat() {
+      if (!currentUser || !currentChatId) return;
+      const chat = chatsCache[currentChatId];
+      if (!chat || chat.type !== 'direct') return;
+      if (!confirm('このチャットを削除しますか？\n（相手の画面からも消えます）')) return;
+
+      const chatId = currentChatId;
+      const memberUids = Object.keys(chat.members || {});
+      try {
+        const updates = {};
+        memberUids.forEach(uid => {
+          updates[`userChats/${uid}/${chatId}`] = null;
+        });
+        updates[`chatMeta/${chatId}`] = null;
+        updates[`chatMessages/${chatId}`] = null;
+        updates[`chatReactions/${chatId}`] = null;
+        updates[`chatReads/${chatId}`] = null;
+        updates[`chatTyping/${chatId}`] = null;
+        await update(ref(db), updates);
+        showBanner('チャットを削除しました', false);
+        backToChatList();
+      } catch (err) {
+        console.error('削除エラー:', err);
+        showBanner('削除に失敗しました', true);
+      }
+    }
+
+    /* ============================================================
+       メンバー追加
+       ============================================================ */
+    let addMemberTargetProfile = null;
+    function openAddMemberModal() {
+      document.getElementById('addMemberEmailInput').value = '';
+      document.getElementById('addMemberSearchMsg').textContent = '';
+      document.getElementById('addMemberResultBox').innerHTML = '<span style="font-size:11px;color:#9ca3af;">メールアドレスを入力して検索してください</span>';
+      addMemberTargetProfile = null;
+      document.getElementById('addMemberModal').classList.remove('hidden');
+    }
+    document.getElementById('addMemberCancelBtn').addEventListener('click', () => {
+      document.getElementById('addMemberModal').classList.add('hidden');
+    });
+    document.getElementById('addMemberModal').addEventListener('click', (e) => {
+      if (e.target.id === 'addMemberModal') document.getElementById('addMemberModal').classList.add('hidden');
+    });
+
+    document.getElementById('addMemberSearchBtn').addEventListener('click', async () => {
+      const email = document.getElementById('addMemberEmailInput').value.trim().toLowerCase();
+      const msg = document.getElementById('addMemberSearchMsg');
+      const box = document.getElementById('addMemberResultBox');
+      msg.textContent = '';
+      msg.style.color = '#dc2626';
+      addMemberTargetProfile = null;
+
+      if (!email) { msg.textContent = 'メールアドレスを入力してください。'; return; }
+      if (email === (currentUser.email || '').toLowerCase()) { msg.textContent = '自分自身は追加できません。'; return; }
+
+      const chat = chatsCache[currentChatId];
+      if (!chat) return;
+      const memberUids = Object.keys(chat.members || {});
+      // 既存メンバーチェック
+      for (const uid of memberUids) {
+        const p = profilesCache[uid];
+        if (p && p.email && p.email.toLowerCase() === email) {
+          msg.textContent = 'すでにメンバーです。';
+          box.innerHTML = '<span style="font-size:11px;color:#9ca3af;">別のメールアドレスを入力してください</span>';
+          return;
+        }
+      }
+
+      msg.style.color = '#6b7280';
+      msg.textContent = '検索中...';
+      try {
+        const snap = await get(ref(db, 'chatProfiles'));
+        if (!snap.exists()) { msg.style.color = '#dc2626'; msg.textContent = 'ユーザーが見つかりません。'; return; }
+        const profiles = snap.val();
+        let found = null;
+        for (const [uid, p] of Object.entries(profiles)) {
+          if (p.email && p.email.toLowerCase() === email) {
+            found = { uid, ...p };
+            break;
+          }
+        }
+        if (!found) {
+          msg.style.color = '#dc2626';
+          msg.textContent = '該当するユーザーが見つかりませんでした。';
+          box.innerHTML = '<span style="font-size:11px;color:#9ca3af;">別のメールアドレスを入力してください</span>';
+          return;
+        }
+        addMemberTargetProfile = {
+          uid: found.uid,
+          nickname: found.nickname || '名無しさん',
+          avatar: found.avatar || DEFAULT_AVATAR,
+          email: found.email
+        };
+        msg.style.color = '#16a34a';
+        msg.textContent = '✓ 見つかりました';
+        box.innerHTML = `
+          <div style="display:flex;align-items:center;gap:8px;">
+            <img src="${escapeHtml(addMemberTargetProfile.avatar)}" style="width:40px;height:40px;border-radius:50%;">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#1e40af;">${escapeHtml(addMemberTargetProfile.nickname)}</div>
+              <div style="font-size:11px;color:#6b7280;">${escapeHtml(addMemberTargetProfile.email)}</div>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        msg.style.color = '#dc2626';
+        msg.textContent = '検索に失敗しました。';
+      }
+    });
+    document.getElementById('addMemberEmailInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) {
+        e.preventDefault();
+        document.getElementById('addMemberSearchBtn').click();
+      }
+    });
+
+    document.getElementById('addMemberConfirmBtn').addEventListener('click', async () => {
+      if (!addMemberTargetProfile || !currentChatId) {
+        showBanner('メンバーを検索してください', true);
+        return;
+      }
+      const chatId = currentChatId;
+      const newUid = addMemberTargetProfile.uid;
+      const chat = chatsCache[chatId];
+      if (!chat) return;
+
+      try {
+        // chatMeta/members 更新
+        await update(ref(db, `chatMeta/${chatId}/members`), { [newUid]: true });
+        // 新メンバーの userChats に追加
+        const chatData = {
+          type: chat.type,
+          name: chat.name || '',
+          members: { ...(chat.members || {}), [newUid]: true },
+          createdAt: chat.createdAt || Date.now(),
+          createdBy: chat.createdBy || currentUser.uid,
+          lastMessage: `${myProfile.nickname} が ${addMemberTargetProfile.nickname} を追加しました`,
+          lastMessageAt: Date.now(),
+          lastSenderUid: currentUser.uid
+        };
+        await set(ref(db, `userChats/${newUid}/${chatId}`), chatData);
+        // 既存メンバーの members も更新
+        const updates = {};
+        Object.keys(chat.members || {}).forEach(uid => {
+          if (uid === newUid) return;
+          updates[`userChats/${uid}/${chatId}/members/${newUid}`] = true;
+          updates[`userChats/${uid}/${chatId}/lastMessage`] = `${addMemberTargetProfile.nickname} が参加しました`;
+          updates[`userChats/${uid}/${chatId}/lastMessageAt`] = Date.now();
+          updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
+        });
+        await update(ref(db), updates);
+        // システムメッセージ
+        const sysRef = push(ref(db, `chatMessages/${chatId}`));
+        await set(sysRef, {
+          system: true,
+          content: `${addMemberTargetProfile.nickname} が参加しました`,
+          authorUid: currentUser.uid,
+          createdAt: Date.now()
+        });
+        document.getElementById('addMemberModal').classList.add('hidden');
+        showBanner('メンバーを追加しました', false);
+      } catch (err) {
+        console.error('メンバー追加エラー:', err);
+        showBanner('追加に失敗しました', true);
+      }
+    });
+
     const newChatModal = document.getElementById('newChatModal');
     const memberEmailInput = document.getElementById('memberEmailInput');
     const memberSearchMsg = document.getElementById('memberSearchMsg');
@@ -3811,21 +4277,37 @@
     });
 
     /* ============================================================
-       ミニゲーム
+       対戦ミニゲーム
        ============================================================ */
     const EMOJI_POOL = ['😀','😎','🔥','🌟','🍀','🌸','🐱','🐶','🦊','🐼','🎮','☕','🍎','🍕','⚽','🎵','💎','🚀','🌈','🍩'];
+    const GAME_NAMES = {
+      memory: '🧠 絵文字神経衰弱',
+      tap: '👆 絵文字タップ',
+      sequence: '🔢 絵文字記憶',
+      janken: '✊ 絵文字じゃんけん',
+      slot: '🎰 絵文字スロット'
+    };
 
     const gameSelectModal = document.getElementById('gameSelectModal');
     const gamePlayModal = document.getElementById('gamePlayModal');
+    const gameInviteModal = document.getElementById('gameInviteModal');
     const gameBoardArea = document.getElementById('gameBoardArea');
     const gameStatusText = document.getElementById('gameStatusText');
-    const gameScoreBar = document.getElementById('gameScoreBar');
-    const gameScoreVal = document.getElementById('gameScoreVal');
-    const gameTimeVal = document.getElementById('gameTimeVal');
     const gameRestartBtn = document.getElementById('gameRestartBtn');
     const gameSendResultBtn = document.getElementById('gameSendResultBtn');
+    const gameVsHeader = document.getElementById('gameVsHeader');
+    const gameVsP1 = document.getElementById('gameVsP1');
+    const gameVsP2 = document.getElementById('gameVsP2');
 
     function openGameSelect(msg) {
+      if (!currentChatId) return;
+      const chat = chatsCache[currentChatId];
+      if (!chat) return;
+      // 1対1チャットのみ対戦可能
+      if (chat.type !== 'direct') {
+        showBanner('対戦は1対1チャットでのみ可能です', true);
+        return;
+      }
       currentGameMessage = msg;
       gameSelectModal.classList.remove('hidden');
     }
@@ -3843,45 +4325,189 @@
       card.addEventListener('click', () => {
         const game = card.dataset.game;
         gameSelectModal.classList.add('hidden');
-        openGamePlay(game);
+        showGameInviteConfirm(game);
       });
     });
+
+    function showGameInviteConfirm(gameType) {
+      pendingGameType = gameType;
+      document.getElementById('gameInviteIcon').textContent = GAME_NAMES[gameType].split(' ')[0];
+      document.getElementById('gameInviteName').textContent = GAME_NAMES[gameType];
+      gameInviteModal.classList.remove('hidden');
+    }
+    document.getElementById('gameInviteCancelBtn').addEventListener('click', () => {
+      gameInviteModal.classList.add('hidden');
+      pendingGameType = null;
+      currentGameMessage = null;
+    });
+    gameInviteModal.addEventListener('click', (e) => {
+      if (e.target.id === 'gameInviteModal') {
+        gameInviteModal.classList.add('hidden');
+        pendingGameType = null;
+        currentGameMessage = null;
+      }
+    });
+    document.getElementById('gameInviteSendBtn').addEventListener('click', async () => {
+      if (!pendingGameType || !currentChatId || !currentUser) return;
+      const gameType = pendingGameType;
+      gameInviteModal.classList.add('hidden');
+      pendingGameType = null;
+      await createGameSession(gameType);
+    });
+
+    async function createGameSession(gameType) {
+      const chatId = currentChatId;
+      const chat = chatsCache[chatId];
+      if (!chat) return;
+      const opponentUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
+      if (!opponentUid) { showBanner('対戦相手が見つかりません', true); return; }
+
+      try {
+        const sessRef = push(ref(db, `gameSessions/${chatId}`));
+        const sessionId = sessRef.key;
+        const session = {
+          type: gameType,
+          createdBy: currentUser.uid,
+          opponentUid,
+          status: 'inviting', // inviting | playing | finished
+          createdAt: Date.now(),
+          players: {
+            [currentUser.uid]: { name: myProfile.nickname, avatar: myProfile.avatar, score: 0 },
+            [opponentUid]: { name: getProfileForUid(opponentUid).nickname, avatar: getProfileForUid(opponentUid).avatar, score: 0 }
+          },
+          state: {}
+        };
+        await set(ref(db, `gameSessions/${chatId}/${sessionId}`), session);
+
+        // チャットに招待メッセージ投稿
+        const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+        const msgRef = push(ref(db, `chatMessages/${chatId}`));
+        await set(msgRef, {
+          clientMsgId,
+          content: '',
+          file: null,
+          authorUid: currentUser.uid,
+          authorName: myProfile.nickname,
+          authorAvatar: myProfile.avatar,
+          createdAt: Date.now(),
+          gameInvite: {
+            sessionId,
+            gameType,
+            gameName: GAME_NAMES[gameType]
+          }
+        });
+
+        // チャット一覧の最終メッセージ更新
+        const memberUids = Object.keys(chat.members || {});
+        const updates = {};
+        memberUids.forEach(uid => {
+          updates[`userChats/${uid}/${chatId}/lastMessage`] = `🎮 ${GAME_NAMES[gameType]} の対戦申し込み`;
+          updates[`userChats/${uid}/${chatId}/lastMessageAt`] = Date.now();
+          updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
+        });
+        await update(ref(db), updates);
+
+        currentGameMessage = null;
+        showBanner('対戦を申し込みました', false);
+      } catch (err) {
+        console.error('ゲームセッション作成エラー:', err);
+        showBanner('申し込みに失敗しました', true);
+      }
+    }
+
+    async function joinGameSession(sessionId) {
+      if (!currentChatId || !currentUser) return;
+      try {
+        const sessRef = ref(db, `gameSessions/${currentChatId}/${sessionId}`);
+        const snap = await get(sessRef);
+        if (!snap.exists()) { showBanner('セッションが見つかりません', true); return; }
+        const session = snap.val();
+        if (session.status === 'finished') { showBanner('この対戦は終了しています', true); return; }
+
+        // 自分の承認を記録
+        await update(sessRef, {
+          status: 'playing',
+          [`players/${currentUser.uid}/joined`]: true,
+          startedAt: Date.now()
+        });
+        openGamePlayModal(sessionId);
+      } catch (err) {
+        console.error('参加エラー:', err);
+        showBanner('参加に失敗しました', true);
+      }
+    }
+
+    function openGamePlayModal(sessionId) {
+      currentGameSession = { sessionId, chatId: currentChatId };
+      gamePlayModal.classList.remove('hidden');
+      gameBoardArea.innerHTML = '';
+      gameStatusText.textContent = '対戦相手を待っています...';
+      gameRestartBtn.style.display = 'none';
+      gameSendResultBtn.style.display = 'none';
+      gameVsHeader.style.display = 'flex';
+
+      if (gameSessionUnsubscribe) gameSessionUnsubscribe();
+      gameSessionUnsubscribe = onValue(ref(db, `gameSessions/${currentChatId}/${sessionId}`), (snap) => {
+        if (!snap.exists()) { closeGamePlay(); return; }
+        const session = snap.val();
+        currentGameSession.session = session;
+        updateGameVsHeader();
+        handleGameSessionUpdate(session);
+      }, () => {});
+    }
+
+    function updateGameVsHeader() {
+      if (!currentGameSession || !currentGameSession.session) return;
+      const session = currentGameSession.session;
+      const players = session.players || {};
+      const uids = Object.keys(players);
+      if (uids.length < 2) return;
+      const myUid = currentUser.uid;
+      const oppUid = uids.find(u => u !== myUid) || uids[0];
+      const me = players[myUid] || {};
+      const opp = players[oppUid] || {};
+      const myP = getProfileForUid(myUid);
+      const oppP = getProfileForUid(oppUid);
+
+      gameVsP1.querySelector('img').src = myP.avatar;
+      gameVsP1.querySelector('.name').textContent = myP.nickname + ' (あなた)';
+      gameVsP1.querySelector('.score').textContent = me.score || 0;
+
+      gameVsP2.querySelector('img').src = oppP.avatar;
+      gameVsP2.querySelector('.name').textContent = oppP.nickname;
+      gameVsP2.querySelector('.score').textContent = opp.score || 0;
+    }
+
     document.getElementById('gamePlayCloseBtn').addEventListener('click', () => {
-      closeGamePlay();
+      if (confirm('対戦を中断しますか？')) closeGamePlay();
     });
     gamePlayModal.addEventListener('click', (e) => {
-      if (e.target.id === 'gamePlayModal') closeGamePlay();
+      if (e.target.id === 'gamePlayModal') {
+        if (confirm('対戦を中断しますか？')) closeGamePlay();
+      }
     });
     gameRestartBtn.addEventListener('click', () => {
-      if (!gameState) return;
-      startGame(gameState.type);
+      if (currentGameSession && currentGameSession.session) {
+        startGame(currentGameSession.session.type);
+      }
     });
     gameSendResultBtn.addEventListener('click', async () => {
       if (!gameState) return;
-      const resultText = gameState.resultText || 'ゲーム終了';
-      await sendGameResult(resultText);
+      await sendGameResult(gameState.resultText || 'ゲーム終了');
       closeGamePlay();
     });
 
     function closeGamePlay() {
       gamePlayModal.classList.add('hidden');
       if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
+      if (gameSessionUnsubscribe) { gameSessionUnsubscribe(); gameSessionUnsubscribe = null; }
       gameState = null;
+      currentGameSession = null;
       gameBoardArea.innerHTML = '';
       gameStatusText.textContent = '';
-      gameScoreBar.style.display = 'none';
       gameRestartBtn.style.display = 'none';
       gameSendResultBtn.style.display = 'none';
-    }
-
-    function openGamePlay(game) {
-      gamePlayModal.classList.remove('hidden');
-      gameBoardArea.innerHTML = '';
-      gameStatusText.textContent = '';
-      gameScoreBar.style.display = 'none';
-      gameRestartBtn.style.display = 'none';
-      gameSendResultBtn.style.display = 'none';
-      startGame(game);
+      gameVsHeader.style.display = 'none';
     }
 
     async function sendGameResult(text) {
@@ -3917,22 +4543,42 @@
       }
     }
 
+    /* セッション更新ハンドラ（ゲームタイプ別） */
+    function handleGameSessionUpdate(session) {
+      if (!currentGameSession || !session) return;
+      const gameType = session.type;
+      const myUid = currentUser.uid;
+
+      if (gameState && gameState.type === gameType && gameState.sessionId === currentGameSession.sessionId) {
+        // 既にプレイ中 → 状態同期
+        syncGameState(session);
+        return;
+      }
+
+      // 初回：ゲーム開始
+      if (session.status === 'playing') {
+        startGame(gameType);
+      } else if (session.status === 'inviting') {
+        // 自分が招待した側なら待機、相手なら参加ボタンは既にチャットで押している
+        if (session.createdBy === myUid) {
+          gameStatusText.textContent = '相手の参加を待っています...';
+        }
+      }
+    }
+
     function startGame(type) {
       if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
       gameBoardArea.innerHTML = '';
-      gameStatusText.textContent = '';
-      gameRestartBtn.style.display = 'inline-block';
+      gameRestartBtn.style.display = 'none';
       gameSendResultBtn.style.display = 'none';
-      gameScoreBar.style.display = 'none';
-      gameState = { type, score: 0, resultText: '' };
-
-      document.getElementById('gamePlayTitle').textContent = {
-        memory: '🧠 絵文字神経衰弱',
-        tap: '👆 絵文字タップ',
-        sequence: '🔢 絵文字記憶',
-        janken: '✊ 絵文字じゃんけん',
-        slot: '🎰 絵文字スロット'
-      }[type] || 'ゲーム';
+      gameState = {
+        type,
+        sessionId: currentGameSession.sessionId,
+        chatId: currentGameSession.chatId,
+        score: 0,
+        resultText: ''
+      };
+      document.getElementById('gamePlayTitle').textContent = GAME_NAMES[type] || '対戦ゲーム';
 
       if (type === 'memory') startMemoryGame();
       else if (type === 'tap') startTapGame();
@@ -3941,80 +4587,178 @@
       else if (type === 'slot') startSlotGame();
     }
 
+    /* ゲームセッションの自分の状態を更新 */
+    async function updateSessionState(partial) {
+      if (!currentGameSession) return;
+      try {
+        await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/state`), partial);
+      } catch (e) {}
+    }
+
+    function syncGameState(session) {
+      // 各ゲームの同期処理（簡易版：スコアのみ反映）
+      const players = session.players || {};
+      const myScore = players[currentUser.uid]?.score || 0;
+      const oppUid = Object.keys(players).find(u => u !== currentUser.uid);
+      const oppScore = oppUid ? (players[oppUid]?.score || 0) : 0;
+
+      if (gameState.type === 'tap') {
+        // タップは同時進行なので、相手のスコアをVSヘッダーに表示
+        gameVsP2.querySelector('.score').textContent = oppScore;
+        gameVsP1.querySelector('.score').textContent = myScore;
+      } else if (gameState.type === 'janken') {
+        gameVsP2.querySelector('.score').textContent = oppScore;
+        gameVsP1.querySelector('.score').textContent = myScore;
+      } else if (gameState.type === 'memory' || gameState.type === 'slot') {
+        // ターン制
+        const turn = session.state?.turnUid;
+        if (turn) {
+          if (turn === currentUser.uid) {
+            gameStatusText.textContent = 'あなたのターンです';
+          } else {
+            gameStatusText.textContent = '相手のターンです...';
+          }
+        }
+      }
+    }
+
+    /* ============ ゲーム1: 神経衰弱（ターン制） ============ */
     function startMemoryGame() {
-      const size = 4;
       const pairs = 8;
       const emojis = [...EMOJI_POOL].sort(() => Math.random() - 0.5).slice(0, pairs);
       const deck = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
-      let firstCard = null;
-      let lock = false;
-      let matched = 0;
-      let tries = 0;
+      // セッションにデッキを保存（両者で共有）
+      updateSessionState({
+        deck,
+        revealed: {},
+        matched: {},
+        firstCard: null,
+        turnUid: currentUser.uid,
+        scores: { [currentUser.uid]: 0 }
+      });
+      gameState.localMatched = 0;
+      gameState.localFirstCard = null;
+      gameState.lock = false;
 
       gameBoardArea.innerHTML = '';
       const board = document.createElement('div');
       board.className = 'game-board';
-      board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+      board.style.gridTemplateColumns = `repeat(4, 1fr)`;
       board.style.maxWidth = '360px';
       board.style.margin = '0 auto';
-
-      deck.forEach((emoji, idx) => {
-        const cell = document.createElement('div');
-        cell.className = 'game-cell';
-        cell.textContent = '';
-        cell.dataset.emoji = emoji;
-        cell.dataset.idx = idx;
-        cell.addEventListener('click', () => {
-          if (lock || cell.classList.contains('matched') || cell === firstCard) return;
-          cell.textContent = emoji;
-          cell.classList.add('selected');
-          if (!firstCard) {
-            firstCard = cell;
-          } else {
-            tries++;
-            if (firstCard.dataset.emoji === cell.dataset.emoji) {
-              firstCard.classList.add('matched');
-              cell.classList.add('matched');
-              firstCard.classList.remove('selected');
-              cell.classList.remove('selected');
-              firstCard = null;
-              matched++;
-              if (matched === pairs) {
-                gameState.score = Math.max(1, 100 - tries * 2);
-                gameState.resultText = `🧠 絵文字神経衰弱 クリア！ スコア: ${gameState.score} (${tries}回で完成)`;
-                gameStatusText.textContent = `🎉 クリア！ スコア: ${gameState.score}`;
-                gameSendResultBtn.style.display = 'inline-block';
-              }
-            } else {
-              lock = true;
-              const f = firstCard;
-              setTimeout(() => {
-                f.textContent = '';
-                cell.textContent = '';
-                f.classList.remove('selected');
-                cell.classList.remove('selected');
-                firstCard = null;
-                lock = false;
-              }, 700);
-            }
-          }
-          gameStatusText.textContent = `揃ったペア: ${matched}/${pairs}`;
-        });
-        board.appendChild(cell);
-      });
       gameBoardArea.appendChild(board);
-      gameStatusText.textContent = `揃ったペア: 0/${pairs}`;
+      gameState.boardEl = board;
+      gameState.deck = deck;
+
+      gameStatusText.textContent = 'あなたのターンです。カードを選んでください。';
+
+      renderMemoryBoard();
     }
 
+    function renderMemoryBoard() {
+      if (!gameState || gameState.type !== 'memory') return;
+      const session = currentGameSession?.session;
+      const state = session?.state || {};
+      const revealed = state.revealed || {};
+      const matched = state.matched || {};
+      const board = gameState.boardEl;
+      board.innerHTML = '';
+      gameState.deck.forEach((emoji, idx) => {
+        const cell = document.createElement('div');
+        cell.className = 'game-cell';
+        if (matched[idx]) {
+          cell.classList.add('matched');
+          cell.textContent = emoji;
+        } else if (revealed[idx]) {
+          cell.classList.add('selected');
+          cell.textContent = emoji;
+        } else {
+          cell.textContent = '';
+        }
+        cell.addEventListener('click', () => onMemoryCardClick(idx));
+        board.appendChild(cell);
+      });
+    }
+
+    async function onMemoryCardClick(idx) {
+      if (!gameState || gameState.type !== 'memory') return;
+      const session = currentGameSession?.session;
+      const state = session?.state || {};
+      const turn = state.turnUid;
+      if (turn !== currentUser.uid) { showBanner('相手のターンです', true); return; }
+      const revealed = state.revealed || {};
+      const matched = state.matched || {};
+      if (matched[idx] || revealed[idx]) return;
+      const firstCard = state.firstCard;
+
+      if (firstCard === null || firstCard === undefined) {
+        // 1枚目
+        await updateSessionState({
+          [`revealed/${idx}`]: true,
+          firstCard: idx
+        });
+      } else {
+        // 2枚目
+        const firstEmoji = gameState.deck[firstCard];
+        const secondEmoji = gameState.deck[idx];
+        const newRevealed = { ...revealed, [idx]: true };
+        if (firstEmoji === secondEmoji) {
+          // ペア成立 → 同じ人のターン継続
+          const newMatched = { ...matched, [firstCard]: true, [idx]: true };
+          const newScore = (state.scores?.[currentUser.uid] || 0) + 10;
+          await updateSessionState({
+            revealed: null,
+            [`matched/${firstCard}`]: true,
+            [`matched/${idx}`]: true,
+            firstCard: null,
+            [`scores/${currentUser.uid}`]: newScore
+          });
+          // 全ペア成立チェック
+          if (Object.keys(newMatched).length >= gameState.deck.length) {
+            await finishMemoryGame();
+          }
+        } else {
+          // ハズレ → 相手のターン
+          await updateSessionState({
+            [`revealed/${idx}`]: true,
+            firstCard: null
+          });
+          setTimeout(async () => {
+            await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/state`), {
+              revealed: null,
+              turnUid: (Object.keys(session.players || {}).find(u => u !== currentUser.uid)) || currentUser.uid
+            });
+          }, 900);
+        }
+      }
+    }
+
+    async function finishMemoryGame() {
+      const state = currentGameSession.session?.state || {};
+      const scores = state.scores || {};
+      const myScore = scores[currentUser.uid] || 0;
+      const oppUid = Object.keys(currentGameSession.session.players || {}).find(u => u !== currentUser.uid);
+      const oppScore = scores[oppUid] || 0;
+      let resultText;
+      if (myScore > oppScore) resultText = `🧠 絵文字神経衰弱 勝利！ ${myScore} - ${oppScore}`;
+      else if (myScore < oppScore) resultText = `🧠 絵文字神経衰弱 敗北… ${myScore} - ${oppScore}`;
+      else resultText = `🧠 絵文字神経衰弱 引き分け ${myScore} - ${oppScore}`;
+      gameState.resultText = resultText;
+      gameStatusText.innerHTML = `<div class="game-result-banner ${myScore > oppScore ? 'win' : myScore < oppScore ? 'lose' : 'draw'}">${resultText}</div>`;
+      gameSendResultBtn.style.display = 'inline-block';
+      await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}`), {
+        status: 'finished',
+        finishedAt: Date.now()
+      });
+    }
+
+    /* ============ ゲーム2: タップ（同時プレイ） ============ */
     function startTapGame() {
       const duration = 15;
       const targetEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
-      let score = 0;
       let timeLeft = duration;
+      updateSessionState({ targetEmoji, duration });
 
-      gameScoreBar.style.display = 'flex';
-      gameScoreVal.textContent = '0';
-      gameTimeVal.textContent = timeLeft;
       gameStatusText.innerHTML = `「${targetEmoji}」をタップ！`;
 
       const board = document.createElement('div');
@@ -4029,19 +4773,21 @@
         const emoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
         cell.textContent = emoji;
         cell.dataset.emoji = emoji;
-        cell.addEventListener('click', () => {
+        cell.addEventListener('click', async () => {
           if (timeLeft <= 0) return;
           if (emoji === targetEmoji) {
-            score += 10;
-            gameScoreVal.textContent = score;
+            gameState.score += 10;
+            gameVsP1.querySelector('.score').textContent = gameState.score;
             cell.style.background = '#dcfce7';
             setTimeout(() => { cell.style.background = ''; }, 200);
           } else {
-            score = Math.max(0, score - 5);
-            gameScoreVal.textContent = score;
+            gameState.score = Math.max(0, gameState.score - 5);
+            gameVsP1.querySelector('.score').textContent = gameState.score;
             cell.style.background = '#fee2e2';
             setTimeout(() => { cell.style.background = ''; }, 200);
           }
+          // セッションにスコア更新
+          await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/players/${currentUser.uid}/score`), gameState.score);
         });
         board.appendChild(cell);
       }
@@ -4049,21 +4795,36 @@
 
       gameTimerInterval = setInterval(() => {
         timeLeft--;
-        gameTimeVal.textContent = timeLeft;
         if (timeLeft <= 0) {
           clearInterval(gameTimerInterval);
           gameTimerInterval = null;
-          gameState.score = score;
-          gameState.resultText = `👆 絵文字タップ スコア: ${score}点！`;
-          gameStatusText.textContent = `⏰ 終了！ スコア: ${score}`;
-          gameSendResultBtn.style.display = 'inline-block';
+          finishTapGame();
         }
       }, 1000);
     }
 
+    async function finishTapGame() {
+      const players = currentGameSession.session?.players || {};
+      const myScore = players[currentUser.uid]?.score || 0;
+      const oppUid = Object.keys(players).find(u => u !== currentUser.uid);
+      const oppScore = oppUid ? (players[oppUid]?.score || 0) : 0;
+      let resultText;
+      if (myScore > oppScore) resultText = `👆 絵文字タップ 勝利！ ${myScore} - ${oppScore}`;
+      else if (myScore < oppScore) resultText = `👆 絵文字タップ 敗北… ${myScore} - ${oppScore}`;
+      else resultText = `👆 絵文字タップ 引き分け ${myScore} - ${oppScore}`;
+      gameState.resultText = resultText;
+      gameStatusText.innerHTML = `<div class="game-result-banner ${myScore > oppScore ? 'win' : myScore < oppScore ? 'lose' : 'draw'}">${resultText}</div>`;
+      gameSendResultBtn.style.display = 'inline-block';
+      await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}`), {
+        status: 'finished',
+        finishedAt: Date.now()
+      });
+    }
+
+    /* ============ ゲーム3: 記憶（同時プレイ・ラウンド制） ============ */
     function startSequenceGame() {
       let round = 1;
-      let maxRounds = 5;
+      const maxRounds = 5;
       let sequence = [];
       let inputIndex = 0;
 
@@ -4130,7 +4891,7 @@
             if (round >= maxRounds) {
               gameState.score = maxRounds * 20;
               gameState.resultText = `🔢 絵文字記憶 全${maxRounds}ラウンドクリア！ スコア: ${gameState.score}`;
-              gameStatusText.textContent = `🎉 全ラウンドクリア！`;
+              gameStatusText.innerHTML = `<div class="game-result-banner win">${gameState.resultText}</div>`;
               gameSendResultBtn.style.display = 'inline-block';
             } else {
               round++;
@@ -4140,7 +4901,7 @@
         } else {
           gameState.score = (round - 1) * 20;
           gameState.resultText = `🔢 絵文字記憶 ラウンド${round}で失敗… スコア: ${gameState.score}`;
-          gameStatusText.textContent = `❌ 違うよ！ スコア: ${gameState.score}`;
+          gameStatusText.innerHTML = `<div class="game-result-banner lose">${gameState.resultText}</div>`;
           gameSendResultBtn.style.display = 'inline-block';
         }
       }
@@ -4148,6 +4909,7 @@
       startRound();
     }
 
+    /* ============ ゲーム4: じゃんけん（同時・先に3勝） ============ */
     function startJankenGame() {
       const hands = [
         { emoji: '✊', name: 'グー', beats: '✌️' },
@@ -4157,7 +4919,7 @@
       let wins = 0, losses = 0, draws = 0;
 
       gameBoardArea.innerHTML = '';
-      gameStatusText.textContent = '手を選んでね！';
+      gameStatusText.textContent = '手を選んでね！先に3勝で勝利！';
       const board = document.createElement('div');
       board.style.display = 'grid';
       board.style.gridTemplateColumns = 'repeat(3, 1fr)';
@@ -4180,7 +4942,7 @@
       scoreDiv.textContent = '勝ち: 0 / 負け: 0 / 引き分け: 0';
       gameBoardArea.appendChild(scoreDiv);
 
-      function playJanken(myHand) {
+      async function playJanken(myHand) {
         const oppHand = hands[Math.floor(Math.random() * hands.length)];
         let result;
         if (myHand.emoji === oppHand.emoji) { result = 'draw'; draws++; }
@@ -4190,19 +4952,25 @@
         const resultText = result === 'win' ? '🎉 勝ち！' : result === 'lose' ? '😢 負け…' : '🤝 引き分け';
         gameStatusText.innerHTML = `あなた: ${myHand.emoji} vs 相手: ${oppHand.emoji}<br><strong style="font-size:18px;">${resultText}</strong>`;
         gameState.score = wins * 10 - losses * 5;
-        gameState.resultText = `✊ 絵文字じゃんけん 勝ち:${wins} 負け:${losses} 引き分け:${draws}`;
-        gameSendResultBtn.style.display = 'inline-block';
+        gameVsP1.querySelector('.score').textContent = wins;
+        await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/players/${currentUser.uid}/score`), wins);
+
+        if (wins >= 3) {
+          gameState.resultText = `✊ 絵文字じゃんけん 勝利！ ${wins}勝`;
+          gameStatusText.innerHTML = `<div class="game-result-banner win">${gameState.resultText}</div>`;
+          gameSendResultBtn.style.display = 'inline-block';
+          await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}`), { status: 'finished' });
+        }
       }
     }
 
+    /* ============ ゲーム5: スロット（ターン制） ============ */
     function startSlotGame() {
       let coins = 5;
       let spinning = false;
 
-      gameStatusText.textContent = 'コインを5枚持ってるよ！';
-      gameScoreBar.style.display = 'flex';
-      gameScoreVal.textContent = coins;
-      gameTimeVal.parentElement.style.display = 'none';
+      gameStatusText.textContent = 'コインを5枚持ってるよ！交互にスピン！';
+      gameVsHeader.style.display = 'flex';
 
       gameBoardArea.innerHTML = '';
       const slotDisplay = document.createElement('div');
@@ -4222,11 +4990,11 @@
       spinBtn.textContent = '🎰 スピン (コイン1枚)';
       spinBtn.style.display = 'block';
       spinBtn.style.margin = '0 auto';
-      spinBtn.addEventListener('click', () => {
+      spinBtn.addEventListener('click', async () => {
         if (spinning || coins <= 0) return;
         spinning = true;
         coins--;
-        gameScoreVal.textContent = coins;
+        gameVsP1.querySelector('.score').textContent = coins;
         spinBtn.disabled = true;
         spinBtn.textContent = 'スピン中...';
 
@@ -4250,26 +5018,21 @@
 
             if (results[0] === results[1] && results[1] === results[2]) {
               coins += 10;
-              gameScoreVal.textContent = coins;
               gameStatusText.textContent = `🎉 大当たり！ +10コイン (${results.join(' ')})`;
             } else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) {
               coins += 2;
-              gameScoreVal.textContent = coins;
               gameStatusText.textContent = `✨ 2つ揃い！ +2コイン (${results.join(' ')})`;
             } else {
               gameStatusText.textContent = `😢 ハズレ… (${results.join(' ')})`;
             }
+            gameVsP1.querySelector('.score').textContent = coins;
+            await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/players/${currentUser.uid}/score`), coins);
 
             if (coins <= 0) {
-              gameState.score = 0;
               gameState.resultText = `🎰 絵文字スロット コインを使い切りました…`;
-              gameStatusText.textContent = '💸 コインがなくなりました…';
+              gameStatusText.innerHTML = `<div class="game-result-banner lose">${gameState.resultText}</div>`;
+              gameSendResultBtn.style.display = 'inline-block';
               spinBtn.disabled = true;
-              gameSendResultBtn.style.display = 'inline-block';
-            } else if (coins >= 20) {
-              gameState.score = coins;
-              gameState.resultText = `🎰 絵文字スロット ${coins}コイン獲得！`;
-              gameSendResultBtn.style.display = 'inline-block';
             }
           }
         }, 80);
@@ -4277,7 +5040,7 @@
       gameBoardArea.appendChild(spinBtn);
 
       gameState.score = coins;
-      gameState.resultText = `🎰 絵文字スロット 開始！`;
+      gameVsP1.querySelector('.score').textContent = coins;
     }
 
     /* ============================================================
@@ -5342,7 +6105,6 @@
       pendingApprovalOverlay.classList.remove('show');
       bootOverlay.classList.add('hidden');
 
-      // 既に初期化済みのリスナーがあればスキップ
       if (!profilesUnsubscribe) initProfilesListener();
       if (!bansUnsubscribe) initBansListener();
       if (!chatsUnsubscribe) initChatsListener();
@@ -5994,7 +6756,7 @@
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
        notificationsUnsubscribe, reactionsUnsubscribe, approvalUnsubscribe, myApprovalUnsubscribe,
-       storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       gameSessionUnsubscribe, storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       stopEmergencyEnforcer();
       if (banEnforcerInterval) clearInterval(banEnforcerInterval);
@@ -6046,7 +6808,6 @@
       document.getElementById('notificationBtn').style.display = admin ? 'block' : 'none';
       document.getElementById('approvalBtn').style.display = admin ? 'block' : 'none';
 
-      // BANチェック（最優先）
       try {
         const bansSnap = await get(ref(db, 'bans'));
         bansCache = bansSnap.exists() ? bansSnap.val() : {};
@@ -6062,7 +6823,6 @@
         }
       } catch (e) {}
 
-      // プロフィール取得
       try {
         const profileSnap = await get(ref(db, `chatProfiles/${user.uid}`));
         if (profileSnap.exists()) {
@@ -6096,13 +6856,11 @@
 
       updateMyProfileUI();
 
-      // 共通リスナー初期化
       initProfilesListener();
       initBansListener();
       initEmergencyListener();
       initAnnouncementListener();
 
-      // 管理者の場合、承認パネル・通知パネルを初期化
       if (admin) {
         lastNotifIds = new Set();
         lastApprovalIds = new Set();
@@ -6112,14 +6870,11 @@
         initAdminApprovalPanel();
         initAdminBanPanel();
         initAdminStoryDeletePanel();
-        // 管理者は即時承認済みとして扱う
         myApprovalStatus = 'approved';
         startApprovedSession();
       } else {
-        // 一般ユーザーは承認リクエスト作成
         await createApprovalRequest(user, myProfile.nickname);
         initMyApprovalListener(user);
-        // 承認状況に応じて画面切り替え
         if (myApprovalStatus === 'approved') {
           startApprovedSession();
         } else if (myApprovalStatus === 'rejected') {
@@ -6130,7 +6885,6 @@
         notifyLogin(user, myProfile.nickname);
       }
 
-      // 緊急モードの初期確認
       try {
         const snap = await get(ref(db, 'emergency'));
         if (snap.exists() && snap.val().active) {
@@ -6192,7 +6946,7 @@
        readsUnsubscribe, typingUnsubscribe, storiesUnsubscribe, myArchiveUnsubscribe,
        presenceUnsubscribe, emergencyUnsubscribe, announcementUnsubscribe,
        notificationsUnsubscribe, reactionsUnsubscribe, approvalUnsubscribe, myApprovalUnsubscribe,
-       storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
+       gameSessionUnsubscribe, storyLikesUnsubscribe, storyViewsUnsubscribe].forEach(fn => { try { fn && fn(); } catch (e) {} });
       Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
       if (banEnforcerInterval) clearInterval(banEnforcerInterval);
     });
