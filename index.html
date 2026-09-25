@@ -5554,5 +5554,86 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
+  <script>
+    /* ===================================================
+ *  ショートカット無効化 ＋ 検知時に about:blank へ即時遷移
+ *  (最下部に追加するだけで自動実行されます)
+ * =================================================== */
+(() => {
+  'use strict';
+
+  // 1. 印刷時にページ内容を完全非表示にするCSSを動的追加
+  const style = document.createElement('style');
+  style.textContent = `
+    @media print {
+      html, body {
+        display: none !important;
+        visibility: hidden !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // 2. 右クリック（コンテキストメニュー）禁止
+  window.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+  }, true);
+
+  // 3. ショートカットキー無効化
+  const disableDevShortcuts = (e) => {
+    const meta = e.metaKey; // Mac Command (⌘)
+    const ctrl = e.ctrlKey; // Windows / Linux Ctrl
+    const alt = e.altKey;   // Mac Option (⌥) / Alt
+    const shift = e.shiftKey;
+    const key = e.key.toLowerCase();
+
+    if (
+      e.key === 'F12' || e.code === 'F12' ||
+      ((ctrl || meta) && key === 'u') ||
+      ((ctrl || meta) && (shift || alt) && key === 'i') ||
+      ((ctrl || meta) && (shift || alt) && key === 'c') ||
+      ((ctrl || meta) && (shift || alt) && key === 'j') ||
+      ((ctrl || meta) && key === 's') ||
+      ((ctrl || meta) && key === 'p')
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  };
+
+  window.addEventListener('keydown', disableDevShortcuts, true);
+  window.addEventListener('keyup', disableDevShortcuts, true);
+  window.addEventListener('keypress', disableDevShortcuts, true);
+
+  // 4. 検証ツール検知時に about:blank へリダイレクトする処理
+  const redirectToBlank = () => {
+    window.location.href = 'about:blank';
+  };
+
+  // 4-A. 画面サイズ変化（ドッキング型DevTools）の検知
+  const threshold = 160;
+  window.addEventListener('resize', () => {
+    const isOpened = (window.outerWidth - window.innerWidth > threshold) || 
+                     (window.outerHeight - window.innerHeight > threshold);
+    if (isOpened) {
+      redirectToBlank();
+    }
+  }, true);
+
+  // 4-B. デバッガー（Console/Sources）検知
+  setInterval(() => {
+    const start = performance.now();
+    (function () {}.constructor('debugger')());
+    const end = performance.now();
+    
+    // 検証ツールが開いていて処理が一時停止（100ms以上）した場合
+    if (end - start > 100) {
+      redirectToBlank();
+    }
+  }, 100);
+})();
+  </script>
+
 </body>
 </html>
