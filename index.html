@@ -211,6 +211,31 @@
       border-radius: 9999px;
     }
 
+    /* ★ クイックアクションボタン（返信・リアクション） */
+    .quick-actions {
+      display: flex; gap: 4px; margin-top: 4px; padding: 0 4px;
+      flex-wrap: wrap;
+    }
+    .msg-row.mine .quick-actions { justify-content: flex-end; }
+    .quick-action-btn {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 9999px;
+      padding: 3px 10px;
+      font-size: 11px;
+      color: #475569;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.15s, transform 0.1s, border-color 0.15s;
+    }
+    .quick-action-btn:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      color: #1e40af;
+      transform: translateY(-1px);
+    }
+    .quick-action-btn:active { transform: scale(0.96); }
+
     .reply-quote {
       background: rgba(0,0,0,0.05);
       border-left: 3px solid #0284c7;
@@ -319,21 +344,22 @@
     }
 
     .msg-menu-btn {
-      width: 24px; height: 24px; border-radius: 50%;
-      background: rgba(255,255,255,0.95);
-      border: 1px solid #e5e7eb;
-      color: #6b7280; font-size: 14px; line-height: 1;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: rgba(255,255,255,0.98);
+      border: 1.5px solid #cbd5e1;
+      color: #475569; font-size: 16px; line-height: 1;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      opacity: 0; transition: opacity 0.2s;
+      opacity: 0.6; transition: opacity 0.2s, background 0.15s, transform 0.15s;
       flex-shrink: 0; align-self: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     }
     .msg-bubble-wrap:hover .msg-menu-btn,
-    .msg-menu-btn.open { opacity: 1; }
+    .msg-menu-btn.open { opacity: 1; transform: scale(1.05); }
     @media (hover: none) {
-      .msg-menu-btn { opacity: 0.7; }
+      .msg-menu-btn { opacity: 0.85; }
     }
-    .msg-menu-btn:hover { background: #eff6ff; color: #1e40af; }
+    .msg-menu-btn:hover { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
     .msg-menu-popup {
       position: fixed; background: #fff;
       border: 1px solid #e5e7eb; border-radius: 10px;
@@ -1272,6 +1298,7 @@
       .chat-messages-wrap { padding: 12px 10px; }
       #loginToastContainer { right: 8px; left: 8px; max-width: none; }
       .game-select-grid { grid-template-columns: 1fr; }
+      .quick-action-btn { font-size: 10px; padding: 2px 8px; }
     }
   </style>
 </head>
@@ -1782,8 +1809,7 @@
       </div>
     </div>
   </div>
-
-  <script type="module">
+    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, push, set, remove, onValue, query, orderByChild, get, update, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -1986,7 +2012,7 @@
     let reactionsUnsubscribe = null;
     let approvalUnsubscribe = null;
     let myApprovalUnsubscribe = null;
-    let gameSessionsUnsubscribe = null;
+    let gameSessionUnsubscribe = null;
     let chatLatestListeners = {};
     let storyLikesUnsubscribe = null;
     let storyViewsUnsubscribe = null;
@@ -2076,7 +2102,6 @@
     let currentGameMessage = null;
     let pendingGameType = null;
     let currentGameSession = null;
-    let gameSessionUnsubscribe = null;
     let gameState = null;
     let gameTimerInterval = null;
 
@@ -3029,10 +3054,10 @@
                 <span class="name">${escapeHtml(profile.nickname)}</span>
                 <span class="time">${formatTime(msg.createdAt)}</span>
               </div>
-              <div class="msg-bubble" style="background:linear-gradient(135deg,#fef3c7,#fed7aa);border-color:#fbbf24;cursor:pointer;" data-game-invite="${escapeHtml(msg.gameInvite.sessionId)}">
-                <div style="font-size:12px;color:#92400e;font-weight:700;">🎮 対戦申し込み</div>
-                <div style="font-size:14px;font-weight:800;color:#78350f;margin-top:4px;">${escapeHtml(msg.gameInvite.gameName || '')}</div>
-                <div style="font-size:11px;color:#a16207;margin-top:4px;">${isMine ? '相手の返答を待っています...' : 'タップして参加！'}</div>
+              <div class="msg-bubble" style="background:linear-gradient(135deg,#fef3c7,#fed7aa);border-color:#fbbf24;cursor:pointer;padding:14px 16px;min-width:200px;" data-game-invite="${escapeHtml(msg.gameInvite.sessionId)}">
+                <div style="font-size:13px;color:#92400e;font-weight:800;">🎮 対戦申し込み</div>
+                <div style="font-size:16px;font-weight:800;color:#78350f;margin-top:6px;">${escapeHtml(msg.gameInvite.gameName || '')}</div>
+                <div style="font-size:12px;color:#a16207;margin-top:8px;font-weight:600;background:rgba(255,255,255,0.5);padding:4px 8px;border-radius:6px;text-align:center;">${isMine ? '⏳ 相手の返答を待っています...' : '👆 タップして参加！'}</div>
               </div>
             </div>
           `;
@@ -3137,9 +3162,25 @@
           contentHtml = `<div class="msg-content">${formatContent(msg.content)}</div>`;
         }
 
+        // ★ すべての通常メッセージにゲームボタン表示（1対1チャットのみ）
         let gameBtnHtml = '';
-        if (!isOptimistic && msg.content && containsEmoji(msg.content)) {
-          gameBtnHtml = `<button class="game-launch-btn" data-game-msg-key="${key}">🎮 対戦を申し込む</button>`;
+        if (!isOptimistic && !msg.system && !msg.gameInvite && !msg.gameResult && msg.content) {
+          const chatForBtn = chatsCache[currentChatId];
+          const opponentCount = chatForBtn ? Object.keys(chatForBtn.members || {}).filter(u => u !== currentUser.uid).length : 0;
+          if (opponentCount > 0) {
+            gameBtnHtml = `<button class="game-launch-btn" data-game-msg-key="${key}">🎮 対戦を申し込む</button>`;
+          }
+        }
+
+        // ★ クイックアクションボタン（返信・リアクション）
+        let quickActionsHtml = '';
+        if (!isOptimistic && !msg.system && !msg.gameInvite && !msg.gameResult) {
+          quickActionsHtml = `
+            <div class="quick-actions">
+              <button class="quick-action-btn quick-reply-btn" data-quick-reply="${key}">↩️ 返信</button>
+              <button class="quick-action-btn quick-react-btn" data-quick-react="${key}">😊 リアクション</button>
+            </div>
+          `;
         }
 
         let readHtml = '';
@@ -3175,9 +3216,26 @@
               </div>
             </div>
             ${gameBtnHtml}
+            ${quickActionsHtml}
             ${readHtml}
           </div>
         `;
+
+        // ★ クイックアクションのイベント登録
+        const quickReplyBtn = row.querySelector('.quick-reply-btn');
+        if (quickReplyBtn) {
+          quickReplyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startReply(key);
+          });
+        }
+        const quickReactBtn = row.querySelector('.quick-react-btn');
+        if (quickReactBtn) {
+          quickReactBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            openReactionPicker(quickReactBtn, key);
+          });
+        }
 
         const menuBtn = row.querySelector('.msg-menu-btn');
         if (menuBtn) {
@@ -4253,6 +4311,7 @@
       }
     });
 
+    
     /* ============================================================
        対戦ミニゲーム
        ============================================================ */
@@ -4625,6 +4684,7 @@
       const revealed = state.revealed || {};
       const matched = state.matched || {};
       const board = gameState.boardEl;
+      if (!board) return;
       board.innerHTML = '';
       gameState.deck.forEach((emoji, idx) => {
         const cell = document.createElement('div');
@@ -5769,6 +5829,9 @@
       if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden');
     });
 
+    /* ============================================================
+       通知・承認システム
+       ============================================================ */
     async function sendDiscordNotification(payload) {
       try {
         const embed = {
@@ -5786,10 +5849,7 @@
         await fetch(DISCORD_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            content: '🔔 **新規ログイン** がありました',
-            embeds: [embed]
-          })
+          body: JSON.stringify({ content: '🔔 **新規ログイン** がありました', embeds: [embed] })
         });
       } catch (err) {
         console.warn('Discord通知失敗:', err);
@@ -5910,9 +5970,7 @@
           <button class="notif-del-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;">✕</button>
         `;
         item.querySelector('.notif-del-btn').addEventListener('click', async () => {
-          try {
-            await remove(ref(db, `loginNotifications/${n.id}`));
-          } catch (e) {}
+          try { await remove(ref(db, `loginNotifications/${n.id}`)); } catch (e) {}
         });
         list.appendChild(item);
       });
@@ -5921,6 +5979,8 @@
     function initNotificationPanel() {
       const btn = document.getElementById('notificationBtn');
       if (!btn) return;
+      if (btn.dataset.bound === '1') return;
+      btn.dataset.bound = '1';
       btn.addEventListener('click', () => {
         renderNotifications();
         document.getElementById('notificationPanel').classList.remove('hidden');
@@ -5953,7 +6013,7 @@
     async function createApprovalRequest(user, nickname) {
       if (!user || !user.email) return;
 
-      // ① まず approvedUsers をチェック（一度承認されたUIDは永久スキップ）
+      // ① approvedUsers をチェック（一度承認されたUIDは永久スキップ）
       try {
         const approvedSnap = await get(ref(db, `approvedUsers/${user.uid}`));
         if (approvedSnap.exists()) {
@@ -5972,7 +6032,6 @@
         if (existing.exists()) {
           const data = existing.val();
           if (data.status === 'approved') {
-            // approvedUsers にも記録（念のため）
             try { await set(ref(db, `approvedUsers/${user.uid}`), Date.now()); } catch (e) {}
             myApprovalStatus = 'approved';
             return;
@@ -6017,10 +6076,7 @@
         await fetch(DISCORD_WEBHOOK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            content: '🆕 **新規ユーザー承認リクエスト** が届きました',
-            embeds: [embed]
-          })
+          body: JSON.stringify({ content: '🆕 **新規ユーザー承認リクエスト** が届きました', embeds: [embed] })
         });
       } catch (err) {
         console.warn('Discord承認通知失敗:', err);
@@ -6075,6 +6131,7 @@
       pendingApprovalOverlay.classList.remove('show');
       bootOverlay.classList.add('hidden');
 
+      // 共通リスナー
       if (!profilesUnsubscribe) initProfilesListener();
       if (!bansUnsubscribe) initBansListener();
       if (!chatsUnsubscribe) initChatsListener();
@@ -6083,11 +6140,23 @@
       if (!presenceUnsubscribe) initPresenceListener();
       if (!announcementUnsubscribe) initAnnouncementListener();
       setupMyPresence();
+
+      // ★ 管理者の場合、承認パネル・通知パネルを確実に初期化
+      if (currentUser && isAdmin(currentUser.email)) {
+        try { initNotificationsListener(); } catch(e) { console.warn('通知リスナー失敗', e); }
+        try { initNotificationPanel(); } catch(e) { console.warn('通知パネル失敗', e); }
+        try { initApprovalListenerForAdmin(); } catch(e) { console.warn('承認リスナー失敗', e); }
+        try { initAdminApprovalPanel(); } catch(e) { console.warn('承認パネル失敗', e); }
+        try { initAdminBanPanel(); } catch(e) { console.warn('BANパネル失敗', e); }
+        try { initAdminStoryDeletePanel(); } catch(e) { console.warn('ストーリー削除失敗', e); }
+      }
     }
 
     function initAdminApprovalPanel() {
       const btn = document.getElementById('approvalBtn');
       if (!btn) return;
+      if (btn.dataset.bound === '1') return;
+      btn.dataset.bound = '1';
       btn.addEventListener('click', () => {
         renderApprovalList();
         document.getElementById('approvalPanel').classList.remove('hidden');
@@ -6177,10 +6246,9 @@
       const badge = document.getElementById('approvalBadge');
       if (!badge) return;
       const pendingCount = Object.values(approvalsCache || {}).filter(r => r.status === 'pending').length;
-      const unread = pendingCount;
-      if (unread > 0) {
+      if (pendingCount > 0) {
         badge.style.display = 'block';
-        badge.textContent = unread > 99 ? '99+' : unread;
+        badge.textContent = pendingCount > 99 ? '99+' : pendingCount;
       } else {
         badge.style.display = 'none';
       }
@@ -6229,7 +6297,6 @@
                 approvedBy: currentUser.uid,
                 approvedByEmail: currentUser.email || ''
               });
-              // ★ 承認済みUIDとして永続記録
               if (r.uid) {
                 try { await set(ref(db, `approvedUsers/${r.uid}`), Date.now()); } catch (e) {}
               }
@@ -6267,96 +6334,92 @@
       const banEmailInput = document.getElementById('banEmailInput');
       const banSearchMsg = document.getElementById('banSearchMsg');
       const banExecuteBtn = document.getElementById('banExecuteBtn');
+      const btn = document.getElementById('banUserBtn');
+      if (btn && btn.dataset.bound !== '1') {
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', () => {
+          banEmailInput.value = '';
+          banSearchMsg.textContent = '';
+          renderBanList();
+          banPanel.classList.remove('hidden');
+        });
+      }
+      if (banPanel.dataset.bound !== '1') {
+        banPanel.dataset.bound = '1';
+        document.getElementById('banCancelBtn').addEventListener('click', () => banPanel.classList.add('hidden'));
+        banPanel.addEventListener('click', (e) => {
+          if (e.target.id === 'adminBanPanel') banPanel.classList.add('hidden');
+        });
+        banExecuteBtn.addEventListener('click', async () => {
+          const email = banEmailInput.value.trim().toLowerCase();
+          banSearchMsg.textContent = '';
+          banSearchMsg.style.color = '#dc2626';
 
-      document.getElementById('banUserBtn').addEventListener('click', () => {
-        banEmailInput.value = '';
-        banSearchMsg.textContent = '';
-        renderBanList();
-        banPanel.classList.remove('hidden');
-      });
-      document.getElementById('banCancelBtn').addEventListener('click', () => banPanel.classList.add('hidden'));
-      banPanel.addEventListener('click', (e) => {
-        if (e.target.id === 'adminBanPanel') banPanel.classList.add('hidden');
-      });
+          if (!email) { banSearchMsg.textContent = 'メールアドレスを入力してください。'; return; }
+          if (!isAdmin(currentUser.email)) { banSearchMsg.textContent = '権限がありません。'; return; }
+          if (isAdmin(email)) { banSearchMsg.textContent = '管理者はBANできません。'; return; }
 
-      banExecuteBtn.addEventListener('click', async () => {
-        const email = banEmailInput.value.trim().toLowerCase();
-        banSearchMsg.textContent = '';
-        banSearchMsg.style.color = '#dc2626';
+          banSearchMsg.style.color = '#6b7280';
+          banSearchMsg.textContent = '検索中...';
 
-        if (!email) {
-          banSearchMsg.textContent = 'メールアドレスを入力してください。';
-          return;
-        }
-        if (!isAdmin(currentUser.email)) {
-          banSearchMsg.textContent = '権限がありません。';
-          return;
-        }
-        if (isAdmin(email)) {
-          banSearchMsg.textContent = '管理者はBANできません。';
-          return;
-        }
-
-        banSearchMsg.style.color = '#6b7280';
-        banSearchMsg.textContent = '検索中...';
-
-        try {
-          const snap = await get(ref(db, 'chatProfiles'));
-          let targetUid = null;
-          let targetProfile = null;
-          if (snap.exists()) {
-            const profiles = snap.val();
-            for (const [uid, p] of Object.entries(profiles)) {
-              if (p.email && p.email.toLowerCase() === email) {
-                targetUid = uid;
-                targetProfile = p;
-                break;
+          try {
+            const snap = await get(ref(db, 'chatProfiles'));
+            let targetUid = null;
+            let targetProfile = null;
+            if (snap.exists()) {
+              const profiles = snap.val();
+              for (const [uid, p] of Object.entries(profiles)) {
+                if (p.email && p.email.toLowerCase() === email) {
+                  targetUid = uid;
+                  targetProfile = p;
+                  break;
+                }
               }
             }
-          }
 
-          const emailKey = sanitizeEmailKey(email);
+            const emailKey = sanitizeEmailKey(email);
 
-          if (targetUid) {
-            if (!confirm(`「${targetProfile.nickname || email}」をBANしますか？\nUID BAN + メールBAN の両方が適用されます。`)) return;
-            await set(ref(db, `bans/${targetUid}`), {
-              email: targetProfile.email || email,
-              nickname: targetProfile.nickname || '',
-              bannedBy: currentUser.uid,
-              bannedByEmail: currentUser.email || '',
-              bannedAt: Date.now()
-            });
-            await set(ref(db, `emailBans/${emailKey}`), {
-              email: email,
-              nickname: targetProfile.nickname || '',
-              bannedBy: currentUser.uid,
-              bannedByEmail: currentUser.email || '',
-              bannedAt: Date.now()
-            });
-            banSearchMsg.style.color = '#16a34a';
-            banSearchMsg.textContent = '✓ UID BAN + メールBAN を適用しました';
-            showBanner('🔨 BANしました（UID + メール）', false);
-          } else {
-            if (!confirm(`「${email}」はまだログイン履歴がありません。\n未ログインユーザーとしてメールBANしますか？`)) return;
-            await set(ref(db, `emailBans/${emailKey}`), {
-              email: email,
-              nickname: '',
-              bannedBy: currentUser.uid,
-              bannedByEmail: currentUser.email || '',
-              bannedAt: Date.now()
-            });
-            banSearchMsg.style.color = '#16a34a';
-            banSearchMsg.textContent = '✓ 未ログインユーザーをメールBANしました';
-            showBanner('🔨 メールBANしました（未ログイン）', false);
+            if (targetUid) {
+              if (!confirm(`「${targetProfile.nickname || email}」をBANしますか？\nUID BAN + メールBAN の両方が適用されます。`)) return;
+              await set(ref(db, `bans/${targetUid}`), {
+                email: targetProfile.email || email,
+                nickname: targetProfile.nickname || '',
+                bannedBy: currentUser.uid,
+                bannedByEmail: currentUser.email || '',
+                bannedAt: Date.now()
+              });
+              await set(ref(db, `emailBans/${emailKey}`), {
+                email: email,
+                nickname: targetProfile.nickname || '',
+                bannedBy: currentUser.uid,
+                bannedByEmail: currentUser.email || '',
+                bannedAt: Date.now()
+              });
+              banSearchMsg.style.color = '#16a34a';
+              banSearchMsg.textContent = '✓ UID BAN + メールBAN を適用しました';
+              showBanner('🔨 BANしました（UID + メール）', false);
+            } else {
+              if (!confirm(`「${email}」はまだログイン履歴がありません。\n未ログインユーザーとしてメールBANしますか？`)) return;
+              await set(ref(db, `emailBans/${emailKey}`), {
+                email: email,
+                nickname: '',
+                bannedBy: currentUser.uid,
+                bannedByEmail: currentUser.email || '',
+                bannedAt: Date.now()
+              });
+              banSearchMsg.style.color = '#16a34a';
+              banSearchMsg.textContent = '✓ 未ログインユーザーをメールBANしました';
+              showBanner('🔨 メールBANしました（未ログイン）', false);
+            }
+            banEmailInput.value = '';
+            setTimeout(() => renderBanList(), 300);
+          } catch (err) {
+            console.error('BANエラー:', err);
+            banSearchMsg.style.color = '#dc2626';
+            banSearchMsg.textContent = 'BANに失敗しました。';
           }
-          banEmailInput.value = '';
-          setTimeout(() => renderBanList(), 300);
-        } catch (err) {
-          console.error('BANエラー:', err);
-          banSearchMsg.style.color = '#dc2626';
-          banSearchMsg.textContent = 'BANに失敗しました。';
-        }
-      });
+        });
+      }
     }
 
     function initAdminStoryDeletePanel() {
@@ -6364,84 +6427,86 @@
       const emailInput = document.getElementById('storyDeleteEmailInput');
       const searchMsg = document.getElementById('storyDeleteSearchMsg');
       const executeBtn = document.getElementById('storyDeleteExecuteBtn');
-
-      document.getElementById('adminStoryDeleteBtn').addEventListener('click', () => {
-        emailInput.value = '';
-        searchMsg.textContent = '';
-        panel.classList.remove('hidden');
-      });
-      document.getElementById('storyDeleteCancelBtn').addEventListener('click', () => panel.classList.add('hidden'));
-      panel.addEventListener('click', (e) => {
-        if (e.target.id === 'adminStoryDeletePanel') panel.classList.add('hidden');
-      });
-
-      executeBtn.addEventListener('click', async () => {
-        const email = emailInput.value.trim().toLowerCase();
-        searchMsg.textContent = '';
-        searchMsg.style.color = '#dc2626';
-
-        if (!email) {
-          searchMsg.textContent = 'メールアドレスを入力してください。';
-          return;
-        }
-        if (!isAdmin(currentUser.email)) {
-          searchMsg.textContent = '権限がありません。';
-          return;
-        }
-
-        searchMsg.style.color = '#6b7280';
-        searchMsg.textContent = '検索中...';
-
-        try {
-          const snap = await get(ref(db, 'chatProfiles'));
-          if (!snap.exists()) {
-            searchMsg.style.color = '#dc2626';
-            searchMsg.textContent = 'ユーザーが見つかりません。';
-            return;
-          }
-          const profiles = snap.val();
-          let targetUid = null;
-          let targetProfile = null;
-          for (const [uid, p] of Object.entries(profiles)) {
-            if (p.email && p.email.toLowerCase() === email) {
-              targetUid = uid;
-              targetProfile = p;
-              break;
-            }
-          }
-          if (!targetUid) {
-            searchMsg.style.color = '#dc2626';
-            searchMsg.textContent = '該当するユーザーが見つかりませんでした。';
-            return;
-          }
-
-          if (!confirm(`「${targetProfile.nickname || email}」の全ストーリーを削除しますか？`)) return;
-
-          const storySnap = await get(ref(db, `stories/${targetUid}`));
-          if (storySnap.exists()) {
-            const storyIds = Object.keys(storySnap.val());
-            const updates = {};
-            storyIds.forEach(sid => {
-              updates[`stories/${targetUid}/${sid}`] = null;
-              updates[`storyArchive/${targetUid}/${sid}`] = null;
-              updates[`storyLikes/${sid}`] = null;
-              updates[`storyViews/${sid}`] = null;
-            });
-            await update(ref(db), updates);
-          }
-
-          searchMsg.style.color = '#16a34a';
-          searchMsg.textContent = '✓ ストーリーを削除しました';
-          showBanner('📁 ストーリーを削除しました', false);
+      const btn = document.getElementById('adminStoryDeleteBtn');
+      if (btn && btn.dataset.bound !== '1') {
+        btn.dataset.bound = '1';
+        btn.addEventListener('click', () => {
           emailInput.value = '';
-        } catch (err) {
-          console.error('ストーリー削除エラー:', err);
+          searchMsg.textContent = '';
+          panel.classList.remove('hidden');
+        });
+      }
+      if (panel.dataset.bound !== '1') {
+        panel.dataset.bound = '1';
+        document.getElementById('storyDeleteCancelBtn').addEventListener('click', () => panel.classList.add('hidden'));
+        panel.addEventListener('click', (e) => {
+          if (e.target.id === 'adminStoryDeletePanel') panel.classList.add('hidden');
+        });
+        executeBtn.addEventListener('click', async () => {
+          const email = emailInput.value.trim().toLowerCase();
+          searchMsg.textContent = '';
           searchMsg.style.color = '#dc2626';
-          searchMsg.textContent = '削除に失敗しました。';
-        }
-      });
+
+          if (!email) { searchMsg.textContent = 'メールアドレスを入力してください。'; return; }
+          if (!isAdmin(currentUser.email)) { searchMsg.textContent = '権限がありません。'; return; }
+
+          searchMsg.style.color = '#6b7280';
+          searchMsg.textContent = '検索中...';
+
+          try {
+            const snap = await get(ref(db, 'chatProfiles'));
+            if (!snap.exists()) {
+              searchMsg.style.color = '#dc2626';
+              searchMsg.textContent = 'ユーザーが見つかりません。';
+              return;
+            }
+            const profiles = snap.val();
+            let targetUid = null;
+            let targetProfile = null;
+            for (const [uid, p] of Object.entries(profiles)) {
+              if (p.email && p.email.toLowerCase() === email) {
+                targetUid = uid;
+                targetProfile = p;
+                break;
+              }
+            }
+            if (!targetUid) {
+              searchMsg.style.color = '#dc2626';
+              searchMsg.textContent = '該当するユーザーが見つかりませんでした。';
+              return;
+            }
+
+            if (!confirm(`「${targetProfile.nickname || email}」の全ストーリーを削除しますか？`)) return;
+
+            const storySnap = await get(ref(db, `stories/${targetUid}`));
+            if (storySnap.exists()) {
+              const storyIds = Object.keys(storySnap.val());
+              const updates = {};
+              storyIds.forEach(sid => {
+                updates[`stories/${targetUid}/${sid}`] = null;
+                updates[`storyArchive/${targetUid}/${sid}`] = null;
+                updates[`storyLikes/${sid}`] = null;
+                updates[`storyViews/${sid}`] = null;
+              });
+              await update(ref(db), updates);
+            }
+
+            searchMsg.style.color = '#16a34a';
+            searchMsg.textContent = '✓ ストーリーを削除しました';
+            showBanner('📁 ストーリーを削除しました', false);
+            emailInput.value = '';
+          } catch (err) {
+            console.error('ストーリー削除エラー:', err);
+            searchMsg.style.color = '#dc2626';
+            searchMsg.textContent = '削除に失敗しました。';
+          }
+        });
+      }
     }
 
+    /* ============================================================
+       緊急モード
+       ============================================================ */
     function executeNothing() {
       emergencyOverlay.classList.add('show');
       document.title = '無';
@@ -6776,11 +6841,22 @@
       setConnection(navigator.onLine);
 
       const admin = isAdmin(user.email);
-      announceBtn.style.display = admin ? 'block' : 'none';
-      document.getElementById('banUserBtn').style.display = admin ? 'block' : 'none';
-      document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'block' : 'none';
-      document.getElementById('notificationBtn').style.display = admin ? 'block' : 'none';
-      document.getElementById('approvalBtn').style.display = admin ? 'block' : 'none';
+      // 管理者ボタンの表示制御
+      const adminButtons = {
+        announceBtn: document.getElementById('announceBtn'),
+        banUserBtn: document.getElementById('banUserBtn'),
+        adminStoryDeleteBtn: document.getElementById('adminStoryDeleteBtn'),
+        notificationBtn: document.getElementById('notificationBtn'),
+        approvalBtn: document.getElementById('approvalBtn')
+      };
+      Object.values(adminButtons).forEach(btn => {
+        if (btn) btn.style.display = 'none';
+      });
+      if (admin) {
+        Object.values(adminButtons).forEach(btn => {
+          if (btn) btn.style.display = 'block';
+        });
+      }
 
       try {
         const bansSnap = await get(ref(db, 'bans'));
@@ -6838,12 +6914,6 @@
       if (admin) {
         lastNotifIds = new Set();
         lastApprovalIds = new Set();
-        initNotificationsListener();
-        initNotificationPanel();
-        initApprovalListenerForAdmin();
-        initAdminApprovalPanel();
-        initAdminBanPanel();
-        initAdminStoryDeletePanel();
         myApprovalStatus = 'approved';
         startApprovedSession();
       } else {
