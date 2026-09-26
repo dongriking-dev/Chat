@@ -264,7 +264,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .related-account-item .ra-email { font-size: 12px; font-weight: 700; color: #92400e; word-break: break-all; }
 .related-account-item .ra-meta { font-size: 10px; color: #a16207; margin-top: 2px; }
 .related-account-item .ra-check { width: 20px; height: 20px; flex-shrink: 0; accent-color: #dc2626; }
-#adminCtrlDHint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2147483646; color: #22c55e; font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 9999px; border: 1px solid #22c55e; pointer-events: none; font-family: monospace; }
 @media (max-width: 500px) {
   .header-title { font-size: 17px; }
   .msg-body { max-width: 82%; }
@@ -290,6 +289,12 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 </div>
 
 <div id="emergencyOverlay"></div>
+<div id="emergencyAdminBanner">🚨 緊急モード発動中 - あなたは管理者として解除できます 🚨</div>
+<div id="adminEmergencyPanel">
+  <div class="ap-title">🚨 緊急モード発動中</div>
+  <div class="ap-trigger" id="adminEmergencyTriggerInfo"></div>
+  <button id="adminClearEmergencyBtn" style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">✅ 緊急解除</button>
+</div>
 
 <div id="announcementBanner">
   <span id="announcementText"></span>
@@ -594,7 +599,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
       </ul>
       <p><strong>発動:</strong> 🚨ボタンを1回クリック</p>
       <p><strong>説明:</strong> 🚨ボタンを1秒以上長押し</p>
-      <p><strong>管理者の解除方法:</strong> 黒い画面で <strong>Ctrl + D</strong> を押す</p>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-top:20px;">
       <button id="emergencyHelpCloseBtn" class="secondary-btn">閉じる</button>
@@ -764,6 +768,9 @@ const myAvatar = document.getElementById('myAvatar');
 const myName = document.getElementById('myName');
 const banOverlay = document.getElementById('banOverlay');
 const emergencyOverlay = document.getElementById('emergencyOverlay');
+const emergencyAdminBanner = document.getElementById('emergencyAdminBanner');
+const adminEmergencyPanel = document.getElementById('adminEmergencyPanel');
+const adminEmergencyTriggerInfo = document.getElementById('adminEmergencyTriggerInfo');
 const announcementBanner = document.getElementById('announcementBanner');
 const announcementText = document.getElementById('announcementText');
 const announceBtn = document.getElementById('announceBtn');
@@ -808,8 +815,9 @@ async function setupMyPresence() {
 }
 async function setMyOffline() { if (!currentUser) return; if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; } try { await set(ref(db, `presence/${currentUser.uid}`), { online: false, lastChanged: Date.now() }); } catch(e) {} }
 
+function getTotalUnread() { return Object.values(unreadCounts).reduce((a,b) => a + (b||0), 0); }
 function refreshFavicon() {
-  if (emergencyState.active) { setFavicon(FAVICON_BLACK); return; }
+  if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) { setFavicon(FAVICON_BLACK); return; }
   setFavicon(FAVICON_NORMAL);
 }
 
@@ -2724,7 +2732,6 @@ function initAdminStoryDeletePanel() {
   });
 }
 
-/* ★ 緊急モード：管理者も黒画面にする */
 function executeNothing() {
   emergencyOverlay.classList.add('show');
   document.title = '無';
@@ -2736,7 +2743,6 @@ function executeNothing() {
   emergencyExiting = true;
   const attemptClose = () => {
     if (!emergencyState.active) return;
-    // ★ 管理者はabout:blank遷移しない（黒画面のまま）
     if (currentUser && isAdmin(currentUser.email)) return;
     try { window.open('', '_self').close(); } catch (e) {}
     try { window.close(); } catch (e) {}
@@ -2746,45 +2752,19 @@ function executeNothing() {
   if (emergencyEnforcerInterval) clearInterval(emergencyEnforcerInterval);
   emergencyEnforcerInterval = setInterval(() => {
     if (!emergencyState.active) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; emergencyExiting = false; return; }
-    // ★ 管理者：黒画面を維持するだけ
-    if (currentUser && isAdmin(currentUser.email)) {
-      emergencyOverlay.classList.add('show');
-      document.body.style.background = '#000';
-      document.title = '無';
-      setFavicon(FAVICON_BLACK);
-      showAdminCtrlDHint();
-      return;
-    }
+    if (currentUser && isAdmin(currentUser.email)) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; emergencyExiting = false; return; }
     attemptClose();
     emergencyOverlay.classList.add('show');
     document.body.style.background = '#000';
     document.title = '無';
-    setFavicon(FAVICON_BLACK);
   }, 800);
-  // 管理者ならヒント表示
-  if (currentUser && isAdmin(currentUser.email)) showAdminCtrlDHint();
 }
 function stopEmergencyEnforcer() { if (emergencyEnforcerInterval) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; } emergencyExiting = false; }
-
-function showAdminCtrlDHint() {
-  if (!currentUser || !isAdmin(currentUser.email)) return;
-  let hint = document.getElementById('adminCtrlDHint');
-  if (!hint) {
-    hint = document.createElement('div');
-    hint.id = 'adminCtrlDHint';
-    hint.textContent = 'Ctrl+D で緊急モードを解除';
-    document.body.appendChild(hint);
-  }
-}
-function hideAdminCtrlDHint() {
-  const hint = document.getElementById('adminCtrlDHint');
-  if (hint) hint.remove();
-}
-
 function restoreNormalScreen() {
   stopEmergencyEnforcer();
   emergencyOverlay.classList.remove('show');
-  hideAdminCtrlDHint();
+  emergencyAdminBanner.classList.remove('show');
+  adminEmergencyPanel.classList.remove('show');
   document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
   document.body.style.background = '';
@@ -2796,13 +2776,18 @@ function initEmergencyListener() {
   unsubs.emergency = onValue(ref(db, 'emergency'), (snap) => {
     emergencyState = snap.exists() ? snap.val() : { active: false };
     const nowActive = !!emergencyState.active;
+    const admin = currentUser && isAdmin(currentUser.email);
     if (nowActive) {
-      // ★ 管理者も一般ユーザーも同じく黒画面
-      executeNothing();
-    } else {
-      restoreNormalScreen();
-      bootOverlay.classList.add('hidden');
-    }
+      if (admin) {
+        stopEmergencyEnforcer();
+        emergencyOverlay.classList.remove('show');
+        emergencyAdminBanner.classList.add('show');
+        adminEmergencyPanel.classList.add('show');
+        document.body.style.background = '';
+        adminEmergencyTriggerInfo.innerHTML = `<div><strong>発動者:</strong> <span class="ap-email">${escapeHtml(emergencyState.triggeredByEmail || '不明')}</span></div><div><strong>ニックネーム:</strong> ${escapeHtml(emergencyState.triggeredByName || '不明')}</div><div><strong>時刻:</strong> ${formatTime(emergencyState.triggeredAt)}</div>`;
+        document.title = '🚨 緊急モード中（管理者）';
+      } else { emergencyAdminBanner.classList.remove('show'); adminEmergencyPanel.classList.remove('show'); executeNothing(); }
+    } else { restoreNormalScreen(); bootOverlay.classList.add('hidden'); }
   }, () => {});
 }
 async function triggerEmergency() {
@@ -2819,8 +2804,7 @@ async function clearEmergency() {
     showBanner('✅ 解除しました', false);
   } catch (err) { showBanner('解除に失敗しました', true); }
 }
-document.getElementById('emergencyHelpModal')?.remove?.();
-
+document.getElementById('adminClearEmergencyBtn').addEventListener('click', clearEmergency);
 const emergencyHelpModal = document.getElementById('emergencyHelpModal');
 function openEmergencyHelp() { emergencyHelpModal.classList.remove('hidden'); }
 function closeEmergencyHelp() { emergencyHelpModal.classList.add('hidden'); }
@@ -2849,36 +2833,6 @@ emergencyBtn.addEventListener('mouseleave', cancelEmergencyPress);
 emergencyBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startEmergencyPress(e); }, { passive: false });
 emergencyBtn.addEventListener('touchend', (e) => { e.preventDefault(); endEmergencyPress(e); }, { passive: false });
 emergencyBtn.addEventListener('touchcancel', () => { cancelEmergencyPress(); emergencyHoldTriggered = false; });
-
-/* ★ 管理者用：Ctrl+D で緊急モード解除 */
-document.addEventListener('keydown', async (e) => {
-  if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
-    // 緊急モード中のみ、かつ管理者のみ
-    if (!emergencyState.active) return;
-    if (!currentUser || !isAdmin(currentUser.email)) return;
-    e.preventDefault();
-    e.stopPropagation();
-    if (!confirm('緊急モードを解除しますか？')) return;
-    try {
-      await update(ref(db, 'emergency'), {
-        active: false,
-        clearedBy: currentUser.uid,
-        clearedByEmail: currentUser.email || '',
-        clearedAt: Date.now()
-      });
-      // 画面復帰は initEmergencyListener が行う
-    } catch (err) {
-      alert('解除に失敗しました');
-    }
-    return false;
-  }
-  // 緊急モード中のブラウザ標準 Ctrl+D を防止
-  if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D') && emergencyState.active) {
-    e.preventDefault();
-    e.stopPropagation();
-    return false;
-  }
-}, true);
 
 function initAnnouncementListener() {
   if (unsubs.announcement) unsubs.announcement();
@@ -2995,7 +2949,6 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
   stopEmergencyEnforcer();
-  hideAdminCtrlDHint();
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
   try { await signOut(auth); } catch (e) {}
   location.reload();
@@ -3082,7 +3035,7 @@ onAuthStateChanged(auth, async (user) => {
 
   try {
     const snap = await get(ref(db, 'emergency'));
-    if (snap.exists() && snap.val().active) { emergencyState = snap.val(); executeNothing(); }
+    if (snap.exists() && snap.val().active) { emergencyState = snap.val(); if (!isAdmin(user.email)) executeNothing(); }
   } catch (e) {}
 });
 
@@ -3094,7 +3047,7 @@ document.addEventListener('visibilitychange', () => {
   if (currentChatId) markChatAsRead(currentChatId);
   refreshFavicon();
   renderChatList();
-  if (emergencyState.active) executeNothing();
+  if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) executeNothing();
   if (currentUser && bansCache[currentUser.uid]) executeBan();
   if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) executeBan();
 });
