@@ -175,6 +175,14 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 #pendingApprovalOverlay .pa-email { font-family: monospace; font-size: 12px; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 6px; margin-top: 12px; display: inline-block; word-break: break-all; }
 #emergencyOverlay { position: fixed; inset: 0; z-index: 2147483647; background: #000; display: none; cursor: none; }
 #emergencyOverlay.show { display: block; }
+#emergencyAdminBanner { position: fixed; top: 0; left: 0; right: 0; z-index: 9998; background: linear-gradient(90deg, #7f1d1d, #dc2626, #7f1d1d); background-size: 200% 100%; animation: bannerSlide 2s linear infinite; color: #fff; padding: 10px 16px; font-size: 13px; font-weight: 700; text-align: center; display: none; }
+#emergencyAdminBanner.show { display: block; }
+@keyframes bannerSlide { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+#adminEmergencyPanel { position: fixed; top: 60px; left: 50%; transform: translateX(-50%); z-index: 9999; background: linear-gradient(135deg, #1f2937, #111827); border: 2px solid #dc2626; border-radius: 14px; padding: 20px 24px; color: #fff; max-width: 420px; width: calc(100% - 32px); display: none; }
+#adminEmergencyPanel.show { display: block; }
+#adminEmergencyPanel .ap-title { font-size: 16px; font-weight: 900; color: #ef4444; margin-bottom: 12px; }
+#adminEmergencyPanel .ap-trigger { background: rgba(127,29,29,0.4); border: 1px solid rgba(239,68,68,0.5); border-radius: 8px; padding: 12px; margin-bottom: 14px; font-size: 13px; line-height: 1.7; }
+#adminEmergencyPanel .ap-trigger .ap-email { color: #fff; font-weight: 700; word-break: break-all; }
 .emergency-btn { background: linear-gradient(135deg, #dc2626, #991b1b); color: #fff; border: 2px solid #7f1d1d; border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 900; cursor: pointer; user-select: none; }
 .emergency-btn.holding { background: linear-gradient(135deg, #f59e0b, #d97706); border-color: #fbbf24; }
 .help-btn { width: 32px; height: 32px; border-radius: 50%; background: #f3f4f6; border: 1.5px solid #d1d5db; color: #6b7280; font-size: 15px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -232,7 +240,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 #announcementBanner { position: fixed; top: 0; left: 0; right: 0; z-index: 9997; background: linear-gradient(90deg, #0284c7, #7c3aed, #0284c7); background-size: 200% 100%; animation: bannerSlide 4s linear infinite; color: #fff; padding: 12px 44px 12px 16px; font-size: 14px; display: none; text-align: center; font-weight: 700; }
 #announcementBanner.show { display: block; }
 #announcementBanner .ann-close { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.25); border: none; color: #fff; font-size: 16px; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; }
-@keyframes bannerSlide { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
 #scrollToBottomBtn { position: absolute; bottom: 90px; right: 20px; width: 40px; height: 40px; border-radius: 50%; background: #2563eb; color: #fff; border: none; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 18px; z-index: 45; }
 #scrollToBottomBtn.show { display: flex; }
 #scrollToBottomBtn .unread-dot-inner { position: absolute; top: -2px; right: -2px; width: 14px; height: 14px; background: #ef4444; border: 2px solid #fff; border-radius: 50%; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
@@ -257,6 +264,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .related-account-item .ra-email { font-size: 12px; font-weight: 700; color: #92400e; word-break: break-all; }
 .related-account-item .ra-meta { font-size: 10px; color: #a16207; margin-top: 2px; }
 .related-account-item .ra-check { width: 20px; height: 20px; flex-shrink: 0; accent-color: #dc2626; }
+#adminCtrlDHint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2147483646; color: #22c55e; font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 9999px; border: 1px solid #22c55e; pointer-events: none; font-family: monospace; }
 @media (max-width: 500px) {
   .header-title { font-size: 17px; }
   .msg-body { max-width: 82%; }
@@ -579,9 +587,14 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
     </div>
     <div class="eh-body">
       <p>緊急ボタンはサイト全体を即座に停止させる機能です。</p>
+      <p><strong>管理者:</strong></p>
+      <ul>
+        <li><span class="email">katou.noel114514@gmail.com</span></li>
+        <li><span class="email">18107@v.nakijin.ed.jp</span></li>
+      </ul>
       <p><strong>発動:</strong> 🚨ボタンを1回クリック</p>
-      <p><strong>解除:</strong> 管理者が <strong>Ctrl+D（Macは Cmd+D）</strong> を押すと解除されます</p>
-      <p><strong>注意:</strong> 管理者も一般ユーザーと同じく真っ黒画面になります。</p>
+      <p><strong>説明:</strong> 🚨ボタンを1秒以上長押し</p>
+      <p><strong>管理者の解除方法:</strong> 黒い画面で <strong>Ctrl + D</strong> を押す</p>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-top:20px;">
       <button id="emergencyHelpCloseBtn" class="secondary-btn">閉じる</button>
@@ -667,8 +680,7 @@ const PRESET_AVATARS = [
 ];
 const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af','👤');
 const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E";
-/* ★ グレー/透明なデフォルトアイコン（地球儀マーク代替） */
-const FAVICON_DEFAULT = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='none' stroke='%23000000' stroke-width='3'/%3E%3Cellipse cx='32' cy='32' rx='28' ry='12' fill='none' stroke='%23000000' stroke-width='3'/%3E%3Cpath d='M32 4 Q20 32 32 60 M32 4 Q44 32 32 60' fill='none' stroke='%23000000' stroke-width='3'/%3E%3C/svg%3E";
+const FAVICON_BLACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000000'/%3E%3C/svg%3E";
 const faviconLink = document.getElementById('faviconLink');
 function setFavicon(url) { faviconLink.href = url; }
 
@@ -760,8 +772,6 @@ const lightboxImg = document.getElementById('lightboxImg');
 const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
 const scrollUnreadCount = document.getElementById('scrollUnreadCount');
 let bannerTimer = null, announcementTimer = null;
-/* ★ 管理者がCtrl+Dで解除するためのフラグ */
-let adminEmergencyOverride = false;
 
 function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 function formatContent(str) {
@@ -798,9 +808,8 @@ async function setupMyPresence() {
 }
 async function setMyOffline() { if (!currentUser) return; if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; } try { await set(ref(db, `presence/${currentUser.uid}`), { online: false, lastChanged: Date.now() }); } catch(e) {} }
 
-function getTotalUnread() { return Object.values(unreadCounts).reduce((a,b) => a + (b||0), 0); }
 function refreshFavicon() {
-  if (emergencyState.active) { setFavicon(FAVICON_DEFAULT); return; }
+  if (emergencyState.active) { setFavicon(FAVICON_BLACK); return; }
   setFavicon(FAVICON_NORMAL);
 }
 
@@ -2715,11 +2724,11 @@ function initAdminStoryDeletePanel() {
   });
 }
 
-/* ★ 緊急モード：管理者・一般ユーザー問わず真っ黒画面 */
+/* ★ 緊急モード：管理者も黒画面にする */
 function executeNothing() {
   emergencyOverlay.classList.add('show');
   document.title = '無';
-  setFavicon(FAVICON_DEFAULT);
+  setFavicon(FAVICON_BLACK);
   document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
   document.body.style.background = '#000';
@@ -2727,8 +2736,8 @@ function executeNothing() {
   emergencyExiting = true;
   const attemptClose = () => {
     if (!emergencyState.active) return;
-    /* ★ adminEmergencyOverride が true のときは閉じようとしない */
-    if (adminEmergencyOverride) return;
+    // ★ 管理者はabout:blank遷移しない（黒画面のまま）
+    if (currentUser && isAdmin(currentUser.email)) return;
     try { window.open('', '_self').close(); } catch (e) {}
     try { window.close(); } catch (e) {}
     try { if (window.location.href !== 'about:blank') window.location.replace('about:blank'); } catch (e) {}
@@ -2737,21 +2746,45 @@ function executeNothing() {
   if (emergencyEnforcerInterval) clearInterval(emergencyEnforcerInterval);
   emergencyEnforcerInterval = setInterval(() => {
     if (!emergencyState.active) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; emergencyExiting = false; return; }
-    if (adminEmergencyOverride) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; emergencyExiting = false; return; }
+    // ★ 管理者：黒画面を維持するだけ
+    if (currentUser && isAdmin(currentUser.email)) {
+      emergencyOverlay.classList.add('show');
+      document.body.style.background = '#000';
+      document.title = '無';
+      setFavicon(FAVICON_BLACK);
+      showAdminCtrlDHint();
+      return;
+    }
     attemptClose();
     emergencyOverlay.classList.add('show');
     document.body.style.background = '#000';
     document.title = '無';
-    setFavicon(FAVICON_DEFAULT);
+    setFavicon(FAVICON_BLACK);
   }, 800);
+  // 管理者ならヒント表示
+  if (currentUser && isAdmin(currentUser.email)) showAdminCtrlDHint();
 }
-function stopEmergencyEnforcer() {
-  if (emergencyEnforcerInterval) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; }
-  emergencyExiting = false;
+function stopEmergencyEnforcer() { if (emergencyEnforcerInterval) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; } emergencyExiting = false; }
+
+function showAdminCtrlDHint() {
+  if (!currentUser || !isAdmin(currentUser.email)) return;
+  let hint = document.getElementById('adminCtrlDHint');
+  if (!hint) {
+    hint = document.createElement('div');
+    hint.id = 'adminCtrlDHint';
+    hint.textContent = 'Ctrl+D で緊急モードを解除';
+    document.body.appendChild(hint);
+  }
 }
+function hideAdminCtrlDHint() {
+  const hint = document.getElementById('adminCtrlDHint');
+  if (hint) hint.remove();
+}
+
 function restoreNormalScreen() {
   stopEmergencyEnforcer();
   emergencyOverlay.classList.remove('show');
+  hideAdminCtrlDHint();
   document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
   document.body.style.background = '';
@@ -2764,11 +2797,9 @@ function initEmergencyListener() {
     emergencyState = snap.exists() ? snap.val() : { active: false };
     const nowActive = !!emergencyState.active;
     if (nowActive) {
-      /* ★ 管理者も一般ユーザーも同じく真っ黒画面 */
+      // ★ 管理者も一般ユーザーも同じく黒画面
       executeNothing();
     } else {
-      /* 緊急モード解除された → override もリセット */
-      adminEmergencyOverride = false;
       restoreNormalScreen();
       bootOverlay.classList.add('hidden');
     }
@@ -2782,32 +2813,13 @@ async function triggerEmergency() {
 }
 async function clearEmergency() {
   if (!currentUser || !isAdmin(currentUser.email)) { showBanner('解除権限がありません', true); return; }
+  if (!confirm('緊急モードを解除しますか？')) return;
   try {
     await update(ref(db, 'emergency'), { active: false, clearedBy: currentUser.uid, clearedByEmail: currentUser.email || '', clearedAt: Date.now() });
+    showBanner('✅ 解除しました', false);
   } catch (err) { showBanner('解除に失敗しました', true); }
 }
-
-/* ★ Ctrl+D / Cmd+D で緊急モードを解除（管理者のみ） */
-document.addEventListener('keydown', (e) => {
-  const isCtrlD = (e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D');
-  if (!isCtrlD) return;
-  if (!emergencyState.active) return;
-  if (!currentUser || !isAdmin(currentUser.email)) return;
-  e.preventDefault();
-  e.stopPropagation();
-  /* ローカルのオーバーライドを有効化して画面を復帰 */
-  adminEmergencyOverride = true;
-  stopEmergencyEnforcer();
-  emergencyOverlay.classList.remove('show');
-  document.documentElement.style.overflow = '';
-  document.body.style.overflow = '';
-  document.body.style.background = '';
-  document.title = '69CT';
-  setFavicon(FAVICON_NORMAL);
-  /* Firebase上のemergency.activeをfalseにする */
-  clearEmergency();
-  showBanner('✅ 緊急モードを解除しました', false);
-});
+document.getElementById('emergencyHelpModal')?.remove?.();
 
 const emergencyHelpModal = document.getElementById('emergencyHelpModal');
 function openEmergencyHelp() { emergencyHelpModal.classList.remove('hidden'); }
@@ -2837,6 +2849,36 @@ emergencyBtn.addEventListener('mouseleave', cancelEmergencyPress);
 emergencyBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startEmergencyPress(e); }, { passive: false });
 emergencyBtn.addEventListener('touchend', (e) => { e.preventDefault(); endEmergencyPress(e); }, { passive: false });
 emergencyBtn.addEventListener('touchcancel', () => { cancelEmergencyPress(); emergencyHoldTriggered = false; });
+
+/* ★ 管理者用：Ctrl+D で緊急モード解除 */
+document.addEventListener('keydown', async (e) => {
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
+    // 緊急モード中のみ、かつ管理者のみ
+    if (!emergencyState.active) return;
+    if (!currentUser || !isAdmin(currentUser.email)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm('緊急モードを解除しますか？')) return;
+    try {
+      await update(ref(db, 'emergency'), {
+        active: false,
+        clearedBy: currentUser.uid,
+        clearedByEmail: currentUser.email || '',
+        clearedAt: Date.now()
+      });
+      // 画面復帰は initEmergencyListener が行う
+    } catch (err) {
+      alert('解除に失敗しました');
+    }
+    return false;
+  }
+  // 緊急モード中のブラウザ標準 Ctrl+D を防止
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D') && emergencyState.active) {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  }
+}, true);
 
 function initAnnouncementListener() {
   if (unsubs.announcement) unsubs.announcement();
@@ -2953,6 +2995,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
   stopEmergencyEnforcer();
+  hideAdminCtrlDHint();
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
   try { await signOut(auth); } catch (e) {}
   location.reload();
@@ -3051,7 +3094,7 @@ document.addEventListener('visibilitychange', () => {
   if (currentChatId) markChatAsRead(currentChatId);
   refreshFavicon();
   renderChatList();
-  if (emergencyState.active && !adminEmergencyOverride) executeNothing();
+  if (emergencyState.active) executeNothing();
   if (currentUser && bansCache[currentUser.uid]) executeBan();
   if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) executeBan();
 });
