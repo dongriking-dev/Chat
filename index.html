@@ -96,8 +96,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .reaction-chip.mine { background: #dbeafe; border-color: #60a5fa; }
 .reaction-chip .reaction-count { font-size: 11px; font-weight: 700; color: #6b7280; }
 .reaction-chip.mine .reaction-count { color: #1e40af; }
-.game-launch-btn { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; border: none; border-radius: 9999px; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
-.game-invite-bubble { background: linear-gradient(135deg,#fef3c7,#fed7aa); border-color: #fbbf24; cursor: pointer; }
 .msg-file { margin-top: 6px; display: block; border-radius: 12px; overflow: hidden; cursor: zoom-in; max-width: 100%; border: 1px solid #e5e7eb; background: #f9fafb; }
 .msg-file img { display: block; max-height: 280px; max-width: 100%; object-fit: contain; }
 .msg-file.only-file { margin-top: 0; }
@@ -251,29 +249,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .eh-body { font-size: 13px; line-height: 1.7; color: #374151; }
 .eh-body ul { padding-left: 20px; }
 .eh-body .email { font-family: monospace; background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 12px; color: #1e40af; word-break: break-all; }
-#gameSelectModal .modal-content { border-top: 6px solid #f59e0b; }
-.game-select-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 8px; }
-.game-select-card { background: linear-gradient(135deg, #fef3c7, #fed7aa); border: 2px solid #fbbf24; border-radius: 12px; padding: 14px 10px; cursor: pointer; text-align: center; position: relative; }
-.game-select-card::after { content: '対戦'; position: absolute; top: 6px; right: 6px; background: #ef4444; color: #fff; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 9999px; }
-.game-select-card .game-icon { font-size: 28px; margin-bottom: 6px; }
-.game-select-card .game-title { font-size: 13px; font-weight: 800; color: #92400e; }
-.game-select-card .game-desc { font-size: 10px; color: #a16207; margin-top: 3px; }
-#gamePlayModal .modal-content { border-top: 6px solid #7c3aed; max-width: 520px; }
-.game-vs-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 12px; padding: 10px; background: #f5f3ff; border-radius: 10px; }
-.game-vs-player { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; min-width: 0; }
-.game-vs-player img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ddd6fe; object-fit: cover; }
-.game-vs-player .name { font-size: 11px; font-weight: 700; color: #4c1d95; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.game-vs-player .score { font-size: 18px; font-weight: 900; color: #7c3aed; }
-.game-vs-vs { font-size: 16px; font-weight: 900; color: #dc2626; flex-shrink: 0; }
-.game-board { display: grid; gap: 8px; margin: 12px 0; justify-content: center; }
-.game-cell { background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; aspect-ratio: 1; user-select: none; }
-.game-cell.matched { background: #dcfce7; border-color: #86efac; cursor: default; opacity: 0.6; }
-.game-cell.selected { background: #fef3c7; border-color: #fbbf24; }
-.game-status { text-align: center; font-size: 14px; font-weight: 700; color: #4c1d95; margin: 8px 0; }
-.game-result-banner { text-align: center; padding: 16px; border-radius: 12px; margin: 12px 0; font-weight: 800; }
-.game-result-banner.win { background: linear-gradient(135deg, #dcfce7, #bbf7d0); color: #166534; }
-.game-result-banner.lose { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #991b1b; }
-.game-result-banner.draw { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; }
 .approval-item { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 8px; background: #f9fafb; }
 .approval-item .ap-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e5e7eb; }
 .approval-item .ap-info { flex: 1; min-width: 0; }
@@ -293,7 +268,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   .header-title { font-size: 17px; }
   .msg-body { max-width: 82%; }
   .modal-content { padding: 18px; }
-  .game-select-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -664,57 +638,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </div>
 </div>
 
-<div id="gameSelectModal" class="modal-backdrop hidden">
-  <div class="modal-content">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#92400e;">🎮 対戦ゲーム</h3>
-    <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">相手に申し込みを送って対戦します。</p>
-    <div class="game-select-grid">
-      <div class="game-select-card" data-game="memory"><div class="game-icon">🧠</div><div class="game-title">絵文字神経衰弱</div><div class="game-desc">ターン制でペアを揃えよう</div></div>
-      <div class="game-select-card" data-game="tap"><div class="game-icon">👆</div><div class="game-title">絵文字タップ</div><div class="game-desc">15秒でスコア勝負</div></div>
-      <div class="game-select-card" data-game="sequence"><div class="game-icon">🔢</div><div class="game-title">絵文字記憶</div><div class="game-desc">順番を当てて勝負</div></div>
-      <div class="game-select-card" data-game="janken"><div class="game-icon">✊</div><div class="game-title">絵文字じゃんけん</div><div class="game-desc">先に3勝で勝利</div></div>
-      <div class="game-select-card" data-game="slot"><div class="game-icon">🎰</div><div class="game-title">絵文字スロット</div><div class="game-desc">コイン勝負</div></div>
-    </div>
-    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-      <button id="gameSelectCancelBtn" class="secondary-btn">閉じる</button>
-    </div>
-  </div>
-</div>
-
-<div id="gamePlayModal" class="modal-backdrop hidden">
-  <div class="modal-content">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <h3 style="font-size:16px;font-weight:700;margin:0;color:#5b21b6;" id="gamePlayTitle">対戦ゲーム</h3>
-      <button id="gamePlayCloseBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">閉じる</button>
-    </div>
-    <div class="game-vs-header" id="gameVsHeader" style="display:none;">
-      <div class="game-vs-player" id="gameVsP1"><img src="" alt=""><div class="name"></div><div class="score">0</div></div>
-      <div class="game-vs-vs">VS</div>
-      <div class="game-vs-player" id="gameVsP2"><img src="" alt=""><div class="name"></div><div class="score">0</div></div>
-    </div>
-    <div class="game-status" id="gameStatusText"></div>
-    <div id="gameBoardArea"></div>
-    <div style="display:flex;justify-content:center;gap:8px;margin-top:12px;">
-      <button id="gameSendResultBtn" class="secondary-btn" style="display:none;">結果をチャットに送る</button>
-    </div>
-  </div>
-</div>
-
-<div id="gameInviteModal" class="modal-backdrop hidden">
-  <div class="modal-content" style="border-top:6px solid #f59e0b; max-width:460px;">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#92400e;">🎮 対戦申し込み</h3>
-    <p style="font-size:11px;color:#6b7280;margin:0 0 16px;">以下の内容で対戦を申し込みます。</p>
-    <div style="background:#fef3c7;border:1px solid #fbbf24;border-radius:10px;padding:14px;margin-bottom:16px;text-align:center;">
-      <div style="font-size:32px;margin-bottom:6px;" id="gameInviteIcon">🎮</div>
-      <div style="font-size:14px;font-weight:800;color:#92400e;" id="gameInviteName"></div>
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="gameInviteCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="gameInviteSendBtn" class="primary-btn">申し込む</button>
-    </div>
-  </div>
-</div>
-
 <div id="storyViewer">
   <div class="story-stage">
     <div class="story-progress-bar" id="storyProgressBar"></div>
@@ -784,7 +707,7 @@ let currentUser = null;
 let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
 let currentChatId = null;
 let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {}, emailBansCache = {}, deviceLinksCache = {}, readsCache = {}, typingCache = {}, presenceCache = {}, reactionsCache = {};
-let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, gameSession: null, storyLikes: null, storyViews: null };
+let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null };
 let chatLatestListeners = {};
 
 const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
@@ -826,7 +749,6 @@ let notificationsCache = {}, lastSeenNotificationCount = parseInt(localStorage.g
 let approvalsCache = {}, lastSeenApprovalCount = parseInt(localStorage.getItem(APPROVAL_SEEN_KEY) || '0', 10), lastApprovalIds = new Set();
 let myApprovalStatus = null;
 let replyingTo = null, currentReactionPicker = null, addMemberTargetProfile = null;
-let currentGameMessage = null, pendingGameType = null, currentGameSession = null, gameState = null, gameTimerInterval = null;
 let relatedAccountsResult = [];
 
 const bootOverlay = document.getElementById('bootOverlay');
@@ -1249,11 +1171,6 @@ async function toggleReaction(msgKey, emoji) {
   catch (err) { showBanner('リアクションに失敗しました', true); }
 }
 
-function containsEmoji(str) {
-  if (!str) return false;
-  return /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{1F000}-\u{1F02F}\u{1F0A0}-\u{1F0FF}\u{1F100}-\u{1F1FF}\u{1F200}-\u{1F2FF}\u{1F300}-\u{1F5FF}\u{1F600}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}]/u.test(str);
-}
-
 function createMessageRow(msg, lastRenderedMsg) {
   const key = msg.key;
   const clientMsgId = msg.clientMsgId || key;
@@ -1264,26 +1181,6 @@ function createMessageRow(msg, lastRenderedMsg) {
     sys.dataset.msgKey = key;
     sys.innerHTML = `<span>${escapeHtml(msg.content || '')}</span>`;
     return { row: sys, msg };
-  }
-  if (msg.gameInvite) {
-    const profile = getProfileForUid(msg.authorUid);
-    const isMine = currentUser && msg.authorUid === currentUser.uid;
-    const inv = document.createElement('div');
-    inv.className = 'msg-row' + (isMine ? ' mine' : '');
-    inv.dataset.msgKey = key;
-    inv.dataset.clientMsgId = clientMsgId;
-    inv.dataset.msgAuthorUid = msg.authorUid;
-    inv.innerHTML = `
-      <div class="msg-avatar-slot"><img class="avatar-sm" src="${escapeHtml(profile.avatar)}"></div>
-      <div class="msg-body">
-        <div class="msg-meta"><span class="name">${escapeHtml(profile.nickname)}</span><span class="time">${formatTime(msg.createdAt)}</span></div>
-        <div class="msg-bubble game-invite-bubble" data-game-invite="${escapeHtml(msg.gameInvite.sessionId)}">
-          <div style="font-size:12px;color:#92400e;font-weight:700;">🎮 対戦申し込み</div>
-          <div style="font-size:14px;font-weight:800;color:#78350f;margin-top:4px;">${escapeHtml(msg.gameInvite.gameName||'')}</div>
-          <div style="font-size:11px;color:#a16207;margin-top:4px;">${isMine?'相手の返答を待っています...':'タップして参加！'}</div>
-        </div>
-      </div>`;
-    return { row: inv, msg };
   }
 
   const isMine = currentUser && msg.authorUid === currentUser.uid;
@@ -1327,9 +1224,6 @@ function createMessageRow(msg, lastRenderedMsg) {
 
   let contentHtml = msg.content ? `<div class="msg-content">${formatContent(msg.content)}</div>` : '';
 
-  let gameBtnHtml = '';
-  if (msg.content && containsEmoji(msg.content)) gameBtnHtml = `<button class="game-launch-btn" data-game-msg-key="${key}">🎮 対戦を申し込む</button>`;
-
   let readHtml = '';
   if (isMine && isMessageReadByOthers(msg)) readHtml = `<div class="read-receipt">✓ 既読</div>`;
 
@@ -1346,7 +1240,6 @@ function createMessageRow(msg, lastRenderedMsg) {
         ${menuBtnHtml}
         <div class="msg-bubble">${replyQuoteHtml}${storyContextHtml}${contentHtml}${fileHtml}</div>
       </div>
-      ${gameBtnHtml}
       ${readHtml}
     </div>`;
   return { row, msg };
@@ -1404,7 +1297,6 @@ function fullRenderMessages() {
   if (isNearBottom) requestAnimationFrame(() => { chatMessagesWrap.scrollTop = chatMessagesWrap.scrollHeight; });
 }
 
-/* イベント委譲 */
 messagesContainer.addEventListener('click', (e) => {
   const menuBtn = e.target.closest('.msg-menu-btn');
   if (menuBtn) { e.stopPropagation(); const k = menuBtn.dataset.key; if (openMenuKey === k) closeAllMenus(); else openMenu(menuBtn, k); return; }
@@ -1420,14 +1312,6 @@ messagesContainer.addEventListener('click', (e) => {
       const bubble = targetRow.querySelector('.msg-bubble');
       if (bubble) { const orig = bubble.style.background; bubble.style.background = '#fef3c7'; setTimeout(() => { bubble.style.background = orig; }, 1200); }
     }
-    return;
-  }
-  const gameBtn = e.target.closest('.game-launch-btn');
-  if (gameBtn) { e.stopPropagation(); const targetMsg = messagesCache.find(m => m.key === gameBtn.dataset.gameMsgKey); if (targetMsg) openGameSelect(targetMsg); return; }
-  const inviteBubble = e.target.closest('[data-game-invite]');
-  if (inviteBubble) {
-    const row = inviteBubble.closest('.msg-row');
-    if (row && row.dataset.msgAuthorUid !== currentUser.uid) joinGameSession(inviteBubble.dataset.gameInvite);
     return;
   }
 });
@@ -1661,7 +1545,6 @@ scrollToBottomBtn.addEventListener('click', () => {
   if (currentChatId) markChatAsRead(currentChatId);
 });
 
-/* チャットヘッダーメニュー */
 function closeChatHeaderMenu() {
   if (openChatHeaderMenuEl && openChatHeaderMenuEl.parentNode) openChatHeaderMenuEl.parentNode.removeChild(openChatHeaderMenuEl);
   openChatHeaderMenuEl = null;
@@ -1759,7 +1642,6 @@ async function deleteDirectChat() {
   } catch (err) { console.error('削除エラー:', err); showBanner('削除に失敗しました', true); }
 }
 
-/* メンバー追加 */
 function openAddMemberModal() {
   document.getElementById('addMemberEmailInput').value = '';
   document.getElementById('addMemberSearchMsg').textContent = '';
@@ -1822,7 +1704,6 @@ document.getElementById('addMemberConfirmBtn').addEventListener('click', async (
   } catch (err) { console.error('メンバー追加エラー:', err); showBanner('追加に失敗しました', true); }
 });
 
-/* 新規チャット */
 const newChatModal = document.getElementById('newChatModal');
 const memberEmailInput = document.getElementById('memberEmailInput');
 const memberSearchMsg = document.getElementById('memberSearchMsg');
@@ -1903,7 +1784,6 @@ async function findExistingDirectChat(partnerUid) {
   } catch (e) { return null; }
 }
 
-/* プロフィール */
 document.getElementById('profileBtn').addEventListener('click', () => {
   document.getElementById('nicknameInput').value = myProfile.nickname || '';
   selectedAvatar = myProfile.avatar || DEFAULT_AVATAR;
@@ -1933,7 +1813,6 @@ document.getElementById('profileSaveBtn').addEventListener('click', async () => 
   } catch (err) { showBanner('保存失敗', true); }
 });
 
-/* 画像/音声/動画変換 */
 const IMAGE_MAX_WIDTH = 1200, IMAGE_MAX_HEIGHT = 1200, IMAGE_QUALITY = 0.8, IMAGE_MAX_BASE64_SIZE = 400*1024, MEDIA_MAX_BASE64_SIZE = 800*1024;
 function fileToBase64Image(file, maxW = IMAGE_MAX_WIDTH, maxH = IMAGE_MAX_HEIGHT, maxSize = IMAGE_MAX_BASE64_SIZE) {
   return new Promise((resolve, reject) => {
@@ -1994,7 +1873,6 @@ function fileToBase64Video(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
 }
 function formatSize(bytes) { if (!bytes) return ''; if (bytes < 1024) return bytes + ' B'; if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB'; return (bytes/1024/1024).toFixed(2) + ' MB'; }
 
-/* ストーリー完全実装 */
 const STORY_TTL = 24 * 60 * 60 * 1000;
 function initStoriesListener() {
   if (unsubs.stories) unsubs.stories();
@@ -2475,464 +2353,6 @@ document.getElementById('myArchiveBtn').addEventListener('click', () => {
 document.getElementById('archiveCloseBtn').addEventListener('click', () => document.getElementById('archiveModal').classList.add('hidden'));
 document.getElementById('archiveModal').addEventListener('click', (e) => { if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden'); });
 
-/* ゲーム */
-const EMOJI_POOL = ['😀','😎','🔥','🌟','🍀','🌸','🐱','🐶','🦊','🐼','🎮','☕','🍎','🍕','⚽','🎵','💎','🚀','🌈','🍩'];
-const GAME_NAMES = { memory: '🧠 絵文字神経衰弱', tap: '👆 絵文字タップ', sequence: '🔢 絵文字記憶', janken: '✊ 絵文字じゃんけん', slot: '🎰 絵文字スロット' };
-const gameSelectModal = document.getElementById('gameSelectModal');
-const gamePlayModal = document.getElementById('gamePlayModal');
-const gameInviteModal = document.getElementById('gameInviteModal');
-const gameBoardArea = document.getElementById('gameBoardArea');
-const gameStatusText = document.getElementById('gameStatusText');
-const gameSendResultBtn = document.getElementById('gameSendResultBtn');
-const gameVsHeader = document.getElementById('gameVsHeader');
-const gameVsP1 = document.getElementById('gameVsP1');
-const gameVsP2 = document.getElementById('gameVsP2');
-
-function openGameSelect(msg) {
-  if (!currentChatId) return;
-  const chat = chatsCache[currentChatId];
-  if (!chat) return;
-  if (chat.type !== 'direct') { showBanner('対戦は1対1チャットでのみ可能です', true); return; }
-  currentGameMessage = msg;
-  gameSelectModal.classList.remove('hidden');
-}
-document.getElementById('gameSelectCancelBtn').addEventListener('click', () => { gameSelectModal.classList.add('hidden'); currentGameMessage = null; });
-gameSelectModal.addEventListener('click', (e) => { if (e.target.id === 'gameSelectModal') { gameSelectModal.classList.add('hidden'); currentGameMessage = null; } });
-document.querySelectorAll('.game-select-card').forEach(card => {
-  card.addEventListener('click', () => { const game = card.dataset.game; gameSelectModal.classList.add('hidden'); showGameInviteConfirm(game); });
-});
-function showGameInviteConfirm(gameType) {
-  pendingGameType = gameType;
-  document.getElementById('gameInviteIcon').textContent = GAME_NAMES[gameType].split(' ')[0];
-  document.getElementById('gameInviteName').textContent = GAME_NAMES[gameType];
-  gameInviteModal.classList.remove('hidden');
-}
-document.getElementById('gameInviteCancelBtn').addEventListener('click', () => { gameInviteModal.classList.add('hidden'); pendingGameType = null; currentGameMessage = null; });
-gameInviteModal.addEventListener('click', (e) => { if (e.target.id === 'gameInviteModal') { gameInviteModal.classList.add('hidden'); pendingGameType = null; currentGameMessage = null; } });
-document.getElementById('gameInviteSendBtn').addEventListener('click', async () => {
-  if (!pendingGameType || !currentChatId || !currentUser) return;
-  const gameType = pendingGameType;
-  gameInviteModal.classList.add('hidden');
-  pendingGameType = null;
-  await createGameSession(gameType);
-});
-async function createGameSession(gameType) {
-  const chatId = currentChatId;
-  const chat = chatsCache[chatId];
-  if (!chat) return;
-  const opponentUid = Object.keys(chat.members||{}).find(uid => uid !== currentUser.uid);
-  if (!opponentUid) { showBanner('対戦相手が見つかりません', true); return; }
-  try {
-    const sessRef = push(ref(db, `gameSessions/${chatId}`));
-    const sessionId = sessRef.key;
-    const session = {
-      type: gameType, createdBy: currentUser.uid, opponentUid, status: 'inviting', createdAt: Date.now(),
-      players: { [currentUser.uid]: { name: myProfile.nickname, avatar: myProfile.avatar, score: 0 }, [opponentUid]: { name: getProfileForUid(opponentUid).nickname, avatar: getProfileForUid(opponentUid).avatar, score: 0 } },
-      state: {}
-    };
-    await set(ref(db, `gameSessions/${chatId}/${sessionId}`), session);
-    const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
-    const msgRef = push(ref(db, `chatMessages/${chatId}`));
-    await set(msgRef, { clientMsgId, content: '', file: null, authorUid: currentUser.uid, authorName: myProfile.nickname, authorAvatar: myProfile.avatar, createdAt: Date.now(), gameInvite: { sessionId, gameType, gameName: GAME_NAMES[gameType] } });
-    const memberUids = Object.keys(chat.members||{});
-    const updates = {};
-    memberUids.forEach(uid => {
-      updates[`userChats/${uid}/${chatId}/lastMessage`] = `🎮 ${GAME_NAMES[gameType]} の対戦申し込み`;
-      updates[`userChats/${uid}/${chatId}/lastMessageAt`] = Date.now();
-      updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
-    });
-    await update(ref(db), updates);
-    currentGameMessage = null;
-    showBanner('対戦を申し込みました', false);
-  } catch (err) { console.error('ゲームセッション作成エラー:', err); showBanner('申し込みに失敗しました', true); }
-}
-async function joinGameSession(sessionId) {
-  if (!currentChatId || !currentUser) return;
-  try {
-    const sessRef = ref(db, `gameSessions/${currentChatId}/${sessionId}`);
-    const snap = await get(sessRef);
-    if (!snap.exists()) { showBanner('セッションが見つかりません', true); return; }
-    const session = snap.val();
-    if (session.status === 'finished') { showBanner('この対戦は終了しています', true); return; }
-    if (session.status === 'playing') { openGamePlayModal(sessionId); return; }
-    await update(sessRef, { status: 'playing', [`players/${currentUser.uid}/joined`]: true, startedAt: Date.now() });
-    openGamePlayModal(sessionId);
-  } catch (err) { console.error('参加エラー:', err); showBanner('参加に失敗しました', true); }
-}
-function openGamePlayModal(sessionId) {
-  currentGameSession = { sessionId, chatId: currentChatId };
-  gamePlayModal.classList.remove('hidden');
-  gameBoardArea.innerHTML = '';
-  gameStatusText.textContent = '対戦相手を待っています...';
-  gameSendResultBtn.style.display = 'none';
-  gameVsHeader.style.display = 'flex';
-  if (unsubs.gameSession) unsubs.gameSession();
-  unsubs.gameSession = onValue(ref(db, `gameSessions/${currentChatId}/${sessionId}`), (snap) => {
-    if (!snap.exists()) { closeGamePlay(); return; }
-    const session = snap.val();
-    currentGameSession.session = session;
-    updateGameVsHeader();
-    handleGameSessionUpdate(session);
-  }, () => {});
-}
-function updateGameVsHeader() {
-  if (!currentGameSession || !currentGameSession.session) return;
-  const session = currentGameSession.session;
-  const players = session.players || {};
-  const uids = Object.keys(players);
-  if (uids.length < 2) return;
-  const myUid = currentUser.uid;
-  const oppUid = uids.find(u => u !== myUid) || uids[0];
-  const me = players[myUid] || {};
-  const opp = players[oppUid] || {};
-  const myP = getProfileForUid(myUid);
-  const oppP = getProfileForUid(oppUid);
-  gameVsP1.querySelector('img').src = myP.avatar;
-  gameVsP1.querySelector('.name').textContent = myP.nickname + ' (あなた)';
-  gameVsP1.querySelector('.score').textContent = me.score || 0;
-  gameVsP2.querySelector('img').src = oppP.avatar;
-  gameVsP2.querySelector('.name').textContent = oppP.nickname;
-  gameVsP2.querySelector('.score').textContent = opp.score || 0;
-}
-document.getElementById('gamePlayCloseBtn').addEventListener('click', () => { if (confirm('対戦を中断しますか？')) closeGamePlay(); });
-gamePlayModal.addEventListener('click', (e) => { if (e.target.id === 'gamePlayModal') { if (confirm('対戦を中断しますか？')) closeGamePlay(); } });
-gameSendResultBtn.addEventListener('click', async () => { if (!gameState) return; await sendGameResult(gameState.resultText || 'ゲーム終了'); closeGamePlay(); });
-function closeGamePlay() {
-  gamePlayModal.classList.add('hidden');
-  if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
-  if (unsubs.gameSession) { unsubs.gameSession(); unsubs.gameSession = null; }
-  gameState = null; currentGameSession = null;
-  gameBoardArea.innerHTML = '';
-  gameStatusText.textContent = '';
-  gameSendResultBtn.style.display = 'none';
-  gameVsHeader.style.display = 'none';
-}
-async function sendGameResult(text) {
-  if (!currentUser || !currentChatId) return;
-  const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
-  try {
-    const newRef = push(ref(db, `chatMessages/${currentChatId}`));
-    await set(newRef, { clientMsgId, content: text, file: null, authorUid: currentUser.uid, authorName: myProfile.nickname, authorAvatar: myProfile.avatar, createdAt: Date.now(), gameResult: true });
-    const chat = chatsCache[currentChatId];
-    if (chat) {
-      const memberUids = Object.keys(chat.members || {});
-      const updates = {};
-      memberUids.forEach(uid => { updates[`userChats/${uid}/${currentChatId}/lastMessage`] = text; updates[`userChats/${uid}/${currentChatId}/lastMessageAt`] = Date.now(); updates[`userChats/${uid}/${currentChatId}/lastSenderUid`] = currentUser.uid; });
-      await update(ref(db), updates);
-    }
-    showBanner('結果を送信しました', false);
-  } catch (err) { showBanner('送信に失敗しました', true); }
-}
-function handleGameSessionUpdate(session) {
-  if (!currentGameSession || !session) return;
-  const gameType = session.type;
-  if (gameState && gameState.type === gameType && gameState.sessionId === currentGameSession.sessionId) { syncGameState(session); return; }
-  if (session.status === 'playing') startGame(gameType);
-  else if (session.status === 'inviting' && session.createdBy === currentUser.uid) gameStatusText.textContent = '相手の参加を待っています...';
-}
-function startGame(type) {
-  if (gameTimerInterval) { clearInterval(gameTimerInterval); gameTimerInterval = null; }
-  gameBoardArea.innerHTML = '';
-  gameSendResultBtn.style.display = 'none';
-  gameState = { type, sessionId: currentGameSession.sessionId, chatId: currentGameSession.chatId, score: 0, resultText: '' };
-  document.getElementById('gamePlayTitle').textContent = GAME_NAMES[type] || '対戦ゲーム';
-  if (type === 'memory') startMemoryGame();
-  else if (type === 'tap') startTapGame();
-  else if (type === 'sequence') startSequenceGame();
-  else if (type === 'janken') startJankenGame();
-  else if (type === 'slot') startSlotGame();
-}
-function syncGameState(session) {
-  const players = session.players || {};
-  const myScore = players[currentUser.uid]?.score || 0;
-  const oppUid = Object.keys(players).find(u => u !== currentUser.uid);
-  const oppScore = oppUid ? (players[oppUid]?.score || 0) : 0;
-  if (gameState.type === 'tap' || gameState.type === 'janken') { gameVsP2.querySelector('.score').textContent = oppScore; gameVsP1.querySelector('.score').textContent = myScore; }
-  if (gameState.type === 'memory') {
-    renderMemoryBoard();
-    const turn = session.state?.turnUid;
-    if (turn === currentUser.uid) gameStatusText.textContent = 'あなたのターンです';
-    else if (turn) gameStatusText.textContent = '相手のターンです...';
-  }
-  if (gameState.type === 'slot') gameVsP2.querySelector('.score').textContent = oppScore;
-}
-function startMemoryGame() {
-  const pairs = 8;
-  const emojis = [...EMOJI_POOL].sort(() => Math.random() - 0.5).slice(0, pairs);
-  const deck = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
-  update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/state`), { deck, revealed: {}, matched: {}, firstCard: null, turnUid: currentUser.uid, scores: { [currentUser.uid]: 0 } });
-  gameState.deck = deck;
-  gameBoardArea.innerHTML = '';
-  const board = document.createElement('div');
-  board.className = 'game-board';
-  board.style.gridTemplateColumns = `repeat(4, 1fr)`;
-  board.style.maxWidth = '360px';
-  board.style.margin = '0 auto';
-  gameBoardArea.appendChild(board);
-  gameState.boardEl = board;
-  renderMemoryBoard();
-}
-function renderMemoryBoard() {
-  if (!gameState || gameState.type !== 'memory' || !gameState.boardEl) return;
-  const session = currentGameSession?.session;
-  const state = session?.state || {};
-  const revealed = state.revealed || {};
-  const matched = state.matched || {};
-  gameState.boardEl.innerHTML = '';
-  gameState.deck.forEach((emoji, idx) => {
-    const cell = document.createElement('div');
-    cell.className = 'game-cell';
-    if (matched[idx]) { cell.classList.add('matched'); cell.textContent = emoji; }
-    else if (revealed[idx]) { cell.classList.add('selected'); cell.textContent = emoji; }
-    cell.addEventListener('click', () => onMemoryCardClick(idx));
-    gameState.boardEl.appendChild(cell);
-  });
-}
-async function onMemoryCardClick(idx) {
-  if (!gameState || gameState.type !== 'memory') return;
-  const session = currentGameSession?.session;
-  const state = session?.state || {};
-  if (state.turnUid !== currentUser.uid) { showBanner('相手のターンです', true); return; }
-  const revealed = state.revealed || {};
-  const matched = state.matched || {};
-  if (matched[idx] || revealed[idx]) return;
-  const firstCard = state.firstCard;
-  if (firstCard === null || firstCard === undefined) {
-    await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/state`), { [`revealed/${idx}`]: true, firstCard: idx });
-  } else {
-    const firstEmoji = gameState.deck[firstCard];
-    const secondEmoji = gameState.deck[idx];
-    if (firstEmoji === secondEmoji) {
-      const newScore = (state.scores?.[currentUser.uid] || 0) + 10;
-      await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/state`), { revealed: null, [`matched/${firstCard}`]: true, [`matched/${idx}`]: true, firstCard: null, [`scores/${currentUser.uid}`]: newScore });
-      const matchedCount = Object.keys(matched).length + 2;
-      if (matchedCount >= gameState.deck.length) await finishMemoryGame();
-    } else {
-      await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/state`), { [`revealed/${idx}`]: true, firstCard: null });
-      const oppUid = Object.keys(session.players || {}).find(u => u !== currentUser.uid);
-      setTimeout(async () => { await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/state`), { revealed: null, turnUid: oppUid || currentUser.uid }); }, 900);
-    }
-  }
-}
-async function finishMemoryGame() {
-  const state = currentGameSession.session?.state || {};
-  const scores = state.scores || {};
-  const myScore = scores[currentUser.uid] || 0;
-  const oppUid = Object.keys(currentGameSession.session.players || {}).find(u => u !== currentUser.uid);
-  const oppScore = scores[oppUid] || 0;
-  let resultText;
-  if (myScore > oppScore) resultText = `🧠 絵文字神経衰弱 勝利！ ${myScore} - ${oppScore}`;
-  else if (myScore < oppScore) resultText = `🧠 絵文字神経衰弱 敗北… ${myScore} - ${oppScore}`;
-  else resultText = `🧠 絵文字神経衰弱 引き分け ${myScore} - ${oppScore}`;
-  gameState.resultText = resultText;
-  gameStatusText.innerHTML = `<div class="game-result-banner ${myScore > oppScore ? 'win' : myScore < oppScore ? 'lose' : 'draw'}">${resultText}</div>`;
-  gameSendResultBtn.style.display = 'inline-block';
-  await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}`), { status: 'finished', finishedAt: Date.now() });
-}
-function startTapGame() {
-  const duration = 15;
-  const targetEmoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
-  let timeLeft = duration;
-  update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/state`), { targetEmoji, duration });
-  gameStatusText.innerHTML = `「${targetEmoji}」をタップ！`;
-  const board = document.createElement('div');
-  board.className = 'game-board';
-  board.style.gridTemplateColumns = 'repeat(4, 1fr)';
-  board.style.maxWidth = '360px';
-  board.style.margin = '0 auto';
-  for (let i = 0; i < 16; i++) {
-    const cell = document.createElement('div');
-    cell.className = 'game-cell';
-    const emoji = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)];
-    cell.textContent = emoji;
-    cell.addEventListener('click', async () => {
-      if (timeLeft <= 0) return;
-      if (emoji === targetEmoji) { gameState.score += 10; gameVsP1.querySelector('.score').textContent = gameState.score; cell.style.background = '#dcfce7'; setTimeout(() => { cell.style.background = ''; }, 200); }
-      else { gameState.score = Math.max(0, gameState.score - 5); gameVsP1.querySelector('.score').textContent = gameState.score; cell.style.background = '#fee2e2'; setTimeout(() => { cell.style.background = ''; }, 200); }
-      await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/players/${currentUser.uid}/score`), gameState.score);
-    });
-    board.appendChild(cell);
-  }
-  gameBoardArea.appendChild(board);
-  gameTimerInterval = setInterval(() => {
-    timeLeft--;
-    if (timeLeft <= 0) { clearInterval(gameTimerInterval); gameTimerInterval = null; finishTapGame(); }
-  }, 1000);
-}
-async function finishTapGame() {
-  const players = currentGameSession.session?.players || {};
-  const myScore = players[currentUser.uid]?.score || 0;
-  const oppUid = Object.keys(players).find(u => u !== currentUser.uid);
-  const oppScore = oppUid ? (players[oppUid]?.score || 0) : 0;
-  let resultText;
-  if (myScore > oppScore) resultText = `👆 絵文字タップ 勝利！ ${myScore} - ${oppScore}`;
-  else if (myScore < oppScore) resultText = `👆 絵文字タップ 敗北… ${myScore} - ${oppScore}`;
-  else resultText = `👆 絵文字タップ 引き分け ${myScore} - ${oppScore}`;
-  gameState.resultText = resultText;
-  gameStatusText.innerHTML = `<div class="game-result-banner ${myScore > oppScore ? 'win' : myScore < oppScore ? 'lose' : 'draw'}">${resultText}</div>`;
-  gameSendResultBtn.style.display = 'inline-block';
-  await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}`), { status: 'finished', finishedAt: Date.now() });
-}
-function startSequenceGame() {
-  let round = 1;
-  const maxRounds = 5;
-  let sequence = [], inputIndex = 0;
-  gameStatusText.textContent = 'よく見て覚えよう！';
-  const board = document.createElement('div');
-  board.style.display = 'grid';
-  board.style.gridTemplateColumns = 'repeat(3, 1fr)';
-  board.style.gap = '10px';
-  board.style.maxWidth = '300px';
-  board.style.margin = '0 auto';
-  const choices = EMOJI_POOL.slice(0, 6);
-  const cells = [];
-  choices.forEach(emoji => {
-    const cell = document.createElement('div');
-    cell.className = 'game-cell';
-    cell.textContent = emoji;
-    cell.dataset.emoji = emoji;
-    cell.style.fontSize = '32px';
-    cell.addEventListener('click', () => handleSeqClick(emoji));
-    board.appendChild(cell);
-    cells.push(cell);
-  });
-  gameBoardArea.appendChild(board);
-  function startRound() { sequence = []; inputIndex = 0; for (let i = 0; i < round + 2; i++) sequence.push(choices[Math.floor(Math.random() * choices.length)]); playSequence(); }
-  function playSequence() {
-    gameStatusText.textContent = `ラウンド ${round}: よく見て！`;
-    let i = 0;
-    const interval = setInterval(() => {
-      if (i >= sequence.length) { clearInterval(interval); gameStatusText.textContent = `ラウンド ${round}: 順番にタップ！`; inputIndex = 0; return; }
-      const emoji = sequence[i];
-      const cell = cells.find(c => c.dataset.emoji === emoji);
-      if (cell) { cell.style.transform = 'scale(1.3)'; cell.style.background = '#fef3c7'; setTimeout(() => { cell.style.transform = ''; cell.style.background = ''; }, 400); }
-      i++;
-    }, 700);
-  }
-  function handleSeqClick(emoji) {
-    if (inputIndex >= sequence.length) return;
-    if (sequence[inputIndex] === emoji) {
-      inputIndex++;
-      if (inputIndex === sequence.length) {
-        if (round >= maxRounds) {
-          gameState.score = maxRounds * 20;
-          gameState.resultText = `🔢 絵文字記憶 全${maxRounds}ラウンドクリア！`;
-          gameStatusText.innerHTML = `<div class="game-result-banner win">${gameState.resultText}</div>`;
-          gameSendResultBtn.style.display = 'inline-block';
-        } else { round++; setTimeout(startRound, 800); }
-      }
-    } else {
-      gameState.score = (round - 1) * 20;
-      gameState.resultText = `🔢 絵文字記憶 ラウンド${round}で失敗…`;
-      gameStatusText.innerHTML = `<div class="game-result-banner lose">${gameState.resultText}</div>`;
-      gameSendResultBtn.style.display = 'inline-block';
-    }
-  }
-  startRound();
-}
-function startJankenGame() {
-  const hands = [{ emoji: '✊', beats: '✌️' }, { emoji: '✌️', beats: '✋' }, { emoji: '✋', beats: '✊' }];
-  let wins = 0, losses = 0, draws = 0;
-  gameBoardArea.innerHTML = '';
-  gameStatusText.textContent = '手を選んでね！先に3勝で勝利！';
-  const board = document.createElement('div');
-  board.style.display = 'grid';
-  board.style.gridTemplateColumns = 'repeat(3, 1fr)';
-  board.style.gap = '12px';
-  board.style.maxWidth = '320px';
-  board.style.margin = '0 auto';
-  hands.forEach(h => {
-    const cell = document.createElement('div');
-    cell.className = 'game-cell';
-    cell.style.fontSize = '40px';
-    cell.textContent = h.emoji;
-    cell.addEventListener('click', () => playJanken(h));
-    board.appendChild(cell);
-  });
-  gameBoardArea.appendChild(board);
-  const scoreDiv = document.createElement('div');
-  scoreDiv.style.cssText = 'text-align:center;margin-top:12px;font-size:13px;color:#6b7280;';
-  scoreDiv.id = 'jankenScore';
-  scoreDiv.textContent = '勝ち: 0 / 負け: 0 / 引き分け: 0';
-  gameBoardArea.appendChild(scoreDiv);
-  async function playJanken(myHand) {
-    const oppHand = hands[Math.floor(Math.random() * hands.length)];
-    let result;
-    if (myHand.emoji === oppHand.emoji) { result = 'draw'; draws++; }
-    else if (myHand.beats === oppHand.emoji) { result = 'win'; wins++; }
-    else { result = 'lose'; losses++; }
-    document.getElementById('jankenScore').textContent = `勝ち: ${wins} / 負け: ${losses} / 引き分け: ${draws}`;
-    const resultText = result === 'win' ? '🎉 勝ち！' : result === 'lose' ? '😢 負け…' : '🤝 引き分け';
-    gameStatusText.innerHTML = `あなた: ${myHand.emoji} vs 相手: ${oppHand.emoji}<br><strong style="font-size:18px;">${resultText}</strong>`;
-    gameState.score = wins * 10 - losses * 5;
-    gameVsP1.querySelector('.score').textContent = wins;
-    await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/players/${currentUser.uid}/score`), wins);
-    if (wins >= 3) {
-      gameState.resultText = `✊ 絵文字じゃんけん 勝利！ ${wins}勝`;
-      gameStatusText.innerHTML = `<div class="game-result-banner win">${gameState.resultText}</div>`;
-      gameSendResultBtn.style.display = 'inline-block';
-      await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}`), { status: 'finished' });
-    }
-  }
-}
-function startSlotGame() {
-  let coins = 5;
-  let spinning = false;
-  gameStatusText.textContent = 'コインを5枚持ってるよ！';
-  gameVsHeader.style.display = 'flex';
-  gameBoardArea.innerHTML = '';
-  const slotDisplay = document.createElement('div');
-  slotDisplay.style.cssText = 'display:flex;justify-content:center;gap:12px;font-size:48px;margin:20px 0;';
-  const reels = [];
-  for (let i = 0; i < 3; i++) {
-    const reel = document.createElement('div');
-    reel.style.cssText = 'width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:#f3f4f6;border:2px solid #d1d5db;border-radius:12px;';
-    reel.textContent = '❓';
-    slotDisplay.appendChild(reel);
-    reels.push(reel);
-  }
-  gameBoardArea.appendChild(slotDisplay);
-  const spinBtn = document.createElement('button');
-  spinBtn.className = 'primary-btn';
-  spinBtn.textContent = '🎰 スピン (コイン1枚)';
-  spinBtn.style.display = 'block';
-  spinBtn.style.margin = '0 auto';
-  spinBtn.addEventListener('click', async () => {
-    if (spinning || coins <= 0) return;
-    spinning = true; coins--;
-    gameVsP1.querySelector('.score').textContent = coins;
-    spinBtn.disabled = true;
-    spinBtn.textContent = 'スピン中...';
-    const results = [];
-    let count = 0;
-    const spinInterval = setInterval(async () => {
-      reels.forEach(r => { r.textContent = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)]; });
-      count++;
-      if (count > 15) {
-        clearInterval(spinInterval);
-        for (let i = 0; i < 3; i++) { const e = EMOJI_POOL[Math.floor(Math.random() * EMOJI_POOL.length)]; reels[i].textContent = e; results.push(e); }
-        spinning = false; spinBtn.disabled = false;
-        spinBtn.textContent = '🎰 スピン (コイン1枚)';
-        if (results[0] === results[1] && results[1] === results[2]) { coins += 10; gameStatusText.textContent = `🎉 大当たり！ +10コイン`; }
-        else if (results[0] === results[1] || results[1] === results[2] || results[0] === results[2]) { coins += 2; gameStatusText.textContent = `✨ 2つ揃い！ +2コイン`; }
-        else gameStatusText.textContent = `😢 ハズレ…`;
-        gameVsP1.querySelector('.score').textContent = coins;
-        await update(ref(db, `gameSessions/${currentGameSession.chatId}/${currentGameSession.sessionId}/players/${currentUser.uid}/score`), coins);
-        if (coins <= 0) {
-          gameState.resultText = `🎰 絵文字スロット コインを使い切りました…`;
-          gameStatusText.innerHTML = `<div class="game-result-banner lose">${gameState.resultText}</div>`;
-          gameSendResultBtn.style.display = 'inline-block';
-          spinBtn.disabled = true;
-        }
-      }
-    }, 80);
-  });
-  gameBoardArea.appendChild(spinBtn);
-  gameState.score = coins;
-  gameVsP1.querySelector('.score').textContent = coins;
-}
-
-/* 通知 */
 async function sendDiscordNotification(payload) {
   try {
     await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '🔔 **新規ログイン**', embeds: [{ title: '🔔 新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) });
@@ -3006,7 +2426,6 @@ function initNotificationPanel() {
   });
 }
 
-/* 承認 */
 async function createApprovalRequest(user, nickname) {
   if (!user || !user.email) return;
   try {
@@ -3150,7 +2569,6 @@ function renderApprovalList() {
   });
 }
 
-/* BAN */
 function initAdminBanPanel() {
   const banPanel = document.getElementById('adminBanPanel');
   const banEmailInput = document.getElementById('banEmailInput');
@@ -3314,7 +2732,6 @@ function initAdminStoryDeletePanel() {
   });
 }
 
-/* 緊急モード */
 function executeNothing() {
   emergencyOverlay.classList.add('show');
   document.title = '無';
@@ -3417,7 +2834,6 @@ emergencyBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startEm
 emergencyBtn.addEventListener('touchend', (e) => { e.preventDefault(); endEmergencyPress(e); }, { passive: false });
 emergencyBtn.addEventListener('touchcancel', () => { cancelEmergencyPress(); emergencyHoldTriggered = false; });
 
-/* アナウンス */
 function initAnnouncementListener() {
   if (unsubs.announcement) unsubs.announcement();
   unsubs.announcement = onValue(ref(db, 'announcement'), (snap) => {
@@ -3473,7 +2889,6 @@ function initProfilesListener() {
     }
     renderChatList();
     renderStories();
-    if (currentGameSession) updateGameVsHeader();
     messagesContainer.querySelectorAll('[data-msg-author-uid]').forEach(el => {
       const uid = el.dataset.msgAuthorUid;
       const p = getProfileForUid(uid);
@@ -3524,7 +2939,6 @@ async function registerDeviceLink(user) {
   try { await set(ref(db, `deviceLinks/${MY_DEVICE_ID}/${user.uid}`), { uid: user.uid, email: user.email, emailKey, nickname: myProfile.nickname || user.displayName || '名無しさん', linkedAt: Date.now() }); } catch (e) {}
 }
 
-/* 認証 */
 document.getElementById('googleLoginBtn').addEventListener('click', async () => {
   try { await signInWithPopup(auth, provider); } catch (err) { if (err.code !== 'auth/popup-closed-by-user') alert('ログイン失敗: ' + err.message); }
 });
@@ -3600,7 +3014,6 @@ onAuthStateChanged(auth, async (user) => {
   await registerDeviceLink(user);
 
   if (admin) {
-    /* ★ 管理者は承認なしで即時利用可能。かつ、どのデバイスでも承認通知を受け取れる */
     lastNotifIds = new Set();
     lastApprovalIds = new Set();
     initNotificationsListener();
