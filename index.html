@@ -14,13 +14,13 @@ html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 body { -webkit-user-select: none; user-select: none; display: flex; flex-direction: column; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif; }
 input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-select: text; }
 #appContainer { display: flex; flex-direction: column; height: 100vh; height: 100dvh; max-width: 900px; width: 100%; margin: 0 auto; background: #f3f4f6; position: relative; }
-#appHeader { flex-shrink: 0; background: #fff; border-bottom: 2px solid #1e40af; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 50; }
+#appHeader { flex-shrink: 0; background: #fff; border-bottom: 2px solid #1e40af; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; z-index: 50; }
 #appMain { flex: 1; overflow: hidden; display: flex; flex-direction: column; position: relative; }
-.scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 12px 16px; -webkit-overflow-scrolling: touch; }
+.scroll-area { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 12px 16px; }
 .scroll-area::-webkit-scrollbar { width: 8px; }
 .scroll-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 .header-user { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
-.header-title { font-size: 20px; font-weight: 700; color: #1e3a8a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header-title { font-size: 20px; font-weight: 700; color: #1e3a8a; }
 .header-meta { font-size: 11px; color: #6b7280; display: flex; align-items: center; gap: 6px; margin-top: 2px; flex-wrap: wrap; }
 .header-actions { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; border: 2px solid #e5e7eb; background: #f3f4f6; }
@@ -35,7 +35,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .online-label.offline { color: #9ca3af; }
 .online-label .online-dot { width: 8px; height: 8px; border-width: 1px; }
 .chat-list { display: flex; flex-direction: column; gap: 2px; }
-.chat-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #fff; border-radius: 10px; cursor: pointer; transition: background 0.2s; border: 1px solid transparent; position: relative; }
+.chat-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: #fff; border-radius: 10px; cursor: pointer; border: 1px solid transparent; position: relative; }
 .chat-item:hover { background: #eff6ff; border-color: #bfdbfe; }
 .chat-item.unread { background: #fefce8; border-color: #fde68a; }
 .chat-item-avatar-wrap { position: relative; flex-shrink: 0; }
@@ -45,7 +45,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .chat-item-last { font-size: 12px; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chat-item.unread .chat-item-last { color: #b45309; font-weight: 600; }
 .chat-item-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
-.chat-item-time { font-size: 10px; color: #9ca3af; white-space: nowrap; }
+.chat-item-time { font-size: 10px; color: #9ca3af; }
 .chat-item-badge { background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 9999px; min-width: 20px; text-align: center; }
 .group-avatars { display: flex; position: relative; width: 40px; height: 40px; }
 .group-avatars .avatar-sm { position: absolute; width: 26px; height: 26px; }
@@ -53,11 +53,11 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .group-avatars .avatar-sm:nth-child(2) { bottom: 0; right: 0; z-index: 2; }
 .group-avatars .avatar-sm:nth-child(3) { top: 0; right: 0; z-index: 1; width: 22px; height: 22px; }
 #chatView { display: flex; flex-direction: column; height: 100%; position: relative; }
-.chat-header { flex-shrink: 0; background: #fff; border-bottom: 1px solid #e5e7eb; padding: 10px 14px; display: flex; align-items: center; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 40; }
+.chat-header { flex-shrink: 0; background: #fff; border-bottom: 1px solid #e5e7eb; padding: 10px 14px; display: flex; align-items: center; gap: 10px; z-index: 40; }
 .chat-header-body { flex: 1; min-width: 0; }
 .chat-header-name { font-size: 16px; font-weight: 700; color: #1e3a8a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chat-header-meta { font-size: 11px; color: #6b7280; display: flex; align-items: center; gap: 6px; margin-top: 1px; }
-.chat-messages-wrap { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 14px; background: #f9fafb; -webkit-overflow-scrolling: touch; }
+.chat-messages-wrap { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 16px 14px; background: #f9fafb; }
 .chat-messages { display: flex; flex-direction: column; gap: 4px; }
 .date-divider { display: flex; align-items: center; justify-content: center; margin: 16px 0; position: relative; }
 .date-divider::before { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #e5e7eb; z-index: 0; }
@@ -68,7 +68,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .msg-row.mine { flex-direction: row-reverse; }
 .msg-row.msg-grouped { margin-bottom: 2px; }
 .msg-avatar-slot { width: 32px; flex-shrink: 0; display: flex; justify-content: center; }
-.msg-avatar-slot .avatar-sm { width: 32px; height: 32px; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.msg-avatar-slot .avatar-sm { width: 32px; height: 32px; border: 2px solid #fff; }
 .msg-avatar-slot.empty { visibility: hidden; height: 32px; }
 .msg-body { max-width: min(78%, 520px); display: flex; flex-direction: column; min-width: 0; }
 .msg-row.mine .msg-body { align-items: flex-end; }
@@ -78,7 +78,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .msg-meta .time { font-size: 10px; color: #9ca3af; }
 .msg-bubble-wrap { position: relative; display: flex; align-items: flex-end; gap: 6px; max-width: 100%; }
 .msg-row.mine .msg-bubble-wrap { flex-direction: row-reverse; }
-.msg-bubble { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 9px 13px; box-shadow: 0 1px 2px rgba(0,0,0,0.04); word-break: break-word; overflow-wrap: anywhere; font-size: 14px; line-height: 1.45; color: #111827; max-width: 100%; }
+.msg-bubble { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 9px 13px; word-break: break-word; overflow-wrap: anywhere; font-size: 14px; line-height: 1.45; color: #111827; max-width: 100%; }
 .msg-row:not(.mine) .msg-bubble { border-bottom-left-radius: 4px; }
 .msg-row.mine .msg-bubble { background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%); border-color: #60a5fa; color: #1e3a8a; border-bottom-right-radius: 4px; }
 .msg-row.mine.msg-grouped .msg-bubble { border-bottom-right-radius: 16px; }
@@ -87,32 +87,26 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .msg-content a { color: #2563eb; text-decoration: underline; word-break: break-all; }
 .msg-row.mine .msg-content a { color: #1e3a8a; }
 .reply-quote { background: rgba(0,0,0,0.05); border-left: 3px solid #0284c7; border-radius: 6px; padding: 5px 8px; margin-bottom: 6px; font-size: 11px; color: #4b5563; cursor: pointer; max-width: 100%; }
-.reply-quote:hover { background: rgba(0,0,0,0.09); }
 .reply-quote .reply-name { font-weight: 700; color: #0284c7; }
 .msg-row.mine .reply-quote { background: rgba(0,0,0,0.06); border-left-color: #1e40af; }
 .msg-row.mine .reply-quote .reply-name { color: #1e40af; }
 .msg-reactions { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; padding: 0 4px; }
 .msg-row.mine .msg-reactions { justify-content: flex-end; }
-.reaction-chip { display: inline-flex; align-items: center; gap: 3px; background: #fff; border: 1px solid #e5e7eb; border-radius: 9999px; padding: 2px 8px; font-size: 13px; cursor: pointer; transition: transform 0.15s, background 0.15s; user-select: none; }
-.reaction-chip:hover { transform: scale(1.08); background: #eff6ff; }
+.reaction-chip { display: inline-flex; align-items: center; gap: 3px; background: #fff; border: 1px solid #e5e7eb; border-radius: 9999px; padding: 2px 8px; font-size: 13px; cursor: pointer; user-select: none; }
 .reaction-chip.mine { background: #dbeafe; border-color: #60a5fa; }
 .reaction-chip .reaction-count { font-size: 11px; font-weight: 700; color: #6b7280; }
 .reaction-chip.mine .reaction-count { color: #1e40af; }
-.game-launch-btn { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; border: none; border-radius: 9999px; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 6px rgba(239,68,68,0.3); transition: transform 0.15s; }
-.game-launch-btn:hover { transform: translateY(-1px) scale(1.03); }
+.game-launch-btn { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; border: none; border-radius: 9999px; padding: 5px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
 .game-invite-bubble { background: linear-gradient(135deg,#fef3c7,#fed7aa); border-color: #fbbf24; cursor: pointer; }
-.game-invite-bubble:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(251,191,36,0.4); }
 .msg-file { margin-top: 6px; display: block; border-radius: 12px; overflow: hidden; cursor: zoom-in; max-width: 100%; border: 1px solid #e5e7eb; background: #f9fafb; }
 .msg-file img { display: block; max-height: 280px; max-width: 100%; object-fit: contain; }
-.msg-row.mine .msg-file { border-color: #93c5fd; }
 .msg-file.only-file { margin-top: 0; }
-.story-reply-context { background: rgba(0,0,0,0.04); border-radius: 8px; padding: 6px 8px; margin-bottom: 6px; font-size: 11px; color: #6b7280; display: flex; align-items: center; gap: 6px; border-left: 3px solid #0284c7; max-width: 100%; }
-.msg-row.mine .story-reply-context { background: rgba(0,0,0,0.06); border-left-color: #1e40af; }
+.story-reply-context { background: rgba(0,0,0,0.04); border-radius: 8px; padding: 6px 8px; margin-bottom: 6px; font-size: 11px; color: #6b7280; display: flex; align-items: center; gap: 6px; border-left: 3px solid #0284c7; }
 .story-reply-context img { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
-.story-reply-context .txt { min-width: 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2; }
+.story-reply-context .txt { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 .read-receipt { font-size: 10px; color: #0284c7; font-weight: 600; margin-top: 2px; padding: 0 4px; display: flex; align-items: center; gap: 3px; justify-content: flex-end; }
 .edited-label { font-size: 10px; color: #9ca3af; font-style: italic; }
-.msg-menu-btn { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.95); border: 1px solid #e5e7eb; color: #6b7280; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; flex-shrink: 0; align-self: center; }
+.msg-menu-btn { width: 24px; height: 24px; border-radius: 50%; background: rgba(255,255,255,0.95); border: 1px solid #e5e7eb; color: #6b7280; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; flex-shrink: 0; align-self: center; }
 .msg-bubble-wrap:hover .msg-menu-btn, .msg-menu-btn.open { opacity: 1; }
 @media (hover: none) { .msg-menu-btn { opacity: 0.7; } }
 .msg-menu-popup { position: fixed; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 170px; z-index: 30000; overflow: hidden; }
@@ -125,8 +119,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .chat-header-menu-popup button:hover { background: #f3f4f6; }
 .chat-header-menu-popup button.danger { color: #ef4444; }
 .reaction-picker { position: fixed; background: #fff; border: 1px solid #e5e7eb; border-radius: 9999px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); display: flex; gap: 2px; padding: 6px 8px; z-index: 31000; }
-.reaction-picker button { width: 34px; height: 34px; border-radius: 50%; background: none; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: transform 0.15s; }
-.reaction-picker button:hover { transform: scale(1.25); background: #f3f4f6; }
+.reaction-picker button { width: 34px; height: 34px; border-radius: 50%; background: none; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
 #typingIndicatorSlot { min-height: 0; }
 #typingIndicatorSlot:not(:empty) { min-height: 40px; margin-bottom: 6px; }
 .typing-indicator-row { display: flex; align-items: flex-end; gap: 8px; }
@@ -141,7 +134,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .chat-input-form { flex-shrink: 0; background: #fff; border-top: 1px solid #e5e7eb; padding: 10px 12px; padding-bottom: max(10px, env(safe-area-inset-bottom)); z-index: 40; }
 .chat-input-row { display: flex; align-items: flex-end; gap: 8px; }
 .chat-input-wrap { flex: 1; min-width: 0; background: #f3f4f6; border-radius: 20px; border: 1px solid #e5e7eb; display: flex; align-items: flex-end; }
-.chat-input-wrap:focus-within { border-color: #93c5fd; background: #fff; box-shadow: 0 0 0 3px rgba(147,197,253,0.2); }
+.chat-input-wrap:focus-within { border-color: #93c5fd; background: #fff; }
 #messageInput { flex: 1; border: none; background: transparent; padding: 9px 14px; font-size: 15px; line-height: 1.4; outline: none; resize: none; min-height: 38px; max-height: 140px; font-family: inherit; color: #111827; width: 100%; }
 .chat-input-icon-btn { width: 40px; height: 40px; border-radius: 50%; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 18px; flex-shrink: 0; }
 .chat-send-btn { background: linear-gradient(135deg, #2563eb, #1e40af); color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
@@ -274,7 +267,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .game-vs-vs { font-size: 16px; font-weight: 900; color: #dc2626; flex-shrink: 0; }
 .game-board { display: grid; gap: 8px; margin: 12px 0; justify-content: center; }
 .game-cell { background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; aspect-ratio: 1; user-select: none; }
-.game-cell:hover { background: #dbeafe; }
 .game-cell.matched { background: #dcfce7; border-color: #86efac; cursor: default; opacity: 0.6; }
 .game-cell.selected { background: #fef3c7; border-color: #fbbf24; }
 .game-status { text-align: center; font-size: 14px; font-weight: 700; color: #4c1d95; margin: 8px 0; }
@@ -493,7 +485,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 <div id="addMemberModal" class="modal-backdrop hidden">
   <div class="modal-content" style="border-top:6px solid #0891b2;">
     <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#0e7490;">👥 メンバーを追加</h3>
-    <p style="font-size:11px;color:#6b7280;margin:0 0 16px;">グループに追加するメンバーのメールアドレスを入力してください。</p>
     <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
     <div style="display:flex;gap:8px;margin-bottom:8px;">
       <input type="email" id="addMemberEmailInput" placeholder="example@gmail.com" style="flex:1;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;outline:none;">
@@ -789,14 +780,12 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 setPersistence(auth, browserLocalPersistence).catch(() => {});
 
-/* グローバル状態 */
 let currentUser = null;
 let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
 let currentChatId = null;
 let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {}, emailBansCache = {}, deviceLinksCache = {}, readsCache = {}, typingCache = {}, presenceCache = {}, reactionsCache = {};
 let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, gameSession: null, storyLikes: null, storyViews: null };
 let chatLatestListeners = {};
-let optimisticMessages = new Map();
 
 const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
 const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v5';
@@ -817,6 +806,7 @@ let mySeenStories = loadJson(SEEN_STORIES_KEY);
 let dismissedAnnouncements = loadJson(ANNOUNCE_DISMISS_KEY);
 let chatLatestMsgAt = {};
 let isTabActive = !document.hidden;
+let isNearBottom = true, unreadInChat = 0;
 let myPresenceRef = null, heartbeatTimer = null;
 const HEARTBEAT_INTERVAL = 20000;
 const PRESENCE_STALE_MS = 60000;
@@ -906,8 +896,7 @@ async function setMyOffline() { if (!currentUser) return; if (heartbeatTimer) { 
 function getTotalUnread() { return Object.values(unreadCounts).reduce((a,b) => a + (b||0), 0); }
 function refreshFavicon() {
   if (emergencyState.active && !(currentUser && isAdmin(currentUser.email))) { setFavicon(FAVICON_BLACK); return; }
-  if (getTotalUnread() > 0 && !isTabActive) setFavicon(FAVICON_NORMAL);
-  else setFavicon(FAVICON_NORMAL);
+  setFavicon(FAVICON_NORMAL);
 }
 
 function markChatAsRead(chatId) {
@@ -924,7 +913,6 @@ function updateScrollButton() {
   if (isNearBottom || unreadInChat === 0) scrollToBottomBtn.classList.remove('show');
   else { scrollToBottomBtn.classList.add('show'); scrollUnreadCount.style.display = 'flex'; scrollUnreadCount.textContent = unreadInChat > 99 ? '99+' : unreadInChat; }
 }
-let isNearBottom = true, unreadInChat = 0;
 
 function handleNewLatest(chatId, data) {
   if (!data) return;
@@ -959,16 +947,12 @@ function executeBan() {
   banOverlay.classList.add('show');
   document.body.style.background = '#000';
   document.title = 'アクセスが拒否されました';
-  let attempts = 0;
-  const attemptClose = () => {
-    attempts++;
-    try { window.open('', '_self').close(); } catch(e) {}
-    try { window.close(); } catch(e) {}
-    try { if (window.location.href !== 'about:blank' && attempts < 10) window.location.replace('about:blank'); } catch(e) {}
-  };
-  setTimeout(attemptClose, 100);
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
-  banEnforcerInterval = setInterval(() => { attemptClose(); banOverlay.classList.add('show'); document.body.style.background = '#000'; document.title = 'アクセスが拒否されました'; }, 800);
+  banEnforcerInterval = setInterval(() => {
+    try { window.close(); } catch(e) {}
+    banOverlay.classList.add('show');
+    document.body.style.background = '#000';
+  }, 800);
 }
 
 function renderChatList() {
@@ -1150,14 +1134,11 @@ function loadMessages(chatId) {
     const oldKeys = new Set(messagesCache.map(m => m.key));
     const newKeys = new Set(newMessages.map(m => m.key));
     messagesCache = newMessages;
-    // 削除があるかチェック
     const hasDeletion = Array.from(oldKeys).some(k => !newKeys.has(k));
-    if (hasDeletion) { fullRenderMessages(); }
+    if (hasDeletion || messagesContainer.children.length === 0) { fullRenderMessages(); }
     else {
-      // 追加分のみ描画
       const newMsgs = newMessages.filter(m => !oldKeys.has(m.key));
       if (newMsgs.length > 0) appendMessages(newMsgs);
-      else if (messagesContainer.children.length === 0 && newMessages.length > 0) fullRenderMessages();
     }
     if (currentChatId === chatId && isTabActive) markChatAsRead(chatId);
   }, () => {
@@ -1375,11 +1356,8 @@ function appendMessages(messages) {
   const fragment = document.createDocumentFragment();
   const lastEl = messagesContainer.lastElementChild;
   let lastRenderedMsg = null;
-  if (lastEl && lastEl.dataset.msgKey && !lastEl.dataset.msgKey.startsWith('temp_')) {
-    lastRenderedMsg = messagesCache.find(m => m.key === lastEl.dataset.msgKey) || null;
-  }
+  if (lastEl && lastEl.dataset.msgKey) lastRenderedMsg = messagesCache.find(m => m.key === lastEl.dataset.msgKey) || null;
   let lastDateForDivider = lastRenderedMsg ? lastRenderedMsg.createdAt : null;
-
   messages.forEach(msg => {
     if (messagesContainer.querySelector(`[data-msg-key="${msg.key}"]`)) return;
     if (!lastDateForDivider || !isSameDay(lastDateForDivider, msg.createdAt)) {
@@ -1426,7 +1404,7 @@ function fullRenderMessages() {
   if (isNearBottom) requestAnimationFrame(() => { chatMessagesWrap.scrollTop = chatMessagesWrap.scrollHeight; });
 }
 
-/* メッセージコンテナのイベント委譲 */
+/* イベント委譲 */
 messagesContainer.addEventListener('click', (e) => {
   const menuBtn = e.target.closest('.msg-menu-btn');
   if (menuBtn) { e.stopPropagation(); const k = menuBtn.dataset.key; if (openMenuKey === k) closeAllMenus(); else openMenu(menuBtn, k); return; }
@@ -1955,6 +1933,548 @@ document.getElementById('profileSaveBtn').addEventListener('click', async () => 
   } catch (err) { showBanner('保存失敗', true); }
 });
 
+/* 画像/音声/動画変換 */
+const IMAGE_MAX_WIDTH = 1200, IMAGE_MAX_HEIGHT = 1200, IMAGE_QUALITY = 0.8, IMAGE_MAX_BASE64_SIZE = 400*1024, MEDIA_MAX_BASE64_SIZE = 800*1024;
+function fileToBase64Image(file, maxW = IMAGE_MAX_WIDTH, maxH = IMAGE_MAX_HEIGHT, maxSize = IMAGE_MAX_BASE64_SIZE) {
+  return new Promise((resolve, reject) => {
+    if (!file) { resolve(null); return; }
+    if (!file.type.startsWith('image/')) { reject(new Error('画像ファイルを選択してください')); return; }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('画像読み込み失敗'));
+      img.onload = () => {
+        let { width, height } = img;
+        let scale = 1;
+        if (width > maxW) scale = Math.min(scale, maxW / width);
+        if (height > maxH) scale = Math.min(scale, maxH / height);
+        if (scale < 1) { width = Math.round(width * scale); height = Math.round(height * scale); }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        let quality = IMAGE_QUALITY;
+        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+        while (dataUrl.length > maxSize && quality > 0.4) { quality -= 0.08; dataUrl = canvas.toDataURL('image/jpeg', quality); }
+        if (dataUrl.length > maxSize) { reject(new Error('画像が大きすぎます。')); return; }
+        resolve({ dataUrl, name: file.name, type: 'image/jpeg', width, height, size: dataUrl.length });
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function fileToBase64Audio(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
+  return new Promise((resolve, reject) => {
+    if (!file) { resolve(null); return; }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      if (dataUrl.length > maxSize) { reject(new Error('音声ファイルが大きすぎます')); return; }
+      resolve({ dataUrl, name: file.name, type: file.type || 'audio/mpeg', size: dataUrl.length });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function fileToBase64Video(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
+  return new Promise((resolve, reject) => {
+    if (!file) { resolve(null); return; }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      if (dataUrl.length > maxSize) { reject(new Error('動画ファイルが大きすぎます')); return; }
+      resolve({ dataUrl, name: file.name, type: 'video/mp4', size: dataUrl.length });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function formatSize(bytes) { if (!bytes) return ''; if (bytes < 1024) return bytes + ' B'; if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB'; return (bytes/1024/1024).toFixed(2) + ' MB'; }
+
+/* ストーリー完全実装 */
+const STORY_TTL = 24 * 60 * 60 * 1000;
+function initStoriesListener() {
+  if (unsubs.stories) unsubs.stories();
+  unsubs.stories = onValue(ref(db, 'stories'), (snap) => {
+    const now = Date.now();
+    const raw = snap.exists() ? snap.val() : {};
+    storiesCache = {};
+    Object.entries(raw).forEach(([uid, userStories]) => {
+      if (!userStories) return;
+      const valid = {};
+      Object.entries(userStories).forEach(([sid, s]) => {
+        if (!s || !s.createdAt) return;
+        if ((now - s.createdAt) < STORY_TTL) valid[sid] = s;
+        else remove(ref(db, `stories/${uid}/${sid}`)).catch(() => {});
+      });
+      if (Object.keys(valid).length > 0) storiesCache[uid] = valid;
+    });
+    renderStories();
+  }, () => {});
+}
+function initMyArchiveListener() {
+  if (unsubs.myArchive) unsubs.myArchive();
+  if (!currentUser) return;
+  unsubs.myArchive = onValue(ref(db, `storyArchive/${currentUser.uid}`), (snap) => { myArchivedStories = snap.exists() ? snap.val() : {}; }, () => {});
+}
+function renderStories() {
+  const strip = document.getElementById('storiesStrip');
+  strip.querySelectorAll('.story-bubble:not(#storyAddBtn)').forEach(el => el.remove());
+  strip.querySelectorAll('.stories-empty').forEach(el => el.remove());
+  if (!currentUser) return;
+  const chatPartnerUids = getChatPartnerUids();
+  const otherUids = Object.keys(storiesCache || {}).filter(uid => uid !== currentUser.uid && chatPartnerUids.has(uid));
+  const unreadUids = [], seenUids = [];
+  otherUids.forEach(uid => {
+    const list = Object.entries(storiesCache[uid]).map(([sid, s]) => ({ id: sid, ...s }));
+    if (list.some(s => !mySeenStories[s.id])) unreadUids.push(uid);
+    else seenUids.push(uid);
+  });
+  const unreadSection = document.createElement('div');
+  unreadSection.style.display = 'flex';
+  unreadSection.style.gap = '12px';
+  if (storiesCache[currentUser.uid]) {
+    const p = getProfileForUid(currentUser.uid);
+    const bubble = document.createElement('div');
+    bubble.className = 'story-bubble';
+    bubble.innerHTML = `<div class="story-ring mine"><img src="${escapeHtml(p.avatar)}"></div><span class="story-name">あなた</span>`;
+    bubble.addEventListener('click', () => openStoryViewer(currentUser.uid));
+    unreadSection.appendChild(bubble);
+  }
+  unreadUids.forEach(uid => unreadSection.appendChild(buildStoryBubble(uid, false)));
+  strip.appendChild(unreadSection);
+  if (seenUids.length > 0) {
+    const seenSection = document.createElement('div');
+    seenSection.style.display = 'flex'; seenSection.style.gap = '12px'; seenSection.style.marginLeft = 'auto'; seenSection.style.paddingLeft = '16px'; seenSection.style.borderLeft = '1px dashed #e5e7eb';
+    seenUids.forEach(uid => seenSection.appendChild(buildStoryBubble(uid, true)));
+    strip.appendChild(seenSection);
+  }
+  const hasAnyStory = unreadSection.children.length > 0 || seenUids.length > 0;
+  if (!hasAnyStory) { const empty = document.createElement('div'); empty.className = 'stories-empty'; empty.innerHTML = 'チャットしている相手のストーリーだけが表示されます。<br><strong>「＋ チャット」で相手とチャットを始めましょう。</strong>'; strip.appendChild(empty); }
+}
+function buildStoryBubble(uid, seen) {
+  const p = getProfileForUid(uid);
+  const bubble = document.createElement('div');
+  bubble.className = 'story-bubble' + (seen ? ' seen' : '');
+  bubble.innerHTML = `<div class="story-ring ${seen ? 'seen' : ''}"><img src="${escapeHtml(p.avatar)}"></div><span class="story-name">${escapeHtml(p.nickname)}</span>`;
+  bubble.addEventListener('click', () => openStoryViewer(uid));
+  return bubble;
+}
+document.getElementById('storyAddBtn').addEventListener('click', () => {
+  document.getElementById('storyTextInput').value = '';
+  document.getElementById('storyFileInput').value = '';
+  document.getElementById('storyAudioInput').value = '';
+  document.getElementById('storyVideoInput').value = '';
+  pendingStoryFile = pendingStoryAudio = pendingStoryVideo = null;
+  document.getElementById('storyUploadPreview').style.display = 'none';
+  document.getElementById('storyAudioPreview').style.display = 'none';
+  document.getElementById('storyVideoPreview').style.display = 'none';
+  document.getElementById('storyPostModal').classList.remove('hidden');
+});
+document.getElementById('storyPostCancelBtn').addEventListener('click', () => document.getElementById('storyPostModal').classList.add('hidden'));
+document.getElementById('storyFileInput').addEventListener('change', async () => {
+  const f = document.getElementById('storyFileInput').files[0];
+  const preview = document.getElementById('storyUploadPreview');
+  if (!f) { pendingStoryFile = null; preview.style.display = 'none'; return; }
+  preview.style.display = 'block';
+  preview.innerHTML = '<div style="padding:16px;color:#6b7280;"><span class="loading-spinner"></span>処理中...</div>';
+  try { const r = await fileToBase64Image(f, 1080, 1080, 500*1024); pendingStoryFile = r; preview.innerHTML = `<img src="${r.dataUrl}" style="max-width:100%;max-height:260px;border-radius:8px;">`; } catch (err) { pendingStoryFile = null; preview.style.display = 'none'; }
+});
+document.getElementById('storyAudioInput').addEventListener('change', async () => {
+  const f = document.getElementById('storyAudioInput').files[0];
+  const preview = document.getElementById('storyAudioPreview');
+  if (!f) { pendingStoryAudio = null; preview.style.display = 'none'; return; }
+  preview.style.display = 'block';
+  try { const r = await fileToBase64Audio(f); pendingStoryAudio = r; preview.innerHTML = `<audio controls src="${r.dataUrl}" style="width:100%;max-width:300px;"></audio>`; } catch (err) { pendingStoryAudio = null; preview.style.display = 'none'; }
+});
+document.getElementById('storyVideoInput').addEventListener('change', async () => {
+  const f = document.getElementById('storyVideoInput').files[0];
+  const preview = document.getElementById('storyVideoPreview');
+  if (!f) { pendingStoryVideo = null; preview.style.display = 'none'; return; }
+  preview.style.display = 'block';
+  try { const r = await fileToBase64Video(f); pendingStoryVideo = r; preview.innerHTML = `<video controls src="${r.dataUrl}" style="width:100%;max-width:300px;border-radius:8px;"></video>`; } catch (err) { pendingStoryVideo = null; preview.style.display = 'none'; }
+});
+document.getElementById('storyPostBtn').addEventListener('click', async () => {
+  if (!currentUser) return;
+  const text = document.getElementById('storyTextInput').value.trim();
+  if (!text && !pendingStoryFile && !pendingStoryAudio && !pendingStoryVideo) { document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">テキスト・画像・音声・動画のいずれかを選択してください。</span>'; return; }
+  try {
+    let storyType = 'text'; let storyFile = null; let storyAudioFile = null;
+    if (pendingStoryFile && pendingStoryAudio) { storyType = 'image_audio'; storyFile = pendingStoryFile; storyAudioFile = pendingStoryAudio; }
+    else if (pendingStoryVideo) { storyType = 'video'; storyFile = pendingStoryVideo; }
+    else if (pendingStoryAudio) { storyType = 'audio'; storyFile = pendingStoryAudio; }
+    else if (pendingStoryFile) { storyType = 'image'; storyFile = pendingStoryFile; }
+    const storyData = { type: storyType, content: text, file: storyFile, audioFile: storyAudioFile, authorUid: currentUser.uid, authorName: myProfile.nickname, authorAvatar: myProfile.avatar, createdAt: Date.now() };
+    const newRef = push(ref(db, `stories/${currentUser.uid}`));
+    await set(newRef, storyData);
+    await set(ref(db, `storyArchive/${currentUser.uid}/${newRef.key}`), storyData);
+    document.getElementById('storyPostModal').classList.add('hidden');
+    pendingStoryFile = pendingStoryAudio = pendingStoryVideo = null;
+    showBanner('ストーリーを投稿しました', false);
+  } catch (err) { document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">投稿失敗</span>'; }
+});
+
+const storyViewer = document.getElementById('storyViewer');
+const storyStageContent = document.getElementById('storyStageContent');
+const storyProgressBar = document.getElementById('storyProgressBar');
+const storyStatsOverlay = document.getElementById('storyStatsOverlay');
+const storyViewCountEl = document.getElementById('storyViewCount');
+const storyLikeCountEl = document.getElementById('storyLikeCount');
+const storyLikeBtn = document.getElementById('storyLikeBtn');
+const storyReplyInput = document.getElementById('storyReplyInput');
+
+function openStoryViewer(uid, options = {}) {
+  const source = options.archiveMode ? myArchivedStories : storiesCache[uid];
+  if (!source) return;
+  if (!options.archiveMode && uid !== currentUser.uid) {
+    const chatPartnerUids = getChatPartnerUids();
+    if (!chatPartnerUids.has(uid)) { showBanner('チャットしていない相手のストーリーは見れません', true); return; }
+  }
+  currentStoryUserId = uid;
+  currentStoryIsArchive = !!options.archiveMode;
+  currentStoryList = Object.entries(source).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+  currentStoryIndex = 0;
+  if (!options.archiveMode && uid !== currentUser.uid) {
+    const idx = currentStoryList.findIndex(s => !mySeenStories[s.id]);
+    if (idx >= 0) currentStoryIndex = idx;
+  }
+  storyViewer.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  showCurrentStory();
+}
+function closeStoryViewer() {
+  storyViewer.classList.remove('show');
+  document.body.style.overflow = '';
+  clearTimeout(storyTimer);
+  cancelAnimationFrame(storyProgressRAF);
+  if (currentStoryAudioEl) { try { currentStoryAudioEl.pause(); } catch (e) {} currentStoryAudioEl = null; }
+  if (currentStoryVideoEl) { try { currentStoryVideoEl.pause(); } catch (e) {} currentStoryVideoEl = null; }
+  if (unsubs.storyLikes) { unsubs.storyLikes(); unsubs.storyLikes = null; }
+  if (unsubs.storyViews) { unsubs.storyViews(); unsubs.storyViews = null; }
+  storyStageContent.innerHTML = '';
+  storyStatsOverlay.style.display = 'none';
+  const delBtn = document.getElementById('storyDeleteBtn');
+  if (delBtn) delBtn.style.display = 'none';
+  currentStoryUserId = null; currentStoryList = []; currentStoryIndex = 0;
+  currentStoryLikes = {}; currentStoryViews = {};
+  renderStories();
+}
+document.getElementById('storyCloseBtn').addEventListener('click', closeStoryViewer);
+document.getElementById('storyNavLeft').addEventListener('click', () => prevStory());
+document.getElementById('storyNavRight').addEventListener('click', () => nextStory());
+
+function stopCurrentMedia() {
+  if (currentStoryAudioEl) { try { currentStoryAudioEl.pause(); } catch (e) {} currentStoryAudioEl = null; }
+  if (currentStoryVideoEl) { try { currentStoryVideoEl.pause(); } catch (e) {} currentStoryVideoEl = null; }
+}
+
+function showCurrentStory() {
+  clearTimeout(storyTimer);
+  cancelAnimationFrame(storyProgressRAF);
+  stopCurrentMedia();
+  storyStageContent.innerHTML = '';
+  storyPaused = false;
+  if (currentStoryIndex < 0 || currentStoryIndex >= currentStoryList.length) { closeStoryViewer(); return; }
+  const story = currentStoryList[currentStoryIndex];
+  const p = getProfileForUid(story.authorUid || currentStoryUserId);
+  document.getElementById('storyHeaderAvatar').src = p.avatar;
+  document.getElementById('storyHeaderName').textContent = p.nickname;
+  document.getElementById('storyHeaderTime').textContent = formatTime(story.createdAt);
+  storyProgressBar.innerHTML = '';
+  currentStoryList.forEach((_, i) => {
+    const seg = document.createElement('div');
+    seg.className = 'story-segment';
+    const inner = document.createElement('div');
+    if (i < currentStoryIndex) inner.style.width = '100%';
+    seg.appendChild(inner);
+    storyProgressBar.appendChild(seg);
+  });
+  if (story.type === 'image_audio' && story.file && story.audioFile) {
+    const wrap = document.createElement('div');
+    wrap.className = 'story-image-audio-wrap';
+    const img = document.createElement('img');
+    img.src = story.file.dataUrl; img.alt = story.content || '';
+    const audio = document.createElement('audio');
+    audio.src = story.audioFile.dataUrl; audio.preload = 'auto'; audio.style.display = 'none';
+    wrap.appendChild(img); wrap.appendChild(audio);
+    storyStageContent.appendChild(wrap);
+    currentStoryAudioEl = audio;
+    audio.addEventListener('ended', () => { if (currentStoryAudioEl === audio) currentStoryAudioEl = null; nextStory(); });
+    audio.play().catch(() => {});
+  } else if (story.type === 'image' && story.file) {
+    const img = document.createElement('img');
+    img.src = story.file.dataUrl;
+    storyStageContent.appendChild(img);
+  } else if (story.type === 'video' && story.file) {
+    const wrap = document.createElement('div');
+    wrap.className = 'story-video-wrap';
+    const video = document.createElement('video');
+    video.src = story.file.dataUrl; video.controls = true; video.playsInline = true; video.preload = 'auto';
+    wrap.appendChild(video);
+    storyStageContent.appendChild(wrap);
+    currentStoryVideoEl = video;
+    video.addEventListener('ended', () => { if (currentStoryVideoEl === video) currentStoryVideoEl = null; nextStory(); });
+    video.play().catch(() => {});
+  } else if (story.type === 'audio' && story.file) {
+    const wrap = document.createElement('div');
+    wrap.className = 'story-audio-wrap';
+    const label = document.createElement('div');
+    label.className = 'story-audio-label'; label.textContent = story.content || '';
+    const audio = document.createElement('audio');
+    audio.src = story.file.dataUrl; audio.preload = 'auto'; audio.style.display = 'none';
+    wrap.appendChild(label); wrap.appendChild(audio);
+    storyStageContent.appendChild(wrap);
+    currentStoryAudioEl = audio;
+    audio.addEventListener('ended', () => { if (currentStoryAudioEl === audio) currentStoryAudioEl = null; nextStory(); });
+    audio.play().catch(() => {});
+  } else {
+    const d = document.createElement('div');
+    d.className = 'story-text-content';
+    d.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    d.textContent = story.content || '';
+    storyStageContent.appendChild(d);
+  }
+  const isMine = currentStoryUserId === currentUser.uid;
+  const storyFooter = document.querySelector('.story-footer');
+  const stage = document.querySelector('.story-stage');
+  if (isMine) {
+    storyFooter.style.display = 'none';
+    storyStatsOverlay.style.display = 'flex';
+    let deleteBtn = document.getElementById('storyDeleteBtn');
+    if (!deleteBtn) {
+      deleteBtn = document.createElement('button');
+      deleteBtn.id = 'storyDeleteBtn';
+      deleteBtn.textContent = '🗑️ 削除';
+      deleteBtn.style.cssText = 'position:absolute;bottom:74px;right:16px;z-index:6;background:rgba(239,68,68,0.85);color:#fff;border:none;border-radius:9999px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;';
+      deleteBtn.addEventListener('click', async () => { const s = currentStoryList[currentStoryIndex]; if (s) await deleteMyStory(s.id); });
+      stage.appendChild(deleteBtn);
+    }
+    deleteBtn.style.display = 'block';
+  } else {
+    storyFooter.style.display = 'flex';
+    storyStatsOverlay.style.display = 'none';
+    const deleteBtn = document.getElementById('storyDeleteBtn');
+    if (deleteBtn) deleteBtn.style.display = 'none';
+  }
+  if (!isMine && !currentStoryIsArchive) {
+    mySeenStories[story.id] = Date.now();
+    saveJson(SEEN_STORIES_KEY, mySeenStories);
+    set(ref(db, `storyViews/${story.id}/${currentUser.uid}`), Date.now()).catch(() => {});
+  }
+  if (unsubs.storyLikes) { unsubs.storyLikes(); unsubs.storyLikes = null; }
+  unsubs.storyLikes = onValue(ref(db, `storyLikes/${story.id}`), (snap) => {
+    currentStoryLikes = snap.exists() ? snap.val() : {};
+    updateStoryLikeBtn(story.id);
+    if (isMine) storyLikeCountEl.textContent = `❤️ ${Object.keys(currentStoryLikes).length}`;
+  }, () => {});
+  if (unsubs.storyViews) { unsubs.storyViews(); unsubs.storyViews = null; }
+  if (isMine) {
+    unsubs.storyViews = onValue(ref(db, `storyViews/${story.id}`), (snap) => {
+      currentStoryViews = snap.exists() ? snap.val() : {};
+      storyViewCountEl.textContent = `👁 ${Object.keys(currentStoryViews).length}`;
+    }, () => {});
+  } else currentStoryViews = {};
+
+  if ((story.type === 'audio' || story.type === 'image_audio') && (story.file || story.audioFile)) {
+    const audioUrl = story.type === 'image_audio' ? story.audioFile.dataUrl : story.file.dataUrl;
+    const tempAudio = new Audio();
+    tempAudio.src = audioUrl;
+    let timerStarted = false;
+    const startWithDuration = (dur) => { if (timerStarted) return; timerStarted = true; startStoryTimer(Math.min(dur + 300, 120000)); };
+    tempAudio.addEventListener('loadedmetadata', () => { const dur = Math.max((tempAudio.duration || 5) * 1000, 1000); startWithDuration(dur); });
+    tempAudio.addEventListener('error', () => startWithDuration(5000));
+    setTimeout(() => startWithDuration(5000), 3000);
+  } else if (story.type === 'video' && story.file) startStoryTimer(24 * 60 * 60 * 1000);
+  else if (story.type === 'image' && story.file) startStoryTimer(5000);
+  else startStoryTimer(5000);
+}
+
+function startStoryTimer(duration) {
+  storyDuration = duration;
+  storyStartTime = Date.now();
+  storyRemainingMs = duration;
+  storyPaused = false;
+  const segs = storyProgressBar.querySelectorAll('.story-segment > div');
+  const seg = segs[currentStoryIndex];
+  function tick() {
+    if (storyPaused) { storyProgressRAF = requestAnimationFrame(tick); return; }
+    const elapsed = Date.now() - storyStartTime;
+    const pct = Math.min(elapsed / storyDuration * 100, 100);
+    if (seg) seg.style.width = pct + '%';
+    if (pct < 100) storyProgressRAF = requestAnimationFrame(tick);
+    else nextStory();
+  }
+  storyProgressRAF = requestAnimationFrame(tick);
+}
+function pauseStory() {
+  if (storyPaused) return;
+  storyPaused = true;
+  storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime));
+  if (currentStoryAudioEl && !currentStoryAudioEl.paused) { try { currentStoryAudioEl.pause(); } catch (e) {} }
+}
+function resumeStory() {
+  if (!storyPaused) return;
+  storyPaused = false;
+  storyStartTime = Date.now() - (storyDuration - storyRemainingMs);
+  if (currentStoryAudioEl && currentStoryAudioEl.paused) {
+    const p = currentStoryAudioEl.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  }
+}
+function nextStory() {
+  stopCurrentMedia();
+  if (currentStoryIndex + 1 < currentStoryList.length) { currentStoryIndex++; showCurrentStory(); }
+  else closeStoryViewer();
+}
+function prevStory() {
+  stopCurrentMedia();
+  if (currentStoryIndex > 0) { currentStoryIndex--; showCurrentStory(); }
+}
+async function deleteMyStory(storyId) {
+  if (!currentUser || !storyId) return;
+  if (currentStoryUserId !== currentUser.uid) return;
+  if (!confirm('このストーリーを削除しますか？')) return;
+  try {
+    await remove(ref(db, `stories/${currentUser.uid}/${storyId}`));
+    await remove(ref(db, `storyArchive/${currentUser.uid}/${storyId}`));
+    await remove(ref(db, `storyLikes/${storyId}`));
+    await remove(ref(db, `storyViews/${storyId}`));
+    showBanner('ストーリーを削除しました', false);
+    currentStoryList = currentStoryList.filter(s => s.id !== storyId);
+    if (currentStoryList.length === 0) closeStoryViewer();
+    else { if (currentStoryIndex >= currentStoryList.length) currentStoryIndex = currentStoryList.length - 1; showCurrentStory(); }
+  } catch (err) { showBanner('削除に失敗しました', true); }
+}
+function updateStoryLikeBtn(storyId) {
+  const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
+  if (liked) { storyLikeBtn.textContent = '❤️'; storyLikeBtn.classList.add('liked'); }
+  else { storyLikeBtn.textContent = '🤍'; storyLikeBtn.classList.remove('liked'); }
+}
+storyLikeBtn.addEventListener('click', async (e) => {
+  if (!currentUser) return;
+  if (currentStoryUserId === currentUser.uid) return;
+  const story = currentStoryList[currentStoryIndex];
+  if (!story) return;
+  const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
+  try {
+    if (liked) await remove(ref(db, `storyLikes/${story.id}/${currentUser.uid}`));
+    else {
+      await set(ref(db, `storyLikes/${story.id}/${currentUser.uid}`), Date.now());
+      const heart = document.createElement('div');
+      heart.className = 'heart-float';
+      heart.textContent = '❤️';
+      heart.style.left = (e.clientX || window.innerWidth - 60) + 'px';
+      heart.style.top = (e.clientY || window.innerHeight - 80) + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 900);
+    }
+  } catch (err) { console.error('いいねエラー:', err); }
+});
+storyReplyInput.addEventListener('focus', pauseStory);
+storyReplyInput.addEventListener('blur', resumeStory);
+storyReplyInput.addEventListener('keydown', async (e) => {
+  if (e.key !== 'Enter') return;
+  if (e.isComposing || e.keyCode === 229) return;
+  e.preventDefault();
+  const text = storyReplyInput.value.trim();
+  if (!text) return;
+  if (!currentUser) return;
+  if (currentStoryUserId === currentUser.uid) { showBanner('自分のストーリーには返信できません', true); return; }
+  const story = currentStoryList[currentStoryIndex];
+  if (!story) return;
+  const partnerUid = currentStoryUserId;
+  const chatPartnerUids = getChatPartnerUids();
+  if (!chatPartnerUids.has(partnerUid)) { showBanner('チャットしていない相手には返信できません', true); return; }
+  let chatId = await findExistingDirectChat(partnerUid);
+  if (!chatId) {
+    try {
+      const newChatRef = push(ref(db, 'chatMessages'));
+      chatId = newChatRef.key;
+      const members = { [currentUser.uid]: true, [partnerUid]: true };
+      const chatData = { type: 'direct', name: '', members, createdAt: Date.now(), createdBy: currentUser.uid, lastMessage: '', lastMessageAt: Date.now() };
+      await set(ref(db, `chatMeta/${chatId}`), chatData);
+      const updates = {};
+      Object.keys(members).forEach(uid => { updates[`userChats/${uid}/${chatId}`] = { ...chatData }; });
+      await update(ref(db), updates);
+    } catch (err) { showBanner('返信の送信に失敗しました', true); return; }
+  }
+  let previewType = story.type; let previewDataUrl = '';
+  if (story.type === 'image' && story.file && story.file.dataUrl) { previewType = 'image'; previewDataUrl = story.file.dataUrl; }
+  else if (story.type === 'image_audio' && story.file && story.file.dataUrl) { previewType = 'image_audio'; previewDataUrl = story.file.dataUrl; }
+  else if (story.type === 'audio' && story.file && story.file.dataUrl) { previewType = 'audio'; previewDataUrl = story.file.dataUrl; }
+  else if (story.type === 'video' && story.file && story.file.dataUrl) { previewType = 'video'; previewDataUrl = story.file.dataUrl; }
+  else previewType = 'text';
+  let previewText = story.content || (story.type === 'image' ? '📷 画像' : story.type === 'image_audio' ? '📷 画像＋音声' : story.type === 'audio' ? '音声' : story.type === 'video' ? '動画' : '（テキストなし）');
+  const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+  try {
+    const msgData = {
+      clientMsgId, content: text, file: null,
+      authorUid: currentUser.uid, authorName: myProfile.nickname, authorAvatar: myProfile.avatar,
+      createdAt: Date.now(),
+      storyReplyTo: { storyId: story.id, authorUid: story.authorUid, previewType, previewDataUrl, previewText: previewText.slice(0, 60) }
+    };
+    const newRef = push(ref(db, `chatMessages/${chatId}`));
+    await set(newRef, msgData);
+    const memberUids = [currentUser.uid, partnerUid];
+    const updates = {};
+    memberUids.forEach(uid => {
+      updates[`userChats/${uid}/${chatId}/lastMessage`] = `↩ ストーリーに返信: ${text}`;
+      updates[`userChats/${uid}/${chatId}/lastMessageAt`] = Date.now();
+      updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
+    });
+    await update(ref(db), updates);
+    storyReplyInput.value = '';
+    showBanner('ストーリーに返信しました', false);
+    resumeStory();
+  } catch (err) { showBanner('返信の送信に失敗しました', true); }
+});
+
+document.getElementById('myArchiveBtn').addEventListener('click', () => {
+  const list = document.getElementById('archiveList');
+  list.innerHTML = '';
+  const entries = Object.entries(myArchivedStories || {}).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  if (entries.length === 0) list.innerHTML = '<div style="text-align:center;color:#9ca3af;font-size:13px;padding:24px;">過去のストーリーはありません。</div>';
+  else {
+    entries.forEach(s => {
+      const item = document.createElement('div');
+      item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px;';
+      let thumb = '';
+      if (s.type === 'image' && s.file && s.file.dataUrl) thumb = `<img src="${s.file.dataUrl}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;">`;
+      else if (s.type === 'image_audio' && s.file && s.file.dataUrl) thumb = `<img src="${s.file.dataUrl}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;">`;
+      else if (s.type === 'audio') thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);flex-shrink:0;"></div>`;
+      else if (s.type === 'video') thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#000,#374151);flex-shrink:0;"></div>`;
+      else thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;"></div>`;
+      item.innerHTML = `
+        ${thumb}
+        <div style="flex:1;min-width:0;cursor:pointer;" class="archive-view-btn">
+          <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || '')}</div>
+          <div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div>
+        </div>
+        <button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;">🗑️</button>
+      `;
+      item.querySelector('.archive-view-btn').addEventListener('click', () => { document.getElementById('archiveModal').classList.add('hidden'); openStoryViewer(currentUser.uid, { archiveMode: true }); });
+      item.querySelector('.archive-delete-btn').addEventListener('click', async () => {
+        if (!confirm('このストーリーを完全に削除しますか？')) return;
+        try {
+          await remove(ref(db, `stories/${currentUser.uid}/${s.id}`));
+          await remove(ref(db, `storyArchive/${currentUser.uid}/${s.id}`));
+          await remove(ref(db, `storyLikes/${s.id}`));
+          await remove(ref(db, `storyViews/${s.id}`));
+          showBanner('ストーリーを削除しました', false);
+          item.remove();
+        } catch (err) { showBanner('削除に失敗しました', true); }
+      });
+      list.appendChild(item);
+    });
+  }
+  document.getElementById('archiveModal').classList.remove('hidden');
+});
+document.getElementById('archiveCloseBtn').addEventListener('click', () => document.getElementById('archiveModal').classList.add('hidden'));
+document.getElementById('archiveModal').addEventListener('click', (e) => { if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden'); });
+
 /* ゲーム */
 const EMOJI_POOL = ['😀','😎','🔥','🌟','🍀','🌸','🐱','🐶','🦊','🐼','🎮','☕','🍎','🍕','⚽','🎵','💎','🚀','🌈','🍩'];
 const GAME_NAMES = { memory: '🧠 絵文字神経衰弱', tap: '👆 絵文字タップ', sequence: '🔢 絵文字記憶', janken: '✊ 絵文字じゃんけん', slot: '🎰 絵文字スロット' };
@@ -2412,129 +2932,7 @@ function startSlotGame() {
   gameVsP1.querySelector('.score').textContent = coins;
 }
 
-/* ストーリー（略式：既存のものを流用） */
-function initStoriesListener() {
-  if (unsubs.stories) unsubs.stories();
-  unsubs.stories = onValue(ref(db, 'stories'), (snap) => {
-    const now = Date.now();
-    const raw = snap.exists() ? snap.val() : {};
-    storiesCache = {};
-    Object.entries(raw).forEach(([uid, userStories]) => {
-      if (!userStories) return;
-      const valid = {};
-      Object.entries(userStories).forEach(([sid, s]) => { if (s && s.createdAt && (now - s.createdAt) < 24*60*60*1000) valid[sid] = s; });
-      if (Object.keys(valid).length > 0) storiesCache[uid] = valid;
-    });
-    renderStories();
-  }, () => {});
-}
-function initMyArchiveListener() {
-  if (unsubs.myArchive) unsubs.myArchive();
-  if (!currentUser) return;
-  unsubs.myArchive = onValue(ref(db, `storyArchive/${currentUser.uid}`), (snap) => { myArchivedStories = snap.exists() ? snap.val() : {}; }, () => {});
-}
-function renderStories() {
-  const strip = document.getElementById('storiesStrip');
-  strip.querySelectorAll('.story-bubble:not(#storyAddBtn)').forEach(el => el.remove());
-  strip.querySelectorAll('.stories-empty').forEach(el => el.remove());
-  if (!currentUser) return;
-  const chatPartnerUids = getChatPartnerUids();
-  const otherUids = Object.keys(storiesCache || {}).filter(uid => uid !== currentUser.uid && chatPartnerUids.has(uid));
-  const unreadUids = [], seenUids = [];
-  otherUids.forEach(uid => {
-    const list = Object.entries(storiesCache[uid]).map(([sid, s]) => ({ id: sid, ...s }));
-    if (list.some(s => !mySeenStories[s.id])) unreadUids.push(uid);
-    else seenUids.push(uid);
-  });
-  const unreadSection = document.createElement('div');
-  unreadSection.style.display = 'flex';
-  unreadSection.style.gap = '12px';
-  if (storiesCache[currentUser.uid]) {
-    const p = getProfileForUid(currentUser.uid);
-    const bubble = document.createElement('div');
-    bubble.className = 'story-bubble';
-    bubble.innerHTML = `<div class="story-ring mine"><img src="${escapeHtml(p.avatar)}"></div><span class="story-name">あなた</span>`;
-    bubble.addEventListener('click', () => openStoryViewer(currentUser.uid));
-    unreadSection.appendChild(bubble);
-  }
-  unreadUids.forEach(uid => unreadSection.appendChild(buildStoryBubble(uid, false)));
-  strip.appendChild(unreadSection);
-  if (seenUids.length > 0) {
-    const seenSection = document.createElement('div');
-    seenSection.style.display = 'flex'; seenSection.style.gap = '12px'; seenSection.style.marginLeft = 'auto'; seenSection.style.paddingLeft = '16px'; seenSection.style.borderLeft = '1px dashed #e5e7eb';
-    seenUids.forEach(uid => seenSection.appendChild(buildStoryBubble(uid, true)));
-    strip.appendChild(seenSection);
-  }
-  const hasAnyStory = unreadSection.children.length > 0 || seenUids.length > 0;
-  if (!hasAnyStory) { const empty = document.createElement('div'); empty.className = 'stories-empty'; empty.innerHTML = 'チャットしている相手のストーリーだけが表示されます。'; strip.appendChild(empty); }
-}
-function buildStoryBubble(uid, seen) {
-  const p = getProfileForUid(uid);
-  const bubble = document.createElement('div');
-  bubble.className = 'story-bubble' + (seen ? ' seen' : '');
-  bubble.innerHTML = `<div class="story-ring ${seen ? 'seen' : ''}"><img src="${escapeHtml(p.avatar)}"></div><span class="story-name">${escapeHtml(p.nickname)}</span>`;
-  bubble.addEventListener('click', () => openStoryViewer(uid));
-  return bubble;
-}
-document.getElementById('storyAddBtn').addEventListener('click', () => {
-  document.getElementById('storyTextInput').value = '';
-  document.getElementById('storyFileInput').value = '';
-  document.getElementById('storyAudioInput').value = '';
-  document.getElementById('storyVideoInput').value = '';
-  pendingStoryFile = pendingStoryAudio = pendingStoryVideo = null;
-  document.getElementById('storyUploadPreview').style.display = 'none';
-  document.getElementById('storyAudioPreview').style.display = 'none';
-  document.getElementById('storyVideoPreview').style.display = 'none';
-  document.getElementById('storyPostModal').classList.remove('hidden');
-});
-document.getElementById('storyPostCancelBtn').addEventListener('click', () => document.getElementById('storyPostModal').classList.add('hidden'));
-document.getElementById('storyFileInput').addEventListener('change', async () => {
-  const f = document.getElementById('storyFileInput').files[0];
-  const preview = document.getElementById('storyUploadPreview');
-  if (!f) { pendingStoryFile = null; preview.style.display = 'none'; return; }
-  preview.style.display = 'block';
-  preview.innerHTML = '<div style="padding:16px;color:#6b7280;"><span class="loading-spinner"></span>処理中...</div>';
-  try { const r = await fileToBase64Image(f, 1080, 1080, 500*1024); pendingStoryFile = r; preview.innerHTML = `<img src="${r.dataUrl}" style="max-width:100%;max-height:260px;border-radius:8px;">`; } catch (err) { pendingStoryFile = null; preview.style.display = 'none'; }
-});
-document.getElementById('storyAudioInput').addEventListener('change', async () => {
-  const f = document.getElementById('storyAudioInput').files[0];
-  const preview = document.getElementById('storyAudioPreview');
-  if (!f) { pendingStoryAudio = null; preview.style.display = 'none'; return; }
-  preview.style.display = 'block';
-  try { const r = await fileToBase64Audio(f); pendingStoryAudio = r; preview.innerHTML = `<audio controls src="${r.dataUrl}" style="width:100%;max-width:300px;"></audio>`; } catch (err) { pendingStoryAudio = null; preview.style.display = 'none'; }
-});
-document.getElementById('storyVideoInput').addEventListener('change', async () => {
-  const f = document.getElementById('storyVideoInput').files[0];
-  const preview = document.getElementById('storyVideoPreview');
-  if (!f) { pendingStoryVideo = null; preview.style.display = 'none'; return; }
-  preview.style.display = 'block';
-  try { const r = await fileToBase64Video(f); pendingStoryVideo = r; preview.innerHTML = `<video controls src="${r.dataUrl}" style="width:100%;max-width:300px;border-radius:8px;"></video>`; } catch (err) { pendingStoryVideo = null; preview.style.display = 'none'; }
-});
-document.getElementById('storyPostBtn').addEventListener('click', async () => {
-  if (!currentUser) return;
-  const text = document.getElementById('storyTextInput').value.trim();
-  if (!text && !pendingStoryFile && !pendingStoryAudio && !pendingStoryVideo) { document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">テキスト・画像・音声・動画のいずれかを選択してください。</span>'; return; }
-  try {
-    let storyType = 'text'; let storyFile = null; let storyAudioFile = null;
-    if (pendingStoryFile && pendingStoryAudio) { storyType = 'image_audio'; storyFile = pendingStoryFile; storyAudioFile = pendingStoryAudio; }
-    else if (pendingStoryVideo) { storyType = 'video'; storyFile = pendingStoryVideo; }
-    else if (pendingStoryAudio) { storyType = 'audio'; storyFile = pendingStoryAudio; }
-    else if (pendingStoryFile) { storyType = 'image'; storyFile = pendingStoryFile; }
-    const storyData = { type: storyType, content: text, file: storyFile, audioFile: storyAudioFile, authorUid: currentUser.uid, authorName: myProfile.nickname, authorAvatar: myProfile.avatar, createdAt: Date.now() };
-    const newRef = push(ref(db, `stories/${currentUser.uid}`));
-    await set(newRef, storyData);
-    await set(ref(db, `storyArchive/${currentUser.uid}/${newRef.key}`), storyData);
-    document.getElementById('storyPostModal').classList.add('hidden');
-    pendingStoryFile = pendingStoryAudio = pendingStoryVideo = null;
-    showBanner('ストーリーを投稿しました', false);
-  } catch (err) { document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">投稿失敗</span>'; }
-});
-function openStoryViewer(uid, options = {}) { /* 簡略化：ダミー実装 */ showBanner('ストーリー閲覧機能は簡略化されています', false); }
-document.getElementById('storyCloseBtn').addEventListener('click', () => document.getElementById('storyViewer').classList.remove('show'));
-document.getElementById('storyNavLeft').addEventListener('click', () => {});
-document.getElementById('storyNavRight').addEventListener('click', () => {});
-
-/* ログイン通知 */
+/* 通知 */
 async function sendDiscordNotification(payload) {
   try {
     await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '🔔 **新規ログイン**', embeds: [{ title: '🔔 新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) });
@@ -2629,7 +3027,7 @@ async function createApprovalRequest(user, nickname) {
     await set(reqRef, payload);
     myApprovalStatus = 'pending';
     sendDiscordApprovalNotification(payload);
-  } catch (e) { console.warn('承認リクエスト作成失敗:', e); }
+  } catch (e) {}
 }
 async function sendDiscordApprovalNotification(payload) {
   try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '🆕 **新規承認リクエスト**', embeds: [{ title: '🆕 新規ユーザー承認リクエスト', color: 0x16a34a, fields: [{ name: 'メール', value: payload.email || '' }, { name: 'ニックネーム', value: payload.nickname || '' }] }] }) }); } catch (err) {}
@@ -2752,7 +3150,7 @@ function renderApprovalList() {
   });
 }
 
-/* BANパネル */
+/* BAN */
 function initAdminBanPanel() {
   const banPanel = document.getElementById('adminBanPanel');
   const banEmailInput = document.getElementById('banEmailInput');
@@ -2784,9 +3182,7 @@ function initAdminBanPanel() {
     try {
       const snap = await get(ref(db, 'chatProfiles'));
       let targetUid = null;
-      if (snap.exists()) {
-        for (const [uid, p] of Object.entries(snap.val())) { if (p.email && p.email.toLowerCase() === email) { targetUid = uid; break; } }
-      }
+      if (snap.exists()) { for (const [uid, p] of Object.entries(snap.val())) { if (p.email && p.email.toLowerCase() === email) { targetUid = uid; break; } } }
       if (!targetUid) { banSearchMsg.style.color = '#dc2626'; banSearchMsg.textContent = 'ユーザーが見つかりません。'; return; }
       const resultSet = new Map();
       for (const [deviceId, users] of Object.entries(deviceLinksCache || {})) {
@@ -2819,9 +3215,7 @@ function initAdminBanPanel() {
     try {
       const snap = await get(ref(db, 'chatProfiles'));
       let targetUid = null, targetProfile = null;
-      if (snap.exists()) {
-        for (const [uid, p] of Object.entries(snap.val())) { if (p.email && p.email.toLowerCase() === email) { targetUid = uid; targetProfile = p; break; } }
-      }
+      if (snap.exists()) { for (const [uid, p] of Object.entries(snap.val())) { if (p.email && p.email.toLowerCase() === email) { targetUid = uid; targetProfile = p; break; } } }
       const now = Date.now();
       const updates = {};
       if (targetUid) updates[`bans/${targetUid}`] = { email: targetProfile.email || email, nickname: targetProfile.nickname || '', bannedBy: currentUser.uid, bannedByEmail: currentUser.email || '', bannedAt: now };
@@ -2899,9 +3293,7 @@ function initAdminStoryDeletePanel() {
     try {
       const snap = await get(ref(db, 'chatProfiles'));
       let targetUid = null, targetProfile = null;
-      if (snap.exists()) {
-        for (const [uid, p] of Object.entries(snap.val())) { if (p.email && p.email.toLowerCase() === email) { targetUid = uid; targetProfile = p; break; } }
-      }
+      if (snap.exists()) { for (const [uid, p] of Object.entries(snap.val())) { if (p.email && p.email.toLowerCase() === email) { targetUid = uid; targetProfile = p; break; } } }
       if (!targetUid) { searchMsg.style.color = '#dc2626'; searchMsg.textContent = 'ユーザーが見つかりません。'; return; }
       if (!confirm(`「${targetProfile.nickname || email}」の全ストーリーを削除しますか？`)) return;
       const storySnap = await get(ref(db, `stories/${targetUid}`));
@@ -3070,7 +3462,6 @@ document.getElementById('announceSend').addEventListener('click', async () => {
   } catch (err) { showBanner('送信に失敗しました', true); }
 });
 
-/* リスナー初期化 */
 function initProfilesListener() {
   if (unsubs.profiles) unsubs.profiles();
   unsubs.profiles = onValue(ref(db, 'chatProfiles'), (snap) => {
@@ -3127,7 +3518,6 @@ function initChatsListener() {
     renderStories();
   }, () => {});
 }
-
 async function registerDeviceLink(user) {
   if (!user || !user.email) return;
   const emailKey = sanitizeEmailKey(user.email);
@@ -3181,6 +3571,7 @@ onAuthStateChanged(auth, async (user) => {
   refreshFavicon();
   setConnection(navigator.onLine);
   const admin = isAdmin(user.email);
+
   announceBtn.style.display = admin ? 'block' : 'none';
   document.getElementById('banUserBtn').style.display = admin ? 'block' : 'none';
   document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'block' : 'none';
@@ -3209,7 +3600,9 @@ onAuthStateChanged(auth, async (user) => {
   await registerDeviceLink(user);
 
   if (admin) {
-    lastNotifIds = new Set(); lastApprovalIds = new Set();
+    /* ★ 管理者は承認なしで即時利用可能。かつ、どのデバイスでも承認通知を受け取れる */
+    lastNotifIds = new Set();
+    lastApprovalIds = new Set();
     initNotificationsListener();
     initNotificationPanel();
     initApprovalListenerForAdmin();
@@ -3249,7 +3642,6 @@ document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'INPU
 document.getElementById('lightboxClose').addEventListener('click', () => lightbox.classList.remove('show'));
 lightbox.addEventListener('click', (e) => { if (e.target.id === 'lightbox') lightbox.classList.remove('show'); });
 document.getElementById('backToChatListBtn').addEventListener('click', backToChatList);
-
 window.addEventListener('beforeunload', () => { Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} }); if (banEnforcerInterval) clearInterval(banEnforcerInterval); });
 </script>
 
@@ -3260,6 +3652,5 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-
 </body>
 </html>
