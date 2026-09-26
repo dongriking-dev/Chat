@@ -99,46 +99,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .msg-file { margin-top: 6px; display: block; border-radius: 12px; overflow: hidden; cursor: zoom-in; max-width: 100%; border: 1px solid #e5e7eb; background: #f9fafb; }
 .msg-file img { display: block; max-height: 280px; max-width: 100%; object-fit: contain; }
 .msg-file.only-file { margin-top: 0; }
-
-/* ★ ステッカー表示 */
-.msg-sticker {
-  display: block;
-  max-width: 180px;
-  max-height: 180px;
-  cursor: pointer;
-  user-select: none;
-  transition: transform 0.15s;
-}
-.msg-sticker:hover { transform: scale(1.03); }
-.msg-sticker img, .msg-sticker video {
-  display: block;
-  max-width: 180px;
-  max-height: 180px;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  border-radius: 8px;
-  pointer-events: none;
-}
-.msg-bubble.sticker-only {
-  background: transparent;
-  border: none;
-  padding: 0;
-  box-shadow: none;
-}
-.msg-row:not(.mine) .msg-bubble.sticker-only,
-.msg-row.mine .msg-bubble.sticker-only {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-.sticker-save-hint {
-  font-size: 10px; color: #0284c7; margin-top: 2px;
-  display: flex; align-items: center; gap: 3px;
-  cursor: pointer;
-}
-.sticker-save-hint:hover { text-decoration: underline; }
-
 .story-reply-context { background: rgba(0,0,0,0.04); border-radius: 8px; padding: 6px 8px; margin-bottom: 6px; font-size: 11px; color: #6b7280; display: flex; align-items: center; gap: 6px; border-left: 3px solid #0284c7; }
 .story-reply-context img { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
 .story-reply-context .txt { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
@@ -175,7 +135,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .chat-input-wrap:focus-within { border-color: #93c5fd; background: #fff; }
 #messageInput { flex: 1; border: none; background: transparent; padding: 9px 14px; font-size: 15px; line-height: 1.4; outline: none; resize: none; min-height: 38px; max-height: 140px; font-family: inherit; color: #111827; width: 100%; }
 .chat-input-icon-btn { width: 40px; height: 40px; border-radius: 50%; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 18px; flex-shrink: 0; }
-.chat-input-icon-btn:hover { background: #e5e7eb; }
 .chat-send-btn { background: linear-gradient(135deg, #2563eb, #1e40af); color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
 .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .msg-preview { margin-bottom: 10px; padding: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; display: none; position: relative; }
@@ -305,95 +264,10 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .related-account-item .ra-email { font-size: 12px; font-weight: 700; color: #92400e; word-break: break-all; }
 .related-account-item .ra-meta { font-size: 10px; color: #a16207; margin-top: 2px; }
 .related-account-item .ra-check { width: 20px; height: 20px; flex-shrink: 0; accent-color: #dc2626; }
-
-/* ★ ステッカーパネル */
-#stickerPanel {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  max-width: 900px; margin: 0 auto;
-  background: #fff; border-top: 1px solid #e5e7eb;
-  z-index: 15000;
-  transform: translateY(100%);
-  transition: transform 0.25s ease;
-  max-height: 55vh; display: flex; flex-direction: column;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-}
-#stickerPanel.show { transform: translateY(0); }
-.sticker-panel-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 14px; border-bottom: 1px solid #e5e7eb;
-  flex-shrink: 0;
-}
-.sticker-panel-header h3 {
-  font-size: 14px; font-weight: 700; color: #1e3a8a; margin: 0;
-}
-.sticker-panel-body {
-  flex: 1; overflow-y: auto; padding: 10px 12px;
-}
-.sticker-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 8px;
-}
-.sticker-grid-item {
-  aspect-ratio: 1;
-  background: #f9fafb; border: 1px solid #e5e7eb;
-  border-radius: 10px; overflow: hidden;
-  cursor: pointer; position: relative;
-  transition: transform 0.15s, border-color 0.15s;
-  display: flex; align-items: center; justify-content: center;
-}
-.sticker-grid-item:hover { transform: scale(1.04); border-color: #60a5fa; }
-.sticker-grid-item img, .sticker-grid-item video {
-  max-width: 100%; max-height: 100%;
-  object-fit: contain; pointer-events: none;
-}
-.sticker-grid-item .sticker-delete-btn {
-  position: absolute; top: 2px; right: 2px;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: rgba(239,68,68,0.9); color: #fff;
-  border: 1px solid #fff; font-size: 11px;
-  cursor: pointer; display: none;
-  align-items: center; justify-content: center;
-}
-.sticker-grid-item:hover .sticker-delete-btn { display: flex; }
-@media (hover: none) { .sticker-grid-item .sticker-delete-btn { display: flex; } }
-.sticker-empty {
-  text-align: center; color: #9ca3af; font-size: 12px;
-  padding: 30px 20px; line-height: 1.6;
-}
-
-/* ステッカー保存モーダル */
-#stickerSaveModal .modal-content { max-width: 400px; text-align: center; }
-#stickerSaveModal .sticker-preview-box {
-  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px;
-  padding: 16px; margin: 12px 0;
-  display: flex; align-items: center; justify-content: center;
-  min-height: 180px;
-}
-#stickerSaveModal .sticker-preview-box img,
-#stickerSaveModal .sticker-preview-box video {
-  max-width: 160px; max-height: 160px;
-  object-fit: contain;
-}
-
-/* ステッカー作成モーダル */
-#stickerCreateModal .modal-content { border-top: 6px solid #8b5cf6; max-width: 480px; }
-.sticker-create-preview {
-  background: #f9fafb; border: 1px dashed #d1d5db; border-radius: 12px;
-  padding: 16px; margin: 12px 0;
-  min-height: 180px;
-  display: flex; align-items: center; justify-content: center;
-}
-.sticker-create-preview img, .sticker-create-preview video {
-  max-width: 160px; max-height: 160px; object-fit: contain;
-}
-
 @media (max-width: 500px) {
   .header-title { font-size: 17px; }
   .msg-body { max-width: 82%; }
   .modal-content { padding: 18px; }
-  .msg-sticker { max-width: 140px; max-height: 140px; }
-  .msg-sticker img, .msg-sticker video { max-width: 140px; max-height: 140px; }
-  #stickerPanel { max-height: 60vh; }
 }
 </style>
 </head>
@@ -546,7 +420,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
             <button type="button" class="msg-preview-remove" id="msgPreviewRemoveBtn">✕</button>
           </div>
           <div class="chat-input-row">
-            <button type="button" id="stickerBtn" class="chat-input-icon-btn" title="ステッカー">😀</button>
             <div class="chat-input-wrap">
               <textarea id="messageInput" rows="1" maxlength="2000" placeholder="メッセージを入力..."></textarea>
               <label class="chat-input-icon-btn" style="cursor:pointer;">
@@ -558,67 +431,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
         </form>
       </div>
     </main>
-  </div>
-</div>
-
-<!-- ★ ステッカーパネル -->
-<div id="stickerPanel">
-  <div class="sticker-panel-header">
-    <h3>😀 マイステッカー</h3>
-    <div style="display:flex;gap:6px;">
-      <button id="stickerCreateBtn" style="background:#8b5cf6;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;">＋ 作成</button>
-      <button id="stickerCloseBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">閉じる</button>
-    </div>
-  </div>
-  <div class="sticker-panel-body">
-    <div id="stickerGrid" class="sticker-grid"></div>
-    <div id="stickerEmpty" class="sticker-empty" style="display:none;">
-      まだステッカーがありません。<br>
-      <strong>「＋ 作成」から mp4 または画像で作成できます。</strong>
-    </div>
-  </div>
-</div>
-
-<!-- ★ ステッカー作成モーダル -->
-<div id="stickerCreateModal" class="modal-backdrop hidden">
-  <div class="modal-content">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#6d28d9;">＋ ステッカーを作成</h3>
-    <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">mp4（GIFの代わり）または静止画（png/jpg/gif）を選択してください。</p>
-
-    <div style="display:flex;gap:8px;margin-bottom:12px;">
-      <label style="flex:1;background:#f3f4f6;border:1px dashed #d1d5db;border-radius:8px;padding:12px;text-align:center;cursor:pointer;font-size:12px;color:#374151;">
-        📁 画像を選択
-        <input type="file" id="stickerImageInput" accept="image/*" style="display:none;">
-      </label>
-      <label style="flex:1;background:#f3f4f6;border:1px dashed #d1d5db;border-radius:8px;padding:12px;text-align:center;cursor:pointer;font-size:12px;color:#374151;">
-        🎬 mp4を選択
-        <input type="file" id="stickerVideoInput" accept="video/mp4,video/*,.mp4" style="display:none;">
-      </label>
-    </div>
-
-    <div id="stickerCreatePreview" class="sticker-create-preview">
-      <span style="color:#9ca3af;font-size:12px;">プレビュー</span>
-    </div>
-
-    <div id="stickerCreateMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
-
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="stickerCreateCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="stickerCreateSaveBtn" class="primary-btn" disabled>保存</button>
-    </div>
-  </div>
-</div>
-
-<!-- ★ ステッカー保存モーダル -->
-<div id="stickerSaveModal" class="modal-backdrop hidden">
-  <div class="modal-content">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#0284c7;">💾 ステッカーを保存</h3>
-    <p style="font-size:11px;color:#6b7280;margin:0 0 8px;">このステッカーを自分のライブラリに保存しますか？</p>
-    <div class="sticker-preview-box" id="stickerSavePreview"></div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="stickerSaveCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="stickerSaveConfirmBtn" class="primary-btn">保存する</button>
-    </div>
   </div>
 </div>
 
@@ -895,8 +707,7 @@ let currentUser = null;
 let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
 let currentChatId = null;
 let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {}, emailBansCache = {}, deviceLinksCache = {}, readsCache = {}, typingCache = {}, presenceCache = {}, reactionsCache = {};
-let stickersCache = {}; // ★ 自分のステッカー
-let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null, stickers: null };
+let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null };
 let chatLatestListeners = {};
 
 const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
@@ -939,8 +750,6 @@ let approvalsCache = {}, lastSeenApprovalCount = parseInt(localStorage.getItem(A
 let myApprovalStatus = null;
 let replyingTo = null, currentReactionPicker = null, addMemberTargetProfile = null;
 let relatedAccountsResult = [];
-let pendingSticker = null; // ★ 作成中のステッカー
-let pendingSaveSticker = null; // ★ 保存予定のステッカー
 
 const bootOverlay = document.getElementById('bootOverlay');
 const loginView = document.getElementById('loginView');
@@ -1413,17 +1222,6 @@ function createMessageRow(msg, lastRenderedMsg) {
   let fileHtml = '';
   if (msg.file && msg.file.dataUrl) fileHtml = `<div class="msg-file ${!msg.content && !storyContextHtml && !replyQuoteHtml ? 'only-file' : ''}" data-lightbox="${msg.file.dataUrl}"><img src="${msg.file.dataUrl}" loading="lazy"></div>`;
 
-  // ★ ステッカー
-  let stickerHtml = '';
-  if (msg.sticker && msg.sticker.dataUrl) {
-    const isVideo = msg.sticker.type && msg.sticker.type.startsWith('video/');
-    if (isVideo) {
-      stickerHtml = `<div class="msg-sticker" data-sticker-save="${escapeHtml(key)}"><video src="${msg.sticker.dataUrl}" autoplay loop muted playsinline></video></div>`;
-    } else {
-      stickerHtml = `<div class="msg-sticker" data-sticker-save="${escapeHtml(key)}"><img src="${msg.sticker.dataUrl}" alt="sticker"></div>`;
-    }
-  }
-
   let contentHtml = msg.content ? `<div class="msg-content">${formatContent(msg.content)}</div>` : '';
 
   let readHtml = '';
@@ -1434,15 +1232,13 @@ function createMessageRow(msg, lastRenderedMsg) {
   const showAvatar = !isMine && !isGrouped;
   const avatarHtml = showAvatar ? `<span class="avatar-online-wrap"><img class="avatar-sm" src="${escapeHtml(profile.avatar)}" data-profile-avatar><span class="online-dot ${senderOnline?'online':''}" data-presence-msg-uid="${escapeHtml(msg.authorUid)}" style="width:9px;height:9px;"></span></span>` : '';
 
-  const isStickerOnly = !!(msg.sticker && msg.sticker.dataUrl && !msg.content && !msg.file && !replyQuoteHtml && !storyContextHtml);
-
   row.innerHTML = `
     <div class="msg-avatar-slot ${showAvatar?'':'empty'}">${avatarHtml}</div>
     <div class="msg-body">
       ${metaHtml}
       <div class="msg-bubble-wrap">
         ${menuBtnHtml}
-        <div class="msg-bubble${isStickerOnly ? ' sticker-only' : ''}">${replyQuoteHtml}${storyContextHtml}${contentHtml}${fileHtml}${stickerHtml}</div>
+        <div class="msg-bubble">${replyQuoteHtml}${storyContextHtml}${contentHtml}${fileHtml}</div>
       </div>
       ${readHtml}
     </div>`;
@@ -1518,15 +1314,6 @@ messagesContainer.addEventListener('click', (e) => {
     }
     return;
   }
-  // ★ ステッカー保存
-  const stickerEl = e.target.closest('[data-sticker-save]');
-  if (stickerEl) {
-    e.stopPropagation();
-    const msgKey = stickerEl.dataset.stickerSave;
-    const msg = messagesCache.find(m => m.key === msgKey);
-    if (msg && msg.sticker) openStickerSaveModal(msg.sticker);
-    return;
-  }
 });
 
 function outsideClickHandler(e) { if (!e.target.closest('.msg-menu-popup') && !e.target.closest('.msg-menu-btn')) closeAllMenus(); }
@@ -1580,7 +1367,7 @@ function startReply(key) {
   replyingTo = { msgKey: key, authorUid: msg.authorUid, authorName: p.nickname, content: msg.content || '', hasFile: !!(msg.file && msg.file.dataUrl) };
   document.getElementById('replyPreviewName').textContent = `↩ ${p.nickname} に返信`;
   const previewText = (msg.content || '').slice(0,80) + ((msg.content || '').length > 80 ? '…' : '');
-  document.getElementById('replyPreviewText').textContent = previewText || (msg.file ? '📷 画像' : (msg.sticker ? '😀 ステッカー' : '(メッセージ)'));
+  document.getElementById('replyPreviewText').textContent = previewText || (msg.file ? '📷 画像' : '(メッセージ)');
   document.getElementById('replyPreviewBox').classList.add('show');
   document.getElementById('messageInput').focus();
 }
@@ -1593,7 +1380,6 @@ async function copyMessageToClipboard(key) {
   if (msg.replyTo && msg.replyTo.content) parts.push(`↩ ${msg.replyTo.authorName}: ${msg.replyTo.content}`);
   if (msg.content) parts.push(msg.content);
   if (msg.file && msg.file.dataUrl) parts.push('[画像]');
-  if (msg.sticker) parts.push('[ステッカー]');
   const text = parts.join('\n').trim();
   if (!text) { showBanner('コピーする内容がありません', true); return; }
   try {
@@ -1650,7 +1436,7 @@ document.getElementById('editMsgSaveBtn').addEventListener('click', async () => 
   const newContent = editMsgInput.value.trim();
   const msg = messagesCache.find(m => m.key === editingMsgKey);
   if (!msg) return;
-  if (!newContent && !(msg.file && msg.file.dataUrl) && !msg.sticker) { alert('メッセージを入力してください。'); return; }
+  if (!newContent && !(msg.file && msg.file.dataUrl)) { alert('メッセージを入力してください。'); return; }
   try {
     await update(ref(db, `chatMessages/${currentChatId}/${editingMsgKey}`), { content: newContent, edited: true, editedAt: Date.now() });
     editMsgModal.classList.add('hidden'); editingMsgKey = null;
@@ -1759,7 +1545,6 @@ scrollToBottomBtn.addEventListener('click', () => {
   if (currentChatId) markChatAsRead(currentChatId);
 });
 
-/* チャットヘッダーメニュー */
 function closeChatHeaderMenu() {
   if (openChatHeaderMenuEl && openChatHeaderMenuEl.parentNode) openChatHeaderMenuEl.parentNode.removeChild(openChatHeaderMenuEl);
   openChatHeaderMenuEl = null;
@@ -1857,7 +1642,6 @@ async function deleteDirectChat() {
   } catch (err) { console.error('削除エラー:', err); showBanner('削除に失敗しました', true); }
 }
 
-/* メンバー追加 */
 function openAddMemberModal() {
   document.getElementById('addMemberEmailInput').value = '';
   document.getElementById('addMemberSearchMsg').textContent = '';
@@ -1920,7 +1704,6 @@ document.getElementById('addMemberConfirmBtn').addEventListener('click', async (
   } catch (err) { console.error('メンバー追加エラー:', err); showBanner('追加に失敗しました', true); }
 });
 
-/* 新規チャット */
 const newChatModal = document.getElementById('newChatModal');
 const memberEmailInput = document.getElementById('memberEmailInput');
 const memberSearchMsg = document.getElementById('memberSearchMsg');
@@ -2001,7 +1784,6 @@ async function findExistingDirectChat(partnerUid) {
   } catch (e) { return null; }
 }
 
-/* プロフィール */
 document.getElementById('profileBtn').addEventListener('click', () => {
   document.getElementById('nicknameInput').value = myProfile.nickname || '';
   selectedAvatar = myProfile.avatar || DEFAULT_AVATAR;
@@ -2031,8 +1813,7 @@ document.getElementById('profileSaveBtn').addEventListener('click', async () => 
   } catch (err) { showBanner('保存失敗', true); }
 });
 
-/* ファイル変換 */
-const IMAGE_MAX_WIDTH = 1200, IMAGE_MAX_HEIGHT = 1200, IMAGE_QUALITY = 0.8, IMAGE_MAX_BASE64_SIZE = 400*1024, MEDIA_MAX_BASE64_SIZE = 800*1024, STICKER_MAX_BASE64_SIZE = 500*1024;
+const IMAGE_MAX_WIDTH = 1200, IMAGE_MAX_HEIGHT = 1200, IMAGE_QUALITY = 0.8, IMAGE_MAX_BASE64_SIZE = 400*1024, MEDIA_MAX_BASE64_SIZE = 800*1024;
 function fileToBase64Image(file, maxW = IMAGE_MAX_WIDTH, maxH = IMAGE_MAX_HEIGHT, maxSize = IMAGE_MAX_BASE64_SIZE) {
   return new Promise((resolve, reject) => {
     if (!file) { resolve(null); return; }
@@ -2060,62 +1841,6 @@ function fileToBase64Image(file, maxW = IMAGE_MAX_WIDTH, maxH = IMAGE_MAX_HEIGHT
         resolve({ dataUrl, name: file.name, type: 'image/jpeg', width, height, size: dataUrl.length });
       };
       img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-function fileToBase64StickerImage(file, maxSize = STICKER_MAX_BASE64_SIZE) {
-  return new Promise((resolve, reject) => {
-    if (!file) { resolve(null); return; }
-    if (!file.type.startsWith('image/')) { reject(new Error('画像ファイルを選択してください')); return; }
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onerror = () => reject(new Error('画像読み込み失敗'));
-      img.onload = () => {
-        let { width, height } = img;
-        const maxDim = 400;
-        let scale = 1;
-        if (width > maxDim) scale = Math.min(scale, maxDim / width);
-        if (height > maxDim) scale = Math.min(scale, maxDim / height);
-        if (scale < 1) { width = Math.round(width * scale); height = Math.round(height * scale); }
-        const canvas = document.createElement('canvas');
-        canvas.width = width; canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, width, height);
-        ctx.drawImage(img, 0, 0, width, height);
-        let quality = 0.85;
-        let dataUrl;
-        // GIFアニメ対応: GIFはそのまま使う
-        if (file.type === 'image/gif') {
-          dataUrl = e.target.result;
-        } else {
-          dataUrl = canvas.toDataURL('image/png');
-          if (dataUrl.length > maxSize) {
-            dataUrl = canvas.toDataURL('image/jpeg', quality);
-            while (dataUrl.length > maxSize && quality > 0.4) { quality -= 0.08; dataUrl = canvas.toDataURL('image/jpeg', quality); }
-          }
-        }
-        if (dataUrl.length > maxSize) { reject(new Error('ステッカーが大きすぎます（500KB以下にしてください）')); return; }
-        resolve({ dataUrl, name: file.name, type: dataUrl.startsWith('data:image/gif') ? 'image/gif' : (dataUrl.startsWith('data:image/png') ? 'image/png' : 'image/jpeg'), width, height, size: dataUrl.length });
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  });
-}
-function fileToBase64StickerVideo(file, maxSize = STICKER_MAX_BASE64_SIZE) {
-  return new Promise((resolve, reject) => {
-    if (!file) { resolve(null); return; }
-    const validExt = /\.mp4$/i.test(file.name) || file.type === 'video/mp4';
-    if (!validExt) { reject(new Error('mp4ファイルを選択してください')); return; }
-    const reader = new FileReader();
-    reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
-    reader.onload = (e) => {
-      const dataUrl = e.target.result;
-      if (dataUrl.length > maxSize) { reject(new Error('動画ステッカーが大きすぎます（500KB以下にしてください）')); return; }
-      resolve({ dataUrl, name: file.name, type: 'video/mp4', size: dataUrl.length });
     };
     reader.readAsDataURL(file);
   });
@@ -2148,227 +1873,6 @@ function fileToBase64Video(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
 }
 function formatSize(bytes) { if (!bytes) return ''; if (bytes < 1024) return bytes + ' B'; if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB'; return (bytes/1024/1024).toFixed(2) + ' MB'; }
 
-/* ★ ステッカー機能 */
-function initStickersListener() {
-  if (unsubs.stickers) unsubs.stickers();
-  if (!currentUser) return;
-  unsubs.stickers = onValue(ref(db, `stickers/${currentUser.uid}`), (snap) => {
-    stickersCache = snap.exists() ? snap.val() : {};
-    renderStickers();
-  }, () => {});
-}
-
-function renderStickers() {
-  const grid = document.getElementById('stickerGrid');
-  const empty = document.getElementById('stickerEmpty');
-  if (!grid || !empty) return;
-  const entries = Object.entries(stickersCache || {}).sort((a,b) => (b[1].createdAt||0) - (a[1].createdAt||0));
-  if (entries.length === 0) {
-    grid.innerHTML = '';
-    empty.style.display = 'block';
-    return;
-  }
-  empty.style.display = 'none';
-  grid.innerHTML = '';
-  entries.forEach(([sid, sticker]) => {
-    const item = document.createElement('div');
-    item.className = 'sticker-grid-item';
-    const isVideo = sticker.type && sticker.type.startsWith('video/');
-    if (isVideo) {
-      item.innerHTML = `<video src="${sticker.dataUrl}" autoplay loop muted playsinline></video><button class="sticker-delete-btn" data-sticker-id="${escapeHtml(sid)}">✕</button>`;
-    } else {
-      item.innerHTML = `<img src="${sticker.dataUrl}" alt="sticker"><button class="sticker-delete-btn" data-sticker-id="${escapeHtml(sid)}">✕</button>`;
-    }
-    item.addEventListener('click', (e) => {
-      if (e.target.closest('.sticker-delete-btn')) return;
-      sendSticker(sticker);
-    });
-    const delBtn = item.querySelector('.sticker-delete-btn');
-    if (delBtn) {
-      delBtn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        if (!confirm('このステッカーを削除しますか？')) return;
-        try { await remove(ref(db, `stickers/${currentUser.uid}/${sid}`)); showBanner('ステッカーを削除しました', false); }
-        catch (err) { showBanner('削除に失敗しました', true); }
-      });
-    }
-    grid.appendChild(item);
-  });
-}
-
-async function sendSticker(sticker) {
-  if (!currentUser || !currentChatId) { showBanner('チャットを開いてください', true); return; }
-  const sendBtn = document.getElementById('sendBtn');
-  sendBtn.disabled = true;
-  const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
-  const chatIdAtSend = currentChatId;
-  try {
-    const msgData = {
-      clientMsgId,
-      content: '',
-      file: null,
-      sticker: {
-        dataUrl: sticker.dataUrl,
-        type: sticker.type,
-        name: sticker.name || 'sticker'
-      },
-      authorUid: currentUser.uid,
-      authorName: myProfile.nickname,
-      authorAvatar: myProfile.avatar,
-      createdAt: Date.now()
-    };
-    const newRef = push(ref(db, `chatMessages/${chatIdAtSend}`));
-    await set(newRef, msgData);
-    const chat = chatsCache[chatIdAtSend];
-    if (chat) {
-      const memberUids = Object.keys(chat.members || {});
-      const updates = {};
-      memberUids.forEach(uid => {
-        updates[`userChats/${uid}/${chatIdAtSend}/lastMessage`] = '😀 ステッカー';
-        updates[`userChats/${uid}/${chatIdAtSend}/lastMessageAt`] = Date.now();
-        updates[`userChats/${uid}/${chatIdAtSend}/lastSenderUid`] = currentUser.uid;
-      });
-      await update(ref(db), updates);
-    }
-    closeStickerPanel();
-    showBanner('ステッカーを送信しました', false);
-  } catch (err) {
-    console.error('ステッカー送信エラー:', err);
-    showBanner('送信失敗: ' + (err.message || ''), true);
-  } finally { sendBtn.disabled = false; }
-}
-
-function openStickerPanel() {
-  document.getElementById('stickerPanel').classList.add('show');
-}
-function closeStickerPanel() {
-  document.getElementById('stickerPanel').classList.remove('show');
-}
-document.getElementById('stickerBtn').addEventListener('click', () => {
-  const panel = document.getElementById('stickerPanel');
-  if (panel.classList.contains('show')) closeStickerPanel();
-  else openStickerPanel();
-});
-document.getElementById('stickerCloseBtn').addEventListener('click', closeStickerPanel);
-
-/* ステッカー作成 */
-const stickerCreateModal = document.getElementById('stickerCreateModal');
-document.getElementById('stickerCreateBtn').addEventListener('click', () => {
-  pendingSticker = null;
-  document.getElementById('stickerImageInput').value = '';
-  document.getElementById('stickerVideoInput').value = '';
-  document.getElementById('stickerCreatePreview').innerHTML = '<span style="color:#9ca3af;font-size:12px;">プレビュー</span>';
-  document.getElementById('stickerCreateMsg').textContent = '';
-  document.getElementById('stickerCreateSaveBtn').disabled = true;
-  stickerCreateModal.classList.remove('hidden');
-});
-document.getElementById('stickerCreateCancelBtn').addEventListener('click', () => stickerCreateModal.classList.add('hidden'));
-stickerCreateModal.addEventListener('click', (e) => { if (e.target.id === 'stickerCreateModal') stickerCreateModal.classList.add('hidden'); });
-
-document.getElementById('stickerImageInput').addEventListener('change', async () => {
-  const f = document.getElementById('stickerImageInput').files[0];
-  if (!f) return;
-  document.getElementById('stickerVideoInput').value = '';
-  const preview = document.getElementById('stickerCreatePreview');
-  const msgEl = document.getElementById('stickerCreateMsg');
-  preview.innerHTML = '<span class="loading-spinner"></span>';
-  msgEl.textContent = '';
-  try {
-    const r = await fileToBase64StickerImage(f);
-    pendingSticker = r;
-    preview.innerHTML = `<img src="${r.dataUrl}" style="max-width:160px;max-height:160px;object-fit:contain;">`;
-    msgEl.style.color = '#16a34a';
-    msgEl.textContent = `✓ ${f.name}（${formatSize(r.size)}）`;
-    document.getElementById('stickerCreateSaveBtn').disabled = false;
-  } catch (err) {
-    pendingSticker = null;
-    preview.innerHTML = '<span style="color:#9ca3af;font-size:12px;">プレビュー</span>';
-    msgEl.style.color = '#dc2626';
-    msgEl.textContent = err.message;
-    document.getElementById('stickerCreateSaveBtn').disabled = true;
-  }
-});
-document.getElementById('stickerVideoInput').addEventListener('change', async () => {
-  const f = document.getElementById('stickerVideoInput').files[0];
-  if (!f) return;
-  document.getElementById('stickerImageInput').value = '';
-  const preview = document.getElementById('stickerCreatePreview');
-  const msgEl = document.getElementById('stickerCreateMsg');
-  preview.innerHTML = '<span class="loading-spinner"></span>';
-  msgEl.textContent = '';
-  try {
-    const r = await fileToBase64StickerVideo(f);
-    pendingSticker = r;
-    preview.innerHTML = `<video src="${r.dataUrl}" autoplay loop muted playsinline style="max-width:160px;max-height:160px;object-fit:contain;"></video>`;
-    msgEl.style.color = '#16a34a';
-    msgEl.textContent = `✓ ${f.name}（${formatSize(r.size)}）`;
-    document.getElementById('stickerCreateSaveBtn').disabled = false;
-  } catch (err) {
-    pendingSticker = null;
-    preview.innerHTML = '<span style="color:#9ca3af;font-size:12px;">プレビュー</span>';
-    msgEl.style.color = '#dc2626';
-    msgEl.textContent = err.message;
-    document.getElementById('stickerCreateSaveBtn').disabled = true;
-  }
-});
-document.getElementById('stickerCreateSaveBtn').addEventListener('click', async () => {
-  if (!pendingSticker || !currentUser) return;
-  try {
-    const newRef = push(ref(db, `stickers/${currentUser.uid}`));
-    await set(newRef, {
-      dataUrl: pendingSticker.dataUrl,
-      type: pendingSticker.type,
-      name: pendingSticker.name || 'sticker',
-      createdAt: Date.now()
-    });
-    stickerCreateModal.classList.add('hidden');
-    pendingSticker = null;
-    showBanner('ステッカーを保存しました', false);
-  } catch (err) {
-    console.error('ステッカー保存エラー:', err);
-    showBanner('保存に失敗しました', true);
-  }
-});
-
-/* ステッカー保存（相手のステッカー） */
-function openStickerSaveModal(sticker) {
-  pendingSaveSticker = sticker;
-  const preview = document.getElementById('stickerSavePreview');
-  const isVideo = sticker.type && sticker.type.startsWith('video/');
-  if (isVideo) {
-    preview.innerHTML = `<video src="${sticker.dataUrl}" autoplay loop muted playsinline></video>`;
-  } else {
-    preview.innerHTML = `<img src="${sticker.dataUrl}" alt="sticker">`;
-  }
-  document.getElementById('stickerSaveModal').classList.remove('hidden');
-}
-document.getElementById('stickerSaveCancelBtn').addEventListener('click', () => {
-  document.getElementById('stickerSaveModal').classList.add('hidden');
-  pendingSaveSticker = null;
-});
-document.getElementById('stickerSaveModal').addEventListener('click', (e) => {
-  if (e.target.id === 'stickerSaveModal') { document.getElementById('stickerSaveModal').classList.add('hidden'); pendingSaveSticker = null; }
-});
-document.getElementById('stickerSaveConfirmBtn').addEventListener('click', async () => {
-  if (!pendingSaveSticker || !currentUser) return;
-  try {
-    const newRef = push(ref(db, `stickers/${currentUser.uid}`));
-    await set(newRef, {
-      dataUrl: pendingSaveSticker.dataUrl,
-      type: pendingSaveSticker.type,
-      name: pendingSaveSticker.name || 'sticker',
-      createdAt: Date.now()
-    });
-    document.getElementById('stickerSaveModal').classList.add('hidden');
-    pendingSaveSticker = null;
-    showBanner('ステッカーを自分のライブラリに保存しました', false);
-  } catch (err) {
-    console.error('ステッカー保存エラー:', err);
-    showBanner('保存に失敗しました', true);
-  }
-});
-
-/* ストーリー */
 const STORY_TTL = 24 * 60 * 60 * 1000;
 function initStoriesListener() {
   if (unsubs.stories) unsubs.stories();
@@ -2984,7 +2488,6 @@ function startApprovedSession() {
   if (!unsubs.myArchive) initMyArchiveListener();
   if (!unsubs.presence) initPresenceListener();
   if (!unsubs.announcement) initAnnouncementListener();
-  if (!unsubs.stickers) initStickersListener();
   setupMyPresence();
 }
 function initAdminApprovalPanel() {
