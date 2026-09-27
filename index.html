@@ -111,15 +111,15 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .msg-menu-popup button { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 10px 14px; font-size: 13px; background: none; border: none; cursor: pointer; color: #374151; }
 .msg-menu-popup button:hover { background: #f3f4f6; }
 .msg-menu-popup button.danger { color: #ef4444; }
-.chat-header-menu-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 7px 11px; cursor: pointer; font-size: 14px; color: #374151; font-weight: 700; }
-.chat-call-btn { background: linear-gradient(135deg, #16a34a, #15803d); border: none; border-radius: 8px; padding: 7px 11px; cursor: pointer; font-size: 14px; color: #fff; font-weight: 700; flex-shrink: 0; }
+.chat-header-menu-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 7px 11px; cursor: pointer; font-size: 14px; color: #374151; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.chat-call-btn { background: linear-gradient(135deg, #16a34a, #15803d); border: none; border-radius: 8px; padding: 7px 11px; cursor: pointer; color: #fff; font-weight: 700; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .chat-call-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .chat-header-menu-popup { position: fixed; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 200px; z-index: 30000; overflow: hidden; }
 .chat-header-menu-popup button { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 11px 14px; font-size: 13px; background: none; border: none; cursor: pointer; color: #374151; }
 .chat-header-menu-popup button:hover { background: #f3f4f6; }
 .chat-header-menu-popup button.danger { color: #ef4444; }
 .reaction-picker { position: fixed; background: #fff; border: 1px solid #e5e7eb; border-radius: 9999px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); display: flex; gap: 2px; padding: 6px 8px; z-index: 31000; }
-.reaction-picker button { width: 34px; height: 34px; border-radius: 50%; background: none; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+.reaction-picker button { width: 34px; height: 34px; border-radius: 50%; background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 #typingIndicatorSlot { min-height: 0; }
 #typingIndicatorSlot:not(:empty) { min-height: 40px; margin-bottom: 6px; }
 .typing-indicator-row { display: flex; align-items: flex-end; gap: 8px; }
@@ -136,8 +136,8 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .chat-input-wrap { flex: 1; min-width: 0; background: #f3f4f6; border-radius: 20px; border: 1px solid #e5e7eb; display: flex; align-items: flex-end; }
 .chat-input-wrap:focus-within { border-color: #93c5fd; background: #fff; }
 #messageInput { flex: 1; border: none; background: transparent; padding: 9px 14px; font-size: 15px; line-height: 1.4; outline: none; resize: none; min-height: 38px; max-height: 140px; font-family: inherit; color: #111827; width: 100%; }
-.chat-input-icon-btn { width: 40px; height: 40px; border-radius: 50%; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 18px; flex-shrink: 0; }
-.chat-send-btn { background: linear-gradient(135deg, #2563eb, #1e40af); color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.chat-input-icon-btn { width: 40px; height: 40px; border-radius: 50%; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #6b7280; flex-shrink: 0; }
+.chat-send-btn { background: linear-gradient(135deg, #2563eb, #1e40af); color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .chat-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .msg-preview { margin-bottom: 10px; padding: 10px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; display: none; position: relative; }
 .msg-preview.show { display: flex; gap: 10px; align-items: center; }
@@ -156,7 +156,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 #lightbox { position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 40000; display: none; align-items: center; justify-content: center; padding: 24px; cursor: zoom-out; }
 #lightbox.show { display: flex; }
 #lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; }
-#lightbox .lightbox-close { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; background: rgba(255,255,255,0.15); border: none; color: #fff; font-size: 20px; border-radius: 50%; cursor: pointer; }
+#lightbox .lightbox-close { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; background: rgba(255,255,255,0.15); border: none; color: #fff; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 #statusBanner { position: fixed; top: 12px; left: 50%; transform: translate(-50%, -150%); z-index: 25000; padding: 10px 20px; font-size: 13px; font-weight: 600; border-radius: 9999px; transition: transform 0.35s, opacity 0.3s; opacity: 0; box-shadow: 0 6px 20px rgba(0,0,0,0.2); white-space: nowrap; max-width: calc(100vw - 32px); overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
 #statusBanner.show { transform: translate(-50%, 0); opacity: 1; }
 #loginToastContainer { position: fixed; top: 60px; right: 16px; z-index: 26000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; max-width: 340px; }
@@ -170,7 +170,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 #banOverlay.show { display: flex; }
 #pendingApprovalOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #1e3a8a, #0f172a); z-index: 99998; display: none; align-items: center; justify-content: center; color: #fff; flex-direction: column; padding: 24px; text-align: center; }
 #pendingApprovalOverlay.show { display: flex; }
-#pendingApprovalOverlay .pa-icon { font-size: 64px; margin-bottom: 16px; animation: paPulse 2s ease-in-out infinite; }
+#pendingApprovalOverlay .pa-icon { margin-bottom: 16px; animation: paPulse 2s ease-in-out infinite; }
 @keyframes paPulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.1); opacity: 0.7; } }
 #pendingApprovalOverlay .pa-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
 #pendingApprovalOverlay .pa-desc { font-size: 13px; color: #cbd5e1; line-height: 1.7; max-width: 420px; }
@@ -179,12 +179,12 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 #emergencyOverlay.show { display: block; }
 #announcementBanner { position: fixed; top: 0; left: 0; right: 0; z-index: 9997; background: linear-gradient(90deg, #0284c7, #7c3aed, #0284c7); background-size: 200% 100%; animation: bannerSlide 4s linear infinite; color: #fff; padding: 12px 44px 12px 16px; font-size: 14px; display: none; text-align: center; font-weight: 700; }
 #announcementBanner.show { display: block; }
-#announcementBanner .ann-close { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.25); border: none; color: #fff; font-size: 16px; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; }
+#announcementBanner .ann-close { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.25); border: none; color: #fff; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 @keyframes bannerSlide { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
-.emergency-btn { background: linear-gradient(135deg, #dc2626, #991b1b); color: #fff; border: 2px solid #7f1d1d; border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 900; cursor: pointer; user-select: none; }
+.emergency-btn { background: linear-gradient(135deg, #dc2626, #991b1b); color: #fff; border: 2px solid #7f1d1d; border-radius: 8px; padding: 7px 12px; cursor: pointer; user-select: none; display: flex; align-items: center; justify-content: center; }
 .emergency-btn.holding { background: linear-gradient(135deg, #f59e0b, #d97706); border-color: #fbbf24; }
 .help-btn { width: 32px; height: 32px; border-radius: 50%; background: #f3f4f6; border: 1.5px solid #d1d5db; color: #6b7280; font-size: 15px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.admin-btn { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: #fff; border: none; border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 900; cursor: pointer; position: relative; }
+.admin-btn { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: #fff; border: none; border-radius: 8px; padding: 7px 12px; cursor: pointer; position: relative; display: flex; align-items: center; justify-content: center; }
 .icon-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 7px 11px; cursor: pointer; font-size: 12px; color: #374151; font-weight: 600; }
 .primary-btn { background: linear-gradient(135deg, #2563eb, #1e40af); color: #fff; border: none; border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 700; cursor: pointer; }
 .primary-btn:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -197,7 +197,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .story-ring.mine { background: linear-gradient(45deg, #0284c7, #7c3aed); }
 .story-ring img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid #fff; }
 .story-name { font-size: 11px; color: #374151; max-width: 64px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.story-add { width: 62px; height: 62px; border-radius: 50%; border: 2px dashed #9ca3af; background: #f9fafb; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #6b7280; }
+.story-add { width: 62px; height: 62px; border-radius: 50%; border: 2px dashed #9ca3af; background: #f9fafb; display: flex; align-items: center; justify-content: center; color: #6b7280; }
 .stories-empty { padding: 18px 20px; text-align: center; color: #9ca3af; font-size: 12px; line-height: 1.6; }
 #storyViewer { position: fixed; inset: 0; z-index: 20000; background: #000; display: none; align-items: center; justify-content: center; }
 #storyViewer.show { display: flex; }
@@ -207,7 +207,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .story-segment > div { height: 100%; width: 0%; background: #fff; }
 .story-header { position: absolute; top: 20px; left: 12px; right: 12px; display: flex; align-items: center; gap: 10px; z-index: 5; color: #fff; }
 .story-header img { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #fff; object-fit: cover; }
-.story-close-btn { margin-left: auto; background: rgba(0,0,0,0.4); border: none; color: #fff; font-size: 20px; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
+.story-close-btn { margin-left: auto; background: rgba(0,0,0,0.4); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .story-nav-left, .story-nav-right { position: absolute; top: 60px; bottom: 90px; width: 30%; z-index: 3; cursor: pointer; }
 .story-nav-left { left: 0; }
 .story-nav-right { right: 0; }
@@ -226,20 +226,20 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .story-footer { position: absolute; bottom: 12px; left: 12px; right: 12px; display: flex; align-items: center; gap: 8px; z-index: 5; }
 .story-footer input { flex: 1; border-radius: 9999px; padding: 10px 16px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.4); color: #fff; font-size: 13px; outline: none; }
 .story-footer input::placeholder { color: rgba(255,255,255,0.65); }
-.story-like-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); cursor: pointer; font-size: 22px; color: #fff; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.story-like-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); cursor: pointer; color: #fff; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .story-like-btn.liked { background: rgba(239,68,68,0.25); border-color: rgba(239,68,68,0.7); color: #ef4444; }
-.heart-float { position: fixed; pointer-events: none; font-size: 24px; color: #ef4444; z-index: 2147483646; animation: heartFloatUp 0.9s ease-out forwards; }
+.heart-float { position: fixed; pointer-events: none; color: #ef4444; z-index: 2147483646; animation: heartFloatUp 0.9s ease-out forwards; }
 @keyframes heartFloatUp { 0% { transform: translate(-50%, 0) scale(0.5); opacity: 0; } 20% { transform: translate(-50%, -20px) scale(1.2); opacity: 1; } 100% { transform: translate(-50%, -120px) scale(0.8); opacity: 0; } }
 .preset-avatar { width: 52px; height: 52px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; object-fit: cover; }
 .preset-avatar.selected { border-color: #0284c7; }
 .member-chip { display: inline-flex; align-items: center; gap: 4px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 9999px; padding: 2px 8px 2px 2px; font-size: 12px; color: #1e40af; margin: 2px; }
 .member-chip img { width: 20px; height: 20px; border-radius: 50%; }
 .member-chip .remove-x { cursor: pointer; color: #ef4444; font-weight: bold; margin-left: 2px; font-size: 14px; }
-#scrollToBottomBtn { position: absolute; bottom: 90px; right: 20px; width: 40px; height: 40px; border-radius: 50%; background: #2563eb; color: #fff; border: none; cursor: pointer; display: none; align-items: center; justify-content: center; font-size: 18px; z-index: 45; }
+#scrollToBottomBtn { position: absolute; bottom: 90px; right: 20px; width: 40px; height: 40px; border-radius: 50%; background: #2563eb; color: #fff; border: none; cursor: pointer; display: none; align-items: center; justify-content: center; z-index: 45; }
 #scrollToBottomBtn.show { display: flex; }
 #scrollToBottomBtn .unread-dot-inner { position: absolute; top: -2px; right: -2px; width: 14px; height: 14px; background: #ef4444; border: 2px solid #fff; border-radius: 50%; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
 .eh-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 14px; border-bottom: 1px solid #e5e7eb; }
-.eh-icon { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #dc2626, #991b1b); color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.eh-icon { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #dc2626, #991b1b); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .eh-title { font-size: 18px; font-weight: 900; color: #991b1b; }
 .eh-body { font-size: 13px; line-height: 1.7; color: #374151; }
 .eh-body ul { padding-left: 20px; }
@@ -254,12 +254,25 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .approval-item .ap-approve { background: #16a34a; color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
 .approval-item .ap-reject { background: #dc2626; color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer; }
 .related-account-item { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid #fbbf24; border-radius: 10px; margin-bottom: 6px; background: #fffbeb; }
-.related-account-item .ra-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #dc2626); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.related-account-item .ra-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #dc2626); color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .related-account-item .ra-info { flex: 1; min-width: 0; }
 .related-account-item .ra-email { font-size: 12px; font-weight: 700; color: #92400e; word-break: break-all; }
 .related-account-item .ra-meta { font-size: 10px; color: #a16207; margin-top: 2px; }
 .related-account-item .ra-check { width: 20px; height: 20px; flex-shrink: 0; accent-color: #dc2626; }
 #adminCtrlDHint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2147483646; color: #22c55e; font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 9999px; border: 1px solid #22c55e; pointer-events: none; font-family: monospace; }
+
+/* ★ SVGアイコンの共通スタイル */
+.svg-icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
+.icon-16 { width: 16px; height: 16px; }
+.icon-18 { width: 18px; height: 18px; }
+.icon-20 { width: 20px; height: 20px; }
+.icon-22 { width: 22px; height: 22px; }
+.icon-24 { width: 24px; height: 24px; }
+.icon-28 { width: 28px; height: 28px; }
+.icon-32 { width: 32px; height: 32px; }
+.icon-40 { width: 40px; height: 40px; }
+.icon-48 { width: 48px; height: 48px; }
+.icon-64 { width: 64px; height: 64px; }
 
 /* ★ 通話・着信UI */
 #incomingCallOverlay {
@@ -290,7 +303,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   width: 72px; height: 72px; border-radius: 50%;
   border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  font-size: 30px; color: #fff;
+  color: #fff;
   transition: transform 0.15s;
 }
 #incomingCallOverlay .ic-btn:hover { transform: scale(1.08); }
@@ -322,7 +335,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 #callPanel .cp-header button {
   background: rgba(255,255,255,0.15); border: none; color: #fff;
   width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
-  font-size: 13px; display: flex; align-items: center; justify-content: center;
+  display: flex; align-items: center; justify-content: center;
 }
 #callPanel .cp-body {
   position: relative; background: #000; aspect-ratio: 16/9;
@@ -362,7 +375,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 #callPanel .cp-ctrl {
   width: 44px; height: 44px; border-radius: 50%;
   background: rgba(255,255,255,0.1); border: none; color: #fff;
-  cursor: pointer; font-size: 18px;
+  cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: background 0.15s, transform 0.15s;
 }
@@ -374,7 +387,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   border: 2px solid #ef4444;
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
 }
-#callPanel .cp-ctrl.end svg { display: block; }
 #callPanel .cp-ctrl.end:hover {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   box-shadow: 0 0 18px rgba(239, 68, 68, 0.9);
@@ -402,7 +414,13 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 </div>
 
 <div id="pendingApprovalOverlay">
-  <div class="pa-icon">⏳</div>
+  <div class="pa-icon">
+    <svg class="svg-icon icon-64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="32" cy="32" r="28" stroke="#fbbf24" stroke-width="3" fill="none"/>
+      <path d="M32 16V34" stroke="#fbbf24" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="32" cy="44" r="2.5" fill="#fbbf24"/>
+    </svg>
+  </div>
   <div class="pa-title">管理者の承認待ちです</div>
   <div class="pa-desc">このサイトを利用するには管理者の承認が必要です。<br>承認されると自動的にチャットが利用可能になります。</div>
   <div class="pa-email" id="pendingApprovalEmail"></div>
@@ -415,7 +433,11 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 
 <div id="announcementBanner">
   <span id="announcementText"></span>
-  <button class="ann-close" id="announcementClose">✕</button>
+  <button class="ann-close" id="announcementClose">
+    <svg class="svg-icon icon-16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 3L13 13M13 3L3 13" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
 </div>
 
 <div id="banOverlay">
@@ -429,7 +451,11 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 <div id="statusBanner"></div>
 <div id="loginToastContainer"></div>
 <div id="lightbox">
-  <button class="lightbox-close" id="lightboxClose">✕</button>
+  <button class="lightbox-close" id="lightboxClose">
+    <svg class="svg-icon icon-20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 4L16 16M16 4L4 16" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </button>
   <img id="lightboxImg" src="" alt="">
 </div>
 
@@ -440,14 +466,14 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   <div class="ic-status" id="icStatus">着信中...</div>
   <div class="ic-actions">
     <button class="ic-btn reject" id="icRejectBtn" title="拒否">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M7.5 9.5C7.5 9.5 9 7.5 12 7.5C15 7.5 16.5 9.5 16.5 9.5L15 12L13 11V9.8C12.7 9.75 12.35 9.7 12 9.7C11.65 9.7 11.3 9.75 11 9.8V11L9 12L7.5 9.5Z" fill="#ffffff"/>
-        <line x1="6" y1="18" x2="18" y2="6" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+      <svg class="svg-icon icon-32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 10C8 10 11 6 16 6C21 6 24 10 24 10L21 15L18 13V10.5C17.4 10.4 16.7 10.3 16 10.3C15.3 10.3 14.6 10.4 14 10.5V13L11 15L8 10Z" fill="#ffffff"/>
+        <line x1="7" y1="25" x2="25" y2="7" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
       </svg>
     </button>
     <button class="ic-btn accept" id="icAcceptBtn" title="応答">
-      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M7.5 9.5C7.5 9.5 9 7.5 12 7.5C15 7.5 16.5 9.5 16.5 9.5L15 12L13 11V9.8C12.7 9.75 12.35 9.7 12 9.7C11.65 9.7 11.3 9.75 11 9.8V11L9 12L7.5 9.5Z" fill="#ffffff"/>
+      <svg class="svg-icon icon-32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 10C8 10 11 6 16 6C21 6 24 10 24 10L21 15L18 13V10.5C17.4 10.4 16.7 10.3 16 10.3C15.3 10.3 14.6 10.4 14 10.5V13L11 15L8 10Z" fill="#ffffff"/>
       </svg>
     </button>
   </div>
@@ -456,9 +482,17 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 <!-- ★ 通話パネル -->
 <div id="callPanel">
   <div class="cp-header">
-    <span style="font-size:16px;">📞</span>
+    <span class="svg-icon icon-18">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+        <path d="M6 8C6 8 8 5 12 5C16 5 18 8 18 8L16 11L14 10V8.5C13.4 8.4 12.7 8.3 12 8.3C11.3 8.3 10.6 8.4 10 8.5V10L8 11L6 8Z" fill="#ffffff"/>
+      </svg>
+    </span>
     <span class="cp-title" id="cpTitle">通話</span>
-    <button id="cpMinimizeBtn" title="最小化">—</button>
+    <button id="cpMinimizeBtn" title="最小化">
+      <svg class="svg-icon icon-16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="3" y1="8" x2="13" y2="8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
   </div>
   <div class="cp-body">
     <video id="cpRemoteVideo" autoplay playsinline></video>
@@ -473,14 +507,31 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </div>
   <div class="cp-status-bar" id="cpStatusBar">準備中...</div>
   <div class="cp-controls">
-    <button class="cp-ctrl" id="cpMicBtn" title="マイク">🎤</button>
-    <button class="cp-ctrl" id="cpCamBtn" title="カメラ">📷</button>
-    <button class="cp-ctrl share" id="cpShareBtn" title="画面共有">🖥️</button>
+    <button class="cp-ctrl" id="cpMicBtn" title="マイク">
+      <svg class="svg-icon icon-22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="9" y="3" width="6" height="11" rx="3" stroke="#ffffff" stroke-width="2"/>
+        <path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="18" x2="12" y2="22" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <button class="cp-ctrl" id="cpCamBtn" title="カメラ">
+      <svg class="svg-icon icon-22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="7" width="13" height="10" rx="2" stroke="#ffffff" stroke-width="2"/>
+        <path d="M16 10L21 7V17L16 14" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <button class="cp-ctrl share" id="cpShareBtn" title="画面共有">
+      <svg class="svg-icon icon-22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="3" y="4" width="18" height="13" rx="2" stroke="#ffffff" stroke-width="2"/>
+        <line x1="8" y1="21" x2="16" y2="21" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="17" x2="12" y2="21" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
     <button class="cp-ctrl end" id="cpEndBtn" title="終了">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="1.5" y="1.5" width="21" height="21" rx="5" stroke="#ffffff" stroke-width="2" fill="none"/>
-        <path d="M7.5 9.5C7.5 9.5 9 7.5 12 7.5C15 7.5 16.5 9.5 16.5 9.5L15 12L13 11V9.8C12.7 9.75 12.35 9.7 12 9.7C11.65 9.7 11.3 9.75 11 9.8V11L9 12L7.5 9.5Z" fill="#ffffff"/>
-        <line x1="6" y1="18" x2="18" y2="6" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
+      <svg class="svg-icon icon-28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="24" height="24" rx="6" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <path d="M9 11C9 11 10.5 8.5 14 8.5C17.5 8.5 19 11 19 11L17 14L15 13V10.8C14.4 10.7 13.7 10.65 14 10.65C14.3 10.65 13.6 10.7 13 10.8V13L11 14L9 11Z" fill="#ffffff"/>
+        <line x1="7" y1="21" x2="21" y2="7" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
       </svg>
     </button>
   </div>
@@ -489,7 +540,12 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 <div id="appContainer">
   <div id="loginView" style="display:none; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:20px;">
     <div style="background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:36px 28px; max-width:420px; width:100%; text-align:center;">
-      <div style="font-size:48px; margin-bottom:12px;">💬</div>
+      <div style="margin-bottom:12px; display:flex; justify-content:center;">
+        <svg class="svg-icon icon-64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="8" width="52" height="40" rx="8" fill="#0284c7"/>
+          <path d="M14 20H50V42H26L18 50V42H14V20Z" fill="#ffffff"/>
+        </svg>
+      </div>
       <h1 style="font-size:26px; font-weight:800; color:#1e3a8a; margin:0 0 8px;">69CT</h1>
       <p style="font-size:13px; color:#6b7280; margin:0 0 6px;">ご利用にはGoogleアカウントでのログインが必要です。</p>
       <p style="font-size:12px; color:#9ca3af; margin:0 0 24px;">初回ログイン時は管理者の承認が必要です。</p>
@@ -522,19 +578,60 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
         </div>
       </div>
       <div class="header-actions">
-        <button id="newChatBtn" class="primary-btn" style="padding:7px 12px;font-size:12px;">＋ チャット</button>
-        <button id="profileBtn" class="icon-btn">👤</button>
-        <button id="announceBtn" class="admin-btn" style="display:none;">📢</button>
-        <button id="banUserBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#dc2626,#991b1b);">🔨</button>
-        <button id="adminStoryDeleteBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#ec4899,#be185d);">📁</button>
+        <button id="newChatBtn" class="primary-btn" style="padding:7px 12px;font-size:12px;display:flex;align-items:center;gap:4px;">
+          <svg class="svg-icon icon-16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="8" y1="3" x2="8" y2="13" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+            <line x1="3" y1="8" x2="13" y2="8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          チャット
+        </button>
+        <button id="profileBtn" class="icon-btn">
+          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="8" r="4" stroke="#374151" stroke-width="2"/>
+            <path d="M4 21C4 17 7.5 14 12 14C16.5 14 20 17 20 21" stroke="#374151" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button id="announceBtn" class="admin-btn" style="display:none;">
+          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 10V14L7 15V9L3 10Z" fill="#ffffff"/>
+            <path d="M7 9V15L18 19V5L7 9Z" fill="#ffffff"/>
+            <path d="M18 8C19.5 8 21 9.5 21 12C21 14.5 19.5 16 18 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button id="banUserBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#dc2626,#991b1b);">
+          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 4L6 12L14 20" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20 4L12 12L20 20" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="adminStoryDeleteBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#ec4899,#be185d);">
+          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 7L12 3L21 7V17L12 21L3 17V7Z" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M12 3V21" stroke="#ffffff" stroke-width="1.5"/>
+          </svg>
+        </button>
         <button id="notificationBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#0891b2,#0e7490);">
-          🔔<span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9999px;border:2px solid #fff;">0</span>
+          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 18H18L16 15V11C16 8.5 14.5 6.5 12 6C9.5 6.5 8 8.5 8 11V15L6 18Z" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M12 4V6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+            <path d="M10 21C10 22.1 10.9 23 12 23C13.1 23 14 22.1 14 21" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9999px;border:2px solid #fff;">0</span>
         </button>
         <button id="approvalBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#16a34a,#15803d);">
-          ✅<span id="approvalBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9999px;border:2px solid #fff;">0</span>
+          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 12L10 17L19 8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span id="approvalBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9999px;border:2px solid #fff;">0</span>
         </button>
         <button id="emergencyHelpBtn" class="help-btn">？</button>
-        <button id="emergencyBtn" class="emergency-btn">🚨</button>
+        <button id="emergencyBtn" class="emergency-btn">
+          <svg class="svg-icon icon-20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3L2 20H22L12 3Z" fill="#ffffff" stroke="#7f1d1d" stroke-width="1" stroke-linejoin="round"/>
+            <line x1="12" y1="9" x2="12" y2="15" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="17.5" r="1" fill="#dc2626"/>
+          </svg>
+        </button>
         <button id="logoutBtn" class="icon-btn">ログアウト</button>
       </div>
     </header>
@@ -544,11 +641,23 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
         <div style="flex-shrink:0; background:#fff; border-bottom:1px solid #e5e7eb;">
           <div style="padding:8px 14px 0; display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:12px; font-weight:700; color:#374151;">ストーリー</span>
-            <button id="myArchiveBtn" style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:600;cursor:pointer;">📁 アーカイブ</button>
+            <button id="myArchiveBtn" style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
+              <svg class="svg-icon icon-14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#2563eb" stroke-width="1.5"/>
+                <path d="M2 6H14" stroke="#2563eb" stroke-width="1.5"/>
+                <path d="M6 9H10" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              アーカイブ
+            </button>
           </div>
           <div id="storiesStrip" class="stories-strip">
             <div class="story-bubble" id="storyAddBtn">
-              <div class="story-add">＋</div>
+              <div class="story-add">
+                <svg class="svg-icon icon-24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <line x1="12" y1="5" x2="12" y2="19" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round"/>
+                  <line x1="5" y1="12" x2="19" y2="12" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+              </div>
               <span class="story-name">あなた</span>
             </div>
           </div>
@@ -560,27 +669,50 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 
       <div id="chatView" style="display:none;">
         <div class="chat-header">
-          <button id="backToChatListBtn" class="icon-btn" style="padding:6px 10px;">←</button>
+          <button id="backToChatListBtn" class="icon-btn" style="padding:6px 10px;">
+            <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 5L8 12L15 19" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
           <div id="chatHeaderAvatars" style="display:flex; position:relative; width:40px; height:40px; flex-shrink:0;"></div>
           <div class="chat-header-body">
             <div class="chat-header-name" id="currentChatName"></div>
             <div class="chat-header-meta" id="currentChatMeta"></div>
           </div>
-          <button id="chatCallBtn" class="chat-call-btn" title="通話 / 画面共有">📞</button>
-          <button id="chatHeaderMenuBtn" class="chat-header-menu-btn">⋮</button>
+          <button id="chatCallBtn" class="chat-call-btn" title="通話 / 画面共有">
+            <svg class="svg-icon icon-20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6 8C6 8 8 5 12 5C16 5 18 8 18 8L16 11L14 10V8.5C13.4 8.4 12.7 8.3 12 8.3C11.3 8.3 10.6 8.4 10 8.5V10L8 11L6 8Z" fill="#ffffff"/>
+            </svg>
+          </button>
+          <button id="chatHeaderMenuBtn" class="chat-header-menu-btn">
+            <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="5" r="2" fill="#374151"/>
+              <circle cx="12" cy="12" r="2" fill="#374151"/>
+              <circle cx="12" cy="19" r="2" fill="#374151"/>
+            </svg>
+          </button>
         </div>
         <div class="chat-messages-wrap" id="chatMessagesWrap">
           <div class="chat-messages" id="messagesContainer"></div>
           <div id="typingIndicatorSlot"></div>
         </div>
-        <button id="scrollToBottomBtn">↓<span class="unread-dot-inner" id="scrollUnreadCount" style="display:none;">0</span></button>
+        <button id="scrollToBottomBtn">
+          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9L12 15L18 9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="unread-dot-inner" id="scrollUnreadCount" style="display:none;">0</span>
+        </button>
         <form class="chat-input-form" id="messageForm">
           <div class="reply-preview" id="replyPreviewBox">
             <div class="reply-preview-body">
               <div class="reply-preview-name" id="replyPreviewName"></div>
               <div class="reply-preview-text" id="replyPreviewText"></div>
             </div>
-            <button type="button" class="reply-preview-close" id="replyPreviewCloseBtn">✕</button>
+            <button type="button" class="reply-preview-close" id="replyPreviewCloseBtn">
+              <svg class="svg-icon icon-12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+                <path d="M2 2L10 10M10 2L2 10" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
           </div>
           <div class="msg-preview" id="messagePreviewBox">
             <img id="messagePreviewImg" src="" alt="">
@@ -588,16 +720,29 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
               <div id="messagePreviewInfo"></div>
               <div style="font-size:11px;color:#6b7280;margin-top:2px;">送信待ち</div>
             </div>
-            <button type="button" class="msg-preview-remove" id="msgPreviewRemoveBtn">✕</button>
+            <button type="button" class="msg-preview-remove" id="msgPreviewRemoveBtn">
+              <svg class="svg-icon icon-12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
+                <path d="M2 2L10 10M10 2L2 10" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
           </div>
           <div class="chat-input-row">
             <div class="chat-input-wrap">
               <textarea id="messageInput" rows="1" maxlength="2000" placeholder="メッセージを入力..."></textarea>
               <label class="chat-input-icon-btn" style="cursor:pointer;">
-                🖼️<input type="file" id="messageFileInput" accept="image/*" style="display:none;">
+                <svg class="svg-icon icon-22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="5" width="18" height="14" rx="2" stroke="#6b7280" stroke-width="2"/>
+                  <circle cx="9" cy="11" r="2" fill="#6b7280"/>
+                  <path d="M3 17L9 12L14 16L18 13L21 16" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <input type="file" id="messageFileInput" accept="image/*" style="display:none;">
               </label>
             </div>
-            <button type="submit" id="sendBtn" class="chat-send-btn">➤</button>
+            <button type="submit" id="sendBtn" class="chat-send-btn">
+              <svg class="svg-icon icon-20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 12L21 4L13 21L11 13L3 12Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
         </form>
       </div>
@@ -607,7 +752,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 
 <div id="newChatModal" class="modal-backdrop hidden">
   <div class="modal-content">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#1e3a8a;">＋ 新しいチャット</h3>
+    <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#1e3a8a;">新しいチャット</h3>
     <p style="font-size:11px;color:#6b7280;margin:0 0 16px;">相手のメールアドレスを入力してください（2人以上でグループになります）</p>
     <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
     <div style="display:flex;gap:8px;margin-bottom:8px;">
@@ -629,7 +774,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 
 <div id="addMemberModal" class="modal-backdrop hidden">
   <div class="modal-content" style="border-top:6px solid #0891b2;">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#0e7490;">👥 メンバーを追加</h3>
+    <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#0e7490;">メンバーを追加</h3>
     <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
     <div style="display:flex;gap:8px;margin-bottom:8px;">
       <input type="email" id="addMemberEmailInput" placeholder="example@gmail.com" style="flex:1;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;outline:none;">
@@ -676,7 +821,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 
 <div id="announceModal" class="modal-backdrop hidden">
   <div class="modal-content" style="border:3px solid #7c3aed;">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#6d28d9;">📢 全体アナウンス</h3>
+    <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#6d28d9;">全体アナウンス</h3>
     <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メッセージ:</label>
     <textarea id="announceTextInput" rows="4" maxlength="200" style="width:100%;border:1px solid #d1d5db;padding:10px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;resize:vertical;font-family:inherit;"></textarea>
     <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">表示時間（秒）:</label>
@@ -690,15 +835,15 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 
 <div id="adminBanPanel" class="modal-backdrop hidden">
   <div class="modal-content" style="border-top:6px solid #dc2626; max-width:520px;">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#991b1b;">🔨 ユーザーBAN（関連アカウント対応）</h3>
+    <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#991b1b;">ユーザーBAN（関連アカウント対応）</h3>
     <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">同じ端末で使われた関連アカウントも自動検出して一括BANできます。</p>
     <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
     <input type="email" id="banEmailInput" placeholder="example@gmail.com" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;">
-    <button id="banSearchRelatedBtn" type="button" style="width:100%;background:#0891b2;color:#fff;border:none;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:12px;">🔍 関連アカウントを検索</button>
+    <button id="banSearchRelatedBtn" type="button" style="width:100%;background:#0891b2;color:#fff;border:none;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:12px;">関連アカウントを検索</button>
     <div id="banSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
     <div id="relatedAccountsBox" style="display:none;margin-bottom:14px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div style="font-size:12px;font-weight:700;color:#92400e;">⚠️ 関連アカウント</div>
+        <div style="font-size:12px;font-weight:700;color:#92400e;">関連アカウント</div>
         <label style="font-size:11px;color:#6b7280;cursor:pointer;display:flex;align-items:center;gap:4px;">
           <input type="checkbox" id="relatedSelectAll">すべて選択
         </label>
@@ -707,7 +852,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
     </div>
     <div style="display:flex;justify-content:flex-end;gap:8px;">
       <button id="banCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="banExecuteBtn" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">🔨 BANする</button>
+      <button id="banExecuteBtn" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">BANする</button>
     </div>
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid #e5e7eb;">
       <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:8px;">現在のBANリスト:</div>
@@ -718,7 +863,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 
 <div id="adminStoryDeletePanel" class="modal-backdrop hidden">
   <div class="modal-content" style="border-top:6px solid #ec4899; max-width:480px;">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#be185d;">📁 ユーザーのストーリー削除</h3>
+    <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#be185d;">ユーザーのストーリー削除</h3>
     <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
     <input type="email" id="storyDeleteEmailInput" placeholder="example@gmail.com" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;">
     <div id="storyDeleteSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
@@ -732,7 +877,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 <div id="approvalPanel" class="modal-backdrop hidden">
   <div class="modal-content" style="border-top:6px solid #16a34a; max-width:560px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <h3 style="font-size:17px;font-weight:700;margin:0;color:#166534;">✅ 承認リクエスト</h3>
+      <h3 style="font-size:17px;font-weight:700;margin:0;color:#166534;">承認リクエスト</h3>
       <button id="approvalClearAllBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">全削除</button>
     </div>
     <div id="approvalList" style="max-height:55vh;overflow-y:auto;"></div>
@@ -745,7 +890,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 <div id="notificationPanel" class="modal-backdrop hidden">
   <div class="modal-content" style="border-top:6px solid #0891b2; max-width:560px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <h3 style="font-size:17px;font-weight:700;margin:0;color:#0e7490;">🔔 ログイン通知</h3>
+      <h3 style="font-size:17px;font-weight:700;margin:0;color:#0e7490;">ログイン通知</h3>
       <button id="notifClearAllBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">全削除</button>
     </div>
     <div id="notificationList" style="max-height:55vh;overflow-y:auto;"></div>
@@ -758,7 +903,13 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 <div id="emergencyHelpModal" class="modal-backdrop hidden">
   <div class="modal-content" style="border-top:6px solid #dc2626;max-width:560px;">
     <div class="eh-header">
-      <div class="eh-icon">🚨</div>
+      <div class="eh-icon">
+        <svg class="svg-icon icon-28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3L2 20H22L12 3Z" fill="#ffffff" stroke="#7f1d1d" stroke-width="1" stroke-linejoin="round"/>
+          <line x1="12" y1="9" x2="12" y2="15" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="12" cy="17.5" r="1" fill="#dc2626"/>
+        </svg>
+      </div>
       <div><div class="eh-title">緊急モードについて</div></div>
     </div>
     <div class="eh-body">
@@ -768,8 +919,8 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
         <li><span class="email">katou.noel114514@gmail.com</span></li>
         <li><span class="email">18107@v.nakijin.ed.jp</span></li>
       </ul>
-      <p><strong>発動:</strong> 🚨ボタンを1回クリック</p>
-      <p><strong>説明:</strong> 🚨ボタンを1秒以上長押し</p>
+      <p><strong>発動:</strong> 緊急ボタンを1回クリック</p>
+      <p><strong>説明:</strong> 緊急ボタンを1秒以上長押し</p>
       <p><strong>管理者の解除方法:</strong> 黒い画面で <strong>Ctrl + D</strong> を押す</p>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-top:20px;">
@@ -802,7 +953,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 
 <div id="archiveModal" class="modal-backdrop hidden">
   <div class="modal-content">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 12px;color:#1e3a8a;">📁 自分のストーリーアーカイブ</h3>
+    <h3 style="font-size:17px;font-weight:700;margin:0 0 12px;color:#1e3a8a;">自分のストーリーアーカイブ</h3>
     <div id="archiveList" style="max-height:55vh;overflow-y:auto;"></div>
     <div style="display:flex;justify-content:flex-end;margin-top:16px;">
       <button id="archiveCloseBtn" class="secondary-btn">閉じる</button>
@@ -819,18 +970,26 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
         <div style="font-size:13px;font-weight:700;" id="storyHeaderName"></div>
         <div style="font-size:11px;opacity:0.75;" id="storyHeaderTime"></div>
       </div>
-      <button class="story-close-btn" id="storyCloseBtn">✕</button>
+      <button class="story-close-btn" id="storyCloseBtn">
+        <svg class="svg-icon icon-18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 3L15 15M15 3L3 15" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
     </div>
     <div class="story-nav-left" id="storyNavLeft"></div>
     <div class="story-nav-right" id="storyNavRight"></div>
     <div id="storyStageContent"></div>
     <div class="story-stats-overlay" id="storyStatsOverlay" style="display:none;">
-      <span class="stat" id="storyViewCount">👁 0</span>
-      <span class="stat" id="storyLikeCount">❤️ 0</span>
+      <span class="stat" id="storyViewCount"></span>
+      <span class="stat" id="storyLikeCount"></span>
     </div>
     <div class="story-footer">
       <input type="text" id="storyReplyInput" placeholder="返信を送る..." maxlength="300">
-      <button class="story-like-btn" id="storyLikeBtn">🤍</button>
+      <button class="story-like-btn" id="storyLikeBtn">
+        <svg class="svg-icon icon-24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" id="storyLikeSvg">
+          <path d="M12 21C12 21 3 14 3 8.5C3 5.5 5.5 3 8.5 3C10.2 3 11.5 3.8 12 5C12.5 3.8 13.8 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14 12 21 12 21Z" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" fill="none" id="storyLikePath"/>
+        </svg>
+      </button>
     </div>
   </div>
 </div>
@@ -844,17 +1003,32 @@ const ADMIN_EMAILS = ['katou.noel114514@gmail.com', '18107@v.nakijin.ed.jp'];
 function isAdmin(email) { return email && ADMIN_EMAILS.includes(email.toLowerCase()); }
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1551138462634082357/ey4MZT_qrEunUGTaD6ayOmW4DjQb4bJn4Lwdn-xylbtkrDiLDMVu2ygyHTOVgmALD5vI';
 
-function makeAvatarSvg(color, emoji) {
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="${color}"/><text x="32" y="42" font-size="32" text-anchor="middle">${emoji}</text></svg>`;
+/* アバター用のSVG（プリセット） */
+function makeAvatarSvg(color, face) {
+  const faces = {
+    smile: '<circle cx="24" cy="26" r="2.5" fill="#fff"/><circle cx="40" cy="26" r="2.5" fill="#fff"/><path d="M22 38 Q32 46 42 38" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>',
+    cool: '<rect x="18" y="22" width="12" height="6" rx="2" fill="#fff"/><rect x="34" y="22" width="12" height="6" rx="2" fill="#fff"/><path d="M22 38 L42 38" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>',
+    fire: '<path d="M32 12 L36 22 L42 20 L38 30 L44 34 L36 40 L32 34 L28 40 L20 34 L26 30 L22 20 L28 22 Z" fill="#fff"/>',
+    star: '<path d="M32 14 L36 26 L48 26 L38 34 L42 46 L32 38 L22 46 L26 34 L16 26 L28 26 Z" fill="#fff"/>',
+    clover: '<circle cx="32" cy="24" r="6" fill="#fff"/><circle cx="32" cy="40" r="6" fill="#fff"/><circle cx="24" cy="32" r="6" fill="#fff"/><circle cx="40" cy="32" r="6" fill="#fff"/>',
+    flower: '<circle cx="32" cy="32" r="5" fill="#fff"/><circle cx="32" cy="20" r="5" fill="#fff"/><circle cx="32" cy="44" r="5" fill="#fff"/><circle cx="20" cy="32" r="5" fill="#fff"/><circle cx="44" cy="32" r="5" fill="#fff"/>',
+    cat: '<path d="M20 20 L24 12 L28 20 Z" fill="#fff"/><path d="M36 20 L40 12 L44 20 Z" fill="#fff"/><circle cx="26" cy="32" r="2.5" fill="#fff"/><circle cx="38" cy="32" r="2.5" fill="#fff"/><path d="M28 40 Q32 44 36 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    dog: '<ellipse cx="22" cy="24" rx="4" ry="6" fill="#fff"/><ellipse cx="42" cy="24" rx="4" ry="6" fill="#fff"/><circle cx="27" cy="32" r="2.5" fill="#fff"/><circle cx="37" cy="32" r="2.5" fill="#fff"/><ellipse cx="32" cy="40" rx="4" ry="3" fill="#fff"/>',
+    fox: '<path d="M18 22 L24 12 L28 22 Z" fill="#fff"/><path d="M36 22 L40 12 L46 22 Z" fill="#fff"/><circle cx="26" cy="30" r="2.5" fill="#fff"/><circle cx="38" cy="30" r="2.5" fill="#fff"/><path d="M28 40 L32 44 L36 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>',
+    panda: '<circle cx="24" cy="24" r="7" fill="#fff"/><circle cx="40" cy="24" r="7" fill="#fff"/><circle cx="28" cy="32" r="3" fill="#fff"/><circle cx="36" cy="32" r="3" fill="#fff"/>',
+    game: '<rect x="16" y="24" width="32" height="18" rx="6" fill="#fff"/><circle cx="24" cy="32" r="3" fill="' + color + '"/><circle cx="40" cy="30" r="2" fill="' + color + '"/><circle cx="44" cy="34" r="2" fill="' + color + '"/>',
+    coffee: '<path d="M20 20 H44 V36 Q44 42 38 42 H26 Q20 42 20 36 Z" fill="#fff"/><path d="M44 24 Q50 24 50 30 Q50 36 44 36" stroke="#fff" stroke-width="2" fill="none"/>'
+  };
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="${color}"/>${faces[face] || faces.smile}</svg>`;
   return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
 }
 const PRESET_AVATARS = [
-  makeAvatarSvg('#0284c7','😀'), makeAvatarSvg('#16a34a','😎'), makeAvatarSvg('#dc2626','🔥'),
-  makeAvatarSvg('#7c3aed','🌟'), makeAvatarSvg('#d97706','🍀'), makeAvatarSvg('#db2777','🌸'),
-  makeAvatarSvg('#0891b2','🐱'), makeAvatarSvg('#65a30d','🐶'), makeAvatarSvg('#ea580c','🦊'),
-  makeAvatarSvg('#475569','🐼'), makeAvatarSvg('#c026d3','🎮'), makeAvatarSvg('#0d9488','☕')
+  makeAvatarSvg('#0284c7','smile'), makeAvatarSvg('#16a34a','cool'), makeAvatarSvg('#dc2626','fire'),
+  makeAvatarSvg('#7c3aed','star'), makeAvatarSvg('#d97706','clover'), makeAvatarSvg('#db2777','flower'),
+  makeAvatarSvg('#0891b2','cat'), makeAvatarSvg('#65a30d','dog'), makeAvatarSvg('#ea580c','fox'),
+  makeAvatarSvg('#475569','panda'), makeAvatarSvg('#c026d3','game'), makeAvatarSvg('#0d9488','coffee')
 ];
-const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af','👤');
+const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af','smile');
 const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E";
 const FAVICON_BLACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000000'/%3E%3C/svg%3E";
 const faviconLink = document.getElementById('faviconLink');
@@ -943,7 +1117,11 @@ let callState = {
   unsub: null,
   isMinimized: false,
   connected: false,
-  remoteDescSet: false
+  remoteDescSet: false,
+  makingOffer: false,
+  ignoreOffer: false,
+  isSettingRemoteAnswerPending: false,
+  renegotiationUnsub: null
 };
 let callVideoCheckInterval = null;
 
@@ -980,6 +1158,122 @@ const lightboxImg = document.getElementById('lightboxImg');
 const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
 const scrollUnreadCount = document.getElementById('scrollUnreadCount');
 let bannerTimer = null, announcementTimer = null;
+
+/* ★ SVGアイコン生成ヘルパー */
+function iconCheck(size = 16, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12L10 17L19 8" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function iconX(size = 16, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 5L19 19M19 5L5 19" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+}
+function iconTrash(size = 16, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7H20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M6 7L7 20C7 20.6 7.4 21 8 21H16C16.6 21 17 20.6 17 20L18 7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 11V17M14 11V17" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+}
+function iconReply(size = 16, color = '#374151') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 8L4 13L10 18" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 13H14C17.3 13 20 15.7 20 19" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconSmile(size = 16, color = '#374151') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="${color}" stroke-width="2"/><circle cx="9" cy="10" r="1.2" fill="${color}"/><circle cx="15" cy="10" r="1.2" fill="${color}"/><path d="M8 14C9 16 11 17 12 17C13 17 15 16 16 14" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconCopy(size = 16, color = '#374151') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="12" height="12" rx="2" stroke="${color}" stroke-width="2"/><path d="M16 8V6C16 4.9 15.1 4 14 4H6C4.9 4 4 4.9 4 6V14C4 15.1 4.9 16 6 16H8" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconEdit(size = 16, color = '#374151') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 20H8L18 10L14 6L4 16V20Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><path d="M14 6L17 3L21 7L18 10" stroke="${color}" stroke-width="2" stroke-linejoin="round"/></svg>`;
+}
+function iconMore(size = 16, color = '#374151') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="5" r="1.8" fill="${color}"/><circle cx="12" cy="12" r="1.8" fill="${color}"/><circle cx="12" cy="19" r="1.8" fill="${color}"/></svg>`;
+}
+function iconUsers(size = 18, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="8" r="3.5" stroke="${color}" stroke-width="2"/><path d="M3 20C3 16.5 5.7 14 9 14C12.3 14 15 16.5 15 20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="8" r="2.5" stroke="${color}" stroke-width="2"/><path d="M15 14C18 14 21 16 21 19" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconLeave(size = 18, color = '#ef4444') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 4H18C19.1 4 20 4.9 20 6V18C20 19.1 19.1 20 18 20H15" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 8L6 12L10 16" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="12" x2="16" y2="12" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconTrashDanger(size = 18, color = '#ef4444') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7H20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M6 7L7 20C7 20.6 7.4 21 8 21H16C16.6 21 17 20.6 17 20L18 7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 11V17M14 11V17" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+}
+function iconBell(size = 18, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 18H18L16 15V11C16 8.5 14.5 6.5 12 6C9.5 6.5 8 8.5 8 11V15L6 18Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><path d="M12 4V6" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 21C10 22.1 10.9 23 12 23C13.1 23 14 22.1 14 21" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconCheckCircle(size = 18, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="${color}" stroke-width="2"/><path d="M8 12L11 15L16 9" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function iconFolder(size = 18, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 6C3 5 4 4 5 4H9L11 6H19C20 6 21 7 21 8V18C21 19 20 20 19 20H5C4 20 3 19 3 18V6Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/></svg>`;
+}
+function iconWarning(size = 16, color = '#ffffff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3L2 20H22L12 3Z" fill="${color}" stroke="#7f1d1d" stroke-width="1" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="15" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1" fill="#dc2626"/></svg>`;
+}
+function iconSearch(size = 16, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="6" stroke="${color}" stroke-width="2"/><line x1="15.5" y1="15.5" x2="20" y2="20" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconPhone(size = 20, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8C6 8 8 5 12 5C16 5 18 8 18 8L16 11L14 10V8.5C13.4 8.4 12.7 8.3 12 8.3C11.3 8.3 10.6 8.4 10 8.5V10L8 11L6 8Z" fill="${color}"/></svg>`;
+}
+function iconPhoneOff(size = 24, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1.5" y="1.5" width="21" height="21" rx="5" stroke="${color}" stroke-width="2" fill="none"/><path d="M7.5 9.5C7.5 9.5 9 7.5 12 7.5C15 7.5 16.5 9.5 16.5 9.5L15 12L13 11V9.8C12.7 9.75 12.35 9.7 12 9.7C11.65 9.7 11.3 9.75 11 9.8V11L9 12L7.5 9.5Z" fill="${color}"/><line x1="6" y1="18" x2="18" y2="6" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+}
+function iconMic(size = 22, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="3" width="6" height="11" rx="3" stroke="${color}" stroke-width="2"/><path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="${color}" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="22" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconMicOff(size = 22, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="3" width="6" height="11" rx="3" stroke="${color}" stroke-width="2"/><line x1="4" y1="4" x2="20" y2="20" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+}
+function iconCamera(size = 22, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="7" width="13" height="10" rx="2" stroke="${color}" stroke-width="2"/><path d="M16 10L21 7V17L16 14" stroke="${color}" stroke-width="2" stroke-linejoin="round"/></svg>`;
+}
+function iconScreen(size = 22, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="13" rx="2" stroke="${color}" stroke-width="2"/><line x1="8" y1="21" x2="16" y2="21" stroke="${color}" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconImage(size = 22, color = '#6b7280') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="2" stroke="${color}" stroke-width="2"/><circle cx="9" cy="11" r="2" fill="${color}"/><path d="M3 17L9 12L14 16L18 13L21 16" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function iconSend(size = 20, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12L21 4L13 21L11 13L3 12Z" fill="${color}" stroke="${color}" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+}
+function iconHeart(size = 24, color = '#fff', filled = false) {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21C12 21 3 14 3 8.5C3 5.5 5.5 3 8.5 3C10.2 3 11.5 3.8 12 5C12.5 3.8 13.8 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14 12 21 12 21Z" stroke="${color}" stroke-width="2" stroke-linejoin="round" fill="${filled ? color : 'none'}"/></svg>`;
+}
+function iconEye(size = 14, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C4 7 8 5 12 5C16 5 20 7 22 12C20 17 16 19 12 19C8 19 4 17 2 12Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="${color}" stroke-width="2"/></svg>`;
+}
+function iconLock(size = 64, color = '#fbbf24') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="14" y="28" width="36" height="26" rx="4" stroke="${color}" stroke-width="3"/><path d="M22 28V20C22 14.5 26.5 10 32 10C37.5 10 42 14.5 42 20V28" stroke="${color}" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="41" r="3" fill="${color}"/></svg>`;
+}
+function iconChat(size = 64, color = '#0284c7') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="8" width="52" height="40" rx="8" fill="${color}"/><path d="M14 20H50V42H26L18 50V42H14V20Z" fill="#ffffff"/></svg>`;
+}
+function iconPlus(size = 24, color = '#6b7280') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="12" y1="5" x2="12" y2="19" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+}
+function iconArrowLeft(size = 18, color = '#374151') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 5L8 12L15 19" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function iconArrowDown(size = 18, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9L12 15L18 9" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function iconUser(size = 18, color = '#374151') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="${color}" stroke-width="2"/><path d="M4 21C4 17 7.5 14 12 14C16.5 14 20 17 20 21" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconMegaphone(size = 18, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 10V14L7 15V9L3 10Z" fill="${color}"/><path d="M7 9V15L18 19V5L7 9Z" fill="${color}"/><path d="M18 8C19.5 8 21 9.5 21 12C21 14.5 19.5 16 18 16" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconHammer(size = 18, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 4L6 12L14 20" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 4L12 12L20 20" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+function iconFolderPink(size = 18, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 6C3 5 4 4 5 4H9L11 6H19C20 6 21 7 21 8V18C21 19 20 20 19 20H5C4 20 3 19 3 18V6Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/></svg>`;
+}
+function iconClose(size = 16, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 5L19 19M19 5L5 19" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+}
+function iconMinimize(size = 16, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><line x1="5" y1="12" x2="19" y2="12" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+}
+function iconReplyFilled(size = 16, color = '#374151') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 8L4 13L10 18" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 13H14C17.3 13 20 15.7 20 19" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
 
 function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
 function formatContent(str) {
@@ -1081,7 +1375,7 @@ function renderChatList() {
   chatListContainer.innerHTML = '';
   const entries = Object.entries(chatsCache || {});
   if (entries.length === 0) {
-    chatListContainer.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#9ca3af;"><div style="font-size:48px;margin-bottom:12px;">💬</div><div style="font-size:14px;font-weight:600;color:#6b7280;">まだチャットがありません</div></div>`;
+    chatListContainer.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#9ca3af;">${iconChat(48, '#cbd5e1')}<div style="font-size:14px;font-weight:600;color:#6b7280;margin-top:12px;">まだチャットがありません</div></div>`;
     return;
   }
   entries.sort((a,b) => (b[1].lastMessageAt||b[1].createdAt||0) - (a[1].lastMessageAt||a[1].createdAt||0));
@@ -1121,7 +1415,7 @@ function renderChatList() {
     item.innerHTML = `
       <div class="chat-item-avatar-wrap">${avatarHtml}${unread>0?'<span class="unread-dot"></span>':''}</div>
       <div class="chat-item-body">
-        <div class="chat-item-name">${isGroup?'👥 ':''}${escapeHtml(displayName)}</div>
+        <div class="chat-item-name">${isGroup?'<span style="display:inline-block;vertical-align:middle;margin-right:4px;">'+iconUsers(14, '#1e3a8a')+'</span>':''}${escapeHtml(displayName)}</div>
         <div class="chat-item-last">${escapeHtml(chat.lastMessage || 'まだメッセージがありません')}</div>
         <div style="margin-top:2px;">${statusLine}</div>
       </div>
@@ -1289,7 +1583,7 @@ function updateReadReceiptsInDOM() {
     const hasReceipt = row.querySelector('.read-receipt');
     const shouldShow = isMessageReadByOthers(msg);
     const body = row.querySelector('.msg-body');
-    if (shouldShow && !hasReceipt && body) { const r = document.createElement('div'); r.className = 'read-receipt'; r.textContent = '既読'; body.appendChild(r); }
+    if (shouldShow && !hasReceipt && body) { const r = document.createElement('div'); r.className = 'read-receipt'; r.innerHTML = iconCheck(12, '#0284c7') + ' 既読'; body.appendChild(r); }
     else if (!shouldShow && hasReceipt) hasReceipt.remove();
   });
 }
@@ -1409,7 +1703,7 @@ function createMessageRow(msg, lastRenderedMsg) {
   if (msg.replyTo && msg.replyTo.msgKey) {
     const r = msg.replyTo;
     const previewText = (r.content||'').slice(0,80) + ((r.content||'').length>80?'…':'');
-    replyQuoteHtml = `<div class="reply-quote" data-reply-target="${escapeHtml(r.msgKey)}"><div class="reply-name">↩ ${escapeHtml(r.authorName||'名無しさん')}</div><div style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(previewText || (r.hasFile?'📷 画像':''))}</div></div>`;
+    replyQuoteHtml = `<div class="reply-quote" data-reply-target="${escapeHtml(r.msgKey)}"><div class="reply-name">${iconReply(11, '#0284c7')} ${escapeHtml(r.authorName||'名無しさん')}</div><div style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(previewText || (r.hasFile?'画像':''))}</div></div>`;
   }
 
   let storyContextHtml = '';
@@ -1430,9 +1724,9 @@ function createMessageRow(msg, lastRenderedMsg) {
   let contentHtml = msg.content ? `<div class="msg-content">${formatContent(msg.content)}</div>` : '';
 
   let readHtml = '';
-  if (isMine && isMessageReadByOthers(msg)) readHtml = `<div class="read-receipt">✓ 既読</div>`;
+  if (isMine && isMessageReadByOthers(msg)) readHtml = `<div class="read-receipt">${iconCheck(12, '#0284c7')} 既読</div>`;
 
-  const menuBtnHtml = `<button class="msg-menu-btn" data-key="${key}" data-mine="${isMine?'1':'0'}">⋯</button>`;
+  const menuBtnHtml = `<button class="msg-menu-btn" data-key="${key}" data-mine="${isMine?'1':'0'}">${iconMore(14, '#6b7280')}</button>`;
 
   const showAvatar = !isMine && !isGrouped;
   const avatarHtml = showAvatar ? `<span class="avatar-online-wrap"><img class="avatar-sm" src="${escapeHtml(profile.avatar)}" data-profile-avatar><span class="online-dot ${senderOnline?'online':''}" data-presence-msg-uid="${escapeHtml(msg.authorUid)}" style="width:9px;height:9px;"></span></span>` : '';
@@ -1478,7 +1772,7 @@ function appendMessages(messages) {
 function fullRenderMessages() {
   messagesContainer.innerHTML = '';
   if (messagesCache.length === 0) {
-    messagesContainer.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#9ca3af;"><div style="font-size:48px;margin-bottom:12px;">💬</div><div style="font-size:14px;color:#6b7280;">まだメッセージがありません</div></div>`;
+    messagesContainer.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#9ca3af;">${iconChat(48, '#cbd5e1')}<div style="font-size:14px;color:#6b7280;margin-top:12px;">まだメッセージがありません</div></div>`;
     return;
   }
   const fragment = document.createDocumentFragment();
@@ -1536,8 +1830,8 @@ function openMenu(btn, key) {
   const isMine = btn.dataset.mine === '1';
   const popup = document.createElement('div');
   popup.className = 'msg-menu-popup';
-  let html = `<button class="reply-action">↩️ 返信</button><button class="react-action">😊 リアクション</button><button class="copy-action">📋 コピー</button>`;
-  if (isMine) html += `<button class="edit-action">✏️ 編集</button><button class="danger delete-action">🗑️ 取り消し</button>`;
+  let html = `<button class="reply-action">${iconReplyFilled(14, '#374151')} 返信</button><button class="react-action">${iconSmile(14, '#374151')} リアクション</button><button class="copy-action">${iconCopy(14, '#374151')} コピー</button>`;
+  if (isMine) html += `<button class="edit-action">${iconEdit(14, '#374151')} 編集</button><button class="danger delete-action">${iconTrashDanger(14, '#ef4444')} 取り消し</button>`;
   popup.innerHTML = html;
   document.body.appendChild(popup);
   openMenuEl = popup;
@@ -1570,9 +1864,9 @@ function startReply(key) {
   if (!msg) return;
   const p = getProfileForUid(msg.authorUid);
   replyingTo = { msgKey: key, authorUid: msg.authorUid, authorName: p.nickname, content: msg.content || '', hasFile: !!(msg.file && msg.file.dataUrl) };
-  document.getElementById('replyPreviewName').textContent = `↩ ${p.nickname} に返信`;
+  document.getElementById('replyPreviewName').innerHTML = `${iconReply(12, '#0284c7')} ${escapeHtml(p.nickname)} に返信`;
   const previewText = (msg.content || '').slice(0,80) + ((msg.content || '').length > 80 ? '…' : '');
-  document.getElementById('replyPreviewText').textContent = previewText || (msg.file ? '📷 画像' : '(メッセージ)');
+  document.getElementById('replyPreviewText').textContent = previewText || (msg.file ? '画像' : '(メッセージ)');
   document.getElementById('replyPreviewBox').classList.add('show');
   document.getElementById('messageInput').focus();
 }
@@ -1582,7 +1876,7 @@ async function copyMessageToClipboard(key) {
   const msg = messagesCache.find(m => m.key === key);
   if (!msg) return;
   const parts = [];
-  if (msg.replyTo && msg.replyTo.content) parts.push(`↩ ${msg.replyTo.authorName}: ${msg.replyTo.content}`);
+  if (msg.replyTo && msg.replyTo.content) parts.push(`返信 ${msg.replyTo.authorName}: ${msg.replyTo.content}`);
   if (msg.content) parts.push(msg.content);
   if (msg.file && msg.file.dataUrl) parts.push('[画像]');
   const text = parts.join('\n').trim();
@@ -1590,7 +1884,7 @@ async function copyMessageToClipboard(key) {
   try {
     if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text);
     else { const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
-    showBanner('📋 コピーしました', false);
+    showBanner('コピーしました', false);
   } catch (err) { showBanner('コピーに失敗しました', true); }
 }
 
@@ -1722,7 +2016,7 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
     const chat = chatsCache[chatIdAtSend];
     if (chat) {
       const memberUids = Object.keys(chat.members || {});
-      const lastMsgLabel = content || (file ? '📷 画像' : '');
+      const lastMsgLabel = content || (file ? '画像' : '');
       const updates = {};
       memberUids.forEach(uid => {
         updates[`userChats/${uid}/${chatIdAtSend}/lastMessage`] = lastMsgLabel;
@@ -1766,8 +2060,8 @@ document.getElementById('chatHeaderMenuBtn').addEventListener('click', (e) => {
   const popup = document.createElement('div');
   popup.className = 'chat-header-menu-popup';
   let html = '';
-  if (isGroup) html += `<button class="add-member-action">👥 メンバーを追加</button><button class="danger leave-action">🚪 グループを退出</button>`;
-  else html += `<button class="danger delete-action">🗑️ チャットを削除</button>`;
+  if (isGroup) html += `<button class="add-member-action">${iconUsers(14, '#374151')} メンバーを追加</button><button class="danger leave-action">${iconLeave(14, '#ef4444')} グループを退出</button>`;
+  else html += `<button class="danger delete-action">${iconTrashDanger(14, '#ef4444')} チャットを削除</button>`;
   popup.innerHTML = html;
   document.body.appendChild(popup);
   openChatHeaderMenuEl = popup;
@@ -1878,7 +2172,7 @@ document.getElementById('addMemberSearchBtn').addEventListener('click', async ()
     for (const [uid, p] of Object.entries(profiles)) { if (p.email && p.email.toLowerCase() === email) { found = { uid, ...p }; break; } }
     if (!found) { msg.style.color = '#dc2626'; msg.textContent = '該当ユーザーが見つかりません。'; box.innerHTML = ''; return; }
     addMemberTargetProfile = { uid: found.uid, nickname: found.nickname || '名無しさん', avatar: found.avatar || DEFAULT_AVATAR, email: found.email };
-    msg.style.color = '#16a34a'; msg.textContent = '✓ 見つかりました';
+    msg.style.color = '#16a34a'; msg.textContent = '見つかりました';
     box.innerHTML = `<div style="display:flex;align-items:center;gap:8px;"><img src="${escapeHtml(addMemberTargetProfile.avatar)}" style="width:40px;height:40px;border-radius:50%;"><div><div style="font-size:13px;font-weight:700;color:#1e40af;">${escapeHtml(addMemberTargetProfile.nickname)}</div><div style="font-size:11px;color:#6b7280;">${escapeHtml(addMemberTargetProfile.email)}</div></div></div>`;
   } catch (err) { msg.style.color = '#dc2626'; msg.textContent = '検索に失敗しました。'; }
 });
@@ -1946,7 +2240,7 @@ document.getElementById('addMemberBtn').addEventListener('click', async () => {
     for (const [uid, p] of Object.entries(profiles)) { if (p.email && p.email.toLowerCase() === email) { found = { uid, ...p }; break; } }
     if (!found) { memberSearchMsg.style.color = '#dc2626'; memberSearchMsg.textContent = '該当ユーザーが見つかりません。'; return; }
     pendingMembers.push({ uid: found.uid, nickname: found.nickname || '名無しさん', avatar: found.avatar || DEFAULT_AVATAR, email: found.email });
-    memberEmailInput.value = ''; memberSearchMsg.style.color = '#16a34a'; memberSearchMsg.textContent = '✓ 追加しました';
+    memberEmailInput.value = ''; memberSearchMsg.style.color = '#16a34a'; memberSearchMsg.textContent = '追加しました';
     renderSelectedMembers();
   } catch (err) { memberSearchMsg.style.color = '#dc2626'; memberSearchMsg.textContent = '検索に失敗しました。'; }
 });
@@ -2330,12 +2624,12 @@ function showCurrentStory() {
     if (!deleteBtn) {
       deleteBtn = document.createElement('button');
       deleteBtn.id = 'storyDeleteBtn';
-      deleteBtn.textContent = '🗑️ 削除';
-      deleteBtn.style.cssText = 'position:absolute;bottom:74px;right:16px;z-index:6;background:rgba(239,68,68,0.85);color:#fff;border:none;border-radius:9999px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;';
+      deleteBtn.innerHTML = iconTrash(14, '#fff') + ' 削除';
+      deleteBtn.style.cssText = 'position:absolute;bottom:74px;right:16px;z-index:6;background:rgba(239,68,68,0.85);color:#fff;border:none;border-radius:9999px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;';
       deleteBtn.addEventListener('click', async () => { const s = currentStoryList[currentStoryIndex]; if (s) await deleteMyStory(s.id); });
       stage.appendChild(deleteBtn);
     }
-    deleteBtn.style.display = 'block';
+    deleteBtn.style.display = 'flex';
   } else {
     storyFooter.style.display = 'flex';
     storyStatsOverlay.style.display = 'none';
@@ -2351,13 +2645,13 @@ function showCurrentStory() {
   unsubs.storyLikes = onValue(ref(db, `storyLikes/${story.id}`), (snap) => {
     currentStoryLikes = snap.exists() ? snap.val() : {};
     updateStoryLikeBtn(story.id);
-    if (isMine) storyLikeCountEl.textContent = `❤️ ${Object.keys(currentStoryLikes).length}`;
+    if (isMine) storyLikeCountEl.innerHTML = iconHeart(14, '#fff', true) + ' ' + Object.keys(currentStoryLikes).length;
   }, () => {});
   if (unsubs.storyViews) { unsubs.storyViews(); unsubs.storyViews = null; }
   if (isMine) {
     unsubs.storyViews = onValue(ref(db, `storyViews/${story.id}`), (snap) => {
       currentStoryViews = snap.exists() ? snap.val() : {};
-      storyViewCountEl.textContent = `👁 ${Object.keys(currentStoryViews).length}`;
+      storyViewCountEl.innerHTML = iconEye(14, '#fff') + ' ' + Object.keys(currentStoryViews).length;
     }, () => {});
   } else currentStoryViews = {};
 
@@ -2433,8 +2727,15 @@ async function deleteMyStory(storyId) {
 }
 function updateStoryLikeBtn(storyId) {
   const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
-  if (liked) { storyLikeBtn.textContent = '❤️'; storyLikeBtn.classList.add('liked'); }
-  else { storyLikeBtn.textContent = '🤍'; storyLikeBtn.classList.remove('liked'); }
+  const svg = document.getElementById('storyLikeSvg');
+  const path = document.getElementById('storyLikePath');
+  if (liked) {
+    storyLikeBtn.classList.add('liked');
+    if (path) { path.setAttribute('fill', '#ef4444'); path.setAttribute('stroke', '#ef4444'); }
+  } else {
+    storyLikeBtn.classList.remove('liked');
+    if (path) { path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#ffffff'); }
+  }
 }
 storyLikeBtn.addEventListener('click', async (e) => {
   if (!currentUser) return;
@@ -2448,7 +2749,7 @@ storyLikeBtn.addEventListener('click', async (e) => {
       await set(ref(db, `storyLikes/${story.id}/${currentUser.uid}`), Date.now());
       const heart = document.createElement('div');
       heart.className = 'heart-float';
-      heart.textContent = '❤️';
+      heart.innerHTML = iconHeart(28, '#ef4444', true);
       heart.style.left = (e.clientX || window.innerWidth - 60) + 'px';
       heart.style.top = (e.clientY || window.innerHeight - 80) + 'px';
       document.body.appendChild(heart);
@@ -2490,7 +2791,7 @@ storyReplyInput.addEventListener('keydown', async (e) => {
   else if (story.type === 'audio' && story.file && story.file.dataUrl) { previewType = 'audio'; previewDataUrl = story.file.dataUrl; }
   else if (story.type === 'video' && story.file && story.file.dataUrl) { previewType = 'video'; previewDataUrl = story.file.dataUrl; }
   else previewType = 'text';
-  let previewText = story.content || (story.type === 'image' ? '📷 画像' : story.type === 'image_audio' ? '📷 画像＋音声' : story.type === 'audio' ? '音声' : story.type === 'video' ? '動画' : '（テキストなし）');
+  let previewText = story.content || (story.type === 'image' ? '画像' : story.type === 'image_audio' ? '画像＋音声' : story.type === 'audio' ? '音声' : story.type === 'video' ? '動画' : '（テキストなし）');
   const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
   try {
     const msgData = {
@@ -2504,7 +2805,7 @@ storyReplyInput.addEventListener('keydown', async (e) => {
     const memberUids = [currentUser.uid, partnerUid];
     const updates = {};
     memberUids.forEach(uid => {
-      updates[`userChats/${uid}/${chatId}/lastMessage`] = `↩ ストーリーに返信: ${text}`;
+      updates[`userChats/${uid}/${chatId}/lastMessage`] = `返信: ${text}`;
       updates[`userChats/${uid}/${chatId}/lastMessageAt`] = Date.now();
       updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
     });
@@ -2536,7 +2837,7 @@ document.getElementById('myArchiveBtn').addEventListener('click', () => {
           <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || '')}</div>
           <div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div>
         </div>
-        <button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;">🗑️</button>
+        <button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;">${iconTrash(14, '#fff')}</button>
       `;
       item.querySelector('.archive-view-btn').addEventListener('click', () => { document.getElementById('archiveModal').classList.add('hidden'); openStoryViewer(currentUser.uid, { archiveMode: true }); });
       item.querySelector('.archive-delete-btn').addEventListener('click', async () => {
@@ -2560,7 +2861,7 @@ document.getElementById('archiveModal').addEventListener('click', (e) => { if (e
 
 async function sendDiscordNotification(payload) {
   try {
-    await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '🔔 **新規ログイン**', embeds: [{ title: '🔔 新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) });
+    await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '**新規ログイン**', embeds: [{ title: '新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) });
   } catch (err) {}
 }
 async function notifyLogin(user, nickname) {
@@ -2586,8 +2887,8 @@ function showLoginToast(n) {
   const c = document.getElementById('loginToastContainer');
   if (!c) return;
   const t = document.createElement('div');
-  t.style.cssText = `background: linear-gradient(135deg, #0891b2, #0e7490); color: #fff; border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; pointer-events: auto; animation: toastSlideIn 0.35s;`;
-  t.innerHTML = `<div style="font-size: 22px;">🔔</div><div style="flex: 1;"><div style="font-size: 11px; opacity: 0.85;">新規ログイン</div><div style="font-size: 12px; font-weight: 700;">${escapeHtml(n.email || '(不明)')}</div></div><button style="background: rgba(255,255,255,0.2); border: none; color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer;">✕</button>`;
+  t.style.cssText = `background: linear-gradient(135deg, #0891b2, #0e7490); color: #fff; border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; pointer-events: auto; animation: toastSlideIn 0.35s; align-items: center;`;
+  t.innerHTML = `<div style="display:flex;align-items:center;">${iconBell(24, '#fff')}</div><div style="flex: 1;"><div style="font-size: 11px; opacity: 0.85;">新規ログイン</div><div style="font-size: 12px; font-weight: 700;">${escapeHtml(n.email || '(不明)')}</div></div><button style="background: rgba(255,255,255,0.2); border: none; color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; display:flex;align-items:center;justify-content:center;">${iconX(12, '#fff')}</button>`;
   t.querySelector('button').addEventListener('click', () => t.remove());
   c.appendChild(t);
   setTimeout(() => { if (t.parentNode) t.remove(); }, 8000);
@@ -2607,8 +2908,8 @@ function renderNotifications() {
   list.innerHTML = '';
   entries.forEach(n => {
     const item = document.createElement('div');
-    item.style.cssText = 'display:flex;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px;background:#f9fafb;';
-    item.innerHTML = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;display:flex;align-items:center;justify-content:center;">🔔</div><div style="flex:1;"><div style="font-weight:700;color:#0e7490;font-size:12px;">${escapeHtml(n.email || '(不明)')}</div><div style="font-size:11px;color:#374151;">${escapeHtml(n.nickname || '名無しさん')}</div><div style="font-size:10px;color:#9ca3af;">${formatTime(n.loggedInAt)}</div></div><button class="notif-del-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:11px;cursor:pointer;">✕</button>`;
+    item.style.cssText = 'display:flex;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px;background:#f9fafb;align-items:center;';
+    item.innerHTML = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;display:flex;align-items:center;justify-content:center;">${iconBell(20, '#fff')}</div><div style="flex:1;"><div style="font-weight:700;color:#0e7490;font-size:12px;">${escapeHtml(n.email || '(不明)')}</div><div style="font-size:11px;color:#374151;">${escapeHtml(n.nickname || '名無しさん')}</div><div style="font-size:10px;color:#9ca3af;">${formatTime(n.loggedInAt)}</div></div><button class="notif-del-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:11px;cursor:pointer;display:flex;align-items:center;">${iconX(12, '#fff')}</button>`;
     item.querySelector('.notif-del-btn').addEventListener('click', async () => { try { await remove(ref(db, `loginNotifications/${n.id}`)); } catch (e) {} });
     list.appendChild(item);
   });
@@ -2654,7 +2955,7 @@ async function createApprovalRequest(user, nickname) {
   } catch (e) {}
 }
 async function sendDiscordApprovalNotification(payload) {
-  try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '🆕 **新規承認リクエスト**', embeds: [{ title: '🆕 新規ユーザー承認リクエスト', color: 0x16a34a, fields: [{ name: 'メール', value: payload.email || '' }, { name: 'ニックネーム', value: payload.nickname || '' }] }] }) }); } catch (err) {}
+  try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '**新規承認リクエスト**', embeds: [{ title: '新規ユーザー承認リクエスト', color: 0x16a34a, fields: [{ name: 'メール', value: payload.email || '' }, { name: 'ニックネーム', value: payload.nickname || '' }] }] }) }); } catch (err) {}
 }
 function initMyApprovalListener(user) {
   if (unsubs.myApproval) unsubs.myApproval();
@@ -2730,8 +3031,8 @@ function showApprovalToast(req) {
   const c = document.getElementById('loginToastContainer');
   if (!c) return;
   const t = document.createElement('div');
-  t.style.cssText = `background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; pointer-events: auto; animation: toastSlideIn 0.35s;`;
-  t.innerHTML = `<div style="font-size: 22px;">🆕</div><div style="flex: 1;"><div style="font-size: 11px; opacity: 0.85;">承認リクエスト</div><div style="font-size: 12px; font-weight: 700;">${escapeHtml(req.email || '(不明)')}</div></div><button style="background: rgba(255,255,255,0.2); border: none; color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer;">✕</button>`;
+  t.style.cssText = `background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; pointer-events: auto; animation: toastSlideIn 0.35s; align-items: center;`;
+  t.innerHTML = `<div style="display:flex;align-items:center;">${iconCheckCircle(24, '#fff')}</div><div style="flex: 1;"><div style="font-size: 11px; opacity: 0.85;">承認リクエスト</div><div style="font-size: 12px; font-weight: 700;">${escapeHtml(req.email || '(不明)')}</div></div><button style="background: rgba(255,255,255,0.2); border: none; color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; display:flex;align-items:center;justify-content:center;">${iconX(12, '#fff')}</button>`;
   t.querySelector('button').addEventListener('click', () => t.remove());
   c.appendChild(t);
   setTimeout(() => { if (t.parentNode) t.remove(); }, 10000);
@@ -2752,7 +3053,7 @@ function renderApprovalList() {
   entries.forEach(r => {
     const item = document.createElement('div');
     item.className = 'approval-item';
-    const statusLabel = r.status === 'approved' ? '<span style="color:#16a34a;font-weight:700;">✓ 承認済み</span>' : r.status === 'rejected' ? '<span style="color:#dc2626;font-weight:700;">✕ 拒否</span>' : '<span style="color:#d97706;font-weight:700;">⏳ 承認待ち</span>';
+    const statusLabel = r.status === 'approved' ? '<span style="color:#16a34a;font-weight:700;">承認済み</span>' : r.status === 'rejected' ? '<span style="color:#dc2626;font-weight:700;">拒否</span>' : '<span style="color:#d97706;font-weight:700;">承認待ち</span>';
     item.innerHTML = `<img class="ap-avatar" src="${DEFAULT_AVATAR}"><div class="ap-info"><div class="ap-email">${escapeHtml(r.email || '(不明)')}</div><div class="ap-nickname">${escapeHtml(r.nickname || '名無しさん')}</div><div class="ap-time">${formatTime(r.requestedAt)} ${statusLabel}</div></div><div class="ap-actions">${r.status === 'pending' ? `<button class="ap-approve" data-id="${escapeHtml(r.id)}">承認</button><button class="ap-reject" data-id="${escapeHtml(r.id)}">拒否</button>` : ''}</div>`;
     const ap = item.querySelector('.ap-approve');
     const rj = item.querySelector('.ap-reject');
@@ -2761,7 +3062,7 @@ function renderApprovalList() {
       try {
         await update(ref(db, `approvalRequests/${r.id}`), { status: 'approved', approvedAt: Date.now(), approvedBy: currentUser.uid, approvedByEmail: currentUser.email || '' });
         if (r.uid) { try { await set(ref(db, `approvedUsers/${r.uid}`), Date.now()); } catch (e) {} }
-        showBanner('✅ 承認しました', false);
+        showBanner('承認しました', false);
       } catch (e) { showBanner('承認に失敗しました', true); }
     });
     if (rj) rj.addEventListener('click', async () => {
@@ -2822,7 +3123,7 @@ function initAdminBanPanel() {
       relatedAccountsResult = Array.from(resultSet.values());
       renderRelatedAccounts();
       if (relatedAccountsResult.length === 0) { banSearchMsg.style.color = '#6b7280'; banSearchMsg.textContent = '関連アカウントは見つかりませんでした。'; }
-      else { banSearchMsg.style.color = '#16a34a'; banSearchMsg.textContent = `✓ ${relatedAccountsResult.length}件見つかりました。`; }
+      else { banSearchMsg.style.color = '#16a34a'; banSearchMsg.textContent = `${relatedAccountsResult.length}件見つかりました。`; }
     } catch (err) { banSearchMsg.style.color = '#dc2626'; banSearchMsg.textContent = '検索に失敗しました。'; }
   });
   banExecuteBtn.addEventListener('click', async () => {
@@ -2850,8 +3151,8 @@ function initAdminBanPanel() {
       }
       await update(ref(db), updates);
       banSearchMsg.style.color = '#16a34a';
-      banSearchMsg.textContent = `✓ BAN完了（関連 ${relatedCount}件）`;
-      showBanner(`🔨 BANしました（関連 ${relatedCount}件）`, false);
+      banSearchMsg.textContent = `BAN完了（関連 ${relatedCount}件）`;
+      showBanner(`BANしました（関連 ${relatedCount}件）`, false);
       banEmailInput.value = ''; relatedAccountsResult = [];
       document.getElementById('relatedAccountsBox').style.display = 'none';
       setTimeout(() => renderBanList(), 300);
@@ -2868,7 +3169,7 @@ function renderRelatedAccounts() {
   relatedAccountsResult.forEach((acc, idx) => {
     const item = document.createElement('div');
     item.className = 'related-account-item';
-    item.innerHTML = `<input type="checkbox" class="ra-check" data-idx="${idx}" checked><div class="ra-avatar">👤</div><div class="ra-info"><div class="ra-email">${escapeHtml(acc.email)}</div><div class="ra-meta">${escapeHtml(acc.nickname)} / ${escapeHtml(acc.reason)}</div></div>`;
+    item.innerHTML = `<input type="checkbox" class="ra-check" data-idx="${idx}" checked><div class="ra-avatar">${iconUser(20, '#fff')}</div><div class="ra-info"><div class="ra-email">${escapeHtml(acc.email)}</div><div class="ra-meta">${escapeHtml(acc.nickname)} / ${escapeHtml(acc.reason)}</div></div>`;
     list.appendChild(item);
   });
 }
@@ -2931,8 +3232,8 @@ function initAdminStoryDeletePanel() {
         });
         await update(ref(db), updates);
       }
-      searchMsg.style.color = '#16a34a'; searchMsg.textContent = '✓ 削除しました';
-      showBanner('📁 ストーリーを削除しました', false);
+      searchMsg.style.color = '#16a34a'; searchMsg.textContent = '削除しました';
+      showBanner('ストーリーを削除しました', false);
       emailInput.value = '';
     } catch (err) { searchMsg.style.color = '#dc2626'; searchMsg.textContent = '削除に失敗しました。'; }
   });
@@ -3035,7 +3336,7 @@ async function clearEmergency() {
   if (!confirm('緊急モードを解除しますか？')) return;
   try {
     await update(ref(db, 'emergency'), { active: false, clearedBy: currentUser.uid, clearedByEmail: currentUser.email || '', clearedAt: Date.now() });
-    showBanner('✅ 解除しました', false);
+    showBanner('解除しました', false);
   } catch (err) { showBanner('解除に失敗しました', true); }
 }
 document.getElementById('adminClearEmergencyBtn')?.addEventListener('click', clearEmergency);
@@ -3095,7 +3396,7 @@ document.addEventListener('keydown', async (e) => {
 function updateRemoteVideoDisplay(stream) {
   const remoteVideo = document.getElementById('cpRemoteVideo');
   const fallback = document.getElementById('cpAvatarFallback');
-  const hasVideo = stream && stream.getVideoTracks().some(t => t.readyState === 'live');
+  const hasVideo = stream && stream.getVideoTracks().some(t => t.readyState === 'live' && !t.muted);
   if (hasVideo) {
     remoteVideo.style.display = 'block';
     fallback.style.display = 'none';
@@ -3137,6 +3438,69 @@ function stopCallVideoCheck() {
   if (callVideoCheckInterval) { clearInterval(callVideoCheckInterval); callVideoCheckInterval = null; }
 }
 
+/* ★ 再ネゴシエーション対応の offer/answer 交換 */
+async function performRenegotiation(isCaller) {
+  if (!callState.pc || !callState.sessionId) return;
+  if (callState.makingOffer) return;
+  const pc = callState.pc;
+  try {
+    callState.makingOffer = true;
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    const updates = { renegotiation: { type: 'offer', sdp: offer.sdp, fromUid: currentUser.uid, at: Date.now() } };
+    await update(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`), updates).catch(() => {});
+    if (callState.peerUid) {
+      await update(ref(db, `calls/${callState.peerUid}/${callState.sessionId}`), updates).catch(() => {});
+    }
+  } catch (e) {
+    console.warn('再ネゴシエーションoffer失敗:', e);
+  } finally {
+    callState.makingOffer = false;
+  }
+}
+
+async function handleRenegotiationOffer(offerSdp) {
+  if (!callState.pc) return;
+  const pc = callState.pc;
+  try {
+    await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: offerSdp }));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    const updates = { renegotiation: { type: 'answer', sdp: answer.sdp, fromUid: currentUser.uid, at: Date.now() } };
+    await update(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`), updates).catch(() => {});
+    if (callState.peerUid) {
+      await update(ref(db, `calls/${callState.peerUid}/${callState.sessionId}`), updates).catch(() => {});
+    }
+  } catch (e) {
+    console.warn('再ネゴシエーションanswer失敗:', e);
+  }
+}
+
+function initRenegotiationListener(isCaller) {
+  if (callState.renegotiationUnsub) callState.renegotiationUnsub();
+  if (!currentUser || !callState.sessionId) return;
+  const peerUid = isCaller ? callState.peerUid : callState.peerUid;
+  const listenRef = ref(db, `calls/${peerUid}/${callState.sessionId}/renegotiation`);
+  let lastAt = 0;
+  callState.renegotiationUnsub = onValue(listenRef, async (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.val();
+    if (!data || !data.sdp) return;
+    if (data.at <= lastAt) return;
+    lastAt = data.at;
+    if (data.fromUid === currentUser.uid) return;
+    if (data.type === 'offer') {
+      await handleRenegotiationOffer(data.sdp);
+    } else if (data.type === 'answer') {
+      try {
+        if (callState.pc && callState.pc.signalingState === 'have-local-offer') {
+          await callState.pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: data.sdp }));
+        }
+      } catch (e) { console.warn('再ネゴシエーションanswer set失敗:', e); }
+    }
+  }, () => {});
+}
+
 async function startCall(peerUid) {
   if (callState.active) { showBanner('既に通話中です', true); return; }
   if (!currentUser || !currentChatId) return;
@@ -3159,7 +3523,6 @@ async function startCall(peerUid) {
 
   const peerProfile = getProfileForUid(peerUid);
 
-  // マイク取得
   try {
     const localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
     callState.localStream = localStream;
@@ -3168,7 +3531,6 @@ async function startCall(peerUid) {
     showBanner('マイクへのアクセスが拒否されました', true);
   }
 
-  // PC作成
   const pc = new RTCPeerConnection(ICE_SERVERS);
   callState.pc = pc;
 
@@ -3198,7 +3560,6 @@ async function startCall(peerUid) {
     }
   };
 
-  // Offer作成
   const offerDesc = await pc.createOffer();
   await pc.setLocalDescription(offerDesc);
 
@@ -3216,7 +3577,6 @@ async function startCall(peerUid) {
   await set(sessionRef, callData);
   await set(ref(db, `calls/${peerUid}/${sessionRef.key}`), callData);
 
-  // 相手側のcallドキュメントを監視
   const peerSessionRef = ref(db, `calls/${peerUid}/${sessionRef.key}`);
   if (callState.unsub) callState.unsub();
   callState.unsub = onValue(peerSessionRef, async (snap) => {
@@ -3255,11 +3615,12 @@ async function startCall(peerUid) {
     }
   });
 
+  initRenegotiationListener(true);
+
   showCallPanel(peerProfile, '発信中...');
   startCallVideoCheck();
 }
 
-/* 着信監視 */
 let incomingCallUnsubs = {};
 function initCallIncomingListener() {
   if (!currentUser) return;
@@ -3430,6 +3791,8 @@ async function acceptIncomingCall(sessionId) {
     }
   });
 
+  initRenegotiationListener(false);
+
   hideIncomingCall();
   const peerProfile = getProfileForUid(data.fromUid);
   showCallPanel(peerProfile, '接続中...');
@@ -3451,7 +3814,7 @@ async function rejectIncomingCall(sessionId) {
 }
 
 function showCallPanel(peerProfile, statusText) {
-  document.getElementById('cpTitle').textContent = `📞 ${peerProfile.nickname}`;
+  document.getElementById('cpTitle').textContent = `通話: ${peerProfile.nickname}`;
   document.getElementById('cpAvatarImg').src = peerProfile.avatar;
   document.getElementById('cpName').textContent = peerProfile.nickname;
   document.getElementById('cpStatus').textContent = statusText;
@@ -3471,7 +3834,7 @@ function updateCallUI() {
   }
   const micBtn = document.getElementById('cpMicBtn');
   micBtn.classList.toggle('off', !callState.micEnabled);
-  micBtn.textContent = callState.micEnabled ? '🎤' : '🔇';
+  micBtn.innerHTML = callState.micEnabled ? iconMic(22, '#fff') : iconMicOff(22, '#fff');
   const camBtn = document.getElementById('cpCamBtn');
   camBtn.classList.toggle('off', !callState.camEnabled);
   const shareBtn = document.getElementById('cpShareBtn');
@@ -3599,6 +3962,7 @@ async function endCall(notifyRemote = true) {
   if (callState.localStream) { callState.localStream.getTracks().forEach(t => t.stop()); }
   if (callState.screenStream) { callState.screenStream.getTracks().forEach(t => t.stop()); }
   if (callState.unsub) { callState.unsub(); callState.unsub = null; }
+  if (callState.renegotiationUnsub) { callState.renegotiationUnsub(); callState.renegotiationUnsub = null; }
   if (currentUser && callState.sessionId) {
     remove(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`)).catch(() => {});
   }
@@ -3611,7 +3975,8 @@ async function endCall(notifyRemote = true) {
     pc: null, localStream: null, screenStream: null, incomingStream: null,
     micEnabled: true, camEnabled: false, screenSharing: false,
     remoteOfferSet: false, pendingCandidates: [], callDocRef: null,
-    unsub: null, isMinimized: false, connected: false, remoteDescSet: false
+    unsub: null, isMinimized: false, connected: false, remoteDescSet: false,
+    makingOffer: false, ignoreOffer: false, isSettingRemoteAnswerPending: false, renegotiationUnsub: null
   };
   document.getElementById('callPanel').classList.remove('show');
   document.getElementById('cpRemoteVideo').srcObject = null;
@@ -3671,7 +4036,7 @@ document.getElementById('announceSend').addEventListener('click', async () => {
       expiresAt: Date.now() + Math.max(5000, Math.min(300000, dur * 1000))
     });
     document.getElementById('announceModal').classList.add('hidden');
-    showBanner('📢 アナウンスを送信しました', false);
+    showBanner('アナウンスを送信しました', false);
   } catch (err) { showBanner('送信に失敗しました', true); }
 });
 
@@ -3787,11 +4152,11 @@ onAuthStateChanged(auth, async (user) => {
   setConnection(navigator.onLine);
   const admin = isAdmin(user.email);
 
-  announceBtn.style.display = admin ? 'block' : 'none';
-  document.getElementById('banUserBtn').style.display = admin ? 'block' : 'none';
-  document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'block' : 'none';
-  document.getElementById('notificationBtn').style.display = admin ? 'block' : 'none';
-  document.getElementById('approvalBtn').style.display = admin ? 'block' : 'none';
+  announceBtn.style.display = admin ? 'flex' : 'none';
+  document.getElementById('banUserBtn').style.display = admin ? 'flex' : 'none';
+  document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'flex' : 'none';
+  document.getElementById('notificationBtn').style.display = admin ? 'flex' : 'none';
+  document.getElementById('approvalBtn').style.display = admin ? 'flex' : 'none';
 
   try { const bansSnap = await get(ref(db, 'bans')); bansCache = bansSnap.exists() ? bansSnap.val() : {}; if (bansCache[user.uid]) { executeBan(); return; } } catch (e) {}
   try { const ebSnap = await get(ref(db, 'emailBans')); emailBansCache = ebSnap.exists() ? ebSnap.val() : {}; if (user.email && emailBansCache[sanitizeEmailKey(user.email)]) { executeBan(); return; } } catch (e) {}
