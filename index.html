@@ -261,6 +261,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .related-account-item .ra-check { width: 20px; height: 20px; flex-shrink: 0; accent-color: #dc2626; }
 #adminCtrlDHint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2147483646; color: #22c55e; font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 9999px; border: 1px solid #22c55e; pointer-events: none; font-family: monospace; }
 
+/* ★ SVGアイコンの共通スタイル */
 .svg-icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .icon-12 { width: 12px; height: 12px; }
 .icon-14 { width: 14px; height: 14px; }
@@ -275,6 +276,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .icon-48 { width: 48px; height: 48px; }
 .icon-64 { width: 64px; height: 64px; }
 
+/* ★ 音声通話UI */
 #incomingCallOverlay {
   position: fixed; inset: 0; z-index: 35000;
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
@@ -432,7 +434,13 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </button>
 </div>
 
-<div id="banOverlay" style="display:none !important;"></div>
+<div id="banOverlay">
+  <div style="font-size:24px;font-weight:bold;" id="banOverlayMsg">アクセスが拒否されました</div>
+  <div style="font-size:14px;margin-top:16px;color:#fca5a5;max-width:400px;" id="banOverlaySub"></div>
+  <div style="margin-top:24px;">
+    <button id="switchAccountBtn" style="font-size:13px;padding:10px 20px;border-radius:6px;border:none;cursor:pointer;font-weight:600;background:#2563eb;color:#fff;">別のGoogleアカウントでログイン</button>
+  </div>
+</div>
 
 <div id="statusBanner"></div>
 <div id="loginToastContainer"></div>
@@ -445,6 +453,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   <img id="lightboxImg" src="" alt="">
 </div>
 
+<!-- ★ 着信画面（音声通話） -->
 <div id="incomingCallOverlay">
   <img id="icAvatar" class="ic-avatar" src="" alt="">
   <div class="ic-name" id="icName">音声通話</div>
@@ -464,6 +473,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </div>
 </div>
 
+<!-- ★ 音声通話パネル -->
 <div id="callPanel">
   <div class="cp-header">
     <span class="svg-icon icon-18">
@@ -970,6 +980,7 @@ const ADMIN_EMAILS = ['katou.noel114514@gmail.com', '18107@v.nakijin.ed.jp'];
 function isAdmin(email) { return email && ADMIN_EMAILS.includes(email.toLowerCase()); }
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1551138462634082357/ey4MZT_qrEunUGTaD6ayOmW4DjQb4bJn4Lwdn-xylbtkrDiLDMVu2ygyHTOVgmALD5vI';
 
+/* アバター用SVG */
 function makeAvatarSvg(color, face) {
   const faces = {
     smile: '<circle cx="24" cy="26" r="2.5" fill="#fff"/><circle cx="40" cy="26" r="2.5" fill="#fff"/><path d="M22 38 Q32 46 42 38" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>',
@@ -1063,11 +1074,23 @@ let myApprovalStatus = null;
 let replyingTo = null, currentReactionPicker = null, addMemberTargetProfile = null;
 let relatedAccountsResult = [];
 
+/* ★ 音声通話関連グローバル */
 let callState = {
-  active: false, role: null, chatId: null, peerUid: null, sessionId: null,
-  pc: null, localStream: null, remoteStream: null, micEnabled: true,
-  pendingCandidates: [], callDocRef: null, unsub: null,
-  isMinimized: false, connected: false, remoteDescSet: false
+  active: false,
+  role: null,
+  chatId: null,
+  peerUid: null,
+  sessionId: null,
+  pc: null,
+  localStream: null,
+  remoteStream: null,
+  micEnabled: true,
+  pendingCandidates: [],
+  callDocRef: null,
+  unsub: null,
+  isMinimized: false,
+  connected: false,
+  remoteDescSet: false
 };
 
 const ICE_SERVERS = {
@@ -1104,6 +1127,7 @@ const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
 const scrollUnreadCount = document.getElementById('scrollUnreadCount');
 let bannerTimer = null, announcementTimer = null;
 
+/* SVGアイコン */
 function iconCheck(size = 16, color = '#fff') {
   return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12L10 17L19 8" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
@@ -1255,58 +1279,16 @@ function initChatLatestListeners() {
   });
 }
 
-/* ★★★ ここが最重要：BAN処理を「タブ削除 or about:blank」のみに変更 ★★★ */
 function executeBan() {
-  document.title = '';
+  banOverlay.classList.add('show');
   document.body.style.background = '#000';
+  document.title = 'アクセスが拒否されました';
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
-
-  const attemptClose = () => {
-    // 1) 自分自身のウィンドウを閉じる（同一オリジンで開いた場合のみ成功）
-    try { window.open('', '_self').close(); } catch (e) {}
-    try { window.close(); } catch (e) {}
-    // 2) 閉じられない場合は about:blank に飛ばす
-    try {
-      if (window.location.href !== 'about:blank') {
-        window.location.replace('about:blank');
-      }
-    } catch (e) {}
-  };
-
-  // 即座に実行
-  attemptClose();
-
-  // 繰り返し実行（ユーザーが戻ってきた場合に備える）
   banEnforcerInterval = setInterval(() => {
-    attemptClose();
-  }, 300);
-}
-
-/* ★★★ BAN状態を停止して通常セッションを開始 ★★★ */
-let approvedSessionStarted = false;
-function startApprovedSession() {
-  if (approvedSessionStarted) return;
-  approvedSessionStarted = true;
-
-  // BAN状態を停止
-  if (banEnforcerInterval) { clearInterval(banEnforcerInterval); banEnforcerInterval = null; }
-  banOverlay.classList.remove('show');
-  document.title = '69CT';
-  document.body.style.background = '';
-  refreshFavicon();
-
-  mainView.style.display = 'flex';
-  pendingApprovalOverlay.classList.remove('show');
-  bootOverlay.classList.add('hidden');
-  if (!unsubs.profiles) initProfilesListener();
-  if (!unsubs.bans) initBansListener();
-  if (!unsubs.chats) initChatsListener();
-  if (!unsubs.stories) initStoriesListener();
-  if (!unsubs.myArchive) initMyArchiveListener();
-  if (!unsubs.presence) initPresenceListener();
-  if (!unsubs.announcement) initAnnouncementListener();
-  setupMyPresence();
-  initCallIncomingListener();
+    try { window.close(); } catch(e) {}
+    banOverlay.classList.add('show');
+    document.body.style.background = '#000';
+  }, 800);
 }
 
 function renderChatList() {
@@ -2887,18 +2869,41 @@ function initMyApprovalListener(user) {
   if (!user || !user.email) return;
   const emailKey = sanitizeEmailKey(user.email);
   unsubs.myApproval = onValue(ref(db, `approvalRequests/${emailKey}`), (snap) => {
-    if (!snap.exists()) { myApprovalStatus = 'pending'; executeBan(); return; }
+    if (!snap.exists()) { myApprovalStatus = 'pending'; showPendingApproval(); return; }
     const data = snap.val();
     myApprovalStatus = data.status || 'pending';
     if (myApprovalStatus === 'approved') { hidePendingApproval(); startApprovedSession(); }
-    else if (myApprovalStatus === 'rejected') executeBan();
-    else executeBan();
+    else if (myApprovalStatus === 'rejected') showRejectedScreen();
+    else showPendingApproval();
   }, () => {});
 }
 function showPendingApproval() { pendingApprovalOverlay.classList.add('show'); mainView.style.display = 'none'; document.getElementById('pendingApprovalEmail').textContent = currentUser?.email || ''; }
 function hidePendingApproval() { pendingApprovalOverlay.classList.remove('show'); }
-function showRejectedScreen() { executeBan(); }
-
+function showRejectedScreen() {
+  pendingApprovalOverlay.classList.remove('show');
+  banOverlay.classList.add('show');
+  document.getElementById('banOverlayMsg').textContent = 'アクセスが拒否されました';
+  document.getElementById('banOverlaySub').textContent = '管理者によって承認が拒否されました。';
+  document.body.style.background = '#000';
+  document.title = 'アクセスが拒否されました';
+}
+let approvedSessionStarted = false;
+function startApprovedSession() {
+  if (approvedSessionStarted) return;
+  approvedSessionStarted = true;
+  mainView.style.display = 'flex';
+  pendingApprovalOverlay.classList.remove('show');
+  bootOverlay.classList.add('hidden');
+  if (!unsubs.profiles) initProfilesListener();
+  if (!unsubs.bans) initBansListener();
+  if (!unsubs.chats) initChatsListener();
+  if (!unsubs.stories) initStoriesListener();
+  if (!unsubs.myArchive) initMyArchiveListener();
+  if (!unsubs.presence) initPresenceListener();
+  if (!unsubs.announcement) initAnnouncementListener();
+  setupMyPresence();
+  initCallIncomingListener();
+}
 function initAdminApprovalPanel() {
   const btn = document.getElementById('approvalBtn');
   if (!btn) return;
@@ -3290,6 +3295,10 @@ document.addEventListener('keydown', async (e) => {
     return false;
   }
 }, true);
+
+/* ============================================================
+   音声通話機能（WebRTC）
+   ============================================================ */
 
 function updateCallUI() {
   if (callState.connected) {
@@ -3827,14 +3836,20 @@ onAuthStateChanged(auth, async (user) => {
     myApprovalStatus = 'approved';
     startApprovedSession();
   } else {
+    // ★★★ 初回ログインユーザーは管理者承認まで強制BAN ★★★
     await createApprovalRequest(user, myProfile.nickname);
     initMyApprovalListener(user);
     if (myApprovalStatus === 'approved') {
+      // すでに承認済みのユーザー
       startApprovedSession();
     } else if (myApprovalStatus === 'rejected') {
-      executeBan();
+      showRejectedScreen();
     } else {
+      // pending または status が未設定 → 承認までBAN状態（タブ消し or about:blank）
+      // ここで executeBan() を即時実行し、承認されるまで継続
       executeBan();
+      // 承認されたら通常画面に戻すためのリスナーは initMyApprovalListener が設定済み
+      // 承認時に startApprovedSession が呼ばれる（hidePendingApproval も内部で呼ばれる）
     }
     notifyLogin(user, myProfile.nickname);
   }
