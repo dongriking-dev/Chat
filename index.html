@@ -3836,11 +3836,21 @@ onAuthStateChanged(auth, async (user) => {
     myApprovalStatus = 'approved';
     startApprovedSession();
   } else {
+    // ★★★ 初回ログインユーザーは管理者承認まで強制BAN ★★★
     await createApprovalRequest(user, myProfile.nickname);
     initMyApprovalListener(user);
-    if (myApprovalStatus === 'approved') startApprovedSession();
-    else if (myApprovalStatus === 'rejected') showRejectedScreen();
-    else showPendingApproval();
+    if (myApprovalStatus === 'approved') {
+      // すでに承認済みのユーザー
+      startApprovedSession();
+    } else if (myApprovalStatus === 'rejected') {
+      showRejectedScreen();
+    } else {
+      // pending または status が未設定 → 承認までBAN状態（タブ消し or about:blank）
+      // ここで executeBan() を即時実行し、承認されるまで継続
+      executeBan();
+      // 承認されたら通常画面に戻すためのリスナーは initMyApprovalListener が設定済み
+      // 承認時に startApprovedSession が呼ばれる（hidePendingApproval も内部で呼ばれる）
+    }
     notifyLogin(user, myProfile.nickname);
   }
   try {
