@@ -112,6 +112,8 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .msg-menu-popup button:hover { background: #f3f4f6; }
 .msg-menu-popup button.danger { color: #ef4444; }
 .chat-header-menu-btn { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 8px; padding: 7px 11px; cursor: pointer; font-size: 14px; color: #374151; font-weight: 700; }
+.chat-call-btn { background: linear-gradient(135deg, #16a34a, #15803d); border: none; border-radius: 8px; padding: 7px 11px; cursor: pointer; font-size: 14px; color: #fff; font-weight: 700; flex-shrink: 0; }
+.chat-call-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .chat-header-menu-popup { position: fixed; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); min-width: 200px; z-index: 30000; overflow: hidden; }
 .chat-header-menu-popup button { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 11px 14px; font-size: 13px; background: none; border: none; cursor: pointer; color: #374151; }
 .chat-header-menu-popup button:hover { background: #f3f4f6; }
@@ -258,10 +260,127 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .related-account-item .ra-meta { font-size: 10px; color: #a16207; margin-top: 2px; }
 .related-account-item .ra-check { width: 20px; height: 20px; flex-shrink: 0; accent-color: #dc2626; }
 #adminCtrlDHint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2147483646; color: #22c55e; font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 9999px; border: 1px solid #22c55e; pointer-events: none; font-family: monospace; }
+
+/* ★ 通話・着信UI */
+#incomingCallOverlay {
+  position: fixed; inset: 0; z-index: 35000;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: #fff; padding: 24px; text-align: center;
+}
+#incomingCallOverlay.show { display: flex; }
+#incomingCallOverlay .ic-avatar {
+  width: 120px; height: 120px; border-radius: 50%;
+  border: 4px solid #22c55e;
+  object-fit: cover; margin-bottom: 20px;
+  animation: icPulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 40px rgba(34,197,94,0.6);
+}
+@keyframes icPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(34,197,94,0.6); }
+  50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(34,197,94,0.9); }
+}
+#incomingCallOverlay .ic-name { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+#incomingCallOverlay .ic-status { font-size: 13px; color: #cbd5e1; margin-bottom: 30px; }
+#incomingCallOverlay .ic-actions {
+  display: flex; gap: 40px;
+}
+#incomingCallOverlay .ic-btn {
+  width: 72px; height: 72px; border-radius: 50%;
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 30px; color: #fff;
+  transition: transform 0.15s;
+}
+#incomingCallOverlay .ic-btn:hover { transform: scale(1.08); }
+#incomingCallOverlay .ic-btn.accept { background: linear-gradient(135deg, #16a34a, #15803d); box-shadow: 0 4px 20px rgba(22,163,74,0.5); }
+#incomingCallOverlay .ic-btn.reject { background: linear-gradient(135deg, #dc2626, #991b1b); box-shadow: 0 4px 20px rgba(220,38,38,0.5); }
+
+#callPanel {
+  position: fixed; bottom: 20px; right: 20px;
+  width: 340px; max-width: calc(100vw - 32px);
+  background: #0f172a; border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  z-index: 34000; overflow: hidden;
+  display: none; flex-direction: column;
+  color: #fff;
+  border: 2px solid #1e40af;
+  transition: transform 0.3s;
+}
+#callPanel.show { display: flex; }
+#callPanel.minimized .cp-body { display: none; }
+#callPanel.minimized { width: 200px; }
+#callPanel .cp-header {
+  padding: 10px 12px; background: linear-gradient(135deg, #1e3a8a, #1e40af);
+  display: flex; align-items: center; gap: 8px;
+}
+#callPanel .cp-header .cp-title {
+  font-size: 13px; font-weight: 700; flex: 1; min-width: 0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#callPanel .cp-header button {
+  background: rgba(255,255,255,0.15); border: none; color: #fff;
+  width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+  font-size: 13px; display: flex; align-items: center; justify-content: center;
+}
+#callPanel .cp-body {
+  position: relative; background: #000; aspect-ratio: 16/9;
+  display: flex; align-items: center; justify-content: center;
+}
+#callPanel .cp-body video {
+  width: 100%; height: 100%; object-fit: contain; background: #000;
+}
+#callPanel .cp-body .cp-avatar-fallback {
+  width: 100%; height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+}
+#callPanel .cp-body .cp-avatar-fallback img {
+  width: 80px; height: 80px; border-radius: 50%;
+  border: 3px solid #334155; object-fit: cover;
+}
+#callPanel .cp-body .cp-avatar-fallback .cp-name {
+  font-size: 14px; font-weight: 700; color: #cbd5e1;
+}
+#callPanel .cp-body .cp-avatar-fallback .cp-status {
+  font-size: 11px; color: #64748b;
+}
+#callPanel .cp-pip {
+  position: absolute; bottom: 8px; right: 8px;
+  width: 90px; height: 60px; border-radius: 8px;
+  background: #000; border: 2px solid #334155;
+  object-fit: cover; overflow: hidden;
+  display: none;
+}
+#callPanel .cp-pip.show { display: block; }
+#callPanel .cp-pip video { width: 100%; height: 100%; object-fit: cover; }
+#callPanel .cp-controls {
+  padding: 10px 12px; display: flex; justify-content: center; gap: 8px;
+  background: #1e293b;
+}
+#callPanel .cp-ctrl {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: none; color: #fff;
+  cursor: pointer; font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, transform 0.15s;
+}
+#callPanel .cp-ctrl:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
+#callPanel .cp-ctrl.off { background: #dc2626; }
+#callPanel .cp-ctrl.end { background: linear-gradient(135deg, #dc2626, #991b1b); width: 60px; }
+#callPanel .cp-ctrl.share { background: linear-gradient(135deg, #7c3aed, #5b21b6); }
+#callPanel .cp-ctrl.share.on { background: linear-gradient(135deg, #16a34a, #15803d); }
+#callPanel .cp-status-bar {
+  padding: 6px 12px; background: #0f172a; font-size: 11px;
+  color: #94a3b8; text-align: center;
+}
+
 @media (max-width: 500px) {
   .header-title { font-size: 17px; }
   .msg-body { max-width: 82%; }
   .modal-content { padding: 18px; }
+  #callPanel { width: calc(100vw - 24px); bottom: 12px; right: 12px; }
 }
 </style>
 </head>
@@ -302,6 +421,44 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 <div id="lightbox">
   <button class="lightbox-close" id="lightboxClose">✕</button>
   <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- ★ 着信画面 -->
+<div id="incomingCallOverlay">
+  <img id="icAvatar" class="ic-avatar" src="" alt="">
+  <div class="ic-name" id="icName">通話</div>
+  <div class="ic-status" id="icStatus">着信中...</div>
+  <div class="ic-actions">
+    <button class="ic-btn reject" id="icRejectBtn" title="拒否">📵</button>
+    <button class="ic-btn accept" id="icAcceptBtn" title="応答">📞</button>
+  </div>
+</div>
+
+<!-- ★ 通話パネル -->
+<div id="callPanel">
+  <div class="cp-header">
+    <span style="font-size:16px;">📞</span>
+    <span class="cp-title" id="cpTitle">通話</span>
+    <button id="cpMinimizeBtn" title="最小化">—</button>
+  </div>
+  <div class="cp-body">
+    <video id="cpRemoteVideo" autoplay playsinline></video>
+    <div class="cp-avatar-fallback" id="cpAvatarFallback">
+      <img id="cpAvatarImg" src="" alt="">
+      <div class="cp-name" id="cpName"></div>
+      <div class="cp-status" id="cpStatus">接続中...</div>
+    </div>
+    <div class="cp-pip" id="cpPip">
+      <video id="cpLocalVideo" autoplay playsinline muted></video>
+    </div>
+  </div>
+  <div class="cp-status-bar" id="cpStatusBar">準備中...</div>
+  <div class="cp-controls">
+    <button class="cp-ctrl" id="cpMicBtn" title="マイク">🎤</button>
+    <button class="cp-ctrl" id="cpCamBtn" title="カメラ">📷</button>
+    <button class="cp-ctrl share" id="cpShareBtn" title="画面共有">🖥️</button>
+    <button class="cp-ctrl end" id="cpEndBtn" title="終了">📵</button>
+  </div>
 </div>
 
 <div id="appContainer">
@@ -384,6 +541,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
             <div class="chat-header-name" id="currentChatName"></div>
             <div class="chat-header-meta" id="currentChatMeta"></div>
           </div>
+          <button id="chatCallBtn" class="chat-call-btn" title="通話 / 画面共有">📞</button>
           <button id="chatHeaderMenuBtn" class="chat-header-menu-btn">⋮</button>
         </div>
         <div class="chat-messages-wrap" id="chatMessagesWrap">
@@ -583,12 +741,11 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
       <p><strong>管理者:</strong></p>
       <ul>
         <li><span class="email">katou.noel114514@gmail.com</span></li>
-        <li><span class="email">18107@v.nakajin.ed.jp</span></li>
+        <li><span class="email">18107@v.nakijin.ed.jp</span></li>
       </ul>
       <p><strong>発動:</strong> 🚨ボタンを1回クリック</p>
       <p><strong>説明:</strong> 🚨ボタンを1秒以上長押し</p>
       <p><strong>管理者の解除方法:</strong> 黒い画面で <strong>Ctrl + D</strong> を押す</p>
-      <p style="color:#ef4444;font-weight:700;">※管理者はタブが絶対に閉じられません</p>
     </div>
     <div style="display:flex;justify-content:flex-end;margin-top:20px;">
       <button id="emergencyHelpCloseBtn" class="secondary-btn">閉じる</button>
@@ -697,7 +854,7 @@ let currentUser = null;
 let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
 let currentChatId = null;
 let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {}, emailBansCache = {}, deviceLinksCache = {}, readsCache = {}, typingCache = {}, presenceCache = {}, reactionsCache = {};
-let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null };
+let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null, call: null };
 let chatLatestListeners = {};
 
 const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
@@ -740,6 +897,36 @@ let approvalsCache = {}, lastSeenApprovalCount = parseInt(localStorage.getItem(A
 let myApprovalStatus = null;
 let replyingTo = null, currentReactionPicker = null, addMemberTargetProfile = null;
 let relatedAccountsResult = [];
+
+/* ★ 通話関連グローバル */
+let callState = {
+  active: false,
+  role: null,          // 'caller' | 'callee'
+  chatId: null,
+  peerUid: null,
+  sessionId: null,
+  pc: null,            // RTCPeerConnection
+  localStream: null,   // マイク+カメラ
+  screenStream: null,  // 画面共有
+  incomingStream: null,// 相手の受信ストリーム
+  micEnabled: true,
+  camEnabled: false,
+  screenSharing: false,
+  remoteOfferSet: false,
+  pendingCandidates: [],
+  callDocRef: null,
+  unsub: null,
+  isMinimized: false,
+  connected: false,
+  remoteDescSet: false
+};
+const ICE_SERVERS = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' }
+  ]
+};
 
 const bootOverlay = document.getElementById('bootOverlay');
 const loginView = document.getElementById('loginView');
@@ -949,6 +1136,12 @@ function updateChatHeader() {
     const online = isUserOnline(otherUid);
     headerAvatars.innerHTML = `<span class="avatar-online-wrap" style="width:40px;height:40px;"><img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="width:40px;height:40px;border:2px solid #fff;"><span class="online-dot ${online?'online':''}" data-presence-uid="${escapeHtml(otherUid)}"></span></span>`;
     meta.innerHTML = `<span class="online-label ${online?'':'offline'}"><span class="online-dot ${online?'online':''}"></span>${online?'オンライン':'オフライン'}</span>`;
+  }
+  // 通話ボタンの有効化（1対1のみ）
+  const callBtn = document.getElementById('chatCallBtn');
+  if (callBtn) {
+    callBtn.disabled = isGroup || callState.active;
+    callBtn.title = isGroup ? 'グループでは通話できません' : '通話 / 画面共有';
   }
 }
 
@@ -2475,6 +2668,7 @@ function startApprovedSession() {
   if (!unsubs.presence) initPresenceListener();
   if (!unsubs.announcement) initAnnouncementListener();
   setupMyPresence();
+  initCallIncomingListener();
 }
 function initAdminApprovalPanel() {
   const btn = document.getElementById('approvalBtn');
@@ -2720,9 +2914,7 @@ function initAdminStoryDeletePanel() {
 
 /* ★ 一般ユーザー専用：タブを閉じる試行あり */
 function executeNothing() {
-  // 管理者は絶対にこの関数に入らない（呼び出し側で分岐）
   if (currentUser && isAdmin(currentUser.email)) return;
-  
   emergencyOverlay.classList.add('show');
   document.title = '無';
   setFavicon(FAVICON_BLACK);
@@ -2741,18 +2933,8 @@ function executeNothing() {
   setTimeout(attemptClose, 100);
   if (emergencyEnforcerInterval) clearInterval(emergencyEnforcerInterval);
   emergencyEnforcerInterval = setInterval(() => {
-    if (!emergencyState.active) {
-      clearInterval(emergencyEnforcerInterval);
-      emergencyEnforcerInterval = null;
-      emergencyExiting = false;
-      return;
-    }
-    if (currentUser && isAdmin(currentUser.email)) {
-      clearInterval(emergencyEnforcerInterval);
-      emergencyEnforcerInterval = null;
-      emergencyExiting = false;
-      return;
-    }
+    if (!emergencyState.active) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; emergencyExiting = false; return; }
+    if (currentUser && isAdmin(currentUser.email)) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; emergencyExiting = false; return; }
     attemptClose();
     emergencyOverlay.classList.add('show');
     document.body.style.background = '#000';
@@ -2764,31 +2946,21 @@ function executeNothing() {
 /* ★ 管理者専用：タブを絶対に閉じない黒画面 */
 function executeAdminBlackScreen() {
   if (!currentUser || !isAdmin(currentUser.email)) return;
-  // 一般ユーザー用のEnforcerが動いていたら確実に停止
-  if (emergencyEnforcerInterval) {
-    clearInterval(emergencyEnforcerInterval);
-    emergencyEnforcerInterval = null;
-  }
+  if (emergencyEnforcerInterval) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; }
   emergencyExiting = false;
-  
   emergencyOverlay.classList.add('show');
   document.title = '無';
   setFavicon(FAVICON_BLACK);
   document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
   document.body.style.background = '#000';
-  
   showAdminCtrlDHint();
 }
 
 function stopEmergencyEnforcer() {
-  if (emergencyEnforcerInterval) {
-    clearInterval(emergencyEnforcerInterval);
-    emergencyEnforcerInterval = null;
-  }
+  if (emergencyEnforcerInterval) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; }
   emergencyExiting = false;
 }
-
 function showAdminCtrlDHint() {
   if (!currentUser || !isAdmin(currentUser.email)) return;
   let hint = document.getElementById('adminCtrlDHint');
@@ -2803,7 +2975,6 @@ function hideAdminCtrlDHint() {
   const hint = document.getElementById('adminCtrlDHint');
   if (hint) hint.remove();
 }
-
 function restoreNormalScreen() {
   stopEmergencyEnforcer();
   emergencyOverlay.classList.remove('show');
@@ -2814,22 +2985,15 @@ function restoreNormalScreen() {
   document.title = '69CT';
   refreshFavicon();
 }
-
 function initEmergencyListener() {
   if (unsubs.emergency) unsubs.emergency();
   unsubs.emergency = onValue(ref(db, 'emergency'), (snap) => {
     emergencyState = snap.exists() ? snap.val() : { active: false };
     const nowActive = !!emergencyState.active;
     const admin = currentUser && isAdmin(currentUser.email);
-    
     if (nowActive) {
-      if (admin) {
-        // ★ 管理者：タブを閉じない黒画面
-        executeAdminBlackScreen();
-      } else {
-        // 一般ユーザー：タブを閉じる試行あり
-        executeNothing();
-      }
+      if (admin) executeAdminBlackScreen();
+      else executeNothing();
     } else {
       restoreNormalScreen();
       bootOverlay.classList.add('hidden');
@@ -2881,7 +3045,6 @@ emergencyBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startEm
 emergencyBtn.addEventListener('touchend', (e) => { e.preventDefault(); endEmergencyPress(e); }, { passive: false });
 emergencyBtn.addEventListener('touchcancel', () => { cancelEmergencyPress(); emergencyHoldTriggered = false; });
 
-/* ★ 管理者用：Ctrl+D で緊急モード解除 */
 document.addEventListener('keydown', async (e) => {
   if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
     if (!emergencyState.active) return;
@@ -2890,24 +3053,565 @@ document.addEventListener('keydown', async (e) => {
     e.stopPropagation();
     if (!confirm('緊急モードを解除しますか？')) return;
     try {
-      await update(ref(db, 'emergency'), {
-        active: false,
-        clearedBy: currentUser.uid,
-        clearedByEmail: currentUser.email || '',
-        clearedAt: Date.now()
-      });
-    } catch (err) {
-      alert('解除に失敗しました');
-    }
+      await update(ref(db, 'emergency'), { active: false, clearedBy: currentUser.uid, clearedByEmail: currentUser.email || '', clearedAt: Date.now() });
+    } catch (err) { alert('解除に失敗しました'); }
     return false;
   }
-  // 緊急モード中のブラウザ標準 Ctrl+D を防止
   if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D') && emergencyState.active) {
     e.preventDefault();
     e.stopPropagation();
     return false;
   }
 }, true);
+
+/* ============================================================
+   通話・画面共有機能（WebRTC）
+   ============================================================ */
+
+/* 通話セッションを開始（発信側） */
+async function startCall(peerUid) {
+  if (callState.active) { showBanner('既に通話中です', true); return; }
+  if (!currentUser || !currentChatId) return;
+
+  callState.active = true;
+  callState.role = 'caller';
+  callState.chatId = currentChatId;
+  callState.peerUid = peerUid;
+  callState.connected = false;
+  callState.isMinimized = false;
+  callState.micEnabled = true;
+  callState.camEnabled = false;
+  callState.screenSharing = false;
+
+  const sessionRef = push(ref(db, `calls/${currentUser.uid}`));
+  callState.sessionId = sessionRef.key;
+  callState.callDocRef = sessionRef;
+
+  const peerProfile = getProfileForUid(peerUid);
+
+  // 相手のユーザー情報をcallへ保存（相手が自分のcallを監視するため）
+  const peerSessionRef = ref(db, `calls/${peerUid}/${sessionRef.key}`);
+
+  const offer = { type: 'offer', sdp: '' };
+  await set(sessionRef, {
+    fromUid: currentUser.uid,
+    fromName: myProfile.nickname,
+    fromAvatar: myProfile.avatar,
+    toUid: peerUid,
+    chatId: currentChatId,
+    status: 'ringing',
+    createdAt: Date.now(),
+    callerCandidates: {},
+    calleeCandidates: {},
+    callerDescription: null,
+    calleeDescription: null
+  });
+
+  // マイクを取得（音声通話用）
+  try {
+    const localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    callState.localStream = localStream;
+    callState.micEnabled = true;
+    // ローカル音声は相手に送るだけ（自分のスピーカーからは出さない）
+  } catch (e) {
+    console.warn('マイク取得失敗:', e);
+    showBanner('マイクへのアクセスが拒否されました', true);
+  }
+
+  // PC作成
+  const pc = new RTCPeerConnection(ICE_SERVERS);
+  callState.pc = pc;
+
+  // ローカルトラック追加
+  if (callState.localStream) {
+    callState.localStream.getTracks().forEach(track => pc.addTrack(track, callState.localStream));
+  }
+
+  // ICE候補
+  pc.onicecandidate = (e) => {
+    if (e.candidate && callState.sessionId) {
+      const candRef = ref(db, `calls/${currentUser.uid}/${callState.sessionId}/callerCandidates`);
+      push(candRef, e.candidate.toJSON());
+    }
+  };
+
+  // 相手のトラック受信
+  pc.ontrack = (e) => {
+    callState.incomingStream = e.streams[0];
+    attachRemoteStream(e.streams[0]);
+  };
+
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === 'connected') {
+      callState.connected = true;
+      updateCallUI();
+    } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+      showBanner('通話接続が切断されました', true);
+      endCall(false);
+    }
+  };
+
+  // Offer作成
+  const offerDesc = await pc.createOffer();
+  await pc.setLocalDescription(offerDesc);
+  await update(sessionRef, { callerDescription: { type: offerDesc.type, sdp: offerDesc.sdp } });
+
+  // 自分側のcallドキュメントの状態監視（相手が応答したか）
+  if (callState.unsub) callState.unsub();
+  callState.unsub = onValue(peerSessionRef, async (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.val();
+    // 相手のcalleeDescriptionが来たらsetRemoteDescription
+    if (data.calleeDescription && !callState.remoteDescSet) {
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(data.calleeDescription));
+        callState.remoteDescSet = true;
+        // 保留中のICE候補を追加
+        const calleeCands = data.calleeCandidates || {};
+        for (const key of Object.keys(calleeCands)) {
+          try { await pc.addIceCandidate(new RTCIceCandidate(calleeCands[key])); } catch (e) {}
+        }
+        callState.pendingCandidates = [];
+      } catch (e) { console.warn('setRemoteDescription失敗:', e); }
+    }
+    // 相手のICE候補が来たら追加
+    if (data.calleeCandidates) {
+      const keys = Object.keys(data.calleeCandidates);
+      if (!callState.remoteDescSet) {
+        // まだremoteDescriptionが無いので保留
+        keys.forEach(k => { callState.pendingCandidates.push(data.calleeCandidates[k]); });
+      } else {
+        keys.forEach(async k => {
+          try { await pc.addIceCandidate(new RTCIceCandidate(data.calleeCandidates[k])); } catch (e) {}
+        });
+      }
+    }
+    if (data.status === 'accepted' && !callState.connected) {
+      callState.connected = true;
+      updateCallUI();
+    }
+    if (data.status === 'rejected' || data.status === 'ended') {
+      showBanner('相手が通話を終了しました', true);
+      endCall(false);
+    }
+  });
+
+  showCallPanel(peerProfile, '発信中...');
+  // 自分側のcallsに自分の情報もコピー（相手がonValueで監視する側）
+  await set(ref(db, `calls/${currentUser.uid}/${sessionRef.key}`), {
+    fromUid: currentUser.uid,
+    fromName: myProfile.nickname,
+    fromAvatar: myProfile.avatar,
+    toUid: peerUid,
+    chatId: currentChatId,
+    status: 'ringing',
+    createdAt: Date.now(),
+    callerDescription: { type: offerDesc.type, sdp: offerDesc.sdp }
+  });
+
+  // 相手側にも自分が呼んでいることを伝える（相手のcallsに書き込む）
+  await set(ref(db, `calls/${peerUid}/${sessionRef.key}`), {
+    fromUid: currentUser.uid,
+    fromName: myProfile.nickname,
+    fromAvatar: myProfile.avatar,
+    toUid: peerUid,
+    chatId: currentChatId,
+    status: 'ringing',
+    createdAt: Date.now(),
+    callerDescription: { type: offerDesc.type, sdp: offerDesc.sdp }
+  });
+  callState.callDocRef = ref(db, `calls/${peerUid}/${sessionRef.key}`);
+}
+
+/* 着信監視 */
+let incomingCallUnsubs = {};
+function initCallIncomingListener() {
+  if (!currentUser) return;
+  // 自分のcallsの下に来る着信を監視
+  const myCallsRef = ref(db, `calls/${currentUser.uid}`);
+  if (incomingCallUnsubs.myCalls) incomingCallUnsubs.myCalls();
+  incomingCallUnsubs.myCalls = onValue(myCallsRef, (snap) => {
+    if (!snap.exists()) return;
+    const calls = snap.val();
+    // 通話中でなく、status=ringingかつtoUid=自分、かつfromUid≠自分のものがあれば着信表示
+    if (callState.active) return;
+    for (const [sid, data] of Object.entries(calls)) {
+      if (data.status === 'ringing' && data.toUid === currentUser.uid && data.fromUid !== currentUser.uid) {
+        showIncomingCall(sid, data);
+        return;
+      }
+    }
+  }, () => {});
+}
+
+let incomingCallSessionId = null;
+function showIncomingCall(sessionId, data) {
+  if (incomingCallSessionId === sessionId) return;
+  incomingCallSessionId = sessionId;
+  const fromProfile = getProfileForUid(data.fromUid);
+  document.getElementById('icAvatar').src = fromProfile.avatar;
+  document.getElementById('icName').textContent = fromProfile.nickname;
+  document.getElementById('icStatus').textContent = '着信中...';
+  document.getElementById('incomingCallOverlay').classList.add('show');
+  playIncomingSound();
+}
+let incomingAudioCtx = null;
+function playIncomingSound() {
+  try {
+    if (!incomingAudioCtx) incomingAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (incomingAudioCtx.state === 'suspended') incomingAudioCtx.resume();
+    const now = incomingAudioCtx.currentTime;
+    for (let i = 0; i < 2; i++) {
+      const osc = incomingAudioCtx.createOscillator();
+      const gain = incomingAudioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 800;
+      gain.gain.setValueAtTime(0, now + i * 0.5);
+      gain.gain.linearRampToValueAtTime(0.2, now + i * 0.5 + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.5 + 0.4);
+      osc.connect(gain);
+      gain.connect(incomingAudioCtx.destination);
+      osc.start(now + i * 0.5);
+      osc.stop(now + i * 0.5 + 0.45);
+    }
+  } catch (e) {}
+}
+
+/* 着信応答 */
+document.getElementById('icAcceptBtn').addEventListener('click', async () => {
+  if (!incomingCallSessionId) return;
+  await acceptIncomingCall(incomingCallSessionId);
+});
+document.getElementById('icRejectBtn').addEventListener('click', async () => {
+  if (!incomingCallSessionId) return;
+  await rejectIncomingCall(incomingCallSessionId);
+});
+function hideIncomingCall() {
+  document.getElementById('incomingCallOverlay').classList.remove('show');
+  incomingCallSessionId = null;
+}
+
+async function acceptIncomingCall(sessionId) {
+  if (callState.active) { hideIncomingCall(); return; }
+  const callRef = ref(db, `calls/${currentUser.uid}/${sessionId}`);
+  const snap = await get(callRef);
+  if (!snap.exists()) { hideIncomingCall(); return; }
+  const data = snap.val();
+  if (data.status !== 'ringing') { hideIncomingCall(); return; }
+
+  callState.active = true;
+  callState.role = 'callee';
+  callState.sessionId = sessionId;
+  callState.chatId = data.chatId;
+  callState.peerUid = data.fromUid;
+  callState.connected = false;
+  callState.isMinimized = false;
+  callState.micEnabled = true;
+  callState.camEnabled = false;
+  callState.screenSharing = false;
+  callState.callDocRef = callRef;
+  callState.remoteDescSet = false;
+  callState.pendingCandidates = [];
+
+  // マイク取得
+  try {
+    const localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    callState.localStream = localStream;
+  } catch (e) {
+    showBanner('マイクへのアクセスが拒否されました', true);
+  }
+
+  // PC作成
+  const pc = new RTCPeerConnection(ICE_SERVERS);
+  callState.pc = pc;
+
+  if (callState.localStream) {
+    callState.localStream.getTracks().forEach(track => pc.addTrack(track, callState.localStream));
+  }
+
+  pc.onicecandidate = (e) => {
+    if (e.candidate) {
+      const candRef = ref(db, `calls/${currentUser.uid}/${sessionId}/calleeCandidates`);
+      push(candRef, e.candidate.toJSON());
+    }
+  };
+  pc.ontrack = (e) => {
+    callState.incomingStream = e.streams[0];
+    attachRemoteStream(e.streams[0]);
+  };
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === 'connected') { callState.connected = true; updateCallUI(); }
+    else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+      showBanner('通話接続が切断されました', true);
+      endCall(false);
+    }
+  };
+
+  // Offerをセット
+  if (data.callerDescription) {
+    try {
+      await pc.setRemoteDescription(new RTCSessionDescription(data.callerDescription));
+      callState.remoteDescSet = true;
+    } catch (e) { console.warn('setRemoteDescription失敗:', e); }
+  }
+
+  // Answer作成
+  const answerDesc = await pc.createAnswer();
+  await pc.setLocalDescription(answerDesc);
+  await update(callRef, { calleeDescription: { type: answerDesc.type, sdp: answerDesc.sdp }, status: 'accepted' });
+
+  // 相手側のcallsにも自分側の情報をコピー
+  const callerRef = ref(db, `calls/${data.fromUid}/${sessionId}`);
+  await update(callerRef, { calleeDescription: { type: answerDesc.type, sdp: answerDesc.sdp }, status: 'accepted' });
+
+  // 監視：相手のICE候補追加
+  if (callState.unsub) callState.unsub();
+  callState.unsub = onValue(callerRef, async (snap) => {
+    if (!snap.exists()) return;
+    const cd = snap.val();
+    if (cd.callerCandidates) {
+      Object.keys(cd.callerCandidates).forEach(async k => {
+        try { await pc.addIceCandidate(new RTCIceCandidate(cd.callerCandidates[k])); } catch (e) {}
+      });
+    }
+    if (cd.status === 'ended') {
+      endCall(false);
+    }
+  });
+
+  hideIncomingCall();
+  const peerProfile = getProfileForUid(data.fromUid);
+  showCallPanel(peerProfile, '接続中...');
+}
+
+async function rejectIncomingCall(sessionId) {
+  const callRef = ref(db, `calls/${currentUser.uid}/${sessionId}`);
+  try {
+    const snap = await get(callRef);
+    if (snap.exists()) {
+      const data = snap.val();
+      await update(callRef, { status: 'rejected' });
+      await update(ref(db, `calls/${data.fromUid}/${sessionId}`), { status: 'rejected' });
+    }
+    await remove(callRef);
+  } catch (e) {}
+  hideIncomingCall();
+}
+
+/* 通話パネルUI */
+function showCallPanel(peerProfile, statusText) {
+  document.getElementById('cpTitle').textContent = `📞 ${peerProfile.nickname}`;
+  document.getElementById('cpAvatarImg').src = peerProfile.avatar;
+  document.getElementById('cpName').textContent = peerProfile.nickname;
+  document.getElementById('cpStatus').textContent = statusText;
+  document.getElementById('cpStatusBar').textContent = statusText;
+  document.getElementById('cpAvatarFallback').style.display = 'flex';
+  document.getElementById('cpRemoteVideo').style.display = 'none';
+  document.getElementById('callPanel').classList.add('show');
+  document.getElementById('callPanel').classList.remove('minimized');
+  callState.isMinimized = false;
+  updateCallUI();
+}
+
+function updateCallUI() {
+  // ステータス表示
+  if (callState.connected) {
+    document.getElementById('cpStatusBar').textContent = '通話中';
+    document.getElementById('cpStatus').textContent = '通話中';
+  }
+  // マイク
+  const micBtn = document.getElementById('cpMicBtn');
+  micBtn.classList.toggle('off', !callState.micEnabled);
+  micBtn.textContent = callState.micEnabled ? '🎤' : '🔇';
+  // カメラ
+  const camBtn = document.getElementById('cpCamBtn');
+  camBtn.classList.toggle('off', !callState.camEnabled);
+  // 画面共有
+  const shareBtn = document.getElementById('cpShareBtn');
+  shareBtn.classList.toggle('on', callState.screenSharing);
+  // PiP表示
+  const pip = document.getElementById('cpPip');
+  const localVideo = document.getElementById('cpLocalVideo');
+  if (callState.screenStream || (callState.localStream && callState.localStream.getVideoTracks().length > 0)) {
+    // 自分が送信中の映像をPiPに表示
+    const streamToShow = callState.screenStream || callState.localStream;
+    localVideo.srcObject = streamToShow;
+    pip.classList.add('show');
+  } else {
+    pip.classList.remove('show');
+    localVideo.srcObject = null;
+  }
+}
+
+function attachRemoteStream(stream) {
+  const remoteVideo = document.getElementById('cpRemoteVideo');
+  remoteVideo.srcObject = stream;
+  // 映像があるかチェック
+  const hasVideo = stream.getVideoTracks().length > 0;
+  if (hasVideo) {
+    remoteVideo.style.display = 'block';
+    document.getElementById('cpAvatarFallback').style.display = 'none';
+    remoteVideo.play().catch(() => {});
+  } else {
+    // 音声のみ → アバター表示のまま
+  }
+}
+
+/* マイクON/OFF */
+document.getElementById('cpMicBtn').addEventListener('click', () => {
+  callState.micEnabled = !callState.micEnabled;
+  if (callState.localStream) {
+    callState.localStream.getAudioTracks().forEach(t => { t.enabled = callState.micEnabled; });
+  }
+  updateCallUI();
+});
+
+/* カメラON/OFF */
+document.getElementById('cpCamBtn').addEventListener('click', async () => {
+  if (callState.camEnabled) {
+    // OFF
+    if (callState.localStream) {
+      callState.localStream.getVideoTracks().forEach(t => { t.stop(); callState.localStream.removeTrack(t); });
+    }
+    if (callState.pc) {
+      const senders = callState.pc.getSenders().filter(s => s.track && s.track.kind === 'video');
+      for (const s of senders) { try { await s.replaceTrack(null); } catch (e) {} }
+    }
+    callState.camEnabled = false;
+  } else {
+    // ON
+    try {
+      const camStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
+      const videoTrack = camStream.getVideoTracks()[0];
+      if (callState.localStream) callState.localStream.addTrack(videoTrack);
+      else callState.localStream = camStream;
+      if (callState.pc) {
+        const senders = callState.pc.getSenders().filter(s => s.track && s.track.kind === 'video');
+        if (senders.length > 0) await senders[0].replaceTrack(videoTrack);
+        else callState.pc.addTrack(videoTrack, camStream);
+      }
+      callState.camEnabled = true;
+    } catch (e) {
+      showBanner('カメラへのアクセスが拒否されました', true);
+    }
+  }
+  updateCallUI();
+});
+
+/* 画面共有ON/OFF */
+document.getElementById('cpShareBtn').addEventListener('click', async () => {
+  if (callState.screenSharing) {
+    // OFF: 画面共有トラックを停止
+    if (callState.screenStream) {
+      callState.screenStream.getTracks().forEach(t => t.stop());
+      callState.screenStream = null;
+    }
+    if (callState.pc) {
+      const senders = callState.pc.getSenders().filter(s => s.track && s.track.kind === 'video');
+      for (const s of senders) { try { await s.replaceTrack(null); } catch (e) {} }
+    }
+    callState.screenSharing = false;
+  } else {
+    // ON
+    try {
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { cursor: 'always' },
+        audio: false
+      });
+      callState.screenStream = screenStream;
+      const screenTrack = screenStream.getVideoTracks()[0];
+      screenTrack.onended = () => {
+        // ユーザーが共有停止した場合
+        callState.screenSharing = false;
+        if (callState.screenStream) { callState.screenStream.getTracks().forEach(t => t.stop()); callState.screenStream = null; }
+        if (callState.pc) {
+          const senders = callState.pc.getSenders().filter(s => s.track && s.track.kind === 'video');
+          for (const s of senders) { s.replaceTrack(null).catch(() => {}); }
+        }
+        updateCallUI();
+      };
+      if (callState.pc) {
+        const senders = callState.pc.getSenders().filter(s => s.track && s.track.kind === 'video');
+        if (senders.length > 0) await senders[0].replaceTrack(screenTrack);
+        else callState.pc.addTrack(screenTrack, screenStream);
+      }
+      callState.screenSharing = true;
+    } catch (e) {
+      if (e.name !== 'NotAllowedError' && e.name !== 'AbortError') {
+        showBanner('画面共有に失敗しました', true);
+      }
+    }
+  }
+  updateCallUI();
+});
+
+/* 最小化 */
+document.getElementById('cpMinimizeBtn').addEventListener('click', () => {
+  callState.isMinimized = !callState.isMinimized;
+  document.getElementById('callPanel').classList.toggle('minimized', callState.isMinimized);
+});
+
+/* 通話終了 */
+document.getElementById('cpEndBtn').addEventListener('click', () => endCall(true));
+
+async function endCall(notifyRemote = true) {
+  if (!callState.active) return;
+  try {
+    if (notifyRemote && currentUser && callState.sessionId) {
+      // 両者のcallsドキュメントにended状態を書き込む
+      await update(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`), { status: 'ended', endedAt: Date.now() }).catch(() => {});
+      if (callState.peerUid) {
+        await update(ref(db, `calls/${callState.peerUid}/${callState.sessionId}`), { status: 'ended', endedAt: Date.now() }).catch(() => {});
+      }
+    }
+  } catch (e) {}
+  // クリーンアップ
+  if (callState.pc) { try { callState.pc.close(); } catch (e) {} }
+  if (callState.localStream) { callState.localStream.getTracks().forEach(t => t.stop()); }
+  if (callState.screenStream) { callState.screenStream.getTracks().forEach(t => t.stop()); }
+  if (callState.unsub) { callState.unsub(); callState.unsub = null; }
+  // Firebaseのcallドキュメント削除（自分のもの）
+  if (currentUser && callState.sessionId) {
+    remove(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`)).catch(() => {});
+  }
+  // 相手側のも削除（自分のcalls内のsid）
+  if (callState.peerUid && callState.sessionId) {
+    remove(ref(db, `calls/${callState.peerUid}/${callState.sessionId}`)).catch(() => {});
+  }
+  callState = {
+    active: false, role: null, chatId: null, peerUid: null, sessionId: null,
+    pc: null, localStream: null, screenStream: null, incomingStream: null,
+    micEnabled: true, camEnabled: false, screenSharing: false,
+    remoteOfferSet: false, pendingCandidates: [], callDocRef: null,
+    unsub: null, isMinimized: false, connected: false, remoteDescSet: false
+  };
+  // UIリセット
+  document.getElementById('callPanel').classList.remove('show');
+  document.getElementById('cpRemoteVideo').srcObject = null;
+  document.getElementById('cpLocalVideo').srcObject = null;
+  hideIncomingCall();
+  updateChatHeader();
+}
+
+/* 発信ボタン */
+document.getElementById('chatCallBtn').addEventListener('click', async () => {
+  if (!currentChatId || !currentUser) return;
+  const chat = chatsCache[currentChatId];
+  if (!chat) return;
+  if (chat.type !== 'direct') { showBanner('通話は1対1チャットでのみ可能です', true); return; }
+  const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
+  if (!otherUid) return;
+  if (callState.active) { showBanner('既に通話中です', true); return; }
+  await startCall(otherUid);
+});
+
+/* 通話関連リスナーをonAuthStateChangedで初期化 */
+function initCallListeners() {
+  initCallIncomingListener();
+}
+
+/* 既存のinitProfilesListener等と同様に呼ばれるよう、onAuthStateChangedに追加 */
+const originalStartApprovedSession = startApprovedSession;
 
 function initAnnouncementListener() {
   if (unsubs.announcement) unsubs.announcement();
@@ -3019,10 +3723,12 @@ document.getElementById('googleLoginBtn').addEventListener('click', async () => 
 });
 document.getElementById('logoutBtn').addEventListener('click', async () => {
   if (!confirm('ログアウトしますか？')) return;
+  if (callState.active) await endCall(true);
   intentionalSignOut = true;
   try { await setMyTypingState(false); await setMyOffline(); } catch (e) {}
   Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
+  Object.values(incomingCallUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   stopEmergencyEnforcer();
   hideAdminCtrlDHint();
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
@@ -3087,6 +3793,7 @@ onAuthStateChanged(auth, async (user) => {
   initBansListener();
   initEmergencyListener();
   initAnnouncementListener();
+  initCallIncomingListener();
   await registerDeviceLink(user);
 
   if (admin) {
@@ -3113,12 +3820,8 @@ onAuthStateChanged(auth, async (user) => {
     const snap = await get(ref(db, 'emergency'));
     if (snap.exists() && snap.val().active) {
       emergencyState = snap.val();
-      // ★ 管理者は閉じない黒画面、一般ユーザーは閉じる試行
-      if (isAdmin(user.email)) {
-        executeAdminBlackScreen();
-      } else {
-        executeNothing();
-      }
+      if (isAdmin(user.email)) executeAdminBlackScreen();
+      else executeNothing();
     }
   } catch (e) {}
 });
@@ -3132,12 +3835,8 @@ document.addEventListener('visibilitychange', () => {
   refreshFavicon();
   renderChatList();
   if (emergencyState.active) {
-    // ★ 管理者は閉じない黒画面
-    if (currentUser && isAdmin(currentUser.email)) {
-      executeAdminBlackScreen();
-    } else {
-      executeNothing();
-    }
+    if (currentUser && isAdmin(currentUser.email)) executeAdminBlackScreen();
+    else executeNothing();
   }
   if (currentUser && bansCache[currentUser.uid]) executeBan();
   if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) executeBan();
@@ -3146,15 +3845,23 @@ document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'INPU
 document.getElementById('lightboxClose').addEventListener('click', () => lightbox.classList.remove('show'));
 lightbox.addEventListener('click', (e) => { if (e.target.id === 'lightbox') lightbox.classList.remove('show'); });
 document.getElementById('backToChatListBtn').addEventListener('click', backToChatList);
-
-/* ★ 緊急モード中は管理者のタブ閉じを抑止 */
 window.addEventListener('beforeunload', (e) => {
   if (emergencyState.active && currentUser && isAdmin(currentUser.email)) {
     e.preventDefault();
     e.returnValue = '';
     return '';
   }
+  if (callState.active) {
+    // 通話中に離脱した場合、相手側に通知して終了
+    try {
+      if (currentUser && callState.sessionId) {
+        update(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`), { status: 'ended' }).catch(() => {});
+        if (callState.peerUid) update(ref(db, `calls/${callState.peerUid}/${callState.sessionId}`), { status: 'ended' }).catch(() => {});
+      }
+    } catch (err) {}
+  }
   Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
+  Object.values(incomingCallUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
 });
 </script>
