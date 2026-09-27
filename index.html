@@ -276,7 +276,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .icon-48 { width: 48px; height: 48px; }
 .icon-64 { width: 64px; height: 64px; }
 
-/* ★ 通話・着信UI */
+/* ★ 音声通話UI */
 #incomingCallOverlay {
   position: fixed; inset: 0; z-index: 35000;
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
@@ -312,19 +312,17 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 
 #callPanel {
   position: fixed; bottom: 20px; right: 20px;
-  width: 340px; max-width: calc(100vw - 32px);
+  width: 300px; max-width: calc(100vw - 32px);
   background: #0f172a; border-radius: 16px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.6);
   z-index: 34000; overflow: hidden;
   display: none; flex-direction: column;
   color: #fff;
   border: 2px solid #1e40af;
-  transition: transform 0.3s;
 }
 #callPanel.show { display: flex; }
-#callPanel.minimized .cp-body { display: none; }
+#callPanel.minimized { width: 180px; }
 #callPanel.minimized .cp-status-bar { display: none; }
-#callPanel.minimized { width: 200px; }
 #callPanel .cp-header {
   padding: 10px 12px; background: linear-gradient(135deg, #1e3a8a, #1e40af);
   display: flex; align-items: center; gap: 8px;
@@ -339,51 +337,43 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   display: flex; align-items: center; justify-content: center;
 }
 #callPanel .cp-body {
-  position: relative; background: #000; aspect-ratio: 16/9;
-  display: flex; align-items: center; justify-content: center;
-  cursor: zoom-in;
+  position: relative; background: linear-gradient(135deg, #1e293b, #0f172a);
+  padding: 30px 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 14px;
 }
-#callPanel .cp-body::after {
-  content: 'クリックで拡大';
-  position: absolute; bottom: 8px; left: 8px;
-  background: rgba(0,0,0,0.6); color: #fff;
-  font-size: 10px; padding: 3px 8px; border-radius: 4px;
-  pointer-events: none; opacity: 0; transition: opacity 0.2s;
+#callPanel.minimized .cp-body { padding: 12px; flex-direction: row; gap: 10px; }
+#callPanel.minimized .cp-body .cp-avatar-wrap img { width: 40px; height: 40px; }
+#callPanel.minimized .cp-body .cp-name { font-size: 12px; }
+#callPanel.minimized .cp-body .cp-status { display: none; }
+#callPanel .cp-avatar-wrap {
+  position: relative; width: 96px; height: 96px; flex-shrink: 0;
 }
-#callPanel .cp-body:hover::after { opacity: 1; }
-#callPanel .cp-body video {
-  width: 100%; height: 100%; object-fit: contain; background: #000;
-}
-#callPanel .cp-body .cp-avatar-fallback {
-  width: 100%; height: 100%; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 12px;
-  background: linear-gradient(135deg, #1e293b, #0f172a);
-}
-#callPanel .cp-body .cp-avatar-fallback img {
-  width: 80px; height: 80px; border-radius: 50%;
+#callPanel.minimized .cp-avatar-wrap { width: 40px; height: 40px; }
+#callPanel .cp-avatar-wrap img {
+  width: 100%; height: 100%; border-radius: 50%;
   border: 3px solid #334155; object-fit: cover;
 }
-#callPanel .cp-body .cp-avatar-fallback .cp-name {
-  font-size: 14px; font-weight: 700; color: #cbd5e1;
+#callPanel .cp-avatar-wrap.ringing img { animation: cpRing 1.5s ease-in-out infinite; }
+@keyframes cpRing {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
+  50% { box-shadow: 0 0 0 12px rgba(34,197,94,0); }
 }
-#callPanel .cp-body .cp-avatar-fallback .cp-status {
-  font-size: 11px; color: #64748b;
+#callPanel .cp-name {
+  font-size: 16px; font-weight: 800; color: #e2e8f0;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
 }
-#callPanel .cp-pip {
-  position: absolute; bottom: 8px; right: 8px;
-  width: 90px; height: 60px; border-radius: 8px;
-  background: #000; border: 2px solid #334155;
-  object-fit: cover; overflow: hidden;
-  display: none; cursor: zoom-in;
+#callPanel .cp-status { font-size: 12px; color: #94a3b8; }
+#callPanel .cp-status-bar {
+  padding: 6px 12px; background: #0f172a; font-size: 11px;
+  color: #94a3b8; text-align: center;
 }
-#callPanel .cp-pip.show { display: block; }
-#callPanel .cp-pip video { width: 100%; height: 100%; object-fit: cover; }
 #callPanel .cp-controls {
-  padding: 10px 12px; display: flex; justify-content: center; gap: 8px;
+  padding: 12px; display: flex; justify-content: center; gap: 10px;
   background: #1e293b;
 }
 #callPanel .cp-ctrl {
-  width: 44px; height: 44px; border-radius: 50%;
+  width: 48px; height: 48px; border-radius: 50%;
   background: rgba(255,255,255,0.1); border: none; color: #fff;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -393,63 +383,13 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 #callPanel .cp-ctrl.off { background: #dc2626; }
 #callPanel .cp-ctrl.end {
   background: linear-gradient(135deg, #dc2626, #991b1b);
-  width: 60px;
+  width: 64px;
   border: 2px solid #ef4444;
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
 }
 #callPanel .cp-ctrl.end:hover {
   background: linear-gradient(135deg, #ef4444, #dc2626);
   box-shadow: 0 0 18px rgba(239, 68, 68, 0.9);
-}
-#callPanel .cp-ctrl.share { background: linear-gradient(135deg, #7c3aed, #5b21b6); }
-#callPanel .cp-ctrl.share.on { background: linear-gradient(135deg, #16a34a, #15803d); }
-#callPanel .cp-status-bar {
-  padding: 6px 12px; background: #0f172a; font-size: 11px;
-  color: #94a3b8; text-align: center;
-}
-
-/* ★ 全画面映像モーダル */
-#fullscreenVideoModal {
-  position: fixed; inset: 0; z-index: 36000;
-  background: rgba(0,0,0,0.96);
-  display: none; align-items: center; justify-content: center;
-}
-#fullscreenVideoModal.show { display: flex; }
-#fullscreenVideoModal .fsv-stage {
-  position: relative; width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-}
-#fullscreenVideoModal video {
-  max-width: 100%; max-height: 100%;
-  width: auto; height: auto;
-  object-fit: contain;
-  background: #000;
-}
-#fullscreenVideoModal .fsv-label {
-  position: absolute; top: 16px; left: 16px;
-  color: #fff; font-size: 14px; font-weight: 700;
-  background: rgba(0,0,0,0.5); padding: 6px 14px; border-radius: 9999px;
-}
-#fullscreenVideoModal .fsv-close {
-  position: absolute; top: 16px; right: 16px;
-  width: 44px; height: 44px; border-radius: 50%;
-  background: rgba(255,255,255,0.15); border: none; color: #fff;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-}
-#fullscreenVideoModal .fsv-avatar-fallback {
-  width: 100%; height: 100%; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 20px;
-  background: linear-gradient(135deg, #1e293b, #0f172a);
-}
-#fullscreenVideoModal .fsv-avatar-fallback img {
-  width: 160px; height: 160px; border-radius: 50%;
-  border: 4px solid #334155; object-fit: cover;
-}
-#fullscreenVideoModal .fsv-avatar-fallback .fsv-name {
-  font-size: 24px; font-weight: 800; color: #cbd5e1;
-}
-#fullscreenVideoModal .fsv-avatar-fallback .fsv-status {
-  font-size: 14px; color: #64748b;
 }
 
 @media (max-width: 500px) {
@@ -513,10 +453,10 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   <img id="lightboxImg" src="" alt="">
 </div>
 
-<!-- ★ 着信画面 -->
+<!-- ★ 着信画面（音声通話） -->
 <div id="incomingCallOverlay">
   <img id="icAvatar" class="ic-avatar" src="" alt="">
-  <div class="ic-name" id="icName">通話</div>
+  <div class="ic-name" id="icName">音声通話</div>
   <div class="ic-status" id="icStatus">着信中...</div>
   <div class="ic-actions">
     <button class="ic-btn reject" id="icRejectBtn" title="拒否">
@@ -533,7 +473,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </div>
 </div>
 
-<!-- ★ 通話パネル -->
+<!-- ★ 音声通話パネル -->
 <div id="callPanel">
   <div class="cp-header">
     <span class="svg-icon icon-18">
@@ -541,23 +481,19 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
         <path d="M6 8C6 8 8 5 12 5C16 5 18 8 18 8L16 11L14 10V8.5C13.4 8.4 12.7 8.3 12 8.3C11.3 8.3 10.6 8.4 10 8.5V10L8 11L6 8Z" fill="#ffffff"/>
       </svg>
     </span>
-    <span class="cp-title" id="cpTitle">通話</span>
+    <span class="cp-title" id="cpTitle">音声通話</span>
     <button id="cpMinimizeBtn" title="最小化">
       <svg class="svg-icon icon-16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <line x1="3" y1="8" x2="13" y2="8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
   </div>
-  <div class="cp-body" id="cpBody" title="クリックで拡大">
-    <video id="cpRemoteVideo" autoplay playsinline></video>
-    <div class="cp-avatar-fallback" id="cpAvatarFallback">
+  <div class="cp-body">
+    <div class="cp-avatar-wrap" id="cpAvatarWrap">
       <img id="cpAvatarImg" src="" alt="">
-      <div class="cp-name" id="cpName"></div>
-      <div class="cp-status" id="cpStatus">接続中...</div>
     </div>
-    <div class="cp-pip" id="cpPip" title="自分の映像（クリックで拡大）">
-      <video id="cpLocalVideo" autoplay playsinline muted></video>
-    </div>
+    <div class="cp-name" id="cpName"></div>
+    <div class="cp-status" id="cpStatus">接続中...</div>
   </div>
   <div class="cp-status-bar" id="cpStatusBar">準備中...</div>
   <div class="cp-controls">
@@ -568,42 +504,11 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
         <line x1="12" y1="18" x2="12" y2="22" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
-    <button class="cp-ctrl" id="cpCamBtn" title="カメラ">
-      <svg class="svg-icon icon-22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="7" width="13" height="10" rx="2" stroke="#ffffff" stroke-width="2"/>
-        <path d="M16 10L21 7V17L16 14" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
-      </svg>
-    </button>
-    <button class="cp-ctrl share" id="cpShareBtn" title="画面共有">
-      <svg class="svg-icon icon-22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="3" y="4" width="18" height="13" rx="2" stroke="#ffffff" stroke-width="2"/>
-        <line x1="8" y1="21" x2="16" y2="21" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-        <line x1="12" y1="17" x2="12" y2="21" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </button>
     <button class="cp-ctrl end" id="cpEndBtn" title="終了">
       <svg class="svg-icon icon-28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="2" y="2" width="24" height="24" rx="6" stroke="#ffffff" stroke-width="2" fill="none"/>
         <path d="M9 11C9 11 10.5 8.5 14 8.5C17.5 8.5 19 11 19 11L17 14L15 13V10.8C14.4 10.7 13.7 10.65 14 10.65C14.3 10.65 13.6 10.7 13 10.8V13L11 14L9 11Z" fill="#ffffff"/>
         <line x1="7" y1="21" x2="21" y2="7" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-    </button>
-  </div>
-</div>
-
-<!-- ★ 全画面映像モーダル -->
-<div id="fullscreenVideoModal">
-  <div class="fsv-stage">
-    <video id="fsvVideo" autoplay playsinline></video>
-    <div class="fsv-avatar-fallback" id="fsvAvatarFallback" style="display:none;">
-      <img id="fsvAvatarImg" src="" alt="">
-      <div class="fsv-name" id="fsvName"></div>
-      <div class="fsv-status" id="fsvStatus">映像なし</div>
-    </div>
-    <div class="fsv-label" id="fsvLabel">相手の映像</div>
-    <button class="fsv-close" id="fsvCloseBtn">
-      <svg class="svg-icon icon-22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 5L17 17M17 5L5 17" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
   </div>
@@ -751,7 +656,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
             <div class="chat-header-name" id="currentChatName"></div>
             <div class="chat-header-meta" id="currentChatMeta"></div>
           </div>
-          <button id="chatCallBtn" class="chat-call-btn" title="通話 / 画面共有">
+          <button id="chatCallBtn" class="chat-call-btn" title="音声通話">
             <svg class="svg-icon icon-20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M6 8C6 8 8 5 12 5C16 5 18 8 18 8L16 11L14 10V8.5C13.4 8.4 12.7 8.3 12 8.3C11.3 8.3 10.6 8.4 10 8.5V10L8 11L6 8Z" fill="#ffffff"/>
             </svg>
@@ -1075,9 +980,7 @@ const ADMIN_EMAILS = ['katou.noel114514@gmail.com', '18107@v.nakijin.ed.jp'];
 function isAdmin(email) { return email && ADMIN_EMAILS.includes(email.toLowerCase()); }
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1551138462634082357/ey4MZT_qrEunUGTaD6ayOmW4DjQb4bJn4Lwdn-xylbtkrDiLDMVu2ygyHTOVgmALD5vI';
 
-/* ============================================================
-   アバター用SVG
-   ============================================================ */
+/* アバター用SVG */
 function makeAvatarSvg(color, face) {
   const faces = {
     smile: '<circle cx="24" cy="26" r="2.5" fill="#fff"/><circle cx="40" cy="26" r="2.5" fill="#fff"/><path d="M22 38 Q32 46 42 38" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>',
@@ -1171,7 +1074,7 @@ let myApprovalStatus = null;
 let replyingTo = null, currentReactionPicker = null, addMemberTargetProfile = null;
 let relatedAccountsResult = [];
 
-/* ★ 通話関連グローバル */
+/* ★ 音声通話関連グローバル */
 let callState = {
   active: false,
   role: null,
@@ -1180,21 +1083,15 @@ let callState = {
   sessionId: null,
   pc: null,
   localStream: null,
-  screenStream: null,
-  incomingStream: null,
+  remoteStream: null,
   micEnabled: true,
-  camEnabled: false,
-  screenSharing: false,
   pendingCandidates: [],
   callDocRef: null,
   unsub: null,
   isMinimized: false,
   connected: false,
-  remoteDescSet: false,
-  videoSender: null
+  remoteDescSet: false
 };
-let callVideoCheckInterval = null;
-let fullscreenCurrentMode = null;
 
 const ICE_SERVERS = {
   iceServers: [
@@ -1230,7 +1127,7 @@ const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
 const scrollUnreadCount = document.getElementById('scrollUnreadCount');
 let bannerTimer = null, announcementTimer = null;
 
-/* ★ SVGアイコン生成ヘルパー */
+/* SVGアイコン */
 function iconCheck(size = 16, color = '#fff') {
   return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12L10 17L19 8" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 }
@@ -1275,6 +1172,27 @@ function iconChat(size = 64, color = '#0284c7') {
 }
 function iconUser(size = 18, color = '#374151') {
   return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="${color}" stroke-width="2"/><path d="M4 21C4 17 7.5 14 12 14C16.5 14 20 17 20 21" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconHeart(size = 24, color = '#fff', filled = false) {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21C12 21 3 14 3 8.5C3 5.5 5.5 3 8.5 3C10.2 3 11.5 3.8 12 5C12.5 3.8 13.8 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14 12 21 12 21Z" stroke="${color}" stroke-width="2" stroke-linejoin="round" fill="${filled ? color : 'none'}"/></svg>`;
+}
+function iconEye(size = 14, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C4 7 8 5 12 5C16 5 20 7 22 12C20 17 16 19 12 19C8 19 4 17 2 12Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="${color}" stroke-width="2"/></svg>`;
+}
+function iconMic(size = 22, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="3" width="6" height="11" rx="3" stroke="${color}" stroke-width="2"/><path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="${color}" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="22" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
+}
+function iconMicOff(size = 22, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="3" width="6" height="11" rx="3" stroke="${color}" stroke-width="2"/><line x1="4" y1="4" x2="20" y2="20" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/></svg>`;
+}
+function iconPhoneOff(size = 28, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="24" height="24" rx="6" stroke="${color}" stroke-width="2" fill="none"/><path d="M9 11C9 11 10.5 8.5 14 8.5C17.5 8.5 19 11 19 11L17 14L15 13V10.8C14.4 10.7 13.7 10.65 14 10.65C14.3 10.65 13.6 10.7 13 10.8V13L11 14L9 11Z" fill="${color}"/><line x1="7" y1="21" x2="21" y2="7" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
+}
+function iconPhone(size = 20, color = '#fff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8C6 8 8 5 12 5C16 5 18 8 18 8L16 11L14 10V8.5C13.4 8.4 12.7 8.3 12 8.3C11.3 8.3 10.6 8.4 10 8.5V10L8 11L6 8Z" fill="${color}"/></svg>`;
+}
+function iconWarning(size = 20, color = '#ffffff') {
+  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3L2 20H22L12 3Z" fill="${color}" stroke="#7f1d1d" stroke-width="1" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="15" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1" fill="#dc2626"/></svg>`;
 }
 
 function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
@@ -1463,7 +1381,7 @@ function updateChatHeader() {
   const callBtn = document.getElementById('chatCallBtn');
   if (callBtn) {
     callBtn.disabled = isGroup || callState.active;
-    callBtn.title = isGroup ? 'グループでは通話できません' : '通話 / 画面共有';
+    callBtn.title = isGroup ? 'グループでは通話できません' : '音声通話';
   }
 }
 
@@ -3379,154 +3297,20 @@ document.addEventListener('keydown', async (e) => {
 }, true);
 
 /* ============================================================
-   通話・画面共有機能（WebRTC）
+   音声通話機能（WebRTC）
    ============================================================ */
 
-function updateRemoteVideoDisplay(stream) {
-  const remoteVideo = document.getElementById('cpRemoteVideo');
-  const fallback = document.getElementById('cpAvatarFallback');
-  const hasVideo = stream && stream.getVideoTracks().some(t => t.readyState === 'live' && !t.muted);
-  if (hasVideo) {
-    remoteVideo.style.display = 'block';
-    fallback.style.display = 'none';
-    remoteVideo.play().catch(() => {});
-  } else {
-    remoteVideo.style.display = 'none';
-    fallback.style.display = 'flex';
+function updateCallUI() {
+  if (callState.connected) {
+    document.getElementById('cpStatusBar').textContent = '通話中';
+    document.getElementById('cpStatus').textContent = '通話中';
   }
-  if (fullscreenCurrentMode === 'remote') {
-    const fsvVideo = document.getElementById('fsvVideo');
-    const fsvFallback = document.getElementById('fsvAvatarFallback');
-    if (hasVideo) {
-      if (fsvVideo.srcObject !== stream) fsvVideo.srcObject = stream;
-      fsvVideo.style.display = 'block';
-      fsvFallback.style.display = 'none';
-      fsvVideo.play().catch(() => {});
-    } else {
-      fsvVideo.srcObject = null;
-      fsvVideo.style.display = 'none';
-      fsvFallback.style.display = 'flex';
-      document.getElementById('fsvAvatarImg').src = document.getElementById('cpAvatarImg').src;
-      document.getElementById('fsvName').textContent = document.getElementById('cpName').textContent;
-      document.getElementById('fsvStatus').textContent = document.getElementById('cpStatus').textContent || '映像なし';
-    }
-  }
+  const micBtn = document.getElementById('cpMicBtn');
+  micBtn.classList.toggle('off', !callState.micEnabled);
+  micBtn.innerHTML = callState.micEnabled ? iconMic(22, '#fff') : iconMicOff(22, '#fff');
+  const avatarWrap = document.getElementById('cpAvatarWrap');
+  if (avatarWrap) avatarWrap.classList.toggle('ringing', !callState.connected && callState.active);
 }
-
-function attachRemoteStream(stream) {
-  const remoteVideo = document.getElementById('cpRemoteVideo');
-  if (remoteVideo.srcObject !== stream) {
-    remoteVideo.srcObject = stream;
-  }
-  updateRemoteVideoDisplay(stream);
-  stream.onaddtrack = () => updateRemoteVideoDisplay(stream);
-  stream.onremovetrack = () => updateRemoteVideoDisplay(stream);
-  remoteVideo.play().catch(() => {});
-}
-
-function startCallVideoCheck() {
-  if (callVideoCheckInterval) clearInterval(callVideoCheckInterval);
-  callVideoCheckInterval = setInterval(() => {
-    if (!callState.active || !callState.pc) return;
-    const receivers = callState.pc.getReceivers();
-    const videoReceiver = receivers.find(r => r.track && r.track.kind === 'video' && r.track.readyState === 'live');
-    if (videoReceiver) {
-      const remoteVideo = document.getElementById('cpRemoteVideo');
-      if (remoteVideo.srcObject) {
-        updateRemoteVideoDisplay(remoteVideo.srcObject);
-      } else if (callState.incomingStream) {
-        attachRemoteStream(callState.incomingStream);
-      }
-    }
-  }, 500);
-}
-function stopCallVideoCheck() {
-  if (callVideoCheckInterval) { clearInterval(callVideoCheckInterval); callVideoCheckInterval = null; }
-}
-
-async function switchOutgoingVideo(newTrack) {
-  if (!callState.pc) return;
-  if (callState.videoSender) {
-    try { await callState.videoSender.replaceTrack(newTrack); } catch (e) { console.warn('replaceTrack失敗:', e); }
-  } else {
-    const sender = callState.pc.getSenders().find(s => s.track && s.track.kind === 'video');
-    if (sender) {
-      callState.videoSender = sender;
-      try { await sender.replaceTrack(newTrack); } catch (e) {}
-    } else if (newTrack) {
-      const stream = new MediaStream([newTrack]);
-      callState.videoSender = callState.pc.addTrack(newTrack, stream);
-    }
-  }
-  updateCallUI();
-}
-
-/* ★ 全画面モーダル */
-function openFullscreenVideo(mode) {
-  fullscreenCurrentMode = mode;
-  const modal = document.getElementById('fullscreenVideoModal');
-  const fsvVideo = document.getElementById('fsvVideo');
-  const fallback = document.getElementById('fsvAvatarFallback');
-  const label = document.getElementById('fsvLabel');
-  if (mode === 'remote') {
-    label.textContent = '相手の映像';
-    const stream = callState.incomingStream;
-    if (stream && stream.getVideoTracks().some(t => t.readyState === 'live' && !t.muted)) {
-      fsvVideo.srcObject = stream;
-      fsvVideo.style.display = 'block';
-      fallback.style.display = 'none';
-      fsvVideo.play().catch(() => {});
-    } else {
-      fsvVideo.srcObject = null;
-      fsvVideo.style.display = 'none';
-      fallback.style.display = 'flex';
-      document.getElementById('fsvAvatarImg').src = document.getElementById('cpAvatarImg').src;
-      document.getElementById('fsvName').textContent = document.getElementById('cpName').textContent;
-      document.getElementById('fsvStatus').textContent = document.getElementById('cpStatus').textContent || '映像なし';
-    }
-  } else if (mode === 'local') {
-    label.textContent = '自分の映像';
-    const stream = callState.screenStream || (callState.localStream && callState.localStream.getVideoTracks().length > 0 ? callState.localStream : null);
-    if (stream) {
-      fsvVideo.srcObject = stream;
-      fsvVideo.style.display = 'block';
-      fallback.style.display = 'none';
-      fsvVideo.play().catch(() => {});
-    } else {
-      fsvVideo.srcObject = null;
-      fsvVideo.style.display = 'none';
-      fallback.style.display = 'flex';
-      document.getElementById('fsvAvatarImg').src = myProfile.avatar;
-      document.getElementById('fsvName').textContent = myProfile.nickname;
-      document.getElementById('fsvStatus').textContent = '映像なし';
-    }
-  }
-  modal.classList.add('show');
-}
-function closeFullscreenVideo() {
-  const modal = document.getElementById('fullscreenVideoModal');
-  const fsvVideo = document.getElementById('fsvVideo');
-  modal.classList.remove('show');
-  fsvVideo.srcObject = null;
-  fullscreenCurrentMode = null;
-}
-document.getElementById('cpBody').addEventListener('click', (e) => {
-  if (e.target.closest('#cpPip')) return;
-  openFullscreenVideo('remote');
-});
-document.getElementById('cpPip').addEventListener('click', (e) => {
-  e.stopPropagation();
-  openFullscreenVideo('local');
-});
-document.getElementById('fsvCloseBtn').addEventListener('click', closeFullscreenVideo);
-document.getElementById('fullscreenVideoModal').addEventListener('click', (e) => {
-  if (e.target.id === 'fullscreenVideoModal') closeFullscreenVideo();
-});
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && document.getElementById('fullscreenVideoModal').classList.contains('show')) {
-    closeFullscreenVideo();
-  }
-});
 
 async function startCall(peerUid) {
   if (callState.active) { showBanner('既に通話中です', true); return; }
@@ -3538,8 +3322,6 @@ async function startCall(peerUid) {
   callState.connected = false;
   callState.isMinimized = false;
   callState.micEnabled = true;
-  callState.camEnabled = false;
-  callState.screenSharing = false;
   callState.remoteDescSet = false;
   callState.pendingCandidates = [];
   const sessionRef = push(ref(db, `calls/${currentUser.uid}`));
@@ -3558,8 +3340,6 @@ async function startCall(peerUid) {
   if (callState.localStream) {
     callState.localStream.getTracks().forEach(track => pc.addTrack(track, callState.localStream));
   }
-  const videoTransceiver = pc.addTransceiver('video', { direction: 'sendrecv' });
-  callState.videoSender = videoTransceiver.sender;
   pc.onicecandidate = (e) => {
     if (e.candidate && callState.sessionId) {
       const candRef = ref(db, `calls/${currentUser.uid}/${callState.sessionId}/callerCandidates`);
@@ -3568,15 +3348,10 @@ async function startCall(peerUid) {
   };
   pc.ontrack = (e) => {
     if (e.streams && e.streams[0]) {
-      callState.incomingStream = e.streams[0];
-      attachRemoteStream(e.streams[0]);
-    } else if (e.track) {
-      let stream = callState.incomingStream;
-      if (!stream) { stream = new MediaStream(); callState.incomingStream = stream; }
-      const sameKind = stream.getTracks().filter(t => t.kind === e.track.kind);
-      sameKind.forEach(t => stream.removeTrack(t));
-      stream.addTrack(e.track);
-      attachRemoteStream(stream);
+      callState.remoteStream = e.streams[0];
+      const audioEl = new Audio();
+      audioEl.srcObject = e.streams[0];
+      audioEl.play().catch(() => {});
     }
   };
   pc.onconnectionstatechange = () => {
@@ -3627,7 +3402,6 @@ async function startCall(peerUid) {
     }
   });
   showCallPanel(peerProfile, '発信中...');
-  startCallVideoCheck();
 }
 
 let incomingCallUnsubs = {};
@@ -3655,7 +3429,7 @@ function showIncomingCall(sessionId, data) {
   const fromProfile = getProfileForUid(data.fromUid);
   document.getElementById('icAvatar').src = fromProfile.avatar;
   document.getElementById('icName').textContent = fromProfile.nickname;
-  document.getElementById('icStatus').textContent = '着信中...';
+  document.getElementById('icStatus').textContent = '音声通話の着信...';
   document.getElementById('incomingCallOverlay').classList.add('show');
   playIncomingSound();
 }
@@ -3709,8 +3483,6 @@ async function acceptIncomingCall(sessionId) {
   callState.connected = false;
   callState.isMinimized = false;
   callState.micEnabled = true;
-  callState.camEnabled = false;
-  callState.screenSharing = false;
   callState.callDocRef = callRef;
   callState.remoteDescSet = false;
   callState.pendingCandidates = [];
@@ -3725,8 +3497,6 @@ async function acceptIncomingCall(sessionId) {
   if (callState.localStream) {
     callState.localStream.getTracks().forEach(track => pc.addTrack(track, callState.localStream));
   }
-  const videoTransceiver = pc.addTransceiver('video', { direction: 'sendrecv' });
-  callState.videoSender = videoTransceiver.sender;
   pc.onicecandidate = (e) => {
     if (e.candidate) {
       const candRef = ref(db, `calls/${currentUser.uid}/${sessionId}/calleeCandidates`);
@@ -3735,15 +3505,10 @@ async function acceptIncomingCall(sessionId) {
   };
   pc.ontrack = (e) => {
     if (e.streams && e.streams[0]) {
-      callState.incomingStream = e.streams[0];
-      attachRemoteStream(e.streams[0]);
-    } else if (e.track) {
-      let stream = callState.incomingStream;
-      if (!stream) { stream = new MediaStream(); callState.incomingStream = stream; }
-      const sameKind = stream.getTracks().filter(t => t.kind === e.track.kind);
-      sameKind.forEach(t => stream.removeTrack(t));
-      stream.addTrack(e.track);
-      attachRemoteStream(stream);
+      callState.remoteStream = e.streams[0];
+      const audioEl = new Audio();
+      audioEl.srcObject = e.streams[0];
+      audioEl.play().catch(() => {});
     }
   };
   pc.onconnectionstatechange = () => {
@@ -3796,7 +3561,6 @@ async function acceptIncomingCall(sessionId) {
   hideIncomingCall();
   const peerProfile = getProfileForUid(data.fromUid);
   showCallPanel(peerProfile, '接続中...');
-  startCallVideoCheck();
 }
 
 async function rejectIncomingCall(sessionId) {
@@ -3814,136 +3578,21 @@ async function rejectIncomingCall(sessionId) {
 }
 
 function showCallPanel(peerProfile, statusText) {
-  document.getElementById('cpTitle').textContent = `通話: ${peerProfile.nickname}`;
+  document.getElementById('cpTitle').textContent = `音声通話: ${peerProfile.nickname}`;
   document.getElementById('cpAvatarImg').src = peerProfile.avatar;
   document.getElementById('cpName').textContent = peerProfile.nickname;
   document.getElementById('cpStatus').textContent = statusText;
   document.getElementById('cpStatusBar').textContent = statusText;
-  document.getElementById('cpAvatarFallback').style.display = 'flex';
-  document.getElementById('cpRemoteVideo').style.display = 'none';
   document.getElementById('callPanel').classList.add('show');
   document.getElementById('callPanel').classList.remove('minimized');
   callState.isMinimized = false;
   updateCallUI();
 }
 
-function updateCallUI() {
-  if (callState.connected) {
-    document.getElementById('cpStatusBar').textContent = '通話中';
-    document.getElementById('cpStatus').textContent = '通話中';
-  }
-  const micBtn = document.getElementById('cpMicBtn');
-  micBtn.classList.toggle('off', !callState.micEnabled);
-  const camBtn = document.getElementById('cpCamBtn');
-  camBtn.classList.toggle('off', !callState.camEnabled);
-  const shareBtn = document.getElementById('cpShareBtn');
-  shareBtn.classList.toggle('on', callState.screenSharing);
-  const pip = document.getElementById('cpPip');
-  const localVideo = document.getElementById('cpLocalVideo');
-  if (callState.screenStream || (callState.localStream && callState.localStream.getVideoTracks().length > 0)) {
-    const streamToShow = callState.screenStream || callState.localStream;
-    localVideo.srcObject = streamToShow;
-    pip.classList.add('show');
-  } else {
-    pip.classList.remove('show');
-    localVideo.srcObject = null;
-  }
-  if (fullscreenCurrentMode === 'local') {
-    const fsvVideo = document.getElementById('fsvVideo');
-    const fsvFallback = document.getElementById('fsvAvatarFallback');
-    const stream = callState.screenStream || (callState.localStream && callState.localStream.getVideoTracks().length > 0 ? callState.localStream : null);
-    if (stream) {
-      if (fsvVideo.srcObject !== stream) fsvVideo.srcObject = stream;
-      fsvVideo.style.display = 'block';
-      fsvFallback.style.display = 'none';
-      fsvVideo.play().catch(() => {});
-    } else {
-      fsvVideo.srcObject = null;
-      fsvVideo.style.display = 'none';
-      fsvFallback.style.display = 'flex';
-      document.getElementById('fsvAvatarImg').src = myProfile.avatar;
-      document.getElementById('fsvName').textContent = myProfile.nickname;
-      document.getElementById('fsvStatus').textContent = '映像なし';
-    }
-  }
-}
-
 document.getElementById('cpMicBtn').addEventListener('click', () => {
   callState.micEnabled = !callState.micEnabled;
   if (callState.localStream) {
     callState.localStream.getAudioTracks().forEach(t => { t.enabled = callState.micEnabled; });
-  }
-  updateCallUI();
-});
-
-document.getElementById('cpCamBtn').addEventListener('click', async () => {
-  if (callState.camEnabled) {
-    if (callState.screenStream) {
-      // 画面共有中はカメラOFFのみ（映像は画面共有のまま）
-    } else {
-      if (callState.localStream) {
-        callState.localStream.getVideoTracks().forEach(t => { t.stop(); callState.localStream.removeTrack(t); });
-      }
-      await switchOutgoingVideo(null);
-    }
-    callState.camEnabled = false;
-  } else {
-    try {
-      const camStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
-      const videoTrack = camStream.getVideoTracks()[0];
-      if (!callState.localStream) callState.localStream = new MediaStream();
-      callState.localStream.getVideoTracks().forEach(t => { t.stop(); callState.localStream.removeTrack(t); });
-      callState.localStream.addTrack(videoTrack);
-      if (!callState.screenSharing) {
-        await switchOutgoingVideo(videoTrack);
-      }
-      callState.camEnabled = true;
-    } catch (e) {
-      showBanner('カメラへのアクセスが拒否されました', true);
-    }
-  }
-  updateCallUI();
-});
-
-document.getElementById('cpShareBtn').addEventListener('click', async () => {
-  if (callState.screenSharing) {
-    if (callState.screenStream) {
-      callState.screenStream.getTracks().forEach(t => t.stop());
-      callState.screenStream = null;
-    }
-    if (callState.camEnabled && callState.localStream && callState.localStream.getVideoTracks().length > 0) {
-      const camTrack = callState.localStream.getVideoTracks()[0];
-      await switchOutgoingVideo(camTrack);
-    } else {
-      await switchOutgoingVideo(null);
-    }
-    callState.screenSharing = false;
-  } else {
-    try {
-      const screenStream = await navigator.mediaDevices.getDisplayMedia({
-        video: { cursor: 'always' },
-        audio: false
-      });
-      callState.screenStream = screenStream;
-      const screenTrack = screenStream.getVideoTracks()[0];
-      screenTrack.onended = async () => {
-        callState.screenSharing = false;
-        if (callState.screenStream) { callState.screenStream.getTracks().forEach(t => t.stop()); callState.screenStream = null; }
-        if (callState.camEnabled && callState.localStream && callState.localStream.getVideoTracks().length > 0) {
-          const camTrack = callState.localStream.getVideoTracks()[0];
-          await switchOutgoingVideo(camTrack);
-        } else {
-          await switchOutgoingVideo(null);
-        }
-        updateCallUI();
-      };
-      await switchOutgoingVideo(screenTrack);
-      callState.screenSharing = true;
-    } catch (e) {
-      if (e.name !== 'NotAllowedError' && e.name !== 'AbortError') {
-        showBanner('画面共有に失敗しました', true);
-      }
-    }
   }
   updateCallUI();
 });
@@ -3957,7 +3606,6 @@ document.getElementById('cpEndBtn').addEventListener('click', () => endCall(true
 
 async function endCall(notifyRemote = true) {
   if (!callState.active) return;
-  closeFullscreenVideo();
   try {
     if (notifyRemote && currentUser && callState.sessionId) {
       await update(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`), { status: 'ended', endedAt: Date.now() }).catch(() => {});
@@ -3968,7 +3616,6 @@ async function endCall(notifyRemote = true) {
   } catch (e) {}
   if (callState.pc) { try { callState.pc.close(); } catch (e) {} }
   if (callState.localStream) { callState.localStream.getTracks().forEach(t => t.stop()); }
-  if (callState.screenStream) { callState.screenStream.getTracks().forEach(t => t.stop()); }
   if (callState.unsub) { callState.unsub(); callState.unsub = null; }
   if (currentUser && callState.sessionId) {
     remove(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`)).catch(() => {});
@@ -3976,18 +3623,13 @@ async function endCall(notifyRemote = true) {
   if (callState.peerUid && callState.sessionId) {
     remove(ref(db, `calls/${callState.peerUid}/${callState.sessionId}`)).catch(() => {});
   }
-  stopCallVideoCheck();
   callState = {
     active: false, role: null, chatId: null, peerUid: null, sessionId: null,
-    pc: null, localStream: null, screenStream: null, incomingStream: null,
-    micEnabled: true, camEnabled: false, screenSharing: false,
-    pendingCandidates: [], callDocRef: null,
-    unsub: null, isMinimized: false, connected: false, remoteDescSet: false,
-    videoSender: null
+    pc: null, localStream: null, remoteStream: null,
+    micEnabled: true, pendingCandidates: [], callDocRef: null,
+    unsub: null, isMinimized: false, connected: false, remoteDescSet: false
   };
   document.getElementById('callPanel').classList.remove('show');
-  document.getElementById('cpRemoteVideo').srcObject = null;
-  document.getElementById('cpLocalVideo').srcObject = null;
   hideIncomingCall();
   updateChatHeader();
 }
@@ -3996,7 +3638,7 @@ document.getElementById('chatCallBtn').addEventListener('click', async () => {
   if (!currentChatId || !currentUser) return;
   const chat = chatsCache[currentChatId];
   if (!chat) return;
-  if (chat.type !== 'direct') { showBanner('通話は1対1チャットでのみ可能です', true); return; }
+  if (chat.type !== 'direct') { showBanner('音声通話は1対1チャットでのみ可能です', true); return; }
   const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
   if (!otherUid) return;
   if (callState.active) { showBanner('既に通話中です', true); return; }
@@ -4122,7 +3764,6 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   stopEmergencyEnforcer();
   hideAdminCtrlDHint();
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
-  stopCallVideoCheck();
   try { await signOut(auth); } catch (e) {}
   location.reload();
 });
