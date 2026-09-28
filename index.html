@@ -786,6 +786,17 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
       <img id="profileAvatarPreview" class="avatar-lg" src="" alt="" style="margin:0 auto;display:block;">
       <p style="font-size:11px;color:#6b7280;margin-top:8px;">アイコンを選択</p>
       <div id="presetAvatarRow" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:8px;"></div>
+      <div style="margin-top:12px;">
+        <label style="display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#1e40af;cursor:pointer;">
+          <svg class="svg-icon icon-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="#1e40af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 16V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V16" stroke="#1e40af" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          画像をアップロード
+          <input type="file" id="profileAvatarFileInput" accept="image/*" style="display:none;">
+        </label>
+      </div>
+      <div id="profileUploadMsg" style="font-size:11px;color:#6b7280;margin-top:6px;min-height:14px;"></div>
     </div>
     <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">ニックネーム（最大20文字）:</label>
     <input type="text" id="nicknameInput" maxlength="20" placeholder="例: 名無しさん" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;">
@@ -1067,6 +1078,7 @@ let currentStoryAudioEl = null, currentStoryVideoEl = null;
 let typingTimeout = null, isCurrentlyTyping = false;
 const TYPING_TIMEOUT_MS = 3000;
 let pendingMembers = [], editingMsgKey = null, openMenuKey = null, openMenuEl = null, openChatHeaderMenuEl = null, intentionalSignOut = false, selectedAvatar = DEFAULT_AVATAR;
+let uploadedAvatarDataUrl = null; // ★ アップロードされたアイコン画像を保持
 let emergencyHoldTimer = null, emergencyHoldTriggered = false, banEnforcerInterval = null;
 let notificationsCache = {}, lastSeenNotificationCount = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0', 10), lastNotifIds = new Set();
 let approvalsCache = {}, lastSeenApprovalCount = parseInt(localStorage.getItem(APPROVAL_SEEN_KEY) || '0', 10), lastApprovalIds = new Set();
@@ -2191,9 +2203,15 @@ async function findExistingDirectChat(partnerUid) {
   } catch (e) { return null; }
 }
 
+/* ============================================================
+   ★ プロフィール設定（画像アップロード対応・完全版）
+   ============================================================ */
 document.getElementById('profileBtn').addEventListener('click', () => {
   document.getElementById('nicknameInput').value = myProfile.nickname || '';
   selectedAvatar = myProfile.avatar || DEFAULT_AVATAR;
+  uploadedAvatarDataUrl = null;
+  document.getElementById('profileAvatarFileInput').value = '';
+  document.getElementById('profileUploadMsg').textContent = '';
   document.getElementById('profileAvatarPreview').src = selectedAvatar;
   const row = document.getElementById('presetAvatarRow');
   row.innerHTML = '';
@@ -2201,21 +2219,66 @@ document.getElementById('profileBtn').addEventListener('click', () => {
     const img = document.createElement('img');
     img.className = 'preset-avatar' + (url === selectedAvatar ? ' selected' : '');
     img.src = url;
-    img.addEventListener('click', () => { selectedAvatar = url; document.getElementById('profileAvatarPreview').src = url; row.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected')); img.classList.add('selected'); });
+    img.addEventListener('click', () => {
+      selectedAvatar = url;
+      uploadedAvatarDataUrl = null;
+      document.getElementById('profileAvatarFileInput').value = '';
+      document.getElementById('profileUploadMsg').textContent = '';
+      document.getElementById('profileAvatarPreview').src = url;
+      row.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected'));
+      img.classList.add('selected');
+    });
     row.appendChild(img);
   });
   document.getElementById('profileModal').classList.remove('hidden');
 });
 document.getElementById('profileCancelBtn').addEventListener('click', () => document.getElementById('profileModal').classList.add('hidden'));
 document.getElementById('profileModal').addEventListener('click', (e) => { if (e.target.id === 'profileModal') document.getElementById('profileModal').classList.add('hidden'); });
+
+/* ★ 画像アップロード処理（リサイズ・圧縮なし。そのまま dataUrl 化） */
+document.getElementById('profileAvatarFileInput').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  const msg = document.getElementById('profileUploadMsg');
+  const row = document.getElementById('presetAvatarRow');
+  if (!f) { uploadedAvatarDataUrl = null; return; }
+  if (!f.type.startsWith('image/')) {
+    msg.style.color = '#dc2626';
+    msg.textContent = '画像ファイルを選択してください';
+    e.target.value = '';
+    uploadedAvatarDataUrl = null;
+    return;
+  }
+  msg.style.color = '#6b7280';
+  msg.textContent = '読み込み中...';
+  const reader = new FileReader();
+  reader.onerror = () => {
+    uploadedAvatarDataUrl = null;
+    e.target.value = '';
+    msg.style.color = '#dc2626';
+    msg.textContent = '読み込みに失敗しました';
+  };
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    uploadedAvatarDataUrl = dataUrl;
+    selectedAvatar = dataUrl;
+    document.getElementById('profileAvatarPreview').src = dataUrl;
+    row.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected'));
+    msg.style.color = '#16a34a';
+    msg.textContent = '画像を設定しました（保存を押してください）';
+  };
+  reader.readAsDataURL(f);
+});
+
 document.getElementById('profileSaveBtn').addEventListener('click', async () => {
   const nickname = document.getElementById('nicknameInput').value.trim();
   if (!nickname) { alert('ニックネームを入力してください。'); return; }
+  const avatarToSave = uploadedAvatarDataUrl || selectedAvatar;
   try {
-    await set(ref(db, `chatProfiles/${currentUser.uid}`), { nickname, avatar: selectedAvatar, email: currentUser.email || '', updatedAt: Date.now() });
-    myProfile = { nickname, avatar: selectedAvatar };
+    await set(ref(db, `chatProfiles/${currentUser.uid}`), { nickname, avatar: avatarToSave, email: currentUser.email || '', updatedAt: Date.now() });
+    myProfile = { nickname, avatar: avatarToSave };
     updateMyProfileUI();
     document.getElementById('profileModal').classList.add('hidden');
+    uploadedAvatarDataUrl = null;
     showBanner('プロフィールを保存しました', false);
   } catch (err) { showBanner('保存失敗', true); }
 });
