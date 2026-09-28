@@ -1806,7 +1806,7 @@ function openReactionPicker(anchorEl, msgKey) {
   closeReactionPicker();
   const picker = document.createElement('div');
   picker.className = 'reaction-picker';
-  ['👍','❤️','😂','😮','😢','🎉','🔥','👏'].forEach(emoji => {
+  ['😭','❤️',👍','❤️‍🔥','😇','🥰','😍','😘','🥳','🥶','💩','🫶','💋','❣️','💕','❌','⭕️','‼️','⁉️'].forEach(emoji => {
     const b = document.createElement('button');
     b.textContent = emoji;
     b.addEventListener('click', (e) => { e.stopPropagation(); toggleReaction(msgKey, emoji); closeReactionPicker(); });
