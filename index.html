@@ -261,7 +261,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .related-account-item .ra-check { width: 20px; height: 20px; flex-shrink: 0; accent-color: #dc2626; }
 #adminCtrlDHint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2147483646; color: #22c55e; font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 9999px; border: 1px solid #22c55e; pointer-events: none; font-family: monospace; }
 
-/* ★ SVGアイコンの共通スタイル */
+/* SVGアイコン */
 .svg-icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .icon-12 { width: 12px; height: 12px; }
 .icon-14 { width: 14px; height: 14px; }
@@ -276,7 +276,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .icon-48 { width: 48px; height: 48px; }
 .icon-64 { width: 64px; height: 64px; }
 
-/* ★ 音声通話UI */
+/* 音声通話UI */
 #incomingCallOverlay {
   position: fixed; inset: 0; z-index: 35000;
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
@@ -453,7 +453,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   <img id="lightboxImg" src="" alt="">
 </div>
 
-<!-- ★ 着信画面（音声通話） -->
 <div id="incomingCallOverlay">
   <img id="icAvatar" class="ic-avatar" src="" alt="">
   <div class="ic-name" id="icName">音声通話</div>
@@ -473,7 +472,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </div>
 </div>
 
-<!-- ★ 音声通話パネル -->
 <div id="callPanel">
   <div class="cp-header">
     <span class="svg-icon icon-18">
@@ -786,17 +784,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
       <img id="profileAvatarPreview" class="avatar-lg" src="" alt="" style="margin:0 auto;display:block;">
       <p style="font-size:11px;color:#6b7280;margin-top:8px;">アイコンを選択</p>
       <div id="presetAvatarRow" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:8px;"></div>
-      <div style="margin-top:12px;">
-        <label style="display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#1e40af;cursor:pointer;">
-          <svg class="svg-icon icon-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="#1e40af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 16V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V16" stroke="#1e40af" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          画像をアップロード
-          <input type="file" id="profileAvatarFileInput" accept="image/*" style="display:none;">
-        </label>
-      </div>
-      <div id="profileUploadMsg" style="font-size:11px;color:#6b7280;margin-top:6px;min-height:14px;"></div>
     </div>
     <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">ニックネーム（最大20文字）:</label>
     <input type="text" id="nicknameInput" maxlength="20" placeholder="例: 名無しさん" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;">
@@ -1018,7 +1005,7 @@ const PRESET_AVATARS = [
 ];
 const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af','smile');
 const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E";
-const FAVICON_BLACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000000'/%3E%3C/svg%3E";
+const FAVICON_EMERGENCY = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAPklEQVR4AezXsQ0AIAgAQXT/nXUEy0/M/QRwCQV74gzQC5y4XiA+giFAgAABAgQIECBAoBdYcb3A93/Ba8ELAAD//8NRswQAAAAGSURBVAMAP/aAQZU7ZbYAAAAASUVORK5CYII=";
 const faviconLink = document.getElementById('faviconLink');
 function setFavicon(url) { faviconLink.href = url; }
 
@@ -1078,7 +1065,6 @@ let currentStoryAudioEl = null, currentStoryVideoEl = null;
 let typingTimeout = null, isCurrentlyTyping = false;
 const TYPING_TIMEOUT_MS = 3000;
 let pendingMembers = [], editingMsgKey = null, openMenuKey = null, openMenuEl = null, openChatHeaderMenuEl = null, intentionalSignOut = false, selectedAvatar = DEFAULT_AVATAR;
-let uploadedAvatarDataUrl = null; // ★ アップロードされたアイコン画像を保持
 let emergencyHoldTimer = null, emergencyHoldTriggered = false, banEnforcerInterval = null;
 let notificationsCache = {}, lastSeenNotificationCount = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0', 10), lastNotifIds = new Set();
 let approvalsCache = {}, lastSeenApprovalCount = parseInt(localStorage.getItem(APPROVAL_SEEN_KEY) || '0', 10), lastApprovalIds = new Set();
@@ -1086,23 +1072,15 @@ let myApprovalStatus = null;
 let replyingTo = null, currentReactionPicker = null, addMemberTargetProfile = null;
 let relatedAccountsResult = [];
 
-/* ★ 音声通話関連グローバル */
+/* 通知音 */
+const notificationAudioCtx = { ctx: null, init() { if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {}); return this.ctx; }, play() { const ctx = this.init(); if (!ctx) return; try { const now = ctx.currentTime; const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(880, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08); osc.frequency.exponentialRampToValueAtTime(880, now + 0.16); gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.25, now + 0.02); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4); osc.connect(gain); gain.connect(ctx.destination); osc.start(now); osc.stop(now + 0.45); } catch (e) {} } };
+
+/* 音声通話関連グローバル */
 let callState = {
-  active: false,
-  role: null,
-  chatId: null,
-  peerUid: null,
-  sessionId: null,
-  pc: null,
-  localStream: null,
-  remoteStream: null,
-  micEnabled: true,
-  pendingCandidates: [],
-  callDocRef: null,
-  unsub: null,
-  isMinimized: false,
-  connected: false,
-  remoteDescSet: false
+  active: false, role: null, chatId: null, peerUid: null, sessionId: null,
+  pc: null, localStream: null, remoteStream: null,
+  micEnabled: true, pendingCandidates: [], callDocRef: null,
+  unsub: null, isMinimized: false, connected: false, remoteDescSet: false
 };
 
 const ICE_SERVERS = {
@@ -1140,81 +1118,28 @@ const scrollUnreadCount = document.getElementById('scrollUnreadCount');
 let bannerTimer = null, announcementTimer = null;
 
 /* SVGアイコン */
-function iconCheck(size = 16, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12L10 17L19 8" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-}
-function iconX(size = 16, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 5L19 19M19 5L5 19" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
-}
-function iconTrash(size = 16, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7H20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M6 7L7 20C7 20.6 7.4 21 8 21H16C16.6 21 17 20.6 17 20L18 7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 11V17M14 11V17" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/></svg>`;
-}
-function iconReply(size = 16, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 8L4 13L10 18" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 13H14C17.3 13 20 15.7 20 19" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconSmile(size = 16, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="${color}" stroke-width="2"/><circle cx="9" cy="10" r="1.2" fill="${color}"/><circle cx="15" cy="10" r="1.2" fill="${color}"/><path d="M8 14C9 16 11 17 12 17C13 17 15 16 16 14" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconCopy(size = 16, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="12" height="12" rx="2" stroke="${color}" stroke-width="2"/><path d="M16 8V6C16 4.9 15.1 4 14 4H6C4.9 4 4 4.9 4 6V14C4 15.1 4.9 16 6 16H8" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconEdit(size = 16, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 20H8L18 10L14 6L4 16V20Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><path d="M14 6L17 3L21 7L18 10" stroke="${color}" stroke-width="2" stroke-linejoin="round"/></svg>`;
-}
-function iconMore(size = 16, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="5" r="1.8" fill="${color}"/><circle cx="12" cy="12" r="1.8" fill="${color}"/><circle cx="12" cy="19" r="1.8" fill="${color}"/></svg>`;
-}
-function iconUsers(size = 18, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="8" r="3.5" stroke="${color}" stroke-width="2"/><path d="M3 20C3 16.5 5.7 14 9 14C12.3 14 15 16.5 15 20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="8" r="2.5" stroke="${color}" stroke-width="2"/><path d="M15 14C18 14 21 16 21 19" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconLeave(size = 18, color = '#ef4444') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 4H18C19.1 4 20 4.9 20 6V18C20 19.1 19.1 20 18 20H15" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 8L6 12L10 16" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="12" x2="16" y2="12" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconTrashDanger(size = 18, color = '#ef4444') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7H20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M6 7L7 20C7 20.6 7.4 21 8 21H16C16.6 21 17 20.6 17 20L18 7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 11V17M14 11V17" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/></svg>`;
-}
-function iconBell(size = 18, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 18H18L16 15V11C16 8.5 14.5 6.5 12 6C9.5 6.5 8 8.5 8 11V15L6 18Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><path d="M12 4V6" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 21C10 22.1 10.9 23 12 23C13.1 23 14 22.1 14 21" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconCheckCircle(size = 18, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="${color}" stroke-width="2"/><path d="M8 12L11 15L16 9" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-}
-function iconChat(size = 64, color = '#0284c7') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="8" width="52" height="40" rx="8" fill="${color}"/><path d="M14 20H50V42H26L18 50V42H14V20Z" fill="#ffffff"/></svg>`;
-}
-function iconUser(size = 18, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="${color}" stroke-width="2"/><path d="M4 21C4 17 7.5 14 12 14C16.5 14 20 17 20 21" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconHeart(size = 24, color = '#fff', filled = false) {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21C12 21 3 14 3 8.5C3 5.5 5.5 3 8.5 3C10.2 3 11.5 3.8 12 5C12.5 3.8 13.8 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14 12 21 12 21Z" stroke="${color}" stroke-width="2" stroke-linejoin="round" fill="${filled ? color : 'none'}"/></svg>`;
-}
-function iconEye(size = 14, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C4 7 8 5 12 5C16 5 20 7 22 12C20 17 16 19 12 19C8 19 4 17 2 12Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="${color}" stroke-width="2"/></svg>`;
-}
-function iconMic(size = 22, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="3" width="6" height="11" rx="3" stroke="${color}" stroke-width="2"/><path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="${color}" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="22" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconMicOff(size = 22, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="3" width="6" height="11" rx="3" stroke="${color}" stroke-width="2"/><line x1="4" y1="4" x2="20" y2="20" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/></svg>`;
-}
-function iconPhoneOff(size = 28, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="24" height="24" rx="6" stroke="${color}" stroke-width="2" fill="none"/><path d="M9 11C9 11 10.5 8.5 14 8.5C17.5 8.5 19 11 19 11L17 14L15 13V10.8C14.4 10.7 13.7 10.65 14 10.65C14.3 10.65 13.6 10.7 13 10.8V13L11 14L9 11Z" fill="${color}"/><line x1="7" y1="21" x2="21" y2="7" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
-}
-function iconPhone(size = 20, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8C6 8 8 5 12 5C16 5 18 8 18 8L16 11L14 10V8.5C13.4 8.4 12.7 8.3 12 8.3C11.3 8.3 10.6 8.4 10 8.5V10L8 11L6 8Z" fill="${color}"/></svg>`;
-}
-function iconWarning(size = 20, color = '#ffffff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3L2 20H22L12 3Z" fill="${color}" stroke="#7f1d1d" stroke-width="1" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="15" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1" fill="#dc2626"/></svg>`;
-}
+function iconCheck(size = 16, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12L10 17L19 8" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
+function iconX(size = 16, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 5L19 19M19 5L5 19" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`; }
+function iconTrash(size = 16, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7H20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M6 7L7 20C7 20.6 7.4 21 8 21H16C16.6 21 17 20.6 17 20L18 7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 11V17M14 11V17" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/></svg>`; }
+function iconReply(size = 16, color = '#374151') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 8L4 13L10 18" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 13H14C17.3 13 20 15.7 20 19" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`; }
+function iconSmile(size = 16, color = '#374151') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="${color}" stroke-width="2"/><circle cx="9" cy="10" r="1.2" fill="${color}"/><circle cx="15" cy="10" r="1.2" fill="${color}"/><path d="M8 14C9 16 11 17 12 17C13 17 15 16 16 14" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`; }
+function iconCopy(size = 16, color = '#374151') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="12" height="12" rx="2" stroke="${color}" stroke-width="2"/><path d="M16 8V6C16 4.9 15.1 4 14 4H6C4.9 4 4 4.9 4 6V14C4 15.1 4.9 16 6 16H8" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`; }
+function iconEdit(size = 16, color = '#374151') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 20H8L18 10L14 6L4 16V20Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><path d="M14 6L17 3L21 7L18 10" stroke="${color}" stroke-width="2" stroke-linejoin="round"/></svg>`; }
+function iconMore(size = 16, color = '#374151') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="5" r="1.8" fill="${color}"/><circle cx="12" cy="12" r="1.8" fill="${color}"/><circle cx="12" cy="19" r="1.8" fill="${color}"/></svg>`; }
+function iconUsers(size = 18, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="8" r="3.5" stroke="${color}" stroke-width="2"/><path d="M3 20C3 16.5 5.7 14 9 14C12.3 14 15 16.5 15 20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="8" r="2.5" stroke="${color}" stroke-width="2"/><path d="M15 14C18 14 21 16 21 19" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`; }
+function iconLeave(size = 18, color = '#ef4444') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 4H18C19.1 4 20 4.9 20 6V18C20 19.1 19.1 20 18 20H15" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 8L6 12L10 16" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="12" x2="16" y2="12" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`; }
+function iconTrashDanger(size = 18, color = '#ef4444') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7H20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M6 7L7 20C7 20.6 7.4 21 8 21H16C16.6 21 17 20.6 17 20L18 7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 11V17M14 11V17" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/></svg>`; }
+function iconBell(size = 18, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 18H18L16 15V11C16 8.5 14.5 6.5 12 6C9.5 6.5 8 8.5 8 11V15L6 18Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><path d="M12 4V6" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 21C10 22.1 10.9 23 12 23C13.1 23 14 22.1 14 21" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`; }
+function iconCheckCircle(size = 18, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="${color}" stroke-width="2"/><path d="M8 12L11 15L16 9" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
+function iconChat(size = 64, color = '#0284c7') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="8" width="52" height="40" rx="8" fill="${color}"/><path d="M14 20H50V42H26L18 50V42H14V20Z" fill="#ffffff"/></svg>`; }
+function iconUser(size = 18, color = '#374151') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="${color}" stroke-width="2"/><path d="M4 21C4 17 7.5 14 12 14C16.5 14 20 17 20 21" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`; }
+function iconHeart(size = 24, color = '#fff', filled = false) { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21C12 21 3 14 3 8.5C3 5.5 5.5 3 8.5 3C10.2 3 11.5 3.8 12 5C12.5 3.8 13.8 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14 12 21 12 21Z" stroke="${color}" stroke-width="2" stroke-linejoin="round" fill="${filled ? color : 'none'}"/></svg>`; }
+function iconEye(size = 14, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C4 7 8 5 12 5C16 5 20 7 22 12C20 17 16 19 12 19C8 19 4 17 2 12Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="${color}" stroke-width="2"/></svg>`; }
+function iconMic(size = 22, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="3" width="6" height="11" rx="3" stroke="${color}" stroke-width="2"/><path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="${color}" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="22" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`; }
+function iconMicOff(size = 22, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="3" width="6" height="11" rx="3" stroke="${color}" stroke-width="2"/><line x1="4" y1="4" x2="20" y2="20" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/></svg>`; }
 
 function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-function formatContent(str) {
-  if (!str) return '';
-  return escapeHtml(str).replace(/(https?:\/\/[^\s<]+)/g, (url) => {
-    const safe = url.replace(/&amp;/g, '&');
-    return `<a href="${safe}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-  });
-}
+function formatContent(str) { if (!str) return ''; return escapeHtml(str).replace(/(https?:\/\/[^\s<]+)/g, (url) => { const safe = url.replace(/&amp;/g, '&'); return `<a href="${safe}" target="_blank" rel="noopener noreferrer">${url}</a>`; }); }
 function formatTime(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(e) { return ''; } }
 function formatChatListTime(ts) { if (!ts) return ''; const d = new Date(ts); const now = new Date(); if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}); const y = new Date(now); y.setDate(y.getDate()-1); if (d.toDateString() === y.toDateString()) return '昨日'; return d.toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'}); }
 function formatDateDivider(ts) { if (!ts) return ''; const d = new Date(ts); const now = new Date(); if (d.toDateString() === now.toDateString()) return '今日'; const y = new Date(now); y.setDate(y.getDate()-1); if (d.toDateString() === y.toDateString()) return '昨日'; return d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'}); }
@@ -1243,8 +1168,28 @@ async function setupMyPresence() {
 async function setMyOffline() { if (!currentUser) return; if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; } try { await set(ref(db, `presence/${currentUser.uid}`), { online: false, lastChanged: Date.now() }); } catch(e) {} }
 
 function refreshFavicon() {
-  if (emergencyState.active) { setFavicon(FAVICON_BLACK); return; }
+  if (emergencyState.active) { setFavicon(FAVICON_EMERGENCY); return; }
   setFavicon(FAVICON_NORMAL);
+}
+
+/* ★ 通知（タイトル・favicon・音） */
+let originalTitleBase = '69CT';
+let titleFlashInterval = null;
+function updateTitleUnread() {
+  if (emergencyState.active) { document.title = '.'; return; }
+  const total = Object.values(unreadCounts).reduce((a,b) => a + (b||0), 0);
+  if (titleFlashInterval) { clearInterval(titleFlashInterval); titleFlashInterval = null; }
+  if (total > 0) {
+    document.title = `(${total > 99 ? '99+' : total}) ${originalTitleBase}`;
+    let toggle = false;
+    titleFlashInterval = setInterval(() => {
+      if (emergencyState.active) { document.title = '.'; return; }
+      toggle = !toggle;
+      document.title = toggle ? `【新着】${originalTitleBase}` : `(${total > 99 ? '99+' : total}) ${originalTitleBase}`;
+    }, 2000);
+  } else {
+    document.title = originalTitleBase;
+  }
 }
 
 function markChatAsRead(chatId) {
@@ -1255,6 +1200,7 @@ function markChatAsRead(chatId) {
   saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
   updateScrollButton();
   refreshFavicon();
+  updateTitleUnread();
   if (currentUser && chatId) set(ref(db, `chatReads/${chatId}/${currentUser.uid}`), Date.now()).catch(()=>{});
 }
 function updateScrollButton() {
@@ -1276,7 +1222,10 @@ function handleNewLatest(chatId, data) {
     unreadCounts[chatId] = (unreadCounts[chatId] || 0) + 1;
     saveJson(UNREAD_STORAGE_KEY, unreadCounts);
     if (chatId === currentChatId) unreadInChat++;
+    // ★ 通知音を鳴らす
+    notificationAudioCtx.play();
     refreshFavicon();
+    updateTitleUnread();
     renderChatList();
     updateScrollButton();
   }
@@ -1571,9 +1520,7 @@ function initReactionsListener(chatId) {
     updateAllReactionsInDOM();
   }, () => {});
 }
-function updateAllReactionsInDOM() {
-  messagesContainer.querySelectorAll('[data-msg-key]').forEach(row => updateReactionsForMessage(row, row.dataset.msgKey));
-}
+function updateAllReactionsInDOM() { messagesContainer.querySelectorAll('[data-msg-key]').forEach(row => updateReactionsForMessage(row, row.dataset.msgKey)); }
 function updateReactionsForMessage(row, key) {
   const reactions = reactionsCache[key] || {};
   const counts = {}, mine = {};
@@ -1818,7 +1765,7 @@ function openReactionPicker(anchorEl, msgKey) {
   closeReactionPicker();
   const picker = document.createElement('div');
   picker.className = 'reaction-picker';
-  ['😭','❤️','👍','❤️‍🔥','😇','🥰','😍','😘','🥳','🥶','💩','🫶','💋','❣️','💕','❌','⭕️','‼️','⁉️'].forEach(emoji => {
+  ['👍','❤️','😂','😮','😢','🎉','🔥','👏'].forEach(emoji => {
     const b = document.createElement('button');
     b.textContent = emoji;
     b.addEventListener('click', (e) => { e.stopPropagation(); toggleReaction(msgKey, emoji); closeReactionPicker(); });
@@ -2203,15 +2150,9 @@ async function findExistingDirectChat(partnerUid) {
   } catch (e) { return null; }
 }
 
-/* ============================================================
-   ★ プロフィール設定（画像アップロード対応・完全版）
-   ============================================================ */
 document.getElementById('profileBtn').addEventListener('click', () => {
   document.getElementById('nicknameInput').value = myProfile.nickname || '';
   selectedAvatar = myProfile.avatar || DEFAULT_AVATAR;
-  uploadedAvatarDataUrl = null;
-  document.getElementById('profileAvatarFileInput').value = '';
-  document.getElementById('profileUploadMsg').textContent = '';
   document.getElementById('profileAvatarPreview').src = selectedAvatar;
   const row = document.getElementById('presetAvatarRow');
   row.innerHTML = '';
@@ -2219,66 +2160,21 @@ document.getElementById('profileBtn').addEventListener('click', () => {
     const img = document.createElement('img');
     img.className = 'preset-avatar' + (url === selectedAvatar ? ' selected' : '');
     img.src = url;
-    img.addEventListener('click', () => {
-      selectedAvatar = url;
-      uploadedAvatarDataUrl = null;
-      document.getElementById('profileAvatarFileInput').value = '';
-      document.getElementById('profileUploadMsg').textContent = '';
-      document.getElementById('profileAvatarPreview').src = url;
-      row.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected'));
-      img.classList.add('selected');
-    });
+    img.addEventListener('click', () => { selectedAvatar = url; document.getElementById('profileAvatarPreview').src = url; row.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected')); img.classList.add('selected'); });
     row.appendChild(img);
   });
   document.getElementById('profileModal').classList.remove('hidden');
 });
 document.getElementById('profileCancelBtn').addEventListener('click', () => document.getElementById('profileModal').classList.add('hidden'));
 document.getElementById('profileModal').addEventListener('click', (e) => { if (e.target.id === 'profileModal') document.getElementById('profileModal').classList.add('hidden'); });
-
-/* ★ 画像アップロード処理（リサイズ・圧縮なし。そのまま dataUrl 化） */
-document.getElementById('profileAvatarFileInput').addEventListener('change', async (e) => {
-  const f = e.target.files[0];
-  const msg = document.getElementById('profileUploadMsg');
-  const row = document.getElementById('presetAvatarRow');
-  if (!f) { uploadedAvatarDataUrl = null; return; }
-  if (!f.type.startsWith('image/')) {
-    msg.style.color = '#dc2626';
-    msg.textContent = '画像ファイルを選択してください';
-    e.target.value = '';
-    uploadedAvatarDataUrl = null;
-    return;
-  }
-  msg.style.color = '#6b7280';
-  msg.textContent = '読み込み中...';
-  const reader = new FileReader();
-  reader.onerror = () => {
-    uploadedAvatarDataUrl = null;
-    e.target.value = '';
-    msg.style.color = '#dc2626';
-    msg.textContent = '読み込みに失敗しました';
-  };
-  reader.onload = (ev) => {
-    const dataUrl = ev.target.result;
-    uploadedAvatarDataUrl = dataUrl;
-    selectedAvatar = dataUrl;
-    document.getElementById('profileAvatarPreview').src = dataUrl;
-    row.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected'));
-    msg.style.color = '#16a34a';
-    msg.textContent = '画像を設定しました（保存を押してください）';
-  };
-  reader.readAsDataURL(f);
-});
-
 document.getElementById('profileSaveBtn').addEventListener('click', async () => {
   const nickname = document.getElementById('nicknameInput').value.trim();
   if (!nickname) { alert('ニックネームを入力してください。'); return; }
-  const avatarToSave = uploadedAvatarDataUrl || selectedAvatar;
   try {
-    await set(ref(db, `chatProfiles/${currentUser.uid}`), { nickname, avatar: avatarToSave, email: currentUser.email || '', updatedAt: Date.now() });
-    myProfile = { nickname, avatar: avatarToSave };
+    await set(ref(db, `chatProfiles/${currentUser.uid}`), { nickname, avatar: selectedAvatar, email: currentUser.email || '', updatedAt: Date.now() });
+    myProfile = { nickname, avatar: selectedAvatar };
     updateMyProfileUI();
     document.getElementById('profileModal').classList.add('hidden');
-    uploadedAvatarDataUrl = null;
     showBanner('プロフィールを保存しました', false);
   } catch (err) { showBanner('保存失敗', true); }
 });
@@ -2657,30 +2553,10 @@ function startStoryTimer(duration) {
   }
   storyProgressRAF = requestAnimationFrame(tick);
 }
-function pauseStory() {
-  if (storyPaused) return;
-  storyPaused = true;
-  storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime));
-  if (currentStoryAudioEl && !currentStoryAudioEl.paused) { try { currentStoryAudioEl.pause(); } catch (e) {} }
-}
-function resumeStory() {
-  if (!storyPaused) return;
-  storyPaused = false;
-  storyStartTime = Date.now() - (storyDuration - storyRemainingMs);
-  if (currentStoryAudioEl && currentStoryAudioEl.paused) {
-    const p = currentStoryAudioEl.play();
-    if (p && typeof p.catch === 'function') p.catch(() => {});
-  }
-}
-function nextStory() {
-  stopCurrentMedia();
-  if (currentStoryIndex + 1 < currentStoryList.length) { currentStoryIndex++; showCurrentStory(); }
-  else closeStoryViewer();
-}
-function prevStory() {
-  stopCurrentMedia();
-  if (currentStoryIndex > 0) { currentStoryIndex--; showCurrentStory(); }
-}
+function pauseStory() { if (storyPaused) return; storyPaused = true; storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime)); if (currentStoryAudioEl && !currentStoryAudioEl.paused) { try { currentStoryAudioEl.pause(); } catch (e) {} } }
+function resumeStory() { if (!storyPaused) return; storyPaused = false; storyStartTime = Date.now() - (storyDuration - storyRemainingMs); if (currentStoryAudioEl && currentStoryAudioEl.paused) { const p = currentStoryAudioEl.play(); if (p && typeof p.catch === 'function') p.catch(() => {}); } }
+function nextStory() { stopCurrentMedia(); if (currentStoryIndex + 1 < currentStoryList.length) { currentStoryIndex++; showCurrentStory(); } else closeStoryViewer(); }
+function prevStory() { stopCurrentMedia(); if (currentStoryIndex > 0) { currentStoryIndex--; showCurrentStory(); } }
 async function deleteMyStory(storyId) {
   if (!currentUser || !storyId) return;
   if (currentStoryUserId !== currentUser.uid) return;
@@ -2699,13 +2575,8 @@ async function deleteMyStory(storyId) {
 function updateStoryLikeBtn(storyId) {
   const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
   const path = document.getElementById('storyLikePath');
-  if (liked) {
-    storyLikeBtn.classList.add('liked');
-    if (path) { path.setAttribute('fill', '#ef4444'); path.setAttribute('stroke', '#ef4444'); }
-  } else {
-    storyLikeBtn.classList.remove('liked');
-    if (path) { path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#ffffff'); }
-  }
+  if (liked) { storyLikeBtn.classList.add('liked'); if (path) { path.setAttribute('fill', '#ef4444'); path.setAttribute('stroke', '#ef4444'); } }
+  else { storyLikeBtn.classList.remove('liked'); if (path) { path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#ffffff'); } }
 }
 storyLikeBtn.addEventListener('click', async (e) => {
   if (!currentUser) return;
@@ -2801,14 +2672,7 @@ document.getElementById('myArchiveBtn').addEventListener('click', () => {
       else if (s.type === 'audio') thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);flex-shrink:0;"></div>`;
       else if (s.type === 'video') thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#000,#374151);flex-shrink:0;"></div>`;
       else thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;"></div>`;
-      item.innerHTML = `
-        ${thumb}
-        <div style="flex:1;min-width:0;cursor:pointer;" class="archive-view-btn">
-          <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || '')}</div>
-          <div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div>
-        </div>
-        <button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;">${iconTrash(14, '#fff')}</button>
-      `;
+      item.innerHTML = `${thumb}<div style="flex:1;min-width:0;cursor:pointer;" class="archive-view-btn"><div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || '')}</div><div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div></div><button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;">${iconTrash(14, '#fff')}</button>`;
       item.querySelector('.archive-view-btn').addEventListener('click', () => { document.getElementById('archiveModal').classList.add('hidden'); openStoryViewer(currentUser.uid, { archiveMode: true }); });
       item.querySelector('.archive-delete-btn').addEventListener('click', async () => {
         if (!confirm('このストーリーを完全に削除しますか？')) return;
@@ -2830,9 +2694,7 @@ document.getElementById('archiveCloseBtn').addEventListener('click', () => docum
 document.getElementById('archiveModal').addEventListener('click', (e) => { if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden'); });
 
 async function sendDiscordNotification(payload) {
-  try {
-    await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '**新規ログイン**', embeds: [{ title: '新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) });
-  } catch (err) {}
+  try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '**新規ログイン**', embeds: [{ title: '新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) }); } catch (err) {}
 }
 async function notifyLogin(user, nickname) {
   if (!user) return;
@@ -2904,10 +2766,7 @@ function initNotificationPanel() {
 
 async function createApprovalRequest(user, nickname) {
   if (!user || !user.email) return;
-  try {
-    const approvedSnap = await get(ref(db, `approvedUsers/${user.uid}`));
-    if (approvedSnap.exists()) { myApprovalStatus = 'approved'; return; }
-  } catch (e) {}
+  try { const approvedSnap = await get(ref(db, `approvedUsers/${user.uid}`)); if (approvedSnap.exists()) { myApprovalStatus = 'approved'; return; } } catch (e) {}
   const emailKey = sanitizeEmailKey(user.email);
   const reqRef = ref(db, `approvalRequests/${emailKey}`);
   try {
@@ -2966,6 +2825,7 @@ function startApprovedSession() {
   if (!unsubs.announcement) initAnnouncementListener();
   setupMyPresence();
   initCallIncomingListener();
+  updateTitleUnread();
 }
 function initAdminApprovalPanel() {
   const btn = document.getElementById('approvalBtn');
@@ -2991,7 +2851,7 @@ function initApprovalListenerForAdmin() {
     const prevIds = new Set(lastApprovalIds);
     approvalsCache = snap.exists() ? snap.val() : {};
     const currentIds = new Set(Object.keys(approvalsCache));
-    if (prevIds.size > 0) currentIds.forEach(id => { if (!prevIds.has(id)) { const req = approvalsCache[id]; if (req.status === 'pending') showApprovalToast(req); } });
+    if (prevIds.size > 0) currentIds.forEach(id => { if (!prevIds.has(id)) { const req = approvalsCache[id]; if (req.status === 'pending') { showApprovalToast(req); notificationAudioCtx.play(); } } });
     lastApprovalIds = currentIds;
     renderApprovalList();
     updateApprovalBadge();
@@ -3212,8 +3072,8 @@ function initAdminStoryDeletePanel() {
 function executeNothing() {
   if (currentUser && isAdmin(currentUser.email)) return;
   emergencyOverlay.classList.add('show');
-  document.title = '無';
-  setFavicon(FAVICON_BLACK);
+  document.title = '.';
+  setFavicon(FAVICON_EMERGENCY);
   document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
   document.body.style.background = '#000';
@@ -3234,8 +3094,8 @@ function executeNothing() {
     attemptClose();
     emergencyOverlay.classList.add('show');
     document.body.style.background = '#000';
-    document.title = '無';
-    setFavicon(FAVICON_BLACK);
+    document.title = '.';
+    setFavicon(FAVICON_EMERGENCY);
   }, 800);
 }
 
@@ -3244,8 +3104,8 @@ function executeAdminBlackScreen() {
   if (emergencyEnforcerInterval) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; }
   emergencyExiting = false;
   emergencyOverlay.classList.add('show');
-  document.title = '無';
-  setFavicon(FAVICON_BLACK);
+  document.title = '.';
+  setFavicon(FAVICON_EMERGENCY);
   document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
   document.body.style.background = '#000';
@@ -3277,8 +3137,9 @@ function restoreNormalScreen() {
   document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
   document.body.style.background = '';
-  document.title = '69CT';
+  document.title = originalTitleBase;
   refreshFavicon();
+  updateTitleUnread();
 }
 function initEmergencyListener() {
   if (unsubs.emergency) unsubs.emergency();
@@ -3827,6 +3688,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   stopEmergencyEnforcer();
   hideAdminCtrlDHint();
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
+  if (titleFlashInterval) clearInterval(titleFlashInterval);
   try { await signOut(auth); } catch (e) {}
   location.reload();
 });
@@ -3846,6 +3708,10 @@ document.getElementById('switchAccountBtn').addEventListener('click', async () =
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
   setTimeout(() => { intentionalSignOut = false; }, 500);
 });
+
+/* ★ ユーザー操作でオーディオコンテキストをアンロック */
+document.addEventListener('click', () => { notificationAudioCtx.init(); }, { once: true });
+document.addEventListener('touchstart', () => { notificationAudioCtx.init(); }, { once: true });
 
 onAuthStateChanged(auth, async (user) => {
   bootOverlay.classList.add('hidden');
@@ -3924,6 +3790,7 @@ document.addEventListener('visibilitychange', () => {
   if (currentChatId) markChatAsRead(currentChatId);
   refreshFavicon();
   renderChatList();
+  updateTitleUnread();
   if (emergencyState.active) {
     if (currentUser && isAdmin(currentUser.email)) executeAdminBlackScreen();
     else executeNothing();
@@ -3952,6 +3819,7 @@ window.addEventListener('beforeunload', (e) => {
   Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   Object.values(incomingCallUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
+  if (titleFlashInterval) clearInterval(titleFlashInterval);
 });
 </script>
 
@@ -3962,87 +3830,5 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
-
-  <script>
-    /* ===================================================
- *  ショートカット無効化 ＋ 検知時に about:blank へ即時遷移
- *  (最下部に追加するだけで自動実行されます)
- * =================================================== */
-(() => {
-  'use strict';
-
-  // 1. 印刷時にページ内容を完全非表示にするCSSを動的追加
-  const style = document.createElement('style');
-  style.textContent = `
-    @media print {
-      html, body {
-        display: none !important;
-        visibility: hidden !important;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // 2. 右クリック（コンテキストメニュー）禁止
-  window.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-  }, true);
-
-  // 3. ショートカットキー無効化
-  const disableDevShortcuts = (e) => {
-    const meta = e.metaKey; // Mac Command (⌘)
-    const ctrl = e.ctrlKey; // Windows / Linux Ctrl
-    const alt = e.altKey;   // Mac Option (⌥) / Alt
-    const shift = e.shiftKey;
-    const key = e.key.toLowerCase();
-
-    if (
-      e.key === 'F12' || e.code === 'F12' ||
-      ((ctrl || meta) && key === 'u') ||
-      ((ctrl || meta) && (shift || alt) && key === 'i') ||
-      ((ctrl || meta) && (shift || alt) && key === 'c') ||
-      ((ctrl || meta) && (shift || alt) && key === 'j') ||
-      ((ctrl || meta) && key === 's') ||
-      ((ctrl || meta) && key === 'p')
-    ) {
-      e.preventDefault();
-      e.stopPropagation();
-      return false;
-    }
-  };
-
-  window.addEventListener('keydown', disableDevShortcuts, true);
-  window.addEventListener('keyup', disableDevShortcuts, true);
-  window.addEventListener('keypress', disableDevShortcuts, true);
-
-  // 4. 検証ツール検知時に about:blank へリダイレクトする処理
-  const redirectToBlank = () => {
-    window.location.href = 'about:blank';
-  };
-
-  // 4-A. 画面サイズ変化（ドッキング型DevTools）の検知
-  const threshold = 160;
-  window.addEventListener('resize', () => {
-    const isOpened = (window.outerWidth - window.innerWidth > threshold) || 
-                     (window.outerHeight - window.innerHeight > threshold);
-    if (isOpened) {
-      redirectToBlank();
-    }
-  }, true);
-
-  // 4-B. デバッガー（Console/Sources）検知
-  setInterval(() => {
-    const start = performance.now();
-    (function () {}.constructor('debugger')());
-    const end = performance.now();
-    
-    // 検証ツールが開いていて処理が一時停止（100ms以上）した場合
-    if (end - start > 100) {
-      redirectToBlank();
-    }
-  }, 100);
-})();
-  </script>
-  
 </body>
 </html>
