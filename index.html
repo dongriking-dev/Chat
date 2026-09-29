@@ -979,10 +979,18 @@ const PRESET_AVATARS = [
   makeAvatarSvg('#475569','panda'), makeAvatarSvg('#c026d3','game'), makeAvatarSvg('#0d9488','coffee')
 ];
 const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af','smile');
+
+/* ★ favicon 定義 */
 const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E";
-const FAVICON_EMERGENCY = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAPklEQVR4AezXsQ0AIAgAQXT/nXUEy0/M/QRwCQV74gzQC5y4XiA+giFAgAABAgQIECBAoBdYcb3A93/Ba8ELAAD//8NRswQAAAAGSURBVAMAP/aAQZU7ZbYAAAAASUVORK5CYII=";
-/* ★ 通知用 favicon（赤ドット付き） */
-const FAVICON_NOTIFY = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='52' cy='12' r='10' fill='%23ef4444' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E";
+const FAVICON_BLACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000000'/%3E%3C/svg%3E";
+/* ★ 未読通知用 favicon（赤い丸バッジ付き） */
+const FAVICON_NOTIFY = "data:image/svg+xml," + encodeURIComponent(
+  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
+    <rect x='4' y='4' width='56' height='56' rx='12' fill='#0284c7'/>
+    <path d='M14 20h36v20H28l-8 8v-8h-6z' fill='#fff'/>
+    <circle cx='52' cy='12' r='11' fill='#ef4444' stroke='#fff' stroke-width='3'/>
+  </svg>`
+);
 const faviconLink = document.getElementById('faviconLink');
 function setFavicon(url) { faviconLink.href = url; }
 
@@ -1051,11 +1059,6 @@ let relatedAccountsResult = [];
 
 /* ★ 通知関連グローバル */
 let notificationPermissionGranted = false;
-let titleFlashInterval = null;
-let titleFlashToggle = false;
-const originalTitleBase = '69CT';
-let faviconFlashInterval = null;
-let faviconFlashToggle = false;
 
 /* ★ 通知音（Web Audio / 複数トーン） */
 const notificationAudioCtx = {
@@ -1072,7 +1075,6 @@ const notificationAudioCtx = {
     }
     return this.ctx;
   },
-  /* 通知音を複数回鳴らして確実に届ける */
   play() {
     const ctx = this.init();
     if (!ctx) return;
@@ -1094,10 +1096,8 @@ const notificationAudioCtx = {
         osc.stop(now + 0.55);
       } catch (e) {}
     };
-    // 2回鳴らして聞こえやすく
     playOnce(0);
     playOnce(0.6);
-    // 別タブ復帰時にもう一度鳴らすためフラグ
     this.lastPlayedAt = Date.now();
   }
 };
@@ -1126,53 +1126,32 @@ function showDesktopNotification(title, body) {
   } catch (e) {}
 }
 
-/* ★ 未読数に応じたタイトル・favicon の点滅 */
+/* ============================================================
+   favicon 通知（タイトルは変更しない）
+   ============================================================ */
 function getTotalUnread() {
   return Object.values(unreadCounts).reduce((a, b) => a + (b || 0), 0);
 }
-function startTitleFlash() {
-  if (titleFlashInterval) return;
-  titleFlashToggle = false;
-  titleFlashInterval = setInterval(() => {
-    if (emergencyState.active) { document.title = '.'; return; }
-    const total = getTotalUnread();
-    if (total <= 0) { stopTitleFlash(); updateTitleUnread(); return; }
-    titleFlashToggle = !titleFlashToggle;
-    document.title = titleFlashToggle ? `【新着】${originalTitleBase}` : `(${total > 99 ? '99+' : total}) ${originalTitleBase}`;
-  }, 1500);
-}
-function stopTitleFlash() {
-  if (titleFlashInterval) { clearInterval(titleFlashInterval); titleFlashInterval = null; }
-}
-function startFaviconFlash() {
-  if (faviconFlashInterval) return;
-  faviconFlashToggle = false;
-  faviconFlashInterval = setInterval(() => {
-    if (emergencyState.active) { setFavicon(FAVICON_EMERGENCY); return; }
-    const total = getTotalUnread();
-    if (total <= 0) { stopFaviconFlash(); refreshFavicon(); return; }
-    faviconFlashToggle = !faviconFlashToggle;
-    setFavicon(faviconFlashToggle ? FAVICON_NOTIFY : FAVICON_NORMAL);
-  }, 1000);
-}
-function stopFaviconFlash() {
-  if (faviconFlashInterval) { clearInterval(faviconFlashInterval); faviconFlashInterval = null; }
+function refreshFavicon() {
+  if (emergencyState.active) { setFavicon(FAVICON_BLACK); return; }
+  if (getTotalUnread() > 0) { setFavicon(FAVICON_NOTIFY); return; }
+  setFavicon(FAVICON_NORMAL);
 }
 function updateTitleUnread() {
-  if (emergencyState.active) { document.title = '.'; return; }
-  const total = getTotalUnread();
-  if (total > 0) {
-    document.title = `(${total > 99 ? '99+' : total}) ${originalTitleBase}`;
-    startTitleFlash();
-    startFaviconFlash();
-  } else {
-    stopTitleFlash();
-    stopFaviconFlash();
-    document.title = originalTitleBase;
-  }
+  if (emergencyState.active) { document.title = '無'; return; }
+  document.title = '69CT';
 }
 
-/* 音声通話関連グローバル */
+/* ★ 通知発火（favicon 更新・音・OS通知） */
+function fireNotification(chatId, senderName, messageText) {
+  notificationAudioCtx.play();
+  refreshFavicon();
+  const title = senderName ? `${senderName}` : '新着メッセージ';
+  const body = messageText || '新しいメッセージが届きました';
+  showDesktopNotification(title, body);
+}
+
+/* ★ 音声通話関連グローバル */
 let callState = {
   active: false, role: null, chatId: null, peerUid: null, sessionId: null,
   pc: null, localStream: null, remoteStream: null,
@@ -1263,24 +1242,6 @@ async function setupMyPresence() {
 }
 async function setMyOffline() { if (!currentUser) return; if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; } try { await set(ref(db, `presence/${currentUser.uid}`), { online: false, lastChanged: Date.now() }); } catch(e) {} }
 
-function refreshFavicon() {
-  if (emergencyState.active) { setFavicon(FAVICON_EMERGENCY); return; }
-  if (getTotalUnread() > 0) { setFavicon(FAVICON_NOTIFY); return; }
-  setFavicon(FAVICON_NORMAL);
-}
-
-/* ★ 通知発火（音・タイトル・favicon・OS通知） */
-function fireNotification(chatId, senderName, messageText) {
-  // 音
-  notificationAudioCtx.play();
-  // タイトル・favicon
-  updateTitleUnread();
-  // OSデスクトップ通知
-  const title = senderName ? `${senderName}` : '新着メッセージ';
-  const body = messageText || '新しいメッセージが届きました';
-  showDesktopNotification(title, body);
-}
-
 function markChatAsRead(chatId) {
   const ts = chatLatestMsgAt[chatId] || 0;
   lastReadAt[chatId] = ts;
@@ -1311,7 +1272,6 @@ function handleNewLatest(chatId, data) {
     unreadCounts[chatId] = (unreadCounts[chatId] || 0) + 1;
     saveJson(UNREAD_STORAGE_KEY, unreadCounts);
     if (chatId === currentChatId) unreadInChat++;
-    // ★ 通知を発火
     const senderProfile = getProfileForUid(lastSender);
     const chatObj = chatsCache[chatId];
     let notifTitle = senderProfile.nickname;
@@ -1611,7 +1571,9 @@ function initReactionsListener(chatId) {
     updateAllReactionsInDOM();
   }, () => {});
 }
-function updateAllReactionsInDOM() { messagesContainer.querySelectorAll('[data-msg-key]').forEach(row => updateReactionsForMessage(row, row.dataset.msgKey)); }
+function updateAllReactionsInDOM() {
+  messagesContainer.querySelectorAll('[data-msg-key]').forEach(row => updateReactionsForMessage(row, row.dataset.msgKey));
+}
 function updateReactionsForMessage(row, key) {
   const reactions = reactionsCache[key] || {};
   const counts = {}, mine = {};
@@ -2644,10 +2606,30 @@ function startStoryTimer(duration) {
   }
   storyProgressRAF = requestAnimationFrame(tick);
 }
-function pauseStory() { if (storyPaused) return; storyPaused = true; storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime)); if (currentStoryAudioEl && !currentStoryAudioEl.paused) { try { currentStoryAudioEl.pause(); } catch (e) {} } }
-function resumeStory() { if (!storyPaused) return; storyPaused = false; storyStartTime = Date.now() - (storyDuration - storyRemainingMs); if (currentStoryAudioEl && currentStoryAudioEl.paused) { const p = currentStoryAudioEl.play(); if (p && typeof p.catch === 'function') p.catch(() => {}); } }
-function nextStory() { stopCurrentMedia(); if (currentStoryIndex + 1 < currentStoryList.length) { currentStoryIndex++; showCurrentStory(); } else closeStoryViewer(); }
-function prevStory() { stopCurrentMedia(); if (currentStoryIndex > 0) { currentStoryIndex--; showCurrentStory(); } }
+function pauseStory() {
+  if (storyPaused) return;
+  storyPaused = true;
+  storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime));
+  if (currentStoryAudioEl && !currentStoryAudioEl.paused) { try { currentStoryAudioEl.pause(); } catch (e) {} }
+}
+function resumeStory() {
+  if (!storyPaused) return;
+  storyPaused = false;
+  storyStartTime = Date.now() - (storyDuration - storyRemainingMs);
+  if (currentStoryAudioEl && currentStoryAudioEl.paused) {
+    const p = currentStoryAudioEl.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  }
+}
+function nextStory() {
+  stopCurrentMedia();
+  if (currentStoryIndex + 1 < currentStoryList.length) { currentStoryIndex++; showCurrentStory(); }
+  else closeStoryViewer();
+}
+function prevStory() {
+  stopCurrentMedia();
+  if (currentStoryIndex > 0) { currentStoryIndex--; showCurrentStory(); }
+}
 async function deleteMyStory(storyId) {
   if (!currentUser || !storyId) return;
   if (currentStoryUserId !== currentUser.uid) return;
@@ -2916,8 +2898,8 @@ function startApprovedSession() {
   if (!unsubs.announcement) initAnnouncementListener();
   setupMyPresence();
   initCallIncomingListener();
-  updateTitleUnread();
   refreshFavicon();
+  updateTitleUnread();
   requestNotificationPermission();
 }
 function initAdminApprovalPanel() {
@@ -3165,8 +3147,8 @@ function initAdminStoryDeletePanel() {
 function executeNothing() {
   if (currentUser && isAdmin(currentUser.email)) return;
   emergencyOverlay.classList.add('show');
-  document.title = '.';
-  setFavicon(FAVICON_EMERGENCY);
+  document.title = '無';
+  setFavicon(FAVICON_BLACK);
   document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
   document.body.style.background = '#000';
@@ -3187,8 +3169,8 @@ function executeNothing() {
     attemptClose();
     emergencyOverlay.classList.add('show');
     document.body.style.background = '#000';
-    document.title = '.';
-    setFavicon(FAVICON_EMERGENCY);
+    document.title = '無';
+    setFavicon(FAVICON_BLACK);
   }, 800);
 }
 
@@ -3197,8 +3179,8 @@ function executeAdminBlackScreen() {
   if (emergencyEnforcerInterval) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; }
   emergencyExiting = false;
   emergencyOverlay.classList.add('show');
-  document.title = '.';
-  setFavicon(FAVICON_EMERGENCY);
+  document.title = '無';
+  setFavicon(FAVICON_BLACK);
   document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
   document.body.style.background = '#000';
@@ -3230,7 +3212,7 @@ function restoreNormalScreen() {
   document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
   document.body.style.background = '';
-  document.title = originalTitleBase;
+  document.title = '69CT';
   refreshFavicon();
   updateTitleUnread();
 }
@@ -3313,7 +3295,10 @@ document.addEventListener('keydown', async (e) => {
   }
 }, true);
 
-/* 音声通話 */
+/* ============================================================
+   音声通話機能（WebRTC）
+   ============================================================ */
+
 function updateCallUI() {
   if (callState.connected) {
     document.getElementById('cpStatusBar').textContent = '通話中';
@@ -3780,8 +3765,6 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   stopEmergencyEnforcer();
   hideAdminCtrlDHint();
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
-  stopTitleFlash();
-  stopFaviconFlash();
   try { await signOut(auth); } catch (e) {}
   location.reload();
 });
@@ -3802,31 +3785,11 @@ document.getElementById('switchAccountBtn').addEventListener('click', async () =
   setTimeout(() => { intentionalSignOut = false; }, 500);
 });
 
-/* ★ ユーザー操作でオーディオをアンロック（ブラウザ自動再生対策） */
+/* ★ ユーザー操作でオーディオをアンロック */
 function unlockAudio() { notificationAudioCtx.init(); }
 document.addEventListener('click', unlockAudio, { once: true });
 document.addEventListener('touchstart', unlockAudio, { once: true });
 document.addEventListener('keydown', unlockAudio, { once: true });
-
-/* ★ 別タブからの復帰時に通知の再開・faviconの再同期 */
-document.addEventListener('visibilitychange', () => {
-  isTabActive = !document.hidden;
-  if (document.hidden) return;
-  // タブ復帰時：オーディオを resume、タイトル点滅・favicon を再開
-  notificationAudioCtx.init();
-  updateTitleUnread();
-  refreshFavicon();
-  if (currentChatId) markChatAsRead(currentChatId);
-  renderChatList();
-  if (emergencyState.active) {
-    if (currentUser && isAdmin(currentUser.email)) executeAdminBlackScreen();
-    else executeNothing();
-  }
-  if (currentUser && bansCache[currentUser.uid]) executeBan();
-  if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) executeBan();
-});
-window.addEventListener('focus', () => { notificationAudioCtx.init(); });
-window.addEventListener('blur', () => { /* 別タブへ移動: 点滅は継続 */ });
 
 onAuthStateChanged(auth, async (user) => {
   bootOverlay.classList.add('hidden');
@@ -3896,12 +3859,27 @@ onAuthStateChanged(auth, async (user) => {
       else executeNothing();
     }
   } catch (e) {}
-  updateTitleUnread();
   refreshFavicon();
+  updateTitleUnread();
 });
 
 window.addEventListener('online', () => setConnection(true));
 window.addEventListener('offline', () => setConnection(false));
+document.addEventListener('visibilitychange', () => {
+  isTabActive = !document.hidden;
+  if (document.hidden) return;
+  notificationAudioCtx.init();
+  if (currentChatId) markChatAsRead(currentChatId);
+  refreshFavicon();
+  renderChatList();
+  if (emergencyState.active) {
+    if (currentUser && isAdmin(currentUser.email)) executeAdminBlackScreen();
+    else executeNothing();
+  }
+  if (currentUser && bansCache[currentUser.uid]) executeBan();
+  if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) executeBan();
+});
+window.addEventListener('focus', () => { notificationAudioCtx.init(); });
 document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return; e.preventDefault(); });
 document.getElementById('lightboxClose').addEventListener('click', () => lightbox.classList.remove('show'));
 lightbox.addEventListener('click', (e) => { if (e.target.id === 'lightbox') lightbox.classList.remove('show'); });
@@ -3923,8 +3901,6 @@ window.addEventListener('beforeunload', (e) => {
   Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   Object.values(incomingCallUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
-  stopTitleFlash();
-  stopFaviconFlash();
 });
 </script>
 
