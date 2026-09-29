@@ -261,7 +261,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .related-account-item .ra-check { width: 20px; height: 20px; flex-shrink: 0; accent-color: #dc2626; }
 #adminCtrlDHint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2147483646; color: #22c55e; font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 9999px; border: 1px solid #22c55e; pointer-events: none; font-family: monospace; }
 
-/* SVGアイコン */
 .svg-icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .icon-12 { width: 12px; height: 12px; }
 .icon-14 { width: 14px; height: 14px; }
@@ -276,7 +275,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .icon-48 { width: 48px; height: 48px; }
 .icon-64 { width: 64px; height: 64px; }
 
-/* 音声通話UI */
 #incomingCallOverlay {
   position: fixed; inset: 0; z-index: 35000;
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
@@ -346,32 +344,18 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 #callPanel.minimized .cp-body .cp-avatar-wrap img { width: 40px; height: 40px; }
 #callPanel.minimized .cp-body .cp-name { font-size: 12px; }
 #callPanel.minimized .cp-body .cp-status { display: none; }
-#callPanel .cp-avatar-wrap {
-  position: relative; width: 96px; height: 96px; flex-shrink: 0;
-}
+#callPanel .cp-avatar-wrap { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
 #callPanel.minimized .cp-avatar-wrap { width: 40px; height: 40px; }
-#callPanel .cp-avatar-wrap img {
-  width: 100%; height: 100%; border-radius: 50%;
-  border: 3px solid #334155; object-fit: cover;
-}
+#callPanel .cp-avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #334155; object-fit: cover; }
 #callPanel .cp-avatar-wrap.ringing img { animation: cpRing 1.5s ease-in-out infinite; }
 @keyframes cpRing {
   0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
   50% { box-shadow: 0 0 0 12px rgba(34,197,94,0); }
 }
-#callPanel .cp-name {
-  font-size: 16px; font-weight: 800; color: #e2e8f0;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
-}
+#callPanel .cp-name { font-size: 16px; font-weight: 800; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 #callPanel .cp-status { font-size: 12px; color: #94a3b8; }
-#callPanel .cp-status-bar {
-  padding: 6px 12px; background: #0f172a; font-size: 11px;
-  color: #94a3b8; text-align: center;
-}
-#callPanel .cp-controls {
-  padding: 12px; display: flex; justify-content: center; gap: 10px;
-  background: #1e293b;
-}
+#callPanel .cp-status-bar { padding: 6px 12px; background: #0f172a; font-size: 11px; color: #94a3b8; text-align: center; }
+#callPanel .cp-controls { padding: 12px; display: flex; justify-content: center; gap: 10px; background: #1e293b; }
 #callPanel .cp-ctrl {
   width: 48px; height: 48px; border-radius: 50%;
   background: rgba(255,255,255,0.1); border: none; color: #fff;
@@ -381,16 +365,8 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 }
 #callPanel .cp-ctrl:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
 #callPanel .cp-ctrl.off { background: #dc2626; }
-#callPanel .cp-ctrl.end {
-  background: linear-gradient(135deg, #dc2626, #991b1b);
-  width: 64px;
-  border: 2px solid #ef4444;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
-}
-#callPanel .cp-ctrl.end:hover {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  box-shadow: 0 0 18px rgba(239, 68, 68, 0.9);
-}
+#callPanel .cp-ctrl.end { background: linear-gradient(135deg, #dc2626, #991b1b); width: 64px; border: 2px solid #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.6); }
+#callPanel .cp-ctrl.end:hover { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 0 18px rgba(239, 68, 68, 0.9); }
 
 @media (max-width: 500px) {
   .header-title { font-size: 17px; }
@@ -978,7 +954,6 @@ const ADMIN_EMAILS = ['katou.noel114514@gmail.com', '18107@v.nakijin.ed.jp'];
 function isAdmin(email) { return email && ADMIN_EMAILS.includes(email.toLowerCase()); }
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1551138462634082357/ey4MZT_qrEunUGTaD6ayOmW4DjQb4bJn4Lwdn-xylbtkrDiLDMVu2ygyHTOVgmALD5vI';
 
-/* アバター用SVG */
 function makeAvatarSvg(color, face) {
   const faces = {
     smile: '<circle cx="24" cy="26" r="2.5" fill="#fff"/><circle cx="40" cy="26" r="2.5" fill="#fff"/><path d="M22 38 Q32 46 42 38" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>',
@@ -1006,6 +981,8 @@ const PRESET_AVATARS = [
 const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af','smile');
 const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E";
 const FAVICON_EMERGENCY = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAPklEQVR4AezXsQ0AIAgAQXT/nXUEy0/M/QRwCQV74gzQC5y4XiA+giFAgAABAgQIECBAoBdYcb3A93/Ba8ELAAD//8NRswQAAAAGSURBVAMAP/aAQZU7ZbYAAAAASUVORK5CYII=";
+/* ★ 通知用 favicon（赤ドット付き） */
+const FAVICON_NOTIFY = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3Ccircle cx='52' cy='12' r='10' fill='%23ef4444' stroke='%23fff' stroke-width='2'/%3E%3C/svg%3E";
 const faviconLink = document.getElementById('faviconLink');
 function setFavicon(url) { faviconLink.href = url; }
 
@@ -1072,8 +1049,128 @@ let myApprovalStatus = null;
 let replyingTo = null, currentReactionPicker = null, addMemberTargetProfile = null;
 let relatedAccountsResult = [];
 
-/* 通知音 */
-const notificationAudioCtx = { ctx: null, init() { if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {}); return this.ctx; }, play() { const ctx = this.init(); if (!ctx) return; try { const now = ctx.currentTime; const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type = 'sine'; osc.frequency.setValueAtTime(880, now); osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08); osc.frequency.exponentialRampToValueAtTime(880, now + 0.16); gain.gain.setValueAtTime(0, now); gain.gain.linearRampToValueAtTime(0.25, now + 0.02); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4); osc.connect(gain); gain.connect(ctx.destination); osc.start(now); osc.stop(now + 0.45); } catch (e) {} } };
+/* ★ 通知関連グローバル */
+let notificationPermissionGranted = false;
+let titleFlashInterval = null;
+let titleFlashToggle = false;
+const originalTitleBase = '69CT';
+let faviconFlashInterval = null;
+let faviconFlashToggle = false;
+
+/* ★ 通知音（Web Audio / 複数トーン） */
+const notificationAudioCtx = {
+  ctx: null,
+  unlocked: false,
+  init() {
+    if (!this.ctx) {
+      try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { this.ctx = null; }
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().then(() => { this.unlocked = true; }).catch(() => {});
+    } else if (this.ctx && this.ctx.state === 'running') {
+      this.unlocked = true;
+    }
+    return this.ctx;
+  },
+  /* 通知音を複数回鳴らして確実に届ける */
+  play() {
+    const ctx = this.init();
+    if (!ctx) return;
+    const playOnce = (delay) => {
+      try {
+        const now = ctx.currentTime + delay;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(1320, now + 0.08);
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.16);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.35, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.55);
+      } catch (e) {}
+    };
+    // 2回鳴らして聞こえやすく
+    playOnce(0);
+    playOnce(0.6);
+    // 別タブ復帰時にもう一度鳴らすためフラグ
+    this.lastPlayedAt = Date.now();
+  }
+};
+
+/* ★ Notification API による OS 通知 */
+function requestNotificationPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'granted') { notificationPermissionGranted = true; return; }
+  if (Notification.permission === 'denied') return;
+  Notification.requestPermission().then((perm) => {
+    notificationPermissionGranted = (perm === 'granted');
+  }).catch(() => {});
+}
+function showDesktopNotification(title, body) {
+  if (!notificationPermissionGranted) return;
+  try {
+    const n = new Notification(title, {
+      body: body || '',
+      icon: FAVICON_NORMAL,
+      tag: 'sikunai-chat-notif',
+      renotify: true,
+      silent: false
+    });
+    n.onclick = () => { try { window.focus(); n.close(); } catch (e) {} };
+    setTimeout(() => { try { n.close(); } catch (e) {} }, 8000);
+  } catch (e) {}
+}
+
+/* ★ 未読数に応じたタイトル・favicon の点滅 */
+function getTotalUnread() {
+  return Object.values(unreadCounts).reduce((a, b) => a + (b || 0), 0);
+}
+function startTitleFlash() {
+  if (titleFlashInterval) return;
+  titleFlashToggle = false;
+  titleFlashInterval = setInterval(() => {
+    if (emergencyState.active) { document.title = '.'; return; }
+    const total = getTotalUnread();
+    if (total <= 0) { stopTitleFlash(); updateTitleUnread(); return; }
+    titleFlashToggle = !titleFlashToggle;
+    document.title = titleFlashToggle ? `【新着】${originalTitleBase}` : `(${total > 99 ? '99+' : total}) ${originalTitleBase}`;
+  }, 1500);
+}
+function stopTitleFlash() {
+  if (titleFlashInterval) { clearInterval(titleFlashInterval); titleFlashInterval = null; }
+}
+function startFaviconFlash() {
+  if (faviconFlashInterval) return;
+  faviconFlashToggle = false;
+  faviconFlashInterval = setInterval(() => {
+    if (emergencyState.active) { setFavicon(FAVICON_EMERGENCY); return; }
+    const total = getTotalUnread();
+    if (total <= 0) { stopFaviconFlash(); refreshFavicon(); return; }
+    faviconFlashToggle = !faviconFlashToggle;
+    setFavicon(faviconFlashToggle ? FAVICON_NOTIFY : FAVICON_NORMAL);
+  }, 1000);
+}
+function stopFaviconFlash() {
+  if (faviconFlashInterval) { clearInterval(faviconFlashInterval); faviconFlashInterval = null; }
+}
+function updateTitleUnread() {
+  if (emergencyState.active) { document.title = '.'; return; }
+  const total = getTotalUnread();
+  if (total > 0) {
+    document.title = `(${total > 99 ? '99+' : total}) ${originalTitleBase}`;
+    startTitleFlash();
+    startFaviconFlash();
+  } else {
+    stopTitleFlash();
+    stopFaviconFlash();
+    document.title = originalTitleBase;
+  }
+}
 
 /* 音声通話関連グローバル */
 let callState = {
@@ -1117,7 +1214,6 @@ const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
 const scrollUnreadCount = document.getElementById('scrollUnreadCount');
 let bannerTimer = null, announcementTimer = null;
 
-/* SVGアイコン */
 function iconCheck(size = 16, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12L10 17L19 8" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
 function iconX(size = 16, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 5L19 19M19 5L5 19" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`; }
 function iconTrash(size = 16, color = '#fff') { return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7H20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M6 7L7 20C7 20.6 7.4 21 8 21H16C16.6 21 17 20.6 17 20L18 7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 11V17M14 11V17" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/></svg>`; }
@@ -1169,27 +1265,20 @@ async function setMyOffline() { if (!currentUser) return; if (heartbeatTimer) { 
 
 function refreshFavicon() {
   if (emergencyState.active) { setFavicon(FAVICON_EMERGENCY); return; }
+  if (getTotalUnread() > 0) { setFavicon(FAVICON_NOTIFY); return; }
   setFavicon(FAVICON_NORMAL);
 }
 
-/* ★ 通知（タイトル・favicon・音） */
-let originalTitleBase = '69CT';
-let titleFlashInterval = null;
-function updateTitleUnread() {
-  if (emergencyState.active) { document.title = '.'; return; }
-  const total = Object.values(unreadCounts).reduce((a,b) => a + (b||0), 0);
-  if (titleFlashInterval) { clearInterval(titleFlashInterval); titleFlashInterval = null; }
-  if (total > 0) {
-    document.title = `(${total > 99 ? '99+' : total}) ${originalTitleBase}`;
-    let toggle = false;
-    titleFlashInterval = setInterval(() => {
-      if (emergencyState.active) { document.title = '.'; return; }
-      toggle = !toggle;
-      document.title = toggle ? `【新着】${originalTitleBase}` : `(${total > 99 ? '99+' : total}) ${originalTitleBase}`;
-    }, 2000);
-  } else {
-    document.title = originalTitleBase;
-  }
+/* ★ 通知発火（音・タイトル・favicon・OS通知） */
+function fireNotification(chatId, senderName, messageText) {
+  // 音
+  notificationAudioCtx.play();
+  // タイトル・favicon
+  updateTitleUnread();
+  // OSデスクトップ通知
+  const title = senderName ? `${senderName}` : '新着メッセージ';
+  const body = messageText || '新しいメッセージが届きました';
+  showDesktopNotification(title, body);
 }
 
 function markChatAsRead(chatId) {
@@ -1222,10 +1311,12 @@ function handleNewLatest(chatId, data) {
     unreadCounts[chatId] = (unreadCounts[chatId] || 0) + 1;
     saveJson(UNREAD_STORAGE_KEY, unreadCounts);
     if (chatId === currentChatId) unreadInChat++;
-    // ★ 通知音を鳴らす
-    notificationAudioCtx.play();
-    refreshFavicon();
-    updateTitleUnread();
+    // ★ 通知を発火
+    const senderProfile = getProfileForUid(lastSender);
+    const chatObj = chatsCache[chatId];
+    let notifTitle = senderProfile.nickname;
+    if (chatObj && chatObj.type === 'group' && chatObj.name) notifTitle = `${chatObj.name}（${senderProfile.nickname}）`;
+    fireNotification(chatId, notifTitle, chatObj ? chatObj.lastMessage : '');
     renderChatList();
     updateScrollButton();
   }
@@ -2709,7 +2800,7 @@ function initNotificationsListener() {
     const prevIds = new Set(lastNotifIds);
     notificationsCache = snap.exists() ? snap.val() : {};
     const currentIds = new Set(Object.keys(notificationsCache));
-    if (prevIds.size > 0) currentIds.forEach(id => { if (!prevIds.has(id)) showLoginToast(notificationsCache[id]); });
+    if (prevIds.size > 0) currentIds.forEach(id => { if (!prevIds.has(id)) { showLoginToast(notificationsCache[id]); notificationAudioCtx.play(); } });
     lastNotifIds = currentIds;
     renderNotifications();
     updateNotifBadge();
@@ -2826,6 +2917,8 @@ function startApprovedSession() {
   setupMyPresence();
   initCallIncomingListener();
   updateTitleUnread();
+  refreshFavicon();
+  requestNotificationPermission();
 }
 function initAdminApprovalPanel() {
   const btn = document.getElementById('approvalBtn');
@@ -3220,10 +3313,7 @@ document.addEventListener('keydown', async (e) => {
   }
 }, true);
 
-/* ============================================================
-   音声通話機能（WebRTC）
-   ============================================================ */
-
+/* 音声通話 */
 function updateCallUI() {
   if (callState.connected) {
     document.getElementById('cpStatusBar').textContent = '通話中';
@@ -3675,6 +3765,8 @@ async function registerDeviceLink(user) {
 }
 
 document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+  notificationAudioCtx.init();
+  requestNotificationPermission();
   try { await signInWithPopup(auth, provider); } catch (err) { if (err.code !== 'auth/popup-closed-by-user') alert('ログイン失敗: ' + err.message); }
 });
 document.getElementById('logoutBtn').addEventListener('click', async () => {
@@ -3688,7 +3780,8 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   stopEmergencyEnforcer();
   hideAdminCtrlDHint();
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
-  if (titleFlashInterval) clearInterval(titleFlashInterval);
+  stopTitleFlash();
+  stopFaviconFlash();
   try { await signOut(auth); } catch (e) {}
   location.reload();
 });
@@ -3709,9 +3802,31 @@ document.getElementById('switchAccountBtn').addEventListener('click', async () =
   setTimeout(() => { intentionalSignOut = false; }, 500);
 });
 
-/* ★ ユーザー操作でオーディオコンテキストをアンロック */
-document.addEventListener('click', () => { notificationAudioCtx.init(); }, { once: true });
-document.addEventListener('touchstart', () => { notificationAudioCtx.init(); }, { once: true });
+/* ★ ユーザー操作でオーディオをアンロック（ブラウザ自動再生対策） */
+function unlockAudio() { notificationAudioCtx.init(); }
+document.addEventListener('click', unlockAudio, { once: true });
+document.addEventListener('touchstart', unlockAudio, { once: true });
+document.addEventListener('keydown', unlockAudio, { once: true });
+
+/* ★ 別タブからの復帰時に通知の再開・faviconの再同期 */
+document.addEventListener('visibilitychange', () => {
+  isTabActive = !document.hidden;
+  if (document.hidden) return;
+  // タブ復帰時：オーディオを resume、タイトル点滅・favicon を再開
+  notificationAudioCtx.init();
+  updateTitleUnread();
+  refreshFavicon();
+  if (currentChatId) markChatAsRead(currentChatId);
+  renderChatList();
+  if (emergencyState.active) {
+    if (currentUser && isAdmin(currentUser.email)) executeAdminBlackScreen();
+    else executeNothing();
+  }
+  if (currentUser && bansCache[currentUser.uid]) executeBan();
+  if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) executeBan();
+});
+window.addEventListener('focus', () => { notificationAudioCtx.init(); });
+window.addEventListener('blur', () => { /* 別タブへ移動: 点滅は継続 */ });
 
 onAuthStateChanged(auth, async (user) => {
   bootOverlay.classList.add('hidden');
@@ -3752,6 +3867,7 @@ onAuthStateChanged(auth, async (user) => {
   initEmergencyListener();
   initAnnouncementListener();
   initCallIncomingListener();
+  requestNotificationPermission();
   await registerDeviceLink(user);
   if (admin) {
     lastNotifIds = new Set();
@@ -3780,24 +3896,12 @@ onAuthStateChanged(auth, async (user) => {
       else executeNothing();
     }
   } catch (e) {}
+  updateTitleUnread();
+  refreshFavicon();
 });
 
 window.addEventListener('online', () => setConnection(true));
 window.addEventListener('offline', () => setConnection(false));
-document.addEventListener('visibilitychange', () => {
-  isTabActive = !document.hidden;
-  if (document.hidden) return;
-  if (currentChatId) markChatAsRead(currentChatId);
-  refreshFavicon();
-  renderChatList();
-  updateTitleUnread();
-  if (emergencyState.active) {
-    if (currentUser && isAdmin(currentUser.email)) executeAdminBlackScreen();
-    else executeNothing();
-  }
-  if (currentUser && bansCache[currentUser.uid]) executeBan();
-  if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) executeBan();
-});
 document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return; e.preventDefault(); });
 document.getElementById('lightboxClose').addEventListener('click', () => lightbox.classList.remove('show'));
 lightbox.addEventListener('click', (e) => { if (e.target.id === 'lightbox') lightbox.classList.remove('show'); });
@@ -3819,7 +3923,8 @@ window.addEventListener('beforeunload', (e) => {
   Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   Object.values(incomingCallUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
-  if (titleFlashInterval) clearInterval(titleFlashInterval);
+  stopTitleFlash();
+  stopFaviconFlash();
 });
 </script>
 
