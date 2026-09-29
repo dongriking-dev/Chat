@@ -979,11 +979,8 @@ const PRESET_AVATARS = [
   makeAvatarSvg('#475569','panda'), makeAvatarSvg('#c026d3','game'), makeAvatarSvg('#0d9488','coffee')
 ];
 const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af','smile');
-
-/* ★ favicon 定義 */
 const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E";
 const FAVICON_BLACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000000'/%3E%3C/svg%3E";
-/* ★ 未読通知用 favicon（赤い丸バッジ付き） */
 const FAVICON_NOTIFY = "data:image/svg+xml," + encodeURIComponent(
   `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'>
     <rect x='4' y='4' width='56' height='56' rx='12' fill='#0284c7'/>
@@ -1060,7 +1057,7 @@ let relatedAccountsResult = [];
 /* ★ 通知関連グローバル */
 let notificationPermissionGranted = false;
 
-/* ★ 通知音（Web Audio / 複数トーン） */
+/* ★ 通知音 */
 const notificationAudioCtx = {
   ctx: null,
   unlocked: false,
@@ -1102,7 +1099,6 @@ const notificationAudioCtx = {
   }
 };
 
-/* ★ Notification API による OS 通知 */
 function requestNotificationPermission() {
   if (!('Notification' in window)) return;
   if (Notification.permission === 'granted') { notificationPermissionGranted = true; return; }
@@ -1141,8 +1137,6 @@ function updateTitleUnread() {
   if (emergencyState.active) { document.title = '無'; return; }
   document.title = '69CT';
 }
-
-/* ★ 通知発火（favicon 更新・音・OS通知） */
 function fireNotification(chatId, senderName, messageText) {
   notificationAudioCtx.play();
   refreshFavicon();
@@ -1151,7 +1145,7 @@ function fireNotification(chatId, senderName, messageText) {
   showDesktopNotification(title, body);
 }
 
-/* ★ 音声通話関連グローバル */
+/* ★ 通話関連 */
 let callState = {
   active: false, role: null, chatId: null, peerUid: null, sessionId: null,
   pc: null, localStream: null, remoteStream: null,
@@ -1258,15 +1252,39 @@ function updateScrollButton() {
   else { scrollToBottomBtn.classList.add('show'); scrollUnreadCount.style.display = 'flex'; scrollUnreadCount.textContent = unreadInChat > 99 ? '99+' : unreadInChat; }
 }
 
+/* ============================================================
+   ★ handleNewLatest（修正版：自分送信・既読済みを未読にしない）
+   ============================================================ */
 function handleNewLatest(chatId, data) {
   if (!data) return;
   const lastAt = data.lastMessageAt || 0;
   const lastSender = data.lastSenderUid || '';
   const prev = chatLatestMsgAt[chatId] || 0;
+
   chatLatestMsgAt[chatId] = lastAt;
+
   if (lastAt <= prev) return;
-  if (!currentUser || lastSender === currentUser.uid) return;
-  if (chatId === currentChatId && isTabActive) { markChatAsRead(chatId); return; }
+
+  // 自分が送信したメッセージは未読にしない
+  if (!currentUser || lastSender === currentUser.uid) {
+    lastReadAt[chatId] = lastAt;
+    saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
+    if (unreadCounts[chatId]) {
+      delete unreadCounts[chatId];
+      saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+      refreshFavicon();
+      updateScrollButton();
+    }
+    return;
+  }
+
+  // 現在開いているチャットで、タブがアクティブなら既読扱い
+  if (chatId === currentChatId && isTabActive) {
+    markChatAsRead(chatId);
+    return;
+  }
+
+  // 既読時刻より新しい場合のみ未読カウント
   const lastRead = lastReadAt[chatId] || 0;
   if (lastAt > lastRead) {
     unreadCounts[chatId] = (unreadCounts[chatId] || 0) + 1;
@@ -1427,19 +1445,37 @@ function updateChatHeaderPresence() {
   }
 }
 
+/* ============================================================
+   ★ openChat（修正版：リスナー初期化前に既読処理を完了）
+   ============================================================ */
 function openChat(chatId) {
   currentChatId = chatId;
   const chat = chatsCache[chatId];
   if (!chat) return;
-  markChatAsRead(chatId);
+
+  // ★ 先に既読処理を完了させる
+  const latestAt = chat.lastMessageAt || chat.createdAt || 0;
+  chatLatestMsgAt[chatId] = latestAt;
+  lastReadAt[chatId] = latestAt;
+  delete unreadCounts[chatId];
+  saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+  saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
+  unreadInChat = 0;
+  refreshFavicon();
+  updateScrollButton();
+  if (currentUser) {
+    set(ref(db, `chatReads/${chatId}/${currentUser.uid}`), Date.now()).catch(() => {});
+  }
+
   initReadsListener(chatId);
   initTypingListener(chatId);
   initReactionsListener(chatId);
+
   isCurrentlyTyping = false;
   clearTimeout(typingTimeout);
-  unreadInChat = 0;
   replyingTo = null;
   document.getElementById('replyPreviewBox').classList.remove('show');
+
   const isGroup = chat.type === 'group';
   let displayName;
   if (isGroup) displayName = chat.name || 'グループチャット';
@@ -1818,7 +1854,7 @@ function openReactionPicker(anchorEl, msgKey) {
   closeReactionPicker();
   const picker = document.createElement('div');
   picker.className = 'reaction-picker';
-  ['👍','❤️','😂','😮','😢','🎉','🔥','👏','😭','❤️‍🔥','😇','🥰','😍','😘','🥳','🥶','💩','🫶','💋','❣️','❌','⭕️','‼️','⁉️','🍌'].forEach(emoji => {
+  ['👍','❤️','😂','😮','😢','🎉','🔥','👏'].forEach(emoji => {
     const b = document.createElement('button');
     b.textContent = emoji;
     b.addEventListener('click', (e) => { e.stopPropagation(); toggleReaction(msgKey, emoji); closeReactionPicker(); });
@@ -1900,6 +1936,9 @@ messageFileInput.addEventListener('change', async () => {
 });
 msgPreviewRemoveBtn.addEventListener('click', () => { pendingFile = null; messageFileInput.value = ''; messagePreviewBox.classList.remove('show'); });
 
+/* ============================================================
+   ★ メッセージ送信（修正版：送信側は即座に既読扱い）
+   ============================================================ */
 document.getElementById('messageForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   const content = messageInput.value.trim();
@@ -1911,6 +1950,8 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
   sendBtn.disabled = true;
   const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
   const chatIdAtSend = currentChatId;
+  const now = Date.now();
+
   messageInput.value = '';
   autoResizeTextarea();
   pendingFile = null;
@@ -1920,6 +1961,16 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
   document.getElementById('replyPreviewBox').classList.remove('show');
   clearTimeout(typingTimeout);
   setMyTypingState(false);
+
+  // ★ 送信側は即座に既読扱い（自分のメッセージを未読にしない）
+  chatLatestMsgAt[chatIdAtSend] = now;
+  lastReadAt[chatIdAtSend] = now;
+  delete unreadCounts[chatIdAtSend];
+  saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+  saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
+  refreshFavicon();
+  updateScrollButton();
+
   try {
     const msgData = {
       clientMsgId,
@@ -1928,7 +1979,7 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
       authorUid: currentUser.uid,
       authorName: myProfile.nickname,
       authorAvatar: myProfile.avatar,
-      createdAt: Date.now()
+      createdAt: now
     };
     if (reply) msgData.replyTo = { msgKey: reply.msgKey, authorUid: reply.authorUid, authorName: reply.authorName, content: (reply.content||'').slice(0, 200), hasFile: reply.hasFile };
     const newRef = push(ref(db, `chatMessages/${chatIdAtSend}`));
@@ -1940,7 +1991,7 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
       const updates = {};
       memberUids.forEach(uid => {
         updates[`userChats/${uid}/${chatIdAtSend}/lastMessage`] = lastMsgLabel;
-        updates[`userChats/${uid}/${chatIdAtSend}/lastMessageAt`] = Date.now();
+        updates[`userChats/${uid}/${chatIdAtSend}/lastMessageAt`] = now;
         updates[`userChats/${uid}/${chatIdAtSend}/lastSenderUid`] = currentUser.uid;
       });
       await update(ref(db), updates);
@@ -2648,8 +2699,13 @@ async function deleteMyStory(storyId) {
 function updateStoryLikeBtn(storyId) {
   const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
   const path = document.getElementById('storyLikePath');
-  if (liked) { storyLikeBtn.classList.add('liked'); if (path) { path.setAttribute('fill', '#ef4444'); path.setAttribute('stroke', '#ef4444'); } }
-  else { storyLikeBtn.classList.remove('liked'); if (path) { path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#ffffff'); } }
+  if (liked) {
+    storyLikeBtn.classList.add('liked');
+    if (path) { path.setAttribute('fill', '#ef4444'); path.setAttribute('stroke', '#ef4444'); }
+  } else {
+    storyLikeBtn.classList.remove('liked');
+    if (path) { path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#ffffff'); }
+  }
 }
 storyLikeBtn.addEventListener('click', async (e) => {
   if (!currentUser) return;
@@ -2745,7 +2801,14 @@ document.getElementById('myArchiveBtn').addEventListener('click', () => {
       else if (s.type === 'audio') thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);flex-shrink:0;"></div>`;
       else if (s.type === 'video') thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#000,#374151);flex-shrink:0;"></div>`;
       else thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;"></div>`;
-      item.innerHTML = `${thumb}<div style="flex:1;min-width:0;cursor:pointer;" class="archive-view-btn"><div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || '')}</div><div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div></div><button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;">${iconTrash(14, '#fff')}</button>`;
+      item.innerHTML = `
+        ${thumb}
+        <div style="flex:1;min-width:0;cursor:pointer;" class="archive-view-btn">
+          <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || '')}</div>
+          <div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div>
+        </div>
+        <button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;">${iconTrash(14, '#fff')}</button>
+      `;
       item.querySelector('.archive-view-btn').addEventListener('click', () => { document.getElementById('archiveModal').classList.add('hidden'); openStoryViewer(currentUser.uid, { archiveMode: true }); });
       item.querySelector('.archive-delete-btn').addEventListener('click', async () => {
         if (!confirm('このストーリーを完全に削除しますか？')) return;
@@ -3296,9 +3359,8 @@ document.addEventListener('keydown', async (e) => {
 }, true);
 
 /* ============================================================
-   音声通話機能（WebRTC）
+   音声通話機能
    ============================================================ */
-
 function updateCallUI() {
   if (callState.connected) {
     document.getElementById('cpStatusBar').textContent = '通話中';
@@ -3733,16 +3795,51 @@ function initPresenceListener() {
     requestAnimationFrame(updatePresenceDots);
   }, () => {});
 }
+
+/* ============================================================
+   ★ initChatsListener（修正版：初回ロード時に古い未読をサニタイズ）
+   ============================================================ */
 function initChatsListener() {
   if (unsubs.chats) unsubs.chats();
   if (!currentUser) return;
   unsubs.chats = onValue(ref(db, `userChats/${currentUser.uid}`), (snap) => {
-    chatsCache = snap.exists() ? snap.val() : {};
+    const newChats = snap.exists() ? snap.val() : {};
+    const firstLoad = Object.keys(chatsCache).length === 0 && Object.keys(newChats).length > 0;
+    chatsCache = newChats;
+
+    // ★ 初回ロード時に古い未読データをサニタイズ
+    if (firstLoad) {
+      let changed = false;
+      Object.keys(newChats).forEach(chatId => {
+        const chat = newChats[chatId];
+        if (!chat) return;
+        const latestAt = chat.lastMessageAt || chat.createdAt || 0;
+        const lastRead = lastReadAt[chatId] || 0;
+        const sender = chat.lastSenderUid || '';
+        // 自分の送信 or 既読済み → 未読クリア
+        if (sender === currentUser.uid || lastRead >= latestAt) {
+          if (unreadCounts[chatId]) {
+            delete unreadCounts[chatId];
+            changed = true;
+          }
+        }
+        if (!chatLatestMsgAt[chatId] || chatLatestMsgAt[chatId] < latestAt) {
+          chatLatestMsgAt[chatId] = latestAt;
+        }
+      });
+      if (changed) {
+        saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+      }
+      refreshFavicon();
+      updateScrollButton();
+    }
+
     renderChatList();
     initChatLatestListeners();
     renderStories();
   }, () => {});
 }
+
 async function registerDeviceLink(user) {
   if (!user || !user.email) return;
   const emailKey = sanitizeEmailKey(user.email);
@@ -3785,7 +3882,6 @@ document.getElementById('switchAccountBtn').addEventListener('click', async () =
   setTimeout(() => { intentionalSignOut = false; }, 500);
 });
 
-/* ★ ユーザー操作でオーディオをアンロック */
 function unlockAudio() { notificationAudioCtx.init(); }
 document.addEventListener('click', unlockAudio, { once: true });
 document.addEventListener('touchstart', unlockAudio, { once: true });
