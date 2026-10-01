@@ -261,7 +261,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .related-account-item .ra-check { width: 20px; height: 20px; flex-shrink: 0; accent-color: #dc2626; }
 #adminCtrlDHint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2147483646; color: #22c55e; font-size: 13px; font-weight: 700; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 9999px; border: 1px solid #22c55e; pointer-events: none; font-family: monospace; }
 
-/* ★ SVGアイコンの共通スタイル */
 .svg-icon { display: inline-block; vertical-align: middle; flex-shrink: 0; }
 .icon-12 { width: 12px; height: 12px; }
 .icon-14 { width: 14px; height: 14px; }
@@ -276,121 +275,44 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .icon-48 { width: 48px; height: 48px; }
 .icon-64 { width: 64px; height: 64px; }
 
-/* ★ 音声通話UI */
-#incomingCallOverlay {
-  position: fixed; inset: 0; z-index: 35000;
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-  display: none; flex-direction: column;
-  align-items: center; justify-content: center;
-  color: #fff; padding: 24px; text-align: center;
-}
+#incomingCallOverlay { position: fixed; inset: 0; z-index: 35000; background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; padding: 24px; text-align: center; }
 #incomingCallOverlay.show { display: flex; }
-#incomingCallOverlay .ic-avatar {
-  width: 120px; height: 120px; border-radius: 50%;
-  border: 4px solid #22c55e;
-  object-fit: cover; margin-bottom: 20px;
-  animation: icPulse 1.5s ease-in-out infinite;
-  box-shadow: 0 0 40px rgba(34,197,94,0.6);
-}
-@keyframes icPulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(34,197,94,0.6); }
-  50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(34,197,94,0.9); }
-}
+#incomingCallOverlay .ic-avatar { width: 120px; height: 120px; border-radius: 50%; border: 4px solid #22c55e; object-fit: cover; margin-bottom: 20px; animation: icPulse 1.5s ease-in-out infinite; box-shadow: 0 0 40px rgba(34,197,94,0.6); }
+@keyframes icPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(34,197,94,0.6); } 50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(34,197,94,0.9); } }
 #incomingCallOverlay .ic-name { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
 #incomingCallOverlay .ic-status { font-size: 13px; color: #cbd5e1; margin-bottom: 30px; }
 #incomingCallOverlay .ic-actions { display: flex; gap: 40px; }
-#incomingCallOverlay .ic-btn {
-  width: 72px; height: 72px; border-radius: 50%;
-  border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: #fff;
-  transition: transform 0.15s;
-}
+#incomingCallOverlay .ic-btn { width: 72px; height: 72px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.15s; }
 #incomingCallOverlay .ic-btn:hover { transform: scale(1.08); }
 #incomingCallOverlay .ic-btn.accept { background: linear-gradient(135deg, #16a34a, #15803d); box-shadow: 0 4px 20px rgba(22,163,74,0.5); }
 #incomingCallOverlay .ic-btn.reject { background: linear-gradient(135deg, #dc2626, #991b1b); box-shadow: 0 4px 20px rgba(220,38,38,0.5); }
 
-#callPanel {
-  position: fixed; bottom: 20px; right: 20px;
-  width: 300px; max-width: calc(100vw - 32px);
-  background: #0f172a; border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  z-index: 34000; overflow: hidden;
-  display: none; flex-direction: column;
-  color: #fff;
-  border: 2px solid #1e40af;
-}
+#callPanel { position: fixed; bottom: 20px; right: 20px; width: 300px; max-width: calc(100vw - 32px); background: #0f172a; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); z-index: 34000; overflow: hidden; display: none; flex-direction: column; color: #fff; border: 2px solid #1e40af; }
 #callPanel.show { display: flex; }
 #callPanel.minimized { width: 180px; }
 #callPanel.minimized .cp-status-bar { display: none; }
-#callPanel .cp-header {
-  padding: 10px 12px; background: linear-gradient(135deg, #1e3a8a, #1e40af);
-  display: flex; align-items: center; gap: 8px;
-}
-#callPanel .cp-header .cp-title {
-  font-size: 13px; font-weight: 700; flex: 1; min-width: 0;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-#callPanel .cp-header button {
-  background: rgba(255,255,255,0.15); border: none; color: #fff;
-  width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-}
-#callPanel .cp-body {
-  position: relative; background: linear-gradient(135deg, #1e293b, #0f172a);
-  padding: 30px 20px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 14px;
-}
+#callPanel .cp-header { padding: 10px 12px; background: linear-gradient(135deg, #1e3a8a, #1e40af); display: flex; align-items: center; gap: 8px; }
+#callPanel .cp-header .cp-title { font-size: 13px; font-weight: 700; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#callPanel .cp-header button { background: rgba(255,255,255,0.15); border: none; color: #fff; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+#callPanel .cp-body { position: relative; background: linear-gradient(135deg, #1e293b, #0f172a); padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
 #callPanel.minimized .cp-body { padding: 12px; flex-direction: row; gap: 10px; }
 #callPanel.minimized .cp-body .cp-avatar-wrap img { width: 40px; height: 40px; }
 #callPanel.minimized .cp-body .cp-name { font-size: 12px; }
 #callPanel.minimized .cp-body .cp-status { display: none; }
-#callPanel .cp-avatar-wrap {
-  position: relative; width: 96px; height: 96px; flex-shrink: 0;
-}
+#callPanel .cp-avatar-wrap { position: relative; width: 96px; height: 96px; flex-shrink: 0; }
 #callPanel.minimized .cp-avatar-wrap { width: 40px; height: 40px; }
-#callPanel .cp-avatar-wrap img {
-  width: 100%; height: 100%; border-radius: 50%;
-  border: 3px solid #334155; object-fit: cover;
-}
+#callPanel .cp-avatar-wrap img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid #334155; object-fit: cover; }
 #callPanel .cp-avatar-wrap.ringing img { animation: cpRing 1.5s ease-in-out infinite; }
-@keyframes cpRing {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
-  50% { box-shadow: 0 0 0 12px rgba(34,197,94,0); }
-}
-#callPanel .cp-name {
-  font-size: 16px; font-weight: 800; color: #e2e8f0;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
-}
+@keyframes cpRing { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); } 50% { box-shadow: 0 0 0 12px rgba(34,197,94,0); } }
+#callPanel .cp-name { font-size: 16px; font-weight: 800; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 #callPanel .cp-status { font-size: 12px; color: #94a3b8; }
-#callPanel .cp-status-bar {
-  padding: 6px 12px; background: #0f172a; font-size: 11px;
-  color: #94a3b8; text-align: center;
-}
-#callPanel .cp-controls {
-  padding: 12px; display: flex; justify-content: center; gap: 10px;
-  background: #1e293b;
-}
-#callPanel .cp-ctrl {
-  width: 48px; height: 48px; border-radius: 50%;
-  background: rgba(255,255,255,0.1); border: none; color: #fff;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.15s, transform 0.15s;
-}
+#callPanel .cp-status-bar { padding: 6px 12px; background: #0f172a; font-size: 11px; color: #94a3b8; text-align: center; }
+#callPanel .cp-controls { padding: 12px; display: flex; justify-content: center; gap: 10px; background: #1e293b; }
+#callPanel .cp-ctrl { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,0.1); border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, transform 0.15s; }
 #callPanel .cp-ctrl:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
 #callPanel .cp-ctrl.off { background: #dc2626; }
-#callPanel .cp-ctrl.end {
-  background: linear-gradient(135deg, #dc2626, #991b1b);
-  width: 64px;
-  border: 2px solid #ef4444;
-  box-shadow: 0 0 12px rgba(239, 68, 68, 0.6);
-}
-#callPanel .cp-ctrl.end:hover {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  box-shadow: 0 0 18px rgba(239, 68, 68, 0.9);
-}
+#callPanel .cp-ctrl.end { background: linear-gradient(135deg, #dc2626, #991b1b); width: 64px; border: 2px solid #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.6); }
+#callPanel .cp-ctrl.end:hover { background: linear-gradient(135deg, #ef4444, #dc2626); box-shadow: 0 0 18px rgba(239, 68, 68, 0.9); }
 
 @media (max-width: 500px) {
   .header-title { font-size: 17px; }
@@ -452,914 +374,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </button>
   <img id="lightboxImg" src="" alt="">
 </div>
-
-<!-- ★ 着信画面（音声通話） -->
-<div id="incomingCallOverlay">
-  <img id="icAvatar" class="ic-avatar" src="" alt="">
-  <div class="ic-name" id="icName">音声通話</div>
-  <div class="ic-status" id="icStatus">着信中...</div>
-  <div class="ic-actions">
-    <button class="ic-btn reject" id="icRejectBtn" title="拒否">
-      <svg class="svg-icon icon-32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 10C8 10 11 6 16 6C21 6 24 10 24 10L21 15L18 13V10.5C17.4 10.4 16.7 10.3 16 10.3C15.3 10.3 14.6 10.4 14 10.5V13L11 15L8 10Z" fill="#ffffff"/>
-        <line x1="7" y1="25" x2="25" y2="7" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
-      </svg>
-    </button>
-    <button class="ic-btn accept" id="icAcceptBtn" title="応答">
-      <svg class="svg-icon icon-32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 10C8 10 11 6 16 6C21 6 24 10 24 10L21 15L18 13V10.5C17.4 10.4 16.7 10.3 16 10.3C15.3 10.3 14.6 10.4 14 10.5V13L11 15L8 10Z" fill="#ffffff"/>
-      </svg>
-    </button>
-  </div>
-</div>
-
-<!-- ★ 音声通話パネル -->
-<div id="callPanel">
-  <div class="cp-header">
-    <span class="svg-icon icon-18">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
-        <path d="M6 8C6 8 8 5 12 5C16 5 18 8 18 8L16 11L14 10V8.5C13.4 8.4 12.7 8.3 12 8.3C11.3 8.3 10.6 8.4 10 8.5V10L8 11L6 8Z" fill="#ffffff"/>
-      </svg>
-    </span>
-    <span class="cp-title" id="cpTitle">音声通話</span>
-    <button id="cpMinimizeBtn" title="最小化">
-      <svg class="svg-icon icon-16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="3" y1="8" x2="13" y2="8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </button>
-  </div>
-  <div class="cp-body">
-    <div class="cp-avatar-wrap" id="cpAvatarWrap">
-      <img id="cpAvatarImg" src="" alt="">
-    </div>
-    <div class="cp-name" id="cpName"></div>
-    <div class="cp-status" id="cpStatus">接続中...</div>
-  </div>
-  <div class="cp-status-bar" id="cpStatusBar">準備中...</div>
-  <div class="cp-controls">
-    <button class="cp-ctrl" id="cpMicBtn" title="マイク">
-      <svg class="svg-icon icon-22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="9" y="3" width="6" height="11" rx="3" stroke="#ffffff" stroke-width="2"/>
-        <path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-        <line x1="12" y1="18" x2="12" y2="22" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </button>
-    <button class="cp-ctrl end" id="cpEndBtn" title="終了">
-      <svg class="svg-icon icon-28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="2" y="2" width="24" height="24" rx="6" stroke="#ffffff" stroke-width="2" fill="none"/>
-        <path d="M9 11C9 11 10.5 8.5 14 8.5C17.5 8.5 19 11 19 11L17 14L15 13V10.8C14.4 10.7 13.7 10.65 14 10.65C14.3 10.65 13.6 10.7 13 10.8V13L11 14L9 11Z" fill="#ffffff"/>
-        <line x1="7" y1="21" x2="21" y2="7" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
-      </svg>
-    </button>
-  </div>
-</div>
-
-<div id="appContainer">
-  <div id="loginView" style="display:none; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:20px;">
-    <div style="background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:36px 28px; max-width:420px; width:100%; text-align:center;">
-      <div style="margin-bottom:12px; display:flex; justify-content:center;">
-        <svg class="svg-icon icon-64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect x="6" y="8" width="52" height="40" rx="8" fill="#0284c7"/>
-          <path d="M14 20H50V42H26L18 50V42H14V20Z" fill="#ffffff"/>
-        </svg>
-      </div>
-      <h1 style="font-size:26px; font-weight:800; color:#1e3a8a; margin:0 0 8px;">69CT</h1>
-      <p style="font-size:13px; color:#6b7280; margin:0 0 6px;">ご利用にはGoogleアカウントでのログインが必要です。</p>
-      <p style="font-size:12px; color:#9ca3af; margin:0 0 24px;">初回ログイン時は管理者の承認が必要です。</p>
-      <button id="googleLoginBtn" style="background:#fff; border:1.5px solid #d1d5db; border-radius:10px; padding:12px 20px; font-size:14px; font-weight:700; color:#374151; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; width:100%;">
-        <svg width="20" height="20" viewBox="0 0 48 48">
-          <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5z"/>
-          <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34.1 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
-          <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/>
-          <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6.2 5.2C41.4 35.3 44 30.1 44 24c0-1.3-.1-2.3-.4-3.5z"/>
-        </svg>
-        Googleでログイン
-      </button>
-    </div>
-  </div>
-
-  <div id="mainView" style="display:none; flex-direction:column; height:100%;">
-    <header id="appHeader">
-      <div class="header-user">
-        <span class="avatar-online-wrap">
-          <img id="myAvatar" class="avatar" src="" alt="">
-          <span class="online-dot online"></span>
-        </span>
-        <div style="min-width:0;">
-          <div class="header-title">69CT</div>
-          <div class="header-meta">
-            <span id="connDot" class="online-dot" style="width:8px;height:8px;border-width:1px;"></span>
-            <span id="connText">接続中...</span>
-            <span id="myName" style="font-weight:700;color:#1e40af;"></span>
-          </div>
-        </div>
-      </div>
-      <div class="header-actions">
-        <button id="newChatBtn" class="primary-btn" style="padding:7px 12px;font-size:12px;display:flex;align-items:center;gap:4px;">
-          <svg class="svg-icon icon-16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <line x1="8" y1="3" x2="8" y2="13" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-            <line x1="3" y1="8" x2="13" y2="8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          チャット
-        </button>
-        <button id="profileBtn" class="icon-btn">
-          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="8" r="4" stroke="#374151" stroke-width="2"/>
-            <path d="M4 21C4 17 7.5 14 12 14C16.5 14 20 17 20 21" stroke="#374151" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-        <button id="announceBtn" class="admin-btn" style="display:none;">
-          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 10V14L7 15V9L3 10Z" fill="#ffffff"/>
-            <path d="M7 9V15L18 19V5L7 9Z" fill="#ffffff"/>
-            <path d="M18 8C19.5 8 21 9.5 21 12C21 14.5 19.5 16 18 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
-        <button id="banUserBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#dc2626,#991b1b);">
-          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M14 4L6 12L14 20" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M20 4L12 12L20 20" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <button id="adminStoryDeleteBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#ec4899,#be185d);">
-          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 7L12 3L21 7V17L12 21L3 17V7Z" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M12 3V21" stroke="#ffffff" stroke-width="1.5"/>
-          </svg>
-        </button>
-        <button id="notificationBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#0891b2,#0e7490);">
-          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 18H18L16 15V11C16 8.5 14.5 6.5 12 6C9.5 6.5 8 8.5 8 11V15L6 18Z" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
-            <path d="M12 4V6" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-            <path d="M10 21C10 22.1 10.9 23 12 23C13.1 23 14 22.1 14 21" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9999px;border:2px solid #fff;">0</span>
-        </button>
-        <button id="approvalBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#16a34a,#15803d);">
-          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 12L10 17L19 8" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span id="approvalBadge" style="display:none;position:absolute;top:-4px;right:-4px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:9999px;border:2px solid #fff;">0</span>
-        </button>
-        <button id="emergencyHelpBtn" class="help-btn">？</button>
-        <button id="emergencyBtn" class="emergency-btn">
-          <svg class="svg-icon icon-20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 3L2 20H22L12 3Z" fill="#ffffff" stroke="#7f1d1d" stroke-width="1" stroke-linejoin="round"/>
-            <line x1="12" y1="9" x2="12" y2="15" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="12" cy="17.5" r="1" fill="#dc2626"/>
-          </svg>
-        </button>
-        <button id="logoutBtn" class="icon-btn">ログアウト</button>
-      </div>
-    </header>
-
-    <main id="appMain">
-      <div id="chatListView" style="display:flex; flex-direction:column; height:100%;">
-        <div style="flex-shrink:0; background:#fff; border-bottom:1px solid #e5e7eb;">
-          <div style="padding:8px 14px 0; display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:12px; font-weight:700; color:#374151;">ストーリー</span>
-            <button id="myArchiveBtn" style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;">
-              <svg class="svg-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-                <rect x="2" y="3" width="12" height="10" rx="1.5" stroke="#2563eb" stroke-width="1.5"/>
-                <path d="M2 6H14" stroke="#2563eb" stroke-width="1.5"/>
-                <path d="M6 9H10" stroke="#2563eb" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-              アーカイブ
-            </button>
-          </div>
-          <div id="storiesStrip" class="stories-strip">
-            <div class="story-bubble" id="storyAddBtn">
-              <div class="story-add">
-                <svg class="svg-icon icon-24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <line x1="12" y1="5" x2="12" y2="19" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round"/>
-                  <line x1="5" y1="12" x2="19" y2="12" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <span class="story-name">あなた</span>
-            </div>
-          </div>
-        </div>
-        <div class="scroll-area">
-          <div id="chatListContainer" class="chat-list"></div>
-        </div>
-      </div>
-
-      <div id="chatView" style="display:none;">
-        <div class="chat-header">
-          <button id="backToChatListBtn" class="icon-btn" style="padding:6px 10px;">
-            <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15 5L8 12L15 19" stroke="#374151" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          <div id="chatHeaderAvatars" style="display:flex; position:relative; width:40px; height:40px; flex-shrink:0;"></div>
-          <div class="chat-header-body">
-            <div class="chat-header-name" id="currentChatName"></div>
-            <div class="chat-header-meta" id="currentChatMeta"></div>
-          </div>
-          <button id="chatCallBtn" class="chat-call-btn" title="音声通話">
-            <svg class="svg-icon icon-20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 8C6 8 8 5 12 5C16 5 18 8 18 8L16 11L14 10V8.5C13.4 8.4 12.7 8.3 12 8.3C11.3 8.3 10.6 8.4 10 8.5V10L8 11L6 8Z" fill="#ffffff"/>
-            </svg>
-          </button>
-          <button id="chatHeaderMenuBtn" class="chat-header-menu-btn">
-            <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="5" r="2" fill="#374151"/>
-              <circle cx="12" cy="12" r="2" fill="#374151"/>
-              <circle cx="12" cy="19" r="2" fill="#374151"/>
-            </svg>
-          </button>
-        </div>
-        <div class="chat-messages-wrap" id="chatMessagesWrap">
-          <div class="chat-messages" id="messagesContainer"></div>
-          <div id="typingIndicatorSlot"></div>
-        </div>
-        <button id="scrollToBottomBtn">
-          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 9L12 15L18 9" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span class="unread-dot-inner" id="scrollUnreadCount" style="display:none;">0</span>
-        </button>
-        <form class="chat-input-form" id="messageForm">
-          <div class="reply-preview" id="replyPreviewBox">
-            <div class="reply-preview-body">
-              <div class="reply-preview-name" id="replyPreviewName"></div>
-              <div class="reply-preview-text" id="replyPreviewText"></div>
-            </div>
-            <button type="button" class="reply-preview-close" id="replyPreviewCloseBtn">
-              <svg class="svg-icon icon-12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
-                <path d="M2 2L10 10M10 2L2 10" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </button>
-          </div>
-          <div class="msg-preview" id="messagePreviewBox">
-            <img id="messagePreviewImg" src="" alt="">
-            <div class="msg-preview-info">
-              <div id="messagePreviewInfo"></div>
-              <div style="font-size:11px;color:#6b7280;margin-top:2px;">送信待ち</div>
-            </div>
-            <button type="button" class="msg-preview-remove" id="msgPreviewRemoveBtn">
-              <svg class="svg-icon icon-12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" width="12" height="12">
-                <path d="M2 2L10 10M10 2L2 10" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-            </button>
-          </div>
-          <div class="chat-input-row">
-            <div class="chat-input-wrap">
-              <textarea id="messageInput" rows="1" maxlength="2000" placeholder="メッセージを入力..."></textarea>
-              <label class="chat-input-icon-btn" style="cursor:pointer;">
-                <svg class="svg-icon icon-22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="3" y="5" width="18" height="14" rx="2" stroke="#6b7280" stroke-width="2"/>
-                  <circle cx="9" cy="11" r="2" fill="#6b7280"/>
-                  <path d="M3 17L9 12L14 16L18 13L21 16" stroke="#6b7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <input type="file" id="messageFileInput" accept="image/*" style="display:none;">
-              </label>
-            </div>
-            <button type="submit" id="sendBtn" class="chat-send-btn">
-              <svg class="svg-icon icon-20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 12L21 4L13 21L11 13L3 12Z" fill="#ffffff" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/>
-              </svg>
-            </button>
-          </div>
-        </form>
-      </div>
-    </main>
-  </div>
-</div>
-
-<div id="newChatModal" class="modal-backdrop hidden">
-  <div class="modal-content">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#1e3a8a;">新しいチャット</h3>
-    <p style="font-size:11px;color:#6b7280;margin:0 0 16px;">相手のメールアドレスを入力してください（2人以上でグループになります）</p>
-    <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
-    <div style="display:flex;gap:8px;margin-bottom:8px;">
-      <input type="email" id="memberEmailInput" placeholder="example@gmail.com" style="flex:1;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;outline:none;">
-      <button id="addMemberBtn" type="button" class="primary-btn" style="padding:9px 14px;">追加</button>
-    </div>
-    <div id="memberSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
-    <div id="selectedMembersBox" style="min-height:44px;border:1px dashed #d1d5db;border-radius:8px;padding:8px;margin-bottom:14px;">
-      <span style="font-size:11px;color:#9ca3af;">まだ相手が追加されていません</span>
-    </div>
-    <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">グループ名（2人以上のとき任意）:</label>
-    <input type="text" id="groupNameInput" maxlength="30" placeholder="例: プロジェクトA" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:16px;outline:none;">
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="newChatCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="newChatCreateBtn" class="primary-btn">チャットを開始</button>
-    </div>
-  </div>
-</div>
-
-<div id="addMemberModal" class="modal-backdrop hidden">
-  <div class="modal-content" style="border-top:6px solid #0891b2;">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#0e7490;">メンバーを追加</h3>
-    <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
-    <div style="display:flex;gap:8px;margin-bottom:8px;">
-      <input type="email" id="addMemberEmailInput" placeholder="example@gmail.com" style="flex:1;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;outline:none;">
-      <button id="addMemberSearchBtn" type="button" class="primary-btn" style="padding:9px 14px;">検索</button>
-    </div>
-    <div id="addMemberSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
-    <div id="addMemberResultBox" style="min-height:44px;border:1px dashed #d1d5db;border-radius:8px;padding:8px;margin-bottom:14px;">
-      <span style="font-size:11px;color:#9ca3af;">メールアドレスを入力して検索してください</span>
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="addMemberCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="addMemberConfirmBtn" class="primary-btn">追加</button>
-    </div>
-  </div>
-</div>
-
-<div id="editMsgModal" class="modal-backdrop hidden">
-  <div class="modal-content">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 14px;color:#1e3a8a;">メッセージを編集</h3>
-    <textarea id="editMsgInput" rows="4" maxlength="2000" style="width:100%;border:1px solid #d1d5db;padding:10px;border-radius:8px;font-size:14px;outline:none;resize:vertical;margin-bottom:14px;font-family:inherit;"></textarea>
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="editMsgCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="editMsgSaveBtn" class="primary-btn">保存</button>
-    </div>
-  </div>
-</div>
-
-<div id="profileModal" class="modal-backdrop hidden">
-  <div class="modal-content">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 16px;color:#1e3a8a;">プロフィール設定</h3>
-    <div style="text-align:center;margin-bottom:16px;">
-      <img id="profileAvatarPreview" class="avatar-lg" src="" alt="" style="margin:0 auto;display:block;">
-      <p style="font-size:11px;color:#6b7280;margin-top:8px;">アイコンを選択</p>
-      <div id="presetAvatarRow" style="display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:8px;"></div>
-      <div style="margin-top:12px;">
-        <label style="display:inline-flex;align-items:center;gap:6px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#1e40af;cursor:pointer;">
-          <svg class="svg-icon icon-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="#1e40af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M4 16V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V16" stroke="#1e40af" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          画像をアップロード
-          <input type="file" id="profileAvatarFileInput" accept="image/*" style="display:none;">
-        </label>
-      </div>
-      <div id="profileUploadMsg" style="font-size:11px;color:#6b7280;margin-top:6px;min-height:14px;"></div>
-    </div>
-    <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">ニックネーム（最大20文字）:</label>
-    <input type="text" id="nicknameInput" maxlength="20" placeholder="例: 名無しさん" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;">
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="profileCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="profileSaveBtn" class="primary-btn">保存</button>
-    </div>
-  </div>
-</div>
-
-<div id="announceModal" class="modal-backdrop hidden">
-  <div class="modal-content" style="border:3px solid #7c3aed;">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#6d28d9;">全体アナウンス</h3>
-    <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メッセージ:</label>
-    <textarea id="announceTextInput" rows="4" maxlength="200" style="width:100%;border:1px solid #d1d5db;padding:10px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;resize:vertical;font-family:inherit;"></textarea>
-    <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">表示時間（秒）:</label>
-    <input type="number" id="announceDurationInput" min="5" max="300" value="30" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:16px;outline:none;">
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="announceCancel" class="secondary-btn">キャンセル</button>
-      <button id="announceSend" style="background:#7c3aed;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">送信</button>
-    </div>
-  </div>
-</div>
-
-<div id="adminBanPanel" class="modal-backdrop hidden">
-  <div class="modal-content" style="border-top:6px solid #dc2626; max-width:520px;">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#991b1b;">ユーザーBAN（関連アカウント対応）</h3>
-    <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">同じ端末で使われた関連アカウントも自動検出して一括BANできます。</p>
-    <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
-    <input type="email" id="banEmailInput" placeholder="example@gmail.com" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:8px;outline:none;">
-    <button id="banSearchRelatedBtn" type="button" style="width:100%;background:#0891b2;color:#fff;border:none;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:12px;">関連アカウントを検索</button>
-    <div id="banSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
-    <div id="relatedAccountsBox" style="display:none;margin-bottom:14px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-        <div style="font-size:12px;font-weight:700;color:#92400e;">関連アカウント</div>
-        <label style="font-size:11px;color:#6b7280;cursor:pointer;display:flex;align-items:center;gap:4px;">
-          <input type="checkbox" id="relatedSelectAll">すべて選択
-        </label>
-      </div>
-      <div id="relatedAccountsList" style="max-height:200px;overflow-y:auto;"></div>
-    </div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="banCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="banExecuteBtn" style="background:#dc2626;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">BANする</button>
-    </div>
-    <div style="margin-top:16px;padding-top:14px;border-top:1px solid #e5e7eb;">
-      <div style="font-size:11px;font-weight:700;color:#6b7280;margin-bottom:8px;">現在のBANリスト:</div>
-      <div id="banListContainer" style="max-height:180px;overflow-y:auto;font-size:12px;"></div>
-    </div>
-  </div>
-</div>
-
-<div id="adminStoryDeletePanel" class="modal-backdrop hidden">
-  <div class="modal-content" style="border-top:6px solid #ec4899; max-width:480px;">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#be185d;">ユーザーのストーリー削除</h3>
-    <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">メールアドレス:</label>
-    <input type="email" id="storyDeleteEmailInput" placeholder="example@gmail.com" style="width:100%;border:1px solid #d1d5db;padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;outline:none;">
-    <div id="storyDeleteSearchMsg" style="font-size:12px;margin-bottom:12px;min-height:16px;"></div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="storyDeleteCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="storyDeleteExecuteBtn" style="background:#ec4899;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">削除する</button>
-    </div>
-  </div>
-</div>
-
-<div id="approvalPanel" class="modal-backdrop hidden">
-  <div class="modal-content" style="border-top:6px solid #16a34a; max-width:560px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <h3 style="font-size:17px;font-weight:700;margin:0;color:#166534;">承認リクエスト</h3>
-      <button id="approvalClearAllBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">全削除</button>
-    </div>
-    <div id="approvalList" style="max-height:55vh;overflow-y:auto;"></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-      <button id="approvalCloseBtn" class="secondary-btn">閉じる</button>
-    </div>
-  </div>
-</div>
-
-<div id="notificationPanel" class="modal-backdrop hidden">
-  <div class="modal-content" style="border-top:6px solid #0891b2; max-width:560px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <h3 style="font-size:17px;font-weight:700;margin:0;color:#0e7490;">ログイン通知</h3>
-      <button id="notifClearAllBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">全削除</button>
-    </div>
-    <div id="notificationList" style="max-height:55vh;overflow-y:auto;"></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-      <button id="notificationCloseBtn" class="secondary-btn">閉じる</button>
-    </div>
-  </div>
-</div>
-
-<div id="emergencyHelpModal" class="modal-backdrop hidden">
-  <div class="modal-content" style="border-top:6px solid #dc2626;max-width:560px;">
-    <div class="eh-header">
-      <div class="eh-icon">
-        <svg class="svg-icon icon-28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 3L2 20H22L12 3Z" fill="#ffffff" stroke="#7f1d1d" stroke-width="1" stroke-linejoin="round"/>
-          <line x1="12" y1="9" x2="12" y2="15" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
-          <circle cx="12" cy="17.5" r="1" fill="#dc2626"/>
-        </svg>
-      </div>
-      <div><div class="eh-title">緊急モードについて</div></div>
-    </div>
-    <div class="eh-body">
-      <p>緊急ボタンはサイト全体を即座に停止させる機能です。</p>
-      <p><strong>管理者:</strong></p>
-      <ul>
-        <li><span class="email">katou.noel114514@gmail.com</span></li>
-        <li><span class="email">18107@v.nakijin.ed.jp</span></li>
-      </ul>
-      <p><strong>発動:</strong> 緊急ボタンを1回クリック</p>
-      <p><strong>説明:</strong> 緊急ボタンを1秒以上長押し</p>
-      <p><strong>管理者の解除方法:</strong> 黒い画面で <strong>Ctrl + D</strong> を押す</p>
-    </div>
-    <div style="display:flex;justify-content:flex-end;margin-top:20px;">
-      <button id="emergencyHelpCloseBtn" class="secondary-btn">閉じる</button>
-    </div>
-  </div>
-</div>
-
-<div id="storyPostModal" class="modal-backdrop hidden">
-  <div class="modal-content">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 12px;color:#1e3a8a;">ストーリーを投稿</h3>
-    <textarea id="storyTextInput" rows="3" maxlength="200" placeholder="今なにしてる？" style="width:100%;border:1px solid #d1d5db;padding:10px;border-radius:8px;font-size:13px;margin-bottom:10px;outline:none;resize:vertical;font-family:inherit;"></textarea>
-    <label style="display:block;font-size:11px;color:#6b7280;margin-bottom:4px;">画像を選択:</label>
-    <input type="file" id="storyFileInput" accept="image/*" style="width:100%;border:1px solid #d1d5db;padding:8px;border-radius:8px;font-size:12px;margin-bottom:8px;">
-    <div id="storyUploadPreview" style="display:none;margin-top:8px;text-align:center;"></div>
-    <label style="display:block;font-size:11px;color:#6b7280;margin:8px 0 4px;">音声（mp3 / m4a）:</label>
-    <input type="file" id="storyAudioInput" accept="audio/*,.mp3,.m4a" style="width:100%;border:1px solid #d1d5db;padding:8px;border-radius:8px;font-size:12px;margin-bottom:8px;">
-    <div id="storyAudioPreview" style="display:none;margin-top:8px;text-align:center;"></div>
-    <label style="display:block;font-size:11px;color:#6b7280;margin:8px 0 4px;">動画（mp4）:</label>
-    <input type="file" id="storyVideoInput" accept="video/mp4,video/*,.mp4" style="width:100%;border:1px solid #d1d5db;padding:8px;border-radius:8px;font-size:12px;margin-bottom:8px;">
-    <div id="storyVideoPreview" style="display:none;margin-top:8px;text-align:center;"></div>
-    <div id="storyUploadInfo" style="font-size:11px;color:#6b7280;margin-bottom:12px;"></div>
-    <div id="storyPostMsg" style="font-size:12px;margin-bottom:8px;min-height:16px;"></div>
-    <div style="display:flex;justify-content:flex-end;gap:8px;">
-      <button id="storyPostCancelBtn" class="secondary-btn">キャンセル</button>
-      <button id="storyPostBtn" style="background:linear-gradient(135deg,#ec4899,#8b5cf6);color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">投稿する</button>
-    </div>
-  </div>
-</div>
-
-<div id="archiveModal" class="modal-backdrop hidden">
-  <div class="modal-content">
-    <h3 style="font-size:17px;font-weight:700;margin:0 0 12px;color:#1e3a8a;">自分のストーリーアーカイブ</h3>
-    <div id="archiveList" style="max-height:55vh;overflow-y:auto;"></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-      <button id="archiveCloseBtn" class="secondary-btn">閉じる</button>
-    </div>
-  </div>
-</div>
-
-<div id="storyViewer">
-  <div class="story-stage">
-    <div class="story-progress-bar" id="storyProgressBar"></div>
-    <div class="story-header">
-      <img id="storyHeaderAvatar" src="" alt="">
-      <div>
-        <div style="font-size:13px;font-weight:700;" id="storyHeaderName"></div>
-        <div style="font-size:11px;opacity:0.75;" id="storyHeaderTime"></div>
-      </div>
-      <button class="story-close-btn" id="storyCloseBtn">
-        <svg class="svg-icon icon-18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 3L15 15M15 3L3 15" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </button>
-    </div>
-    <div class="story-nav-left" id="storyNavLeft"></div>
-    <div class="story-nav-right" id="storyNavRight"></div>
-    <div id="storyStageContent"></div>
-    <div class="story-stats-overlay" id="storyStatsOverlay" style="display:none;">
-      <span class="stat" id="storyViewCount"></span>
-      <span class="stat" id="storyLikeCount"></span>
-    </div>
-    <div class="story-footer">
-      <input type="text" id="storyReplyInput" placeholder="返信を送る..." maxlength="300">
-      <button class="story-like-btn" id="storyLikeBtn">
-        <svg class="svg-icon icon-24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 21C12 21 3 14 3 8.5C3 5.5 5.5 3 8.5 3C10.2 3 11.5 3.8 12 5C12.5 3.8 13.8 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14 12 21 12 21Z" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" fill="none" id="storyLikePath"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-</div>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, set, remove, onValue, query, orderByChild, get, update, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-const ADMIN_EMAILS = ['katou.noel114514@gmail.com', '18107@v.nakijin.ed.jp'];
-function isAdmin(email) { return email && ADMIN_EMAILS.includes(email.toLowerCase()); }
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1551138462634082357/ey4MZT_qrEunUGTaD6ayOmW4DjQb4bJn4Lwdn-xylbtkrDiLDMVu2ygyHTOVgmALD5vI';
-
-/* アバター用SVG */
-function makeAvatarSvg(color, face) {
-  const faces = {
-    smile: '<circle cx="24" cy="26" r="2.5" fill="#fff"/><circle cx="40" cy="26" r="2.5" fill="#fff"/><path d="M22 38 Q32 46 42 38" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>',
-    cool: '<rect x="18" y="22" width="12" height="6" rx="2" fill="#fff"/><rect x="34" y="22" width="12" height="6" rx="2" fill="#fff"/><path d="M22 38 L42 38" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>',
-    fire: '<path d="M32 12 L36 22 L42 20 L38 30 L44 34 L36 40 L32 34 L28 40 L20 34 L26 30 L22 20 L28 22 Z" fill="#fff"/>',
-    star: '<path d="M32 14 L36 26 L48 26 L38 34 L42 46 L32 38 L22 46 L26 34 L16 26 L28 26 Z" fill="#fff"/>',
-    clover: '<circle cx="32" cy="24" r="6" fill="#fff"/><circle cx="32" cy="40" r="6" fill="#fff"/><circle cx="24" cy="32" r="6" fill="#fff"/><circle cx="40" cy="32" r="6" fill="#fff"/>',
-    flower: '<circle cx="32" cy="32" r="5" fill="#fff"/><circle cx="32" cy="20" r="5" fill="#fff"/><circle cx="32" cy="44" r="5" fill="#fff"/><circle cx="20" cy="32" r="5" fill="#fff"/><circle cx="44" cy="32" r="5" fill="#fff"/>',
-    cat: '<path d="M20 20 L24 12 L28 20 Z" fill="#fff"/><path d="M36 20 L40 12 L44 20 Z" fill="#fff"/><circle cx="26" cy="32" r="2.5" fill="#fff"/><circle cx="38" cy="32" r="2.5" fill="#fff"/><path d="M28 40 Q32 44 36 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>',
-    dog: '<ellipse cx="22" cy="24" rx="4" ry="6" fill="#fff"/><ellipse cx="42" cy="24" rx="4" ry="6" fill="#fff"/><circle cx="27" cy="32" r="2.5" fill="#fff"/><circle cx="37" cy="32" r="2.5" fill="#fff"/><ellipse cx="32" cy="40" rx="4" ry="3" fill="#fff"/>',
-    fox: '<path d="M18 22 L24 12 L28 22 Z" fill="#fff"/><path d="M36 22 L40 12 L46 22 Z" fill="#fff"/><circle cx="26" cy="30" r="2.5" fill="#fff"/><circle cx="38" cy="30" r="2.5" fill="#fff"/><path d="M28 40 L32 44 L36 40" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>',
-    panda: '<circle cx="24" cy="24" r="7" fill="#fff"/><circle cx="40" cy="24" r="7" fill="#fff"/><circle cx="28" cy="32" r="3" fill="#fff"/><circle cx="36" cy="32" r="3" fill="#fff"/>',
-    game: '<rect x="16" y="24" width="32" height="18" rx="6" fill="#fff"/><circle cx="24" cy="32" r="3" fill="' + color + '"/><circle cx="40" cy="30" r="2" fill="' + color + '"/><circle cx="44" cy="34" r="2" fill="' + color + '"/>',
-    coffee: '<path d="M20 20 H44 V36 Q44 42 38 42 H26 Q20 42 20 36 Z" fill="#fff"/><path d="M44 24 Q50 24 50 30 Q50 36 44 36" stroke="#fff" stroke-width="2" fill="none"/>'
-  };
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="${color}"/>${faces[face] || faces.smile}</svg>`;
-  return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
-}
-const PRESET_AVATARS = [
-  makeAvatarSvg('#0284c7','smile'), makeAvatarSvg('#16a34a','cool'), makeAvatarSvg('#dc2626','fire'),
-  makeAvatarSvg('#7c3aed','star'), makeAvatarSvg('#d97706','clover'), makeAvatarSvg('#db2777','flower'),
-  makeAvatarSvg('#0891b2','cat'), makeAvatarSvg('#65a30d','dog'), makeAvatarSvg('#ea580c','fox'),
-  makeAvatarSvg('#475569','panda'), makeAvatarSvg('#c026d3','game'), makeAvatarSvg('#0d9488','coffee')
-];
-const DEFAULT_AVATAR = makeAvatarSvg('#9ca3af','smile');
-const FAVICON_NORMAL = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E";
-const FAVICON_BLACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23000000'/%3E%3C/svg%3E";
-const faviconLink = document.getElementById('faviconLink');
-function setFavicon(url) { faviconLink.href = url; }
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAexiMqMGTzd1r9IzHb4_aQomhPf-DCB6U",
-  authDomain: "chat-d04a6.firebaseapp.com",
-  databaseURL: "https://chat-d04a6-default-rtdb.firebaseio.com",
-  projectId: "chat-d04a6",
-  storageBucket: "chat-d04a6.firebasestorage.app",
-  messagingSenderId: "290611121392",
-  appId: "1:290611121392:web:c45ca30c8099f85bf08635"
-};
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-setPersistence(auth, browserLocalPersistence).catch(() => {});
-
-let currentUser = null;
-let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
-let currentChatId = null;
-let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {}, emailBansCache = {}, deviceLinksCache = {}, readsCache = {}, typingCache = {}, presenceCache = {}, reactionsCache = {};
-let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null };
-let chatLatestListeners = {};
-
-const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
-const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v5';
-const SEEN_STORIES_KEY = 'sikunai_seen_stories_v1';
-const ANNOUNCE_DISMISS_KEY = 'sikunai_dismissed_announcements_v1';
-const NOTIF_SEEN_KEY = 'sikunai_notif_seen_v1';
-const APPROVAL_SEEN_KEY = 'sikunai_approval_seen_v1';
-const DEVICE_ID_KEY = 'sikunai_device_id_v1';
-function loadJson(key) { try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch (e) { return {}; } }
-function saveJson(key, obj) { try { localStorage.setItem(key, JSON.stringify(obj)); } catch (e) {} }
-function getOrCreateDeviceId() {
-  try { let id = localStorage.getItem(DEVICE_ID_KEY); if (!id) { id = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2, 12); localStorage.setItem(DEVICE_ID_KEY, id); } return id; } catch (e) { return 'dev_unknown'; }
-}
-const MY_DEVICE_ID = getOrCreateDeviceId();
-let unreadCounts = loadJson(UNREAD_STORAGE_KEY);
-let lastReadAt = loadJson(LASTREAD_STORAGE_KEY);
-let mySeenStories = loadJson(SEEN_STORIES_KEY);
-let dismissedAnnouncements = loadJson(ANNOUNCE_DISMISS_KEY);
-let chatLatestMsgAt = {};
-let isTabActive = !document.hidden;
-let isNearBottom = true, unreadInChat = 0;
-let myPresenceRef = null, heartbeatTimer = null;
-const HEARTBEAT_INTERVAL = 20000;
-const PRESENCE_STALE_MS = 60000;
-let emergencyState = { active: false };
-let emergencyEnforcerInterval = null, emergencyExiting = false;
-let storiesCache = {};
-let currentStoryUserId = null, currentStoryIndex = 0, currentStoryList = [], currentStoryIsArchive = false;
-let storyTimer = null, storyProgressRAF = null, storyStartTime = 0, storyDuration = 5000, storyRemainingMs = 0, storyPaused = false;
-let currentStoryLikes = {}, currentStoryViews = {}, myArchivedStories = {};
-let pendingStoryFile = null, pendingStoryAudio = null, pendingStoryVideo = null;
-let currentStoryAudioEl = null, currentStoryVideoEl = null;
-let typingTimeout = null, isCurrentlyTyping = false;
-const TYPING_TIMEOUT_MS = 3000;
-let pendingMembers = [], editingMsgKey = null, openMenuKey = null, openMenuEl = null, openChatHeaderMenuEl = null, intentionalSignOut = false, selectedAvatar = DEFAULT_AVATAR;
-let uploadedAvatarDataUrl = null; // ★ アップロードされたアイコン画像を保持
-let emergencyHoldTimer = null, emergencyHoldTriggered = false, banEnforcerInterval = null;
-let notificationsCache = {}, lastSeenNotificationCount = parseInt(localStorage.getItem(NOTIF_SEEN_KEY) || '0', 10), lastNotifIds = new Set();
-let approvalsCache = {}, lastSeenApprovalCount = parseInt(localStorage.getItem(APPROVAL_SEEN_KEY) || '0', 10), lastApprovalIds = new Set();
-let myApprovalStatus = null;
-let replyingTo = null, currentReactionPicker = null, addMemberTargetProfile = null;
-let relatedAccountsResult = [];
-
-/* ★ 音声通話関連グローバル */
-let callState = {
-  active: false,
-  role: null,
-  chatId: null,
-  peerUid: null,
-  sessionId: null,
-  pc: null,
-  localStream: null,
-  remoteStream: null,
-  micEnabled: true,
-  pendingCandidates: [],
-  callDocRef: null,
-  unsub: null,
-  isMinimized: false,
-  connected: false,
-  remoteDescSet: false
-};
-
-const ICE_SERVERS = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun2.l.google.com:19302' }
-  ]
-};
-
-const bootOverlay = document.getElementById('bootOverlay');
-const loginView = document.getElementById('loginView');
-const mainView = document.getElementById('mainView');
-const pendingApprovalOverlay = document.getElementById('pendingApprovalOverlay');
-const chatListView = document.getElementById('chatListView');
-const chatView = document.getElementById('chatView');
-const chatListContainer = document.getElementById('chatListContainer');
-const messagesContainer = document.getElementById('messagesContainer');
-const chatMessagesWrap = document.getElementById('chatMessagesWrap');
-const typingIndicatorSlot = document.getElementById('typingIndicatorSlot');
-const connDot = document.getElementById('connDot');
-const connText = document.getElementById('connText');
-const statusBanner = document.getElementById('statusBanner');
-const myAvatar = document.getElementById('myAvatar');
-const myName = document.getElementById('myName');
-const banOverlay = document.getElementById('banOverlay');
-const emergencyOverlay = document.getElementById('emergencyOverlay');
-const announcementBanner = document.getElementById('announcementBanner');
-const announcementText = document.getElementById('announcementText');
-const announceBtn = document.getElementById('announceBtn');
-const lightbox = document.getElementById('lightbox');
-const lightboxImg = document.getElementById('lightboxImg');
-const scrollToBottomBtn = document.getElementById('scrollToBottomBtn');
-const scrollUnreadCount = document.getElementById('scrollUnreadCount');
-let bannerTimer = null, announcementTimer = null;
-
-/* SVGアイコン */
-function iconCheck(size = 16, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12L10 17L19 8" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-}
-function iconX(size = 16, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 5L19 19M19 5L5 19" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
-}
-function iconTrash(size = 16, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7H20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M6 7L7 20C7 20.6 7.4 21 8 21H16C16.6 21 17 20.6 17 20L18 7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 11V17M14 11V17" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/></svg>`;
-}
-function iconReply(size = 16, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 8L4 13L10 18" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 13H14C17.3 13 20 15.7 20 19" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconSmile(size = 16, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="${color}" stroke-width="2"/><circle cx="9" cy="10" r="1.2" fill="${color}"/><circle cx="15" cy="10" r="1.2" fill="${color}"/><path d="M8 14C9 16 11 17 12 17C13 17 15 16 16 14" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconCopy(size = 16, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="12" height="12" rx="2" stroke="${color}" stroke-width="2"/><path d="M16 8V6C16 4.9 15.1 4 14 4H6C4.9 4 4 4.9 4 6V14C4 15.1 4.9 16 6 16H8" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconEdit(size = 16, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 20H8L18 10L14 6L4 16V20Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><path d="M14 6L17 3L21 7L18 10" stroke="${color}" stroke-width="2" stroke-linejoin="round"/></svg>`;
-}
-function iconMore(size = 16, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="5" r="1.8" fill="${color}"/><circle cx="12" cy="12" r="1.8" fill="${color}"/><circle cx="12" cy="19" r="1.8" fill="${color}"/></svg>`;
-}
-function iconUsers(size = 18, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="8" r="3.5" stroke="${color}" stroke-width="2"/><path d="M3 20C3 16.5 5.7 14 9 14C12.3 14 15 16.5 15 20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><circle cx="17" cy="8" r="2.5" stroke="${color}" stroke-width="2"/><path d="M15 14C18 14 21 16 21 19" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconLeave(size = 18, color = '#ef4444') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 4H18C19.1 4 20 4.9 20 6V18C20 19.1 19.1 20 18 20H15" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 8L6 12L10 16" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="6" y1="12" x2="16" y2="12" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconTrashDanger(size = 18, color = '#ef4444') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7H20" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M9 7V5C9 4.4 9.4 4 10 4H14C14.6 4 15 4.4 15 5V7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M6 7L7 20C7 20.6 7.4 21 8 21H16C16.6 21 17 20.6 17 20L18 7" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 11V17M14 11V17" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/></svg>`;
-}
-function iconBell(size = 18, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 18H18L16 15V11C16 8.5 14.5 6.5 12 6C9.5 6.5 8 8.5 8 11V15L6 18Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><path d="M12 4V6" stroke="${color}" stroke-width="2" stroke-linecap="round"/><path d="M10 21C10 22.1 10.9 23 12 23C13.1 23 14 22.1 14 21" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconCheckCircle(size = 18, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="${color}" stroke-width="2"/><path d="M8 12L11 15L16 9" stroke="${color}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-}
-function iconChat(size = 64, color = '#0284c7') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="8" width="52" height="40" rx="8" fill="${color}"/><path d="M14 20H50V42H26L18 50V42H14V20Z" fill="#ffffff"/></svg>`;
-}
-function iconUser(size = 18, color = '#374151') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="4" stroke="${color}" stroke-width="2"/><path d="M4 21C4 17 7.5 14 12 14C16.5 14 20 17 20 21" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconHeart(size = 24, color = '#fff', filled = false) {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21C12 21 3 14 3 8.5C3 5.5 5.5 3 8.5 3C10.2 3 11.5 3.8 12 5C12.5 3.8 13.8 3 15.5 3C18.5 3 21 5.5 21 8.5C21 14 12 21 12 21Z" stroke="${color}" stroke-width="2" stroke-linejoin="round" fill="${filled ? color : 'none'}"/></svg>`;
-}
-function iconEye(size = 14, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12C4 7 8 5 12 5C16 5 20 7 22 12C20 17 16 19 12 19C8 19 4 17 2 12Z" stroke="${color}" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="${color}" stroke-width="2"/></svg>`;
-}
-function iconMic(size = 22, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="3" width="6" height="11" rx="3" stroke="${color}" stroke-width="2"/><path d="M5 11C5 14.866 8.134 18 12 18C15.866 18 19 14.866 19 11" stroke="${color}" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="18" x2="12" y2="22" stroke="${color}" stroke-width="2" stroke-linecap="round"/></svg>`;
-}
-function iconMicOff(size = 22, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="3" width="6" height="11" rx="3" stroke="${color}" stroke-width="2"/><line x1="4" y1="4" x2="20" y2="20" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/></svg>`;
-}
-function iconPhoneOff(size = 28, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="24" height="24" rx="6" stroke="${color}" stroke-width="2" fill="none"/><path d="M9 11C9 11 10.5 8.5 14 8.5C17.5 8.5 19 11 19 11L17 14L15 13V10.8C14.4 10.7 13.7 10.65 14 10.65C14.3 10.65 13.6 10.7 13 10.8V13L11 14L9 11Z" fill="${color}"/><line x1="7" y1="21" x2="21" y2="7" stroke="${color}" stroke-width="2.5" stroke-linecap="round"/></svg>`;
-}
-function iconPhone(size = 20, color = '#fff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8C6 8 8 5 12 5C16 5 18 8 18 8L16 11L14 10V8.5C13.4 8.4 12.7 8.3 12 8.3C11.3 8.3 10.6 8.4 10 8.5V10L8 11L6 8Z" fill="${color}"/></svg>`;
-}
-function iconWarning(size = 20, color = '#ffffff') {
-  return `<svg class="svg-icon" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3L2 20H22L12 3Z" fill="${color}" stroke="#7f1d1d" stroke-width="1" stroke-linejoin="round"/><line x1="12" y1="9" x2="12" y2="15" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.5" r="1" fill="#dc2626"/></svg>`;
-}
-
-function escapeHtml(str) { if (!str) return ''; return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;'); }
-function formatContent(str) {
-  if (!str) return '';
-  return escapeHtml(str).replace(/(https?:\/\/[^\s<]+)/g, (url) => {
-    const safe = url.replace(/&amp;/g, '&');
-    return `<a href="${safe}" target="_blank" rel="noopener noreferrer">${url}</a>`;
-  });
-}
-function formatTime(ts) { if (!ts) return ''; try { return new Date(ts).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }); } catch(e) { return ''; } }
-function formatChatListTime(ts) { if (!ts) return ''; const d = new Date(ts); const now = new Date(); if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'}); const y = new Date(now); y.setDate(y.getDate()-1); if (d.toDateString() === y.toDateString()) return '昨日'; return d.toLocaleDateString('ja-JP',{month:'numeric',day:'numeric'}); }
-function formatDateDivider(ts) { if (!ts) return ''; const d = new Date(ts); const now = new Date(); if (d.toDateString() === now.toDateString()) return '今日'; const y = new Date(now); y.setDate(y.getDate()-1); if (d.toDateString() === y.toDateString()) return '昨日'; return d.toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'}); }
-function isSameDay(a,b) { if (!a||!b) return false; const da = new Date(a), db2 = new Date(b); return da.getFullYear()===db2.getFullYear() && da.getMonth()===db2.getMonth() && da.getDate()===db2.getDate(); }
-function setConnection(online) { connDot.classList.toggle('online', online); connText.textContent = online ? 'オンライン' : 'オフライン'; }
-function showBanner(msg, isError = true) { statusBanner.textContent = msg; statusBanner.style.background = isError ? 'linear-gradient(135deg, #dc2626, #991b1b)' : 'linear-gradient(135deg, #16a34a, #15803d)'; statusBanner.classList.add('show'); clearTimeout(bannerTimer); bannerTimer = setTimeout(() => { statusBanner.classList.remove('show'); }, 3000); }
-function sanitizeEmailKey(email) { return email ? String(email).toLowerCase().replace(/[.@#$\[\]]/g,'_') : ''; }
-function isUserOnline(uid) { if (!uid) return false; if (currentUser && uid === currentUser.uid) return true; const p = presenceCache[uid]; if (!p||!p.online) return false; if (p.lastChanged && (Date.now()-p.lastChanged) > PRESENCE_STALE_MS) return false; return true; }
-function getProfileForUid(uid) { if (!uid) return { nickname:'名無しさん', avatar:DEFAULT_AVATAR }; const p = profilesCache[uid]; return p ? { nickname: p.nickname||'名無しさん', avatar: p.avatar||DEFAULT_AVATAR } : { nickname:'名無しさん', avatar:DEFAULT_AVATAR }; }
-function getChatPartnerUids() { const s = new Set(); if (!currentUser) return s; Object.values(chatsCache||{}).forEach(c => { if (!c||!c.members) return; Object.keys(c.members).forEach(uid => { if (uid !== currentUser.uid) s.add(uid); }); }); return s; }
-function updateMyProfileUI() { myAvatar.src = myProfile.avatar || DEFAULT_AVATAR; myName.textContent = myProfile.nickname || '名無しさん'; }
-
-function updatePresenceDots() {
-  document.querySelectorAll('[data-presence-uid]').forEach(el => { el.classList.toggle('online', isUserOnline(el.dataset.presenceUid)); });
-  document.querySelectorAll('[data-presence-msg-uid]').forEach(el => { el.classList.toggle('online', isUserOnline(el.dataset.presenceMsgUid)); });
-  updateChatHeaderPresence();
-}
-
-async function setupMyPresence() {
-  if (!currentUser) return;
-  myPresenceRef = ref(db, `presence/${currentUser.uid}`);
-  try { await set(myPresenceRef, { online: true, lastChanged: Date.now() }); onDisconnect(myPresenceRef).set({ online: false, lastChanged: Date.now() }); } catch(e) {}
-  if (heartbeatTimer) clearInterval(heartbeatTimer);
-  heartbeatTimer = setInterval(() => { if (currentUser && myPresenceRef) update(myPresenceRef, { online: true, lastChanged: Date.now() }).catch(()=>{}); }, HEARTBEAT_INTERVAL);
-}
-async function setMyOffline() { if (!currentUser) return; if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; } try { await set(ref(db, `presence/${currentUser.uid}`), { online: false, lastChanged: Date.now() }); } catch(e) {} }
-
-function refreshFavicon() {
-  if (emergencyState.active) { setFavicon(FAVICON_BLACK); return; }
-  setFavicon(FAVICON_NORMAL);
-}
-
-function markChatAsRead(chatId) {
-  const ts = chatLatestMsgAt[chatId] || 0;
-  lastReadAt[chatId] = ts;
-  delete unreadCounts[chatId];
-  saveJson(UNREAD_STORAGE_KEY, unreadCounts);
-  saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
-  updateScrollButton();
-  refreshFavicon();
-  if (currentUser && chatId) set(ref(db, `chatReads/${chatId}/${currentUser.uid}`), Date.now()).catch(()=>{});
-}
-function updateScrollButton() {
-  if (isNearBottom || unreadInChat === 0) scrollToBottomBtn.classList.remove('show');
-  else { scrollToBottomBtn.classList.add('show'); scrollUnreadCount.style.display = 'flex'; scrollUnreadCount.textContent = unreadInChat > 99 ? '99+' : unreadInChat; }
-}
-
-function handleNewLatest(chatId, data) {
-  if (!data) return;
-  const lastAt = data.lastMessageAt || 0;
-  const lastSender = data.lastSenderUid || '';
-  const prev = chatLatestMsgAt[chatId] || 0;
-  chatLatestMsgAt[chatId] = lastAt;
-  if (lastAt <= prev) return;
-  if (!currentUser || lastSender === currentUser.uid) return;
-  if (chatId === currentChatId && isTabActive) { markChatAsRead(chatId); return; }
-  const lastRead = lastReadAt[chatId] || 0;
-  if (lastAt > lastRead) {
-    unreadCounts[chatId] = (unreadCounts[chatId] || 0) + 1;
-    saveJson(UNREAD_STORAGE_KEY, unreadCounts);
-    if (chatId === currentChatId) unreadInChat++;
-    refreshFavicon();
-    renderChatList();
-    updateScrollButton();
-  }
-}
-
-function initChatLatestListeners() {
-  Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch(e) {} });
-  chatLatestListeners = {};
-  Object.keys(chatsCache || {}).forEach(chatId => {
-    const unsub = onValue(ref(db, `userChats/${currentUser.uid}/${chatId}`), (snap) => { if (snap.exists()) handleNewLatest(chatId, snap.val()); });
-    chatLatestListeners[chatId] = unsub;
-  });
-}
-
-function executeBan() {
-  banOverlay.classList.add('show');
-  document.body.style.background = '#000';
-  document.title = 'アクセスが拒否されました';
-  if (banEnforcerInterval) clearInterval(banEnforcerInterval);
-  banEnforcerInterval = setInterval(() => {
-    try { window.close(); } catch(e) {}
-    banOverlay.classList.add('show');
-    document.body.style.background = '#000';
-  }, 800);
-}
-
-function renderChatList() {
-  chatListContainer.innerHTML = '';
-  const entries = Object.entries(chatsCache || {});
-  if (entries.length === 0) {
-    chatListContainer.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#9ca3af;">${iconChat(48, '#cbd5e1')}<div style="font-size:14px;font-weight:600;color:#6b7280;margin-top:12px;">まだチャットがありません</div></div>`;
-    return;
-  }
-  entries.sort((a,b) => (b[1].lastMessageAt||b[1].createdAt||0) - (a[1].lastMessageAt||a[1].createdAt||0));
-  entries.forEach(([chatId, chat]) => {
-    const unread = unreadCounts[chatId] || 0;
-    const isGroup = chat.type === 'group';
-    const item = document.createElement('div');
-    item.className = 'chat-item' + (unread > 0 ? ' unread' : '');
-    item.onclick = () => openChat(chatId);
-    let displayName, avatarHtml;
-    if (isGroup) {
-      displayName = chat.name || 'グループチャット';
-      const memberUids = Object.keys(chat.members||{}).filter(uid => uid !== currentUser.uid);
-      const avatars = memberUids.slice(0,3).map(uid => {
-        const p = getProfileForUid(uid);
-        const online = isUserOnline(uid);
-        return `<span class="avatar-online-wrap"><img class="avatar-sm" src="${escapeHtml(p.avatar)}"><span class="online-dot small ${online?'online':''}" data-presence-uid="${escapeHtml(uid)}"></span></span>`;
-      }).join('');
-      avatarHtml = `<div class="group-avatars">${avatars || `<img class="avatar" src="${DEFAULT_AVATAR}">`}</div>`;
-    } else {
-      const otherUid = Object.keys(chat.members||{}).find(uid => uid !== currentUser.uid);
-      const p = getProfileForUid(otherUid);
-      displayName = p.nickname;
-      const online = isUserOnline(otherUid);
-      avatarHtml = `<span class="avatar-online-wrap"><img class="avatar" src="${escapeHtml(p.avatar)}"><span class="online-dot ${online?'online':''}" data-presence-uid="${escapeHtml(otherUid)}"></span></span>`;
-    }
-    let statusLine = '';
-    if (isGroup) {
-      const others = Object.keys(chat.members||{}).filter(uid => uid !== currentUser.uid);
-      const onlineCount = others.filter(uid => isUserOnline(uid)).length;
-      statusLine = `<span class="online-label ${onlineCount===0?'offline':''}"><span class="online-dot ${onlineCount>0?'online':''}"></span>${onlineCount}/${others.length} オンライン</span>`;
-    } else {
-      const otherUid = Object.keys(chat.members||{}).find(uid => uid !== currentUser.uid);
-      const online = isUserOnline(otherUid);
-      statusLine = `<span class="online-label ${online?'':'offline'}"><span class="online-dot ${online?'online':''}"></span>${online?'オンライン':'オフライン'}</span>`;
-    }
-    item.innerHTML = `
-      <div class="chat-item-avatar-wrap">${avatarHtml}${unread>0?'<span class="unread-dot"></span>':''}</div>
-      <div class="chat-item-body">
-        <div class="chat-item-name">${isGroup?'<span style="display:inline-block;vertical-align:middle;margin-right:4px;">'+iconUsers(14, '#1e3a8a')+'</span>':''}${escapeHtml(displayName)}</div>
-        <div class="chat-item-last">${escapeHtml(chat.lastMessage || 'まだメッセージがありません')}</div>
-        <div style="margin-top:2px;">${statusLine}</div>
-      </div>
-      <div class="chat-item-side">
-        <div class="chat-item-time">${formatChatListTime(chat.lastMessageAt || chat.createdAt)}</div>
-        ${unread>0?`<span class="chat-item-badge">${unread>99?'99+':unread}</span>`:''}
-      </div>
-    `;
-    chatListContainer.appendChild(item);
-  });
-}
-
 function updateChatHeader() {
   const meta = document.getElementById('currentChatMeta');
   const headerAvatars = document.getElementById('chatHeaderAvatars');
@@ -1431,13 +445,23 @@ function openChat(chatId) {
   currentChatId = chatId;
   const chat = chatsCache[chatId];
   if (!chat) return;
-  markChatAsRead(chatId);
+  const latestAt = chat.lastMessageAt || chat.createdAt || 0;
+  chatLatestMsgAt[chatId] = latestAt;
+  lastReadAt[chatId] = latestAt;
+  delete unreadCounts[chatId];
+  saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+  saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
+  unreadInChat = 0;
+  refreshFavicon();
+  updateScrollButton();
+  if (currentUser) {
+    set(ref(db, `chatReads/${chatId}/${currentUser.uid}`), Date.now()).catch(() => {});
+  }
   initReadsListener(chatId);
   initTypingListener(chatId);
   initReactionsListener(chatId);
   isCurrentlyTyping = false;
   clearTimeout(typingTimeout);
-  unreadInChat = 0;
   replyingTo = null;
   document.getElementById('replyPreviewBox').classList.remove('show');
   const isGroup = chat.type === 'group';
@@ -1818,7 +842,7 @@ function openReactionPicker(anchorEl, msgKey) {
   closeReactionPicker();
   const picker = document.createElement('div');
   picker.className = 'reaction-picker';
-  ['😭','❤️',👍','❤️‍🔥','😇','🥰','😍','😘','🥳','🥶','💩','🫶','💋','❣️','💕','❌','⭕️','‼️','⁉️'].forEach(emoji => {
+  ['👍','❤️','😂','😮','😢','🎉','🔥','👏','😭','❤️‍🔥','😇','🥰','😍','😘','🥳','🥶','💩','🫶','💋','❣️','❌','⭕️','‼️','⁉️','🍌'].forEach(emoji => {
     const b = document.createElement('button');
     b.textContent = emoji;
     b.addEventListener('click', (e) => { e.stopPropagation(); toggleReaction(msgKey, emoji); closeReactionPicker(); });
@@ -1911,6 +935,7 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
   sendBtn.disabled = true;
   const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
   const chatIdAtSend = currentChatId;
+  const now = Date.now();
   messageInput.value = '';
   autoResizeTextarea();
   pendingFile = null;
@@ -1920,6 +945,13 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
   document.getElementById('replyPreviewBox').classList.remove('show');
   clearTimeout(typingTimeout);
   setMyTypingState(false);
+  chatLatestMsgAt[chatIdAtSend] = now;
+  lastReadAt[chatIdAtSend] = now;
+  delete unreadCounts[chatIdAtSend];
+  saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+  saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
+  refreshFavicon();
+  updateScrollButton();
   try {
     const msgData = {
       clientMsgId,
@@ -1928,7 +960,7 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
       authorUid: currentUser.uid,
       authorName: myProfile.nickname,
       authorAvatar: myProfile.avatar,
-      createdAt: Date.now()
+      createdAt: now
     };
     if (reply) msgData.replyTo = { msgKey: reply.msgKey, authorUid: reply.authorUid, authorName: reply.authorName, content: (reply.content||'').slice(0, 200), hasFile: reply.hasFile };
     const newRef = push(ref(db, `chatMessages/${chatIdAtSend}`));
@@ -1940,7 +972,7 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
       const updates = {};
       memberUids.forEach(uid => {
         updates[`userChats/${uid}/${chatIdAtSend}/lastMessage`] = lastMsgLabel;
-        updates[`userChats/${uid}/${chatIdAtSend}/lastMessageAt`] = Date.now();
+        updates[`userChats/${uid}/${chatIdAtSend}/lastMessageAt`] = now;
         updates[`userChats/${uid}/${chatIdAtSend}/lastSenderUid`] = currentUser.uid;
       });
       await update(ref(db), updates);
@@ -2204,7 +1236,7 @@ async function findExistingDirectChat(partnerUid) {
 }
 
 /* ============================================================
-   ★ プロフィール設定（画像アップロード対応・完全版）
+   ★ プロフィール設定（画像アップロード対応）
    ============================================================ */
 document.getElementById('profileBtn').addEventListener('click', () => {
   document.getElementById('nicknameInput').value = myProfile.nickname || '';
@@ -2236,7 +1268,7 @@ document.getElementById('profileCancelBtn').addEventListener('click', () => docu
 document.getElementById('profileModal').addEventListener('click', (e) => { if (e.target.id === 'profileModal') document.getElementById('profileModal').classList.add('hidden'); });
 
 /* ★ 画像アップロード処理（リサイズ・圧縮なし。そのまま dataUrl 化） */
-document.getElementById('profileAvatarFileInput').addEventListener('change', async (e) => {
+document.getElementById('profileAvatarFileInput').addEventListener('change', (e) => {
   const f = e.target.files[0];
   const msg = document.getElementById('profileUploadMsg');
   const row = document.getElementById('presetAvatarRow');
@@ -2830,9 +1862,7 @@ document.getElementById('archiveCloseBtn').addEventListener('click', () => docum
 document.getElementById('archiveModal').addEventListener('click', (e) => { if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden'); });
 
 async function sendDiscordNotification(payload) {
-  try {
-    await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '**新規ログイン**', embeds: [{ title: '新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) });
-  } catch (err) {}
+  try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '**新規ログイン**', embeds: [{ title: '新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) }); } catch (err) {}
 }
 async function notifyLogin(user, nickname) {
   if (!user) return;
@@ -2847,7 +1877,7 @@ function initNotificationsListener() {
     const prevIds = new Set(lastNotifIds);
     notificationsCache = snap.exists() ? snap.val() : {};
     const currentIds = new Set(Object.keys(notificationsCache));
-    if (prevIds.size > 0) currentIds.forEach(id => { if (!prevIds.has(id)) showLoginToast(notificationsCache[id]); });
+    if (prevIds.size > 0) currentIds.forEach(id => { if (!prevIds.has(id)) { showLoginToast(notificationsCache[id]); notificationAudioCtx.play(); } });
     lastNotifIds = currentIds;
     renderNotifications();
     updateNotifBadge();
@@ -2904,10 +1934,7 @@ function initNotificationPanel() {
 
 async function createApprovalRequest(user, nickname) {
   if (!user || !user.email) return;
-  try {
-    const approvedSnap = await get(ref(db, `approvedUsers/${user.uid}`));
-    if (approvedSnap.exists()) { myApprovalStatus = 'approved'; return; }
-  } catch (e) {}
+  try { const approvedSnap = await get(ref(db, `approvedUsers/${user.uid}`)); if (approvedSnap.exists()) { myApprovalStatus = 'approved'; return; } } catch (e) {}
   const emailKey = sanitizeEmailKey(user.email);
   const reqRef = ref(db, `approvalRequests/${emailKey}`);
   try {
@@ -2966,6 +1993,9 @@ function startApprovedSession() {
   if (!unsubs.announcement) initAnnouncementListener();
   setupMyPresence();
   initCallIncomingListener();
+  refreshFavicon();
+  updateTitleUnread();
+  requestNotificationPermission();
 }
 function initAdminApprovalPanel() {
   const btn = document.getElementById('approvalBtn');
@@ -2991,7 +2021,7 @@ function initApprovalListenerForAdmin() {
     const prevIds = new Set(lastApprovalIds);
     approvalsCache = snap.exists() ? snap.val() : {};
     const currentIds = new Set(Object.keys(approvalsCache));
-    if (prevIds.size > 0) currentIds.forEach(id => { if (!prevIds.has(id)) { const req = approvalsCache[id]; if (req.status === 'pending') showApprovalToast(req); } });
+    if (prevIds.size > 0) currentIds.forEach(id => { if (!prevIds.has(id)) { const req = approvalsCache[id]; if (req.status === 'pending') { showApprovalToast(req); notificationAudioCtx.play(); } } });
     lastApprovalIds = currentIds;
     renderApprovalList();
     updateApprovalBadge();
@@ -3279,6 +2309,7 @@ function restoreNormalScreen() {
   document.body.style.background = '';
   document.title = '69CT';
   refreshFavicon();
+  updateTitleUnread();
 }
 function initEmergencyListener() {
   if (unsubs.emergency) unsubs.emergency();
@@ -3358,10 +2389,6 @@ document.addEventListener('keydown', async (e) => {
     return false;
   }
 }, true);
-
-/* ============================================================
-   音声通話機能（WebRTC）
-   ============================================================ */
 
 function updateCallUI() {
   if (callState.connected) {
@@ -3797,16 +2824,42 @@ function initPresenceListener() {
     requestAnimationFrame(updatePresenceDots);
   }, () => {});
 }
+
 function initChatsListener() {
   if (unsubs.chats) unsubs.chats();
   if (!currentUser) return;
   unsubs.chats = onValue(ref(db, `userChats/${currentUser.uid}`), (snap) => {
-    chatsCache = snap.exists() ? snap.val() : {};
+    const newChats = snap.exists() ? snap.val() : {};
+    const firstLoad = Object.keys(chatsCache).length === 0 && Object.keys(newChats).length > 0;
+    chatsCache = newChats;
+    if (firstLoad) {
+      let changed = false;
+      Object.keys(newChats).forEach(chatId => {
+        const chat = newChats[chatId];
+        if (!chat) return;
+        const latestAt = chat.lastMessageAt || chat.createdAt || 0;
+        const lastRead = lastReadAt[chatId] || 0;
+        const sender = chat.lastSenderUid || '';
+        if (sender === currentUser.uid || lastRead >= latestAt) {
+          if (unreadCounts[chatId]) {
+            delete unreadCounts[chatId];
+            changed = true;
+          }
+        }
+        if (!chatLatestMsgAt[chatId] || chatLatestMsgAt[chatId] < latestAt) {
+          chatLatestMsgAt[chatId] = latestAt;
+        }
+      });
+      if (changed) saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+      refreshFavicon();
+      updateScrollButton();
+    }
     renderChatList();
     initChatLatestListeners();
     renderStories();
   }, () => {});
 }
+
 async function registerDeviceLink(user) {
   if (!user || !user.email) return;
   const emailKey = sanitizeEmailKey(user.email);
@@ -3814,6 +2867,8 @@ async function registerDeviceLink(user) {
 }
 
 document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+  notificationAudioCtx.init();
+  requestNotificationPermission();
   try { await signInWithPopup(auth, provider); } catch (err) { if (err.code !== 'auth/popup-closed-by-user') alert('ログイン失敗: ' + err.message); }
 });
 document.getElementById('logoutBtn').addEventListener('click', async () => {
@@ -3846,6 +2901,11 @@ document.getElementById('switchAccountBtn').addEventListener('click', async () =
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
   setTimeout(() => { intentionalSignOut = false; }, 500);
 });
+
+function unlockAudio() { notificationAudioCtx.init(); }
+document.addEventListener('click', unlockAudio, { once: true });
+document.addEventListener('touchstart', unlockAudio, { once: true });
+document.addEventListener('keydown', unlockAudio, { once: true });
 
 onAuthStateChanged(auth, async (user) => {
   bootOverlay.classList.add('hidden');
@@ -3886,6 +2946,7 @@ onAuthStateChanged(auth, async (user) => {
   initEmergencyListener();
   initAnnouncementListener();
   initCallIncomingListener();
+  requestNotificationPermission();
   await registerDeviceLink(user);
   if (admin) {
     lastNotifIds = new Set();
@@ -3914,6 +2975,8 @@ onAuthStateChanged(auth, async (user) => {
       else executeNothing();
     }
   } catch (e) {}
+  refreshFavicon();
+  updateTitleUnread();
 });
 
 window.addEventListener('online', () => setConnection(true));
@@ -3921,6 +2984,7 @@ window.addEventListener('offline', () => setConnection(false));
 document.addEventListener('visibilitychange', () => {
   isTabActive = !document.hidden;
   if (document.hidden) return;
+  notificationAudioCtx.init();
   if (currentChatId) markChatAsRead(currentChatId);
   refreshFavicon();
   renderChatList();
@@ -3931,6 +2995,7 @@ document.addEventListener('visibilitychange', () => {
   if (currentUser && bansCache[currentUser.uid]) executeBan();
   if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) executeBan();
 });
+window.addEventListener('focus', () => { notificationAudioCtx.init(); });
 document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return; e.preventDefault(); });
 document.getElementById('lightboxClose').addEventListener('click', () => lightbox.classList.remove('show'));
 lightbox.addEventListener('click', (e) => { if (e.target.id === 'lightbox') lightbox.classList.remove('show'); });
@@ -3963,15 +3028,9 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
-  <script>
-    /* ===================================================
- *  ショートカット無効化 ＋ 検知時に about:blank へ即時遷移
- *  (最下部に追加するだけで自動実行されます)
- * =================================================== */
+<script>
 (() => {
   'use strict';
-
-  // 1. 印刷時にページ内容を完全非表示にするCSSを動的追加
   const style = document.createElement('style');
   style.textContent = `
     @media print {
@@ -3982,20 +3041,13 @@ if ('serviceWorker' in navigator) {
     }
   `;
   document.head.appendChild(style);
-
-  // 2. 右クリック（コンテキストメニュー）禁止
-  window.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-  }, true);
-
-  // 3. ショートカットキー無効化
+  window.addEventListener('contextmenu', (e) => { e.preventDefault(); }, true);
   const disableDevShortcuts = (e) => {
-    const meta = e.metaKey; // Mac Command (⌘)
-    const ctrl = e.ctrlKey; // Windows / Linux Ctrl
-    const alt = e.altKey;   // Mac Option (⌥) / Alt
+    const meta = e.metaKey;
+    const ctrl = e.ctrlKey;
+    const alt = e.altKey;
     const shift = e.shiftKey;
     const key = e.key.toLowerCase();
-
     if (
       e.key === 'F12' || e.code === 'F12' ||
       ((ctrl || meta) && key === 'u') ||
@@ -4010,39 +3062,24 @@ if ('serviceWorker' in navigator) {
       return false;
     }
   };
-
   window.addEventListener('keydown', disableDevShortcuts, true);
   window.addEventListener('keyup', disableDevShortcuts, true);
   window.addEventListener('keypress', disableDevShortcuts, true);
-
-  // 4. 検証ツール検知時に about:blank へリダイレクトする処理
-  const redirectToBlank = () => {
-    window.location.href = 'about:blank';
-  };
-
-  // 4-A. 画面サイズ変化（ドッキング型DevTools）の検知
+  const redirectToBlank = () => { window.location.href = 'about:blank'; };
   const threshold = 160;
   window.addEventListener('resize', () => {
-    const isOpened = (window.outerWidth - window.innerWidth > threshold) || 
+    const isOpened = (window.outerWidth - window.innerWidth > threshold) ||
                      (window.outerHeight - window.innerHeight > threshold);
-    if (isOpened) {
-      redirectToBlank();
-    }
+    if (isOpened) redirectToBlank();
   }, true);
-
-  // 4-B. デバッガー（Console/Sources）検知
   setInterval(() => {
     const start = performance.now();
     (function () {}.constructor('debugger')());
     const end = performance.now();
-    
-    // 検証ツールが開いていて処理が一時停止（100ms以上）した場合
-    if (end - start > 100) {
-      redirectToBlank();
-    }
+    if (end - start > 100) redirectToBlank();
   }, 100);
 })();
-  </script>
-  
+</script>
+
 </body>
 </html>
