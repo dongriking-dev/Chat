@@ -1310,3 +1310,2710 @@ function renderChatList() {
     chatListContainer.appendChild(item);
   });
 }
+function updateChatHeader() {
+  const meta = document.getElementById('currentChatMeta');
+  const headerAvatars = document.getElementById('chatHeaderAvatars');
+  if (!currentChatId || !chatsCache[currentChatId]) return;
+  const chat = chatsCache[currentChatId];
+  const isGroup = chat.type === 'group';
+  headerAvatars.innerHTML = '';
+  if (isGroup) {
+    const memberUids = Object.keys(chat.members||{}).filter(uid => uid !== currentUser.uid);
+    const onlineCount = memberUids.filter(uid => isUserOnline(uid)).length;
+    memberUids.slice(0,3).forEach((uid,i) => {
+      const p = getProfileForUid(uid);
+      const online = isUserOnline(uid);
+      const sp = document.createElement('span');
+      sp.className = 'avatar-online-wrap';
+      sp.style.position = 'absolute';
+      sp.style.width = '26px'; sp.style.height = '26px';
+      const positions = [{top:'0',left:'0',zIndex:3},{bottom:'0',right:'0',zIndex:2},{top:'0',right:'0',zIndex:1}];
+      Object.assign(sp.style, positions[i]);
+      sp.innerHTML = `<img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="width:26px;height:26px;border:2px solid #fff;"><span class="online-dot small ${online?'online':''}" data-presence-uid="${escapeHtml(uid)}" style="width:9px;height:9px;"></span>`;
+      headerAvatars.appendChild(sp);
+    });
+    meta.innerHTML = `<span>${Object.keys(chat.members||{}).length}人</span><span style="color:#d1d5db;">・</span><span class="online-label ${onlineCount===0?'offline':''}"><span class="online-dot ${onlineCount>0?'online':''}"></span>${onlineCount}人オンライン</span>`;
+  } else {
+    const otherUid = Object.keys(chat.members||{}).find(uid => uid !== currentUser.uid);
+    const p = getProfileForUid(otherUid);
+    const online = isUserOnline(otherUid);
+    headerAvatars.innerHTML = `<span class="avatar-online-wrap" style="width:40px;height:40px;"><img class="avatar-sm" src="${escapeHtml(p.avatar)}" style="width:40px;height:40px;border:2px solid #fff;"><span class="online-dot ${online?'online':''}" data-presence-uid="${escapeHtml(otherUid)}"></span></span>`;
+    meta.innerHTML = `<span class="online-label ${online?'':'offline'}"><span class="online-dot ${online?'online':''}"></span>${online?'オンライン':'オフライン'}</span>`;
+  }
+  const callBtn = document.getElementById('chatCallBtn');
+  if (callBtn) {
+    callBtn.disabled = isGroup || callState.active;
+    callBtn.title = isGroup ? 'グループでは通話できません' : '音声通話';
+  }
+}
+
+function updateChatHeaderPresence() {
+  if (!currentChatId || !chatsCache[currentChatId]) return;
+  const chat = chatsCache[currentChatId];
+  const meta = document.getElementById('currentChatMeta');
+  if (!meta) return;
+  if (chat.type === 'group') {
+    const others = Object.keys(chat.members||{}).filter(uid => uid !== currentUser.uid);
+    const onlineCount = others.filter(uid => isUserOnline(uid)).length;
+    const label = meta.querySelector('.online-label');
+    if (label) {
+      label.className = 'online-label ' + (onlineCount===0?'offline':'');
+      const dot = label.querySelector('.online-dot');
+      if (dot) dot.classList.toggle('online', onlineCount > 0);
+      const textNodes = Array.from(label.childNodes).filter(n => n.nodeType === Node.TEXT_NODE);
+      if (textNodes[0]) textNodes[0].nodeValue = ` ${onlineCount}人オンライン`;
+    }
+  } else {
+    const otherUid = Object.keys(chat.members||{}).find(uid => uid !== currentUser.uid);
+    const online = isUserOnline(otherUid);
+    const label = meta.querySelector('.online-label');
+    if (label) {
+      label.className = 'online-label ' + (online?'':'offline');
+      const dot = label.querySelector('.online-dot');
+      if (dot) dot.classList.toggle('online', online);
+      const textNodes = Array.from(label.childNodes).filter(n => n.nodeType === Node.TEXT_NODE);
+      if (textNodes[0]) textNodes[0].nodeValue = ` ${online?'オンライン':'オフライン'}`;
+    }
+  }
+}
+
+function openChat(chatId) {
+  currentChatId = chatId;
+  const chat = chatsCache[chatId];
+  if (!chat) return;
+  const latestAt = chat.lastMessageAt || chat.createdAt || 0;
+  chatLatestMsgAt[chatId] = latestAt;
+  lastReadAt[chatId] = latestAt;
+  delete unreadCounts[chatId];
+  saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+  saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
+  unreadInChat = 0;
+  refreshFavicon();
+  updateScrollButton();
+  if (currentUser) {
+    set(ref(db, `chatReads/${chatId}/${currentUser.uid}`), Date.now()).catch(() => {});
+  }
+  initReadsListener(chatId);
+  initTypingListener(chatId);
+  initReactionsListener(chatId);
+  isCurrentlyTyping = false;
+  clearTimeout(typingTimeout);
+  replyingTo = null;
+  document.getElementById('replyPreviewBox').classList.remove('show');
+  const isGroup = chat.type === 'group';
+  let displayName;
+  if (isGroup) displayName = chat.name || 'グループチャット';
+  else { const otherUid = Object.keys(chat.members||{}).find(uid => uid !== currentUser.uid); displayName = getProfileForUid(otherUid).nickname; }
+  document.getElementById('currentChatName').textContent = displayName;
+  updateChatHeader();
+  chatListView.style.display = 'none';
+  chatView.style.display = 'flex';
+  messagesContainer.innerHTML = '<div style="text-align:center;padding:30px;color:#9ca3af;font-size:13px;"><span class="loading-spinner"></span>読み込み中...</div>';
+  typingIndicatorSlot.innerHTML = '';
+  typingCache = {};
+  reactionsCache = {};
+  isNearBottom = true;
+  updateScrollButton();
+  loadMessages(chatId);
+}
+
+function backToChatList() {
+  setMyTypingState(false);
+  currentChatId = null;
+  chatView.style.display = 'none';
+  chatListView.style.display = 'flex';
+  if (unsubs.messages) { unsubs.messages(); unsubs.messages = null; }
+  if (unsubs.reads) { unsubs.reads(); unsubs.reads = null; }
+  if (unsubs.typing) { unsubs.typing(); unsubs.typing = null; }
+  if (unsubs.reactions) { unsubs.reactions(); unsubs.reactions = null; }
+  messagesCache = []; readsCache = {}; typingCache = {}; reactionsCache = {};
+  unreadInChat = 0;
+  replyingTo = null;
+  document.getElementById('replyPreviewBox').classList.remove('show');
+  closeAllMenus(); closeReactionPicker(); closeChatHeaderMenu();
+  renderChatList();
+}
+
+function loadMessages(chatId) {
+  if (unsubs.messages) { unsubs.messages(); unsubs.messages = null; }
+  const q = query(ref(db, `chatMessages/${chatId}`), orderByChild('createdAt'));
+  unsubs.messages = onValue(q, (snapshot) => {
+    setConnection(true);
+    const newMessages = [];
+    if (snapshot.exists()) {
+      snapshot.forEach((child) => { newMessages.push({ key: child.key, ...child.val() }); });
+      newMessages.sort((a,b) => (a.createdAt||0) - (b.createdAt||0));
+    }
+    const oldKeys = new Set(messagesCache.map(m => m.key));
+    const newKeys = new Set(newMessages.map(m => m.key));
+    messagesCache = newMessages;
+    const hasDeletion = Array.from(oldKeys).some(k => !newKeys.has(k));
+    if (hasDeletion || messagesContainer.children.length === 0) { fullRenderMessages(); }
+    else {
+      const newMsgs = newMessages.filter(m => !oldKeys.has(m.key));
+      if (newMsgs.length > 0) appendMessages(newMsgs);
+    }
+    if (currentChatId === chatId && isTabActive) markChatAsRead(chatId);
+  }, () => {
+    setConnection(false);
+    messagesContainer.innerHTML = '<div style="text-align:center;padding:30px;color:#ef4444;font-size:13px;">読み込みに失敗しました。</div>';
+  });
+}
+
+function initReadsListener(chatId) {
+  if (unsubs.reads) unsubs.reads();
+  unsubs.reads = onValue(ref(db, `chatReads/${chatId}`), (snap) => {
+    readsCache = snap.exists() ? snap.val() : {};
+    updateReadReceiptsInDOM();
+  }, () => {});
+}
+function updateReadReceiptsInDOM() {
+  messagesCache.forEach(msg => {
+    if (!currentUser || msg.authorUid !== currentUser.uid) return;
+    const row = messagesContainer.querySelector(`[data-msg-key="${msg.key}"]`);
+    if (!row) return;
+    const hasReceipt = row.querySelector('.read-receipt');
+    const shouldShow = isMessageReadByOthers(msg);
+    const body = row.querySelector('.msg-body');
+    if (shouldShow && !hasReceipt && body) { const r = document.createElement('div'); r.className = 'read-receipt'; r.innerHTML = iconCheck(12, '#0284c7') + ' 既読'; body.appendChild(r); }
+    else if (!shouldShow && hasReceipt) hasReceipt.remove();
+  });
+}
+function isMessageReadByOthers(msg) {
+  if (!currentUser || msg.authorUid !== currentUser.uid) return false;
+  const chat = chatsCache[currentChatId];
+  if (!chat) return false;
+  const memberUids = Object.keys(chat.members||{}).filter(uid => uid !== currentUser.uid);
+  if (memberUids.length === 0) return false;
+  const msgAt = msg.createdAt || 0;
+  if (chat.type === 'direct') return (readsCache[memberUids[0]]||0) >= msgAt;
+  return memberUids.every(uid => (readsCache[uid]||0) >= msgAt);
+}
+
+function initTypingListener(chatId) {
+  if (unsubs.typing) unsubs.typing();
+  unsubs.typing = onValue(ref(db, `chatTyping/${chatId}`), (snap) => {
+    const now = Date.now();
+    const raw = snap.exists() ? snap.val() : {};
+    const newTC = {};
+    Object.entries(raw).forEach(([uid, info]) => { if (uid === currentUser.uid) return; if (info && info.at && (now - info.at) < TYPING_TIMEOUT_MS) newTC[uid] = info; });
+    typingCache = newTC;
+    renderTypingIndicator();
+  }, () => {});
+}
+function renderTypingIndicator() {
+  typingIndicatorSlot.innerHTML = '';
+  const uids = Object.keys(typingCache);
+  if (uids.length === 0 || !currentChatId) return;
+  const names = uids.map(uid => getProfileForUid(uid).nickname);
+  const label = names.length === 1 ? `${names[0]} が入力中` : `${names.join('、')} が入力中`;
+  const p = getProfileForUid(uids[0]);
+  const row = document.createElement('div');
+  row.className = 'typing-indicator-row';
+  row.innerHTML = `<div class="msg-avatar-slot"><img class="avatar-sm" src="${escapeHtml(p.avatar)}"></div><div class="typing-bubble"><span class="typing-label">${escapeHtml(label)}</span><span class="typing-dots"><span></span><span></span><span></span></span></div>`;
+  typingIndicatorSlot.appendChild(row);
+  if (isNearBottom) requestAnimationFrame(() => { chatMessagesWrap.scrollTop = chatMessagesWrap.scrollHeight; });
+}
+async function setMyTypingState(isTyping) {
+  if (!currentUser || !currentChatId || isCurrentlyTyping === isTyping) return;
+  isCurrentlyTyping = isTyping;
+  try {
+    const tRef = ref(db, `chatTyping/${currentChatId}/${currentUser.uid}`);
+    if (isTyping) { await set(tRef, { nickname: myProfile.nickname, at: Date.now() }); onDisconnect(tRef).remove(); }
+    else await remove(tRef);
+  } catch(e) {}
+}
+
+function initReactionsListener(chatId) {
+  if (unsubs.reactions) unsubs.reactions();
+  unsubs.reactions = onValue(ref(db, `chatReactions/${chatId}`), (snap) => {
+    reactionsCache = snap.exists() ? snap.val() : {};
+    updateAllReactionsInDOM();
+  }, () => {});
+}
+function updateAllReactionsInDOM() {
+  messagesContainer.querySelectorAll('[data-msg-key]').forEach(row => updateReactionsForMessage(row, row.dataset.msgKey));
+}
+function updateReactionsForMessage(row, key) {
+  const reactions = reactionsCache[key] || {};
+  const counts = {}, mine = {};
+  Object.entries(reactions).forEach(([uid, emoji]) => { if (!emoji) return; counts[emoji] = (counts[emoji]||0) + 1; if (currentUser && uid === currentUser.uid) mine[emoji] = true; });
+  let container = row.querySelector('.msg-reactions');
+  const body = row.querySelector('.msg-body');
+  if (!body) return;
+  if (Object.keys(counts).length === 0) { if (container) container.remove(); return; }
+  if (!container) { container = document.createElement('div'); container.className = 'msg-reactions'; body.appendChild(container); }
+  container.innerHTML = '';
+  Object.entries(counts).forEach(([emoji, count]) => {
+    const chip = document.createElement('span');
+    chip.className = 'reaction-chip' + (mine[emoji] ? ' mine' : '');
+    chip.dataset.reactionEmoji = emoji;
+    chip.dataset.reactionKey = key;
+    chip.innerHTML = `<span>${emoji}</span><span class="reaction-count">${count}</span>`;
+    container.appendChild(chip);
+  });
+}
+async function toggleReaction(msgKey, emoji) {
+  if (!currentUser || !currentChatId) return;
+  const reactionRef = ref(db, `chatReactions/${currentChatId}/${msgKey}/${currentUser.uid}`);
+  const snap = await get(reactionRef);
+  const existing = snap.exists() ? snap.val() : null;
+  try { if (existing === emoji) await remove(reactionRef); else await set(reactionRef, emoji); }
+  catch (err) { showBanner('リアクションに失敗しました', true); }
+}
+
+function createMessageRow(msg, lastRenderedMsg) {
+  const key = msg.key;
+  const clientMsgId = msg.clientMsgId || key;
+  if (msg.system) {
+    const sys = document.createElement('div');
+    sys.className = 'system-message';
+    sys.dataset.msgKey = key;
+    sys.innerHTML = `<span>${escapeHtml(msg.content || '')}</span>`;
+    return { row: sys, msg };
+  }
+  const isMine = currentUser && msg.authorUid === currentUser.uid;
+  const profile = getProfileForUid(msg.authorUid);
+  const senderOnline = isUserOnline(msg.authorUid);
+  const isGrouped = lastRenderedMsg && lastRenderedMsg.authorUid === msg.authorUid && (msg.createdAt - lastRenderedMsg.createdAt) < 60000;
+  const row = document.createElement('div');
+  row.className = 'msg-row' + (isMine ? ' mine' : '') + (isGrouped ? ' msg-grouped' : '');
+  row.dataset.msgKey = key;
+  row.dataset.clientMsgId = clientMsgId;
+  row.dataset.msgAuthorUid = msg.authorUid;
+  let metaHtml = '';
+  if (!isGrouped) {
+    const editedHtml = msg.edited ? '<span class="edited-label">(編集済み)</span>' : '';
+    metaHtml = `<div class="msg-meta"><span class="name" data-profile-name>${escapeHtml(profile.nickname)}</span><span class="time">${formatTime(msg.createdAt)}</span>${editedHtml}</div>`;
+  }
+  let replyQuoteHtml = '';
+  if (msg.replyTo && msg.replyTo.msgKey) {
+    const r = msg.replyTo;
+    const previewText = (r.content||'').slice(0,80) + ((r.content||'').length>80?'…':'');
+    replyQuoteHtml = `<div class="reply-quote" data-reply-target="${escapeHtml(r.msgKey)}"><div class="reply-name">${iconReply(11, '#0284c7')} ${escapeHtml(r.authorName||'名無しさん')}</div><div style="font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(previewText || (r.hasFile?'画像':''))}</div></div>`;
+  }
+  let storyContextHtml = '';
+  if (msg.storyReplyTo && msg.storyReplyTo.previewType) {
+    const s = msg.storyReplyTo;
+    let thumb = '';
+    if (s.previewType === 'image' && s.previewDataUrl) thumb = `<img src="${s.previewDataUrl}">`;
+    else if (s.previewType === 'audio') thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);"></div>`;
+    else if (s.previewType === 'video') thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(135deg,#000,#374151);"></div>`;
+    else if (s.previewType === 'image_audio') thumb = `<img src="${s.previewDataUrl}">`;
+    else thumb = `<div style="width:36px;height:36px;border-radius:4px;background:linear-gradient(45deg,#f09433,#bc1888);"></div>`;
+    storyContextHtml = `<div class="story-reply-context">${thumb}<div class="txt"><strong style="font-size:10px;color:#0284c7;">ストーリーに返信</strong><br>${escapeHtml(s.previewText||'')}</div></div>`;
+  }
+  let fileHtml = '';
+  if (msg.file && msg.file.dataUrl) fileHtml = `<div class="msg-file ${!msg.content && !storyContextHtml && !replyQuoteHtml ? 'only-file' : ''}" data-lightbox="${msg.file.dataUrl}"><img src="${msg.file.dataUrl}" loading="lazy"></div>`;
+  let contentHtml = msg.content ? `<div class="msg-content">${formatContent(msg.content)}</div>` : '';
+  let readHtml = '';
+  if (isMine && isMessageReadByOthers(msg)) readHtml = `<div class="read-receipt">${iconCheck(12, '#0284c7')} 既読</div>`;
+  const menuBtnHtml = `<button class="msg-menu-btn" data-key="${key}" data-mine="${isMine?'1':'0'}">${iconMore(14, '#6b7280')}</button>`;
+  const showAvatar = !isMine && !isGrouped;
+  const avatarHtml = showAvatar ? `<span class="avatar-online-wrap"><img class="avatar-sm" src="${escapeHtml(profile.avatar)}" data-profile-avatar><span class="online-dot ${senderOnline?'online':''}" data-presence-msg-uid="${escapeHtml(msg.authorUid)}" style="width:9px;height:9px;"></span></span>` : '';
+  row.innerHTML = `
+    <div class="msg-avatar-slot ${showAvatar?'':'empty'}">${avatarHtml}</div>
+    <div class="msg-body">
+      ${metaHtml}
+      <div class="msg-bubble-wrap">
+        ${menuBtnHtml}
+        <div class="msg-bubble">${replyQuoteHtml}${storyContextHtml}${contentHtml}${fileHtml}</div>
+      </div>
+      ${readHtml}
+    </div>`;
+  return { row, msg };
+}
+
+function appendMessages(messages) {
+  const fragment = document.createDocumentFragment();
+  const lastEl = messagesContainer.lastElementChild;
+  let lastRenderedMsg = null;
+  if (lastEl && lastEl.dataset.msgKey) lastRenderedMsg = messagesCache.find(m => m.key === lastEl.dataset.msgKey) || null;
+  let lastDateForDivider = lastRenderedMsg ? lastRenderedMsg.createdAt : null;
+  messages.forEach(msg => {
+    if (messagesContainer.querySelector(`[data-msg-key="${msg.key}"]`)) return;
+    if (!lastDateForDivider || !isSameDay(lastDateForDivider, msg.createdAt)) {
+      const div = document.createElement('div');
+      div.className = 'date-divider';
+      div.innerHTML = `<span>${formatDateDivider(msg.createdAt)}</span>`;
+      fragment.appendChild(div);
+      lastRenderedMsg = null;
+      lastDateForDivider = msg.createdAt;
+    }
+    const { row } = createMessageRow(msg, lastRenderedMsg);
+    fragment.appendChild(row);
+    lastRenderedMsg = msg;
+  });
+  messagesContainer.appendChild(fragment);
+  updateAllReactionsInDOM();
+  if (isNearBottom) requestAnimationFrame(() => { chatMessagesWrap.scrollTop = chatMessagesWrap.scrollHeight; });
+}
+
+function fullRenderMessages() {
+  messagesContainer.innerHTML = '';
+  if (messagesCache.length === 0) {
+    messagesContainer.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#9ca3af;">${iconChat(48, '#cbd5e1')}<div style="font-size:14px;color:#6b7280;margin-top:12px;">まだメッセージがありません</div></div>`;
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  let lastRenderedMsg = null;
+  let lastDateForDivider = null;
+  messagesCache.forEach(msg => {
+    if (!lastDateForDivider || !isSameDay(lastDateForDivider, msg.createdAt)) {
+      const div = document.createElement('div');
+      div.className = 'date-divider';
+      div.innerHTML = `<span>${formatDateDivider(msg.createdAt)}</span>`;
+      fragment.appendChild(div);
+      lastRenderedMsg = null;
+      lastDateForDivider = msg.createdAt;
+    }
+    const { row } = createMessageRow(msg, lastRenderedMsg);
+    fragment.appendChild(row);
+    lastRenderedMsg = msg;
+  });
+  messagesContainer.appendChild(fragment);
+  updateAllReactionsInDOM();
+  if (isNearBottom) requestAnimationFrame(() => { chatMessagesWrap.scrollTop = chatMessagesWrap.scrollHeight; });
+}
+
+messagesContainer.addEventListener('click', (e) => {
+  const menuBtn = e.target.closest('.msg-menu-btn');
+  if (menuBtn) { e.stopPropagation(); const k = menuBtn.dataset.key; if (openMenuKey === k) closeAllMenus(); else openMenu(menuBtn, k); return; }
+  const reactionChip = e.target.closest('.reaction-chip');
+  if (reactionChip) { e.stopPropagation(); toggleReaction(reactionChip.dataset.reactionKey, reactionChip.dataset.reactionEmoji); return; }
+  const lightboxTarget = e.target.closest('[data-lightbox]');
+  if (lightboxTarget) { lightboxImg.src = lightboxTarget.dataset.lightbox; lightbox.classList.add('show'); return; }
+  const replyQuote = e.target.closest('.reply-quote');
+  if (replyQuote) {
+    const targetRow = messagesContainer.querySelector(`[data-msg-key="${replyQuote.dataset.replyTarget}"]`);
+    if (targetRow) {
+      targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const bubble = targetRow.querySelector('.msg-bubble');
+      if (bubble) { const orig = bubble.style.background; bubble.style.background = '#fef3c7'; setTimeout(() => { bubble.style.background = orig; }, 1200); }
+    }
+    return;
+  }
+});
+
+function outsideClickHandler(e) { if (!e.target.closest('.msg-menu-popup') && !e.target.closest('.msg-menu-btn')) closeAllMenus(); }
+function closeAllMenus() {
+  if (openMenuEl && openMenuEl.parentNode) openMenuEl.parentNode.removeChild(openMenuEl);
+  openMenuEl = null;
+  messagesContainer.querySelectorAll('.msg-menu-btn.open').forEach(el => el.classList.remove('open'));
+  openMenuKey = null;
+  document.removeEventListener('click', outsideClickHandler);
+}
+function openMenu(btn, key) {
+  closeAllMenus(); closeReactionPicker(); closeChatHeaderMenu();
+  openMenuKey = key;
+  btn.classList.add('open');
+  const isMine = btn.dataset.mine === '1';
+  const popup = document.createElement('div');
+  popup.className = 'msg-menu-popup';
+  let html = `<button class="reply-action">${iconReply(14, '#374151')} 返信</button><button class="react-action">${iconSmile(14, '#374151')} リアクション</button><button class="copy-action">${iconCopy(14, '#374151')} コピー</button>`;
+  if (isMine) html += `<button class="edit-action">${iconEdit(14, '#374151')} 編集</button><button class="danger delete-action">${iconTrashDanger(14, '#ef4444')} 取り消し</button>`;
+  popup.innerHTML = html;
+  document.body.appendChild(popup);
+  openMenuEl = popup;
+  const rect = btn.getBoundingClientRect();
+  const pr = popup.getBoundingClientRect();
+  let left = rect.left - pr.width - 8;
+  let top = rect.top;
+  if (left < 8) left = rect.right + 8;
+  if (top + pr.height > window.innerHeight - 8) top = window.innerHeight - pr.height - 8;
+  if (left + pr.width > window.innerWidth - 8) left = window.innerWidth - pr.width - 8;
+  popup.style.left = left + 'px';
+  popup.style.top = top + 'px';
+  popup.querySelector('.copy-action').addEventListener('click', async (e) => { e.stopPropagation(); closeAllMenus(); await copyMessageToClipboard(key); });
+  popup.querySelector('.reply-action').addEventListener('click', (e) => { e.stopPropagation(); closeAllMenus(); startReply(key); });
+  popup.querySelector('.react-action').addEventListener('click', (e) => { e.stopPropagation(); closeAllMenus(); openReactionPicker(btn, key); });
+  if (isMine) {
+    popup.querySelector('.edit-action').addEventListener('click', (e) => { e.stopPropagation(); closeAllMenus(); openEditModal(key); });
+    popup.querySelector('.delete-action').addEventListener('click', async (e) => {
+      e.stopPropagation(); closeAllMenus();
+      if (!confirm('このメッセージを取り消しますか？')) return;
+      try { await remove(ref(db, `chatMessages/${currentChatId}/${key}`)); showBanner('メッセージを取り消しました', false); }
+      catch (err) { showBanner('取り消しに失敗しました', true); }
+    });
+  }
+  setTimeout(() => { document.addEventListener('click', outsideClickHandler); }, 0);
+}
+
+function startReply(key) {
+  const msg = messagesCache.find(m => m.key === key);
+  if (!msg) return;
+  const p = getProfileForUid(msg.authorUid);
+  replyingTo = { msgKey: key, authorUid: msg.authorUid, authorName: p.nickname, content: msg.content || '', hasFile: !!(msg.file && msg.file.dataUrl) };
+  document.getElementById('replyPreviewName').innerHTML = `${iconReply(12, '#0284c7')} ${escapeHtml(p.nickname)} に返信`;
+  const previewText = (msg.content || '').slice(0,80) + ((msg.content || '').length > 80 ? '…' : '');
+  document.getElementById('replyPreviewText').textContent = previewText || (msg.file ? '画像' : '(メッセージ)');
+  document.getElementById('replyPreviewBox').classList.add('show');
+  document.getElementById('messageInput').focus();
+}
+document.getElementById('replyPreviewCloseBtn').addEventListener('click', () => { replyingTo = null; document.getElementById('replyPreviewBox').classList.remove('show'); });
+
+async function copyMessageToClipboard(key) {
+  const msg = messagesCache.find(m => m.key === key);
+  if (!msg) return;
+  const parts = [];
+  if (msg.replyTo && msg.replyTo.content) parts.push(`返信 ${msg.replyTo.authorName}: ${msg.replyTo.content}`);
+  if (msg.content) parts.push(msg.content);
+  if (msg.file && msg.file.dataUrl) parts.push('[画像]');
+  const text = parts.join('\n').trim();
+  if (!text) { showBanner('コピーする内容がありません', true); return; }
+  try {
+    if (navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(text);
+    else { const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }
+    showBanner('コピーしました', false);
+  } catch (err) { showBanner('コピーに失敗しました', true); }
+}
+
+function closeReactionPicker() {
+  if (currentReactionPicker && currentReactionPicker.parentNode) currentReactionPicker.parentNode.removeChild(currentReactionPicker);
+  currentReactionPicker = null;
+  document.removeEventListener('click', outsideReactionPickerHandler);
+}
+function outsideReactionPickerHandler(e) { if (!e.target.closest('.reaction-picker')) closeReactionPicker(); }
+function openReactionPicker(anchorEl, msgKey) {
+  closeReactionPicker();
+  const picker = document.createElement('div');
+  picker.className = 'reaction-picker';
+  ['👍','❤️','😂','😮','😢','🎉','🔥','👏','😭','❤️‍🔥','😇','🥰','😍','😘','🥳','🥶','💩','🫶','💋','❣️','❌','⭕️','‼️','⁉️','🍌'].forEach(emoji => {
+    const b = document.createElement('button');
+    b.textContent = emoji;
+    b.addEventListener('click', (e) => { e.stopPropagation(); toggleReaction(msgKey, emoji); closeReactionPicker(); });
+    picker.appendChild(b);
+  });
+  document.body.appendChild(picker);
+  currentReactionPicker = picker;
+  const rect = anchorEl.getBoundingClientRect();
+  const pw = picker.offsetWidth || 320;
+  let left = rect.left - pw/2 + rect.width/2;
+  let top = rect.top - 50;
+  if (left < 8) left = 8;
+  if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+  if (top < 8) top = rect.bottom + 8;
+  picker.style.left = left + 'px';
+  picker.style.top = top + 'px';
+  setTimeout(() => { document.addEventListener('click', outsideReactionPickerHandler); }, 0);
+}
+
+const editMsgModal = document.getElementById('editMsgModal');
+const editMsgInput = document.getElementById('editMsgInput');
+function openEditModal(key) {
+  const msg = messagesCache.find(m => m.key === key);
+  if (!msg) return;
+  editingMsgKey = key;
+  editMsgInput.value = msg.content || '';
+  editMsgModal.classList.remove('hidden');
+  setTimeout(() => editMsgInput.focus(), 100);
+}
+document.getElementById('editMsgCancelBtn').addEventListener('click', () => { editMsgModal.classList.add('hidden'); editingMsgKey = null; });
+editMsgModal.addEventListener('click', (e) => { if (e.target.id === 'editMsgModal') { editMsgModal.classList.add('hidden'); editingMsgKey = null; } });
+document.getElementById('editMsgSaveBtn').addEventListener('click', async () => {
+  if (!editingMsgKey || !currentChatId) return;
+  const newContent = editMsgInput.value.trim();
+  const msg = messagesCache.find(m => m.key === editingMsgKey);
+  if (!msg) return;
+  if (!newContent && !(msg.file && msg.file.dataUrl)) { alert('メッセージを入力してください。'); return; }
+  try {
+    await update(ref(db, `chatMessages/${currentChatId}/${editingMsgKey}`), { content: newContent, edited: true, editedAt: Date.now() });
+    editMsgModal.classList.add('hidden'); editingMsgKey = null;
+    showBanner('メッセージを編集しました', false);
+  } catch (err) { showBanner('編集に失敗しました', true); }
+});
+
+const messageInput = document.getElementById('messageInput');
+const messageFileInput = document.getElementById('messageFileInput');
+const messagePreviewBox = document.getElementById('messagePreviewBox');
+const messagePreviewImg = document.getElementById('messagePreviewImg');
+const messagePreviewInfo = document.getElementById('messagePreviewInfo');
+const msgPreviewRemoveBtn = document.getElementById('msgPreviewRemoveBtn');
+let pendingFile = null;
+
+function autoResizeTextarea() { messageInput.style.height = 'auto'; messageInput.style.height = Math.min(messageInput.scrollHeight, 140) + 'px'; }
+messageInput.addEventListener('input', () => {
+  autoResizeTextarea();
+  const hasText = messageInput.value.trim().length > 0;
+  if (hasText) { setMyTypingState(true); clearTimeout(typingTimeout); typingTimeout = setTimeout(() => setMyTypingState(false), TYPING_TIMEOUT_MS); }
+  else { clearTimeout(typingTimeout); setMyTypingState(false); }
+});
+messageInput.addEventListener('blur', () => { clearTimeout(typingTimeout); setMyTypingState(false); });
+messageInput.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  if (e.shiftKey) return;
+  if (e.isComposing || e.keyCode === 229) return;
+  e.preventDefault();
+  document.getElementById('messageForm').requestSubmit();
+});
+
+messageFileInput.addEventListener('change', async () => {
+  const f = messageFileInput.files[0];
+  if (!f) { pendingFile = null; messagePreviewBox.classList.remove('show'); return; }
+  try {
+    const r = await fileToBase64Image(f);
+    pendingFile = r;
+    messagePreviewImg.src = r.dataUrl;
+    messagePreviewInfo.textContent = `${f.name}（${r.width}×${r.height}, ${formatSize(r.size)}）`;
+    messagePreviewBox.classList.add('show');
+  } catch (err) { alert(err.message); messageFileInput.value = ''; pendingFile = null; messagePreviewBox.classList.remove('show'); }
+});
+msgPreviewRemoveBtn.addEventListener('click', () => { pendingFile = null; messageFileInput.value = ''; messagePreviewBox.classList.remove('show'); });
+
+document.getElementById('messageForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const content = messageInput.value.trim();
+  const file = pendingFile;
+  const reply = replyingTo;
+  if (!content && !file) return;
+  if (!currentUser || !currentChatId) return;
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+  const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+  const chatIdAtSend = currentChatId;
+  const now = Date.now();
+  messageInput.value = '';
+  autoResizeTextarea();
+  pendingFile = null;
+  messageFileInput.value = '';
+  messagePreviewBox.classList.remove('show');
+  replyingTo = null;
+  document.getElementById('replyPreviewBox').classList.remove('show');
+  clearTimeout(typingTimeout);
+  setMyTypingState(false);
+  chatLatestMsgAt[chatIdAtSend] = now;
+  lastReadAt[chatIdAtSend] = now;
+  delete unreadCounts[chatIdAtSend];
+  saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+  saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
+  refreshFavicon();
+  updateScrollButton();
+  try {
+    const msgData = {
+      clientMsgId,
+      content: content || '',
+      file: file || null,
+      authorUid: currentUser.uid,
+      authorName: myProfile.nickname,
+      authorAvatar: myProfile.avatar,
+      createdAt: now
+    };
+    if (reply) msgData.replyTo = { msgKey: reply.msgKey, authorUid: reply.authorUid, authorName: reply.authorName, content: (reply.content||'').slice(0, 200), hasFile: reply.hasFile };
+    const newRef = push(ref(db, `chatMessages/${chatIdAtSend}`));
+    await set(newRef, msgData);
+    const chat = chatsCache[chatIdAtSend];
+    if (chat) {
+      const memberUids = Object.keys(chat.members || {});
+      const lastMsgLabel = content || (file ? '画像' : '');
+      const updates = {};
+      memberUids.forEach(uid => {
+        updates[`userChats/${uid}/${chatIdAtSend}/lastMessage`] = lastMsgLabel;
+        updates[`userChats/${uid}/${chatIdAtSend}/lastMessageAt`] = now;
+        updates[`userChats/${uid}/${chatIdAtSend}/lastSenderUid`] = currentUser.uid;
+      });
+      await update(ref(db), updates);
+    }
+    if (currentChatId === chatIdAtSend) markChatAsRead(chatIdAtSend);
+  } catch (err) {
+    console.error('送信エラー:', err);
+    showBanner('送信失敗: ' + (err.message || ''), true);
+  } finally { sendBtn.disabled = false; }
+});
+
+chatMessagesWrap.addEventListener('scroll', () => {
+  const distance = chatMessagesWrap.scrollHeight - chatMessagesWrap.scrollTop - chatMessagesWrap.clientHeight;
+  isNearBottom = distance < 80;
+  if (isNearBottom) { unreadInChat = 0; updateScrollButton(); if (currentChatId) markChatAsRead(currentChatId); }
+  else updateScrollButton();
+});
+scrollToBottomBtn.addEventListener('click', () => {
+  chatMessagesWrap.scrollTo({ top: chatMessagesWrap.scrollHeight, behavior: 'smooth' });
+  unreadInChat = 0; isNearBottom = true; updateScrollButton();
+  if (currentChatId) markChatAsRead(currentChatId);
+});
+
+function closeChatHeaderMenu() {
+  if (openChatHeaderMenuEl && openChatHeaderMenuEl.parentNode) openChatHeaderMenuEl.parentNode.removeChild(openChatHeaderMenuEl);
+  openChatHeaderMenuEl = null;
+  document.removeEventListener('click', outsideChatHeaderMenuHandler);
+}
+function outsideChatHeaderMenuHandler(e) { if (!e.target.closest('.chat-header-menu-popup') && !e.target.closest('.chat-header-menu-btn')) closeChatHeaderMenu(); }
+document.getElementById('chatHeaderMenuBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (openChatHeaderMenuEl) { closeChatHeaderMenu(); return; }
+  closeAllMenus(); closeReactionPicker();
+  const chat = chatsCache[currentChatId];
+  if (!chat) return;
+  const isGroup = chat.type === 'group';
+  const popup = document.createElement('div');
+  popup.className = 'chat-header-menu-popup';
+  let html = '';
+  if (isGroup) html += `<button class="add-member-action">${iconUsers(14, '#374151')} メンバーを追加</button><button class="danger leave-action">${iconLeave(14, '#ef4444')} グループを退出</button>`;
+  else html += `<button class="danger delete-action">${iconTrashDanger(14, '#ef4444')} チャットを削除</button>`;
+  popup.innerHTML = html;
+  document.body.appendChild(popup);
+  openChatHeaderMenuEl = popup;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pr = popup.getBoundingClientRect();
+  let left = rect.right - pr.width;
+  let top = rect.bottom + 6;
+  if (left < 8) left = 8;
+  if (left + pr.width > window.innerWidth - 8) left = window.innerWidth - pr.width - 8;
+  if (top + pr.height > window.innerHeight - 8) top = rect.top - pr.height - 6;
+  popup.style.left = left + 'px';
+  popup.style.top = top + 'px';
+  const addBtn = popup.querySelector('.add-member-action');
+  if (addBtn) addBtn.addEventListener('click', () => { closeChatHeaderMenu(); openAddMemberModal(); });
+  const leaveBtn = popup.querySelector('.leave-action');
+  if (leaveBtn) leaveBtn.addEventListener('click', () => { closeChatHeaderMenu(); leaveGroup(); });
+  const delBtn = popup.querySelector('.delete-action');
+  if (delBtn) delBtn.addEventListener('click', () => { closeChatHeaderMenu(); deleteDirectChat(); });
+  setTimeout(() => { document.addEventListener('click', outsideChatHeaderMenuHandler); }, 0);
+});
+
+async function leaveGroup() {
+  if (!currentUser || !currentChatId) return;
+  const chat = chatsCache[currentChatId];
+  if (!chat || chat.type !== 'group') return;
+  if (!confirm('このグループを退出しますか？\n（自分の画面からチャットが消えます）')) return;
+  const chatId = currentChatId;
+  try {
+    await remove(ref(db, `userChats/${currentUser.uid}/${chatId}`));
+    const sysRef = push(ref(db, `chatMessages/${chatId}`));
+    await set(sysRef, { system: true, content: `${myProfile.nickname} が退出しました`, authorUid: currentUser.uid, createdAt: Date.now() });
+    const membersSnap = await get(ref(db, `chatMeta/${chatId}/members`));
+    if (membersSnap.exists()) {
+      const members = membersSnap.val();
+      delete members[currentUser.uid];
+      await set(ref(db, `chatMeta/${chatId}/members`), members);
+      const remaining = Object.keys(members);
+      if (remaining.length === 0) {
+        await remove(ref(db, `chatMeta/${chatId}`));
+        await remove(ref(db, `chatMessages/${chatId}`));
+        await remove(ref(db, `chatReactions/${chatId}`));
+        await remove(ref(db, `chatReads/${chatId}`));
+        await remove(ref(db, `chatTyping/${chatId}`));
+      } else {
+        const updates = {};
+        remaining.forEach(uid => {
+          updates[`userChats/${uid}/${chatId}/lastMessage`] = `${myProfile.nickname} が退出しました`;
+          updates[`userChats/${uid}/${chatId}/lastMessageAt`] = Date.now();
+          updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
+        });
+        await update(ref(db), updates);
+      }
+    }
+    showBanner('グループを退出しました', false);
+    backToChatList();
+  } catch (err) { console.error('退出エラー:', err); showBanner('退出に失敗しました', true); }
+}
+
+async function deleteDirectChat() {
+  if (!currentUser || !currentChatId) return;
+  const chat = chatsCache[currentChatId];
+  if (!chat || chat.type !== 'direct') return;
+  if (!confirm('このチャットを削除しますか？\n（相手の画面からも消えます）')) return;
+  const chatId = currentChatId;
+  const memberUids = Object.keys(chat.members || {});
+  try {
+    const updates = {};
+    memberUids.forEach(uid => { updates[`userChats/${uid}/${chatId}`] = null; });
+    updates[`chatMeta/${chatId}`] = null;
+    updates[`chatMessages/${chatId}`] = null;
+    updates[`chatReactions/${chatId}`] = null;
+    updates[`chatReads/${chatId}`] = null;
+    updates[`chatTyping/${chatId}`] = null;
+    await update(ref(db), updates);
+    showBanner('チャットを削除しました', false);
+    backToChatList();
+  } catch (err) { console.error('削除エラー:', err); showBanner('削除に失敗しました', true); }
+}
+
+function openAddMemberModal() {
+  document.getElementById('addMemberEmailInput').value = '';
+  document.getElementById('addMemberSearchMsg').textContent = '';
+  document.getElementById('addMemberResultBox').innerHTML = '<span style="font-size:11px;color:#9ca3af;">メールアドレスを入力して検索してください</span>';
+  addMemberTargetProfile = null;
+  document.getElementById('addMemberModal').classList.remove('hidden');
+}
+document.getElementById('addMemberCancelBtn').addEventListener('click', () => document.getElementById('addMemberModal').classList.add('hidden'));
+document.getElementById('addMemberModal').addEventListener('click', (e) => { if (e.target.id === 'addMemberModal') document.getElementById('addMemberModal').classList.add('hidden'); });
+document.getElementById('addMemberSearchBtn').addEventListener('click', async () => {
+  const email = document.getElementById('addMemberEmailInput').value.trim().toLowerCase();
+  const msg = document.getElementById('addMemberSearchMsg');
+  const box = document.getElementById('addMemberResultBox');
+  msg.textContent = ''; msg.style.color = '#dc2626'; addMemberTargetProfile = null;
+  if (!email) { msg.textContent = 'メールアドレスを入力してください。'; return; }
+  if (email === (currentUser.email||'').toLowerCase()) { msg.textContent = '自分自身は追加できません。'; return; }
+  const chat = chatsCache[currentChatId];
+  if (!chat) return;
+  for (const uid of Object.keys(chat.members||{})) {
+    const p = profilesCache[uid];
+    if (p && p.email && p.email.toLowerCase() === email) { msg.textContent = 'すでにメンバーです。'; box.innerHTML = ''; return; }
+  }
+  msg.style.color = '#6b7280'; msg.textContent = '検索中...';
+  try {
+    const snap = await get(ref(db, 'chatProfiles'));
+    if (!snap.exists()) { msg.style.color = '#dc2626'; msg.textContent = 'ユーザーが見つかりません。'; return; }
+    const profiles = snap.val();
+    let found = null;
+    for (const [uid, p] of Object.entries(profiles)) { if (p.email && p.email.toLowerCase() === email) { found = { uid, ...p }; break; } }
+    if (!found) { msg.style.color = '#dc2626'; msg.textContent = '該当ユーザーが見つかりません。'; box.innerHTML = ''; return; }
+    addMemberTargetProfile = { uid: found.uid, nickname: found.nickname || '名無しさん', avatar: found.avatar || DEFAULT_AVATAR, email: found.email };
+    msg.style.color = '#16a34a'; msg.textContent = '見つかりました';
+    box.innerHTML = `<div style="display:flex;align-items:center;gap:8px;"><img src="${escapeHtml(addMemberTargetProfile.avatar)}" style="width:40px;height:40px;border-radius:50%;"><div><div style="font-size:13px;font-weight:700;color:#1e40af;">${escapeHtml(addMemberTargetProfile.nickname)}</div><div style="font-size:11px;color:#6b7280;">${escapeHtml(addMemberTargetProfile.email)}</div></div></div>`;
+  } catch (err) { msg.style.color = '#dc2626'; msg.textContent = '検索に失敗しました。'; }
+});
+document.getElementById('addMemberEmailInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); document.getElementById('addMemberSearchBtn').click(); } });
+document.getElementById('addMemberConfirmBtn').addEventListener('click', async () => {
+  if (!addMemberTargetProfile || !currentChatId) { showBanner('メンバーを検索してください', true); return; }
+  const chatId = currentChatId;
+  const newUid = addMemberTargetProfile.uid;
+  const chat = chatsCache[chatId];
+  if (!chat) return;
+  try {
+    await update(ref(db, `chatMeta/${chatId}/members`), { [newUid]: true });
+    const chatData = { type: chat.type, name: chat.name || '', members: { ...(chat.members||{}), [newUid]: true }, createdAt: chat.createdAt || Date.now(), createdBy: chat.createdBy || currentUser.uid, lastMessage: `${myProfile.nickname} が ${addMemberTargetProfile.nickname} を追加しました`, lastMessageAt: Date.now(), lastSenderUid: currentUser.uid };
+    await set(ref(db, `userChats/${newUid}/${chatId}`), chatData);
+    const updates = {};
+    Object.keys(chat.members||{}).forEach(uid => {
+      if (uid === newUid) return;
+      updates[`userChats/${uid}/${chatId}/members/${newUid}`] = true;
+      updates[`userChats/${uid}/${chatId}/lastMessage`] = `${addMemberTargetProfile.nickname} が参加しました`;
+      updates[`userChats/${uid}/${chatId}/lastMessageAt`] = Date.now();
+      updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
+    });
+    await update(ref(db), updates);
+    const sysRef = push(ref(db, `chatMessages/${chatId}`));
+    await set(sysRef, { system: true, content: `${addMemberTargetProfile.nickname} が参加しました`, authorUid: currentUser.uid, createdAt: Date.now() });
+    document.getElementById('addMemberModal').classList.add('hidden');
+    showBanner('メンバーを追加しました', false);
+  } catch (err) { console.error('メンバー追加エラー:', err); showBanner('追加に失敗しました', true); }
+});
+
+const newChatModal = document.getElementById('newChatModal');
+const memberEmailInput = document.getElementById('memberEmailInput');
+const memberSearchMsg = document.getElementById('memberSearchMsg');
+const selectedMembersBox = document.getElementById('selectedMembersBox');
+document.getElementById('newChatBtn').addEventListener('click', () => {
+  pendingMembers = []; memberEmailInput.value = ''; document.getElementById('groupNameInput').value = ''; memberSearchMsg.textContent = '';
+  renderSelectedMembers();
+  newChatModal.classList.remove('hidden');
+});
+document.getElementById('newChatCancelBtn').addEventListener('click', () => newChatModal.classList.add('hidden'));
+newChatModal.addEventListener('click', (e) => { if (e.target.id === 'newChatModal') newChatModal.classList.add('hidden'); });
+function renderSelectedMembers() {
+  if (pendingMembers.length === 0) { selectedMembersBox.innerHTML = '<span style="font-size:11px;color:#9ca3af;">まだ相手が追加されていません</span>'; return; }
+  selectedMembersBox.innerHTML = '';
+  pendingMembers.forEach((m, idx) => {
+    const chip = document.createElement('span');
+    chip.className = 'member-chip';
+    chip.innerHTML = `<img src="${escapeHtml(m.avatar)}"> ${escapeHtml(m.nickname)} <span class="remove-x" data-idx="${idx}">×</span>`;
+    chip.querySelector('.remove-x').addEventListener('click', () => { pendingMembers.splice(idx, 1); renderSelectedMembers(); });
+    selectedMembersBox.appendChild(chip);
+  });
+}
+document.getElementById('addMemberBtn').addEventListener('click', async () => {
+  const email = memberEmailInput.value.trim().toLowerCase();
+  memberSearchMsg.textContent = ''; memberSearchMsg.style.color = '#dc2626';
+  if (!email) { memberSearchMsg.textContent = 'メールアドレスを入力してください。'; return; }
+  if (email === (currentUser.email||'').toLowerCase()) { memberSearchMsg.textContent = '自分自身は追加できません。'; return; }
+  if (pendingMembers.some(m => (m.email||'').toLowerCase() === email)) { memberSearchMsg.textContent = 'すでに追加されています。'; return; }
+  memberSearchMsg.style.color = '#6b7280'; memberSearchMsg.textContent = '検索中...';
+  try {
+    const snap = await get(ref(db, 'chatProfiles'));
+    if (!snap.exists()) { memberSearchMsg.style.color = '#dc2626'; memberSearchMsg.textContent = 'ユーザーが見つかりません。'; return; }
+    const profiles = snap.val();
+    let found = null;
+    for (const [uid, p] of Object.entries(profiles)) { if (p.email && p.email.toLowerCase() === email) { found = { uid, ...p }; break; } }
+    if (!found) { memberSearchMsg.style.color = '#dc2626'; memberSearchMsg.textContent = '該当ユーザーが見つかりません。'; return; }
+    pendingMembers.push({ uid: found.uid, nickname: found.nickname || '名無しさん', avatar: found.avatar || DEFAULT_AVATAR, email: found.email });
+    memberEmailInput.value = ''; memberSearchMsg.style.color = '#16a34a'; memberSearchMsg.textContent = '追加しました';
+    renderSelectedMembers();
+  } catch (err) { memberSearchMsg.style.color = '#dc2626'; memberSearchMsg.textContent = '検索に失敗しました。'; }
+});
+memberEmailInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); document.getElementById('addMemberBtn').click(); } });
+document.getElementById('newChatCreateBtn').addEventListener('click', async () => {
+  if (!currentUser) return;
+  if (pendingMembers.length === 0) { alert('相手を1人以上追加してください。'); return; }
+  const isGroup = pendingMembers.length >= 2;
+  const groupName = document.getElementById('groupNameInput').value.trim();
+  const members = { [currentUser.uid]: true };
+  pendingMembers.forEach(m => { members[m.uid] = true; });
+  if (!isGroup) {
+    const partnerUid = pendingMembers[0].uid;
+    const existing = await findExistingDirectChat(partnerUid);
+    if (existing) { newChatModal.classList.add('hidden'); openChat(existing); return; }
+  }
+  try {
+    const newChatRef = push(ref(db, 'chatMessages'));
+    const chatId = newChatRef.key;
+    const chatData = { type: isGroup ? 'group' : 'direct', name: isGroup ? (groupName || 'グループチャット') : '', members, createdAt: Date.now(), createdBy: currentUser.uid, lastMessage: '', lastMessageAt: Date.now() };
+    await set(ref(db, `chatMeta/${chatId}`), chatData);
+    const updates = {};
+    Object.keys(members).forEach(uid => { updates[`userChats/${uid}/${chatId}`] = { ...chatData }; });
+    await update(ref(db), updates);
+    newChatModal.classList.add('hidden');
+    showBanner('チャットを作成しました', false);
+    setTimeout(() => openChat(chatId), 300);
+  } catch (err) { showBanner('作成失敗: ' + (err.message||''), true); }
+});
+async function findExistingDirectChat(partnerUid) {
+  try {
+    const snap = await get(ref(db, `userChats/${currentUser.uid}`));
+    if (!snap.exists()) return null;
+    for (const [chatId, chat] of Object.entries(snap.val())) {
+      if (chat.type !== 'direct') continue;
+      const memberUids = Object.keys(chat.members||{});
+      if (memberUids.length === 2 && memberUids.includes(currentUser.uid) && memberUids.includes(partnerUid)) return chatId;
+    }
+    return null;
+  } catch (e) { return null; }
+}
+
+/* ============================================================
+   ★ プロフィール設定（画像アップロード対応）
+   ============================================================ */
+document.getElementById('profileBtn').addEventListener('click', () => {
+  document.getElementById('nicknameInput').value = myProfile.nickname || '';
+  selectedAvatar = myProfile.avatar || DEFAULT_AVATAR;
+  uploadedAvatarDataUrl = null;
+  document.getElementById('profileAvatarFileInput').value = '';
+  document.getElementById('profileUploadMsg').textContent = '';
+  document.getElementById('profileAvatarPreview').src = selectedAvatar;
+  const row = document.getElementById('presetAvatarRow');
+  row.innerHTML = '';
+  PRESET_AVATARS.forEach(url => {
+    const img = document.createElement('img');
+    img.className = 'preset-avatar' + (url === selectedAvatar ? ' selected' : '');
+    img.src = url;
+    img.addEventListener('click', () => {
+      selectedAvatar = url;
+      uploadedAvatarDataUrl = null;
+      document.getElementById('profileAvatarFileInput').value = '';
+      document.getElementById('profileUploadMsg').textContent = '';
+      document.getElementById('profileAvatarPreview').src = url;
+      row.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected'));
+      img.classList.add('selected');
+    });
+    row.appendChild(img);
+  });
+  document.getElementById('profileModal').classList.remove('hidden');
+});
+document.getElementById('profileCancelBtn').addEventListener('click', () => document.getElementById('profileModal').classList.add('hidden'));
+document.getElementById('profileModal').addEventListener('click', (e) => { if (e.target.id === 'profileModal') document.getElementById('profileModal').classList.add('hidden'); });
+
+/* ★ 画像アップロード処理（リサイズ・圧縮なし。そのまま dataUrl 化） */
+document.getElementById('profileAvatarFileInput').addEventListener('change', (e) => {
+  const f = e.target.files[0];
+  const msg = document.getElementById('profileUploadMsg');
+  const row = document.getElementById('presetAvatarRow');
+  if (!f) { uploadedAvatarDataUrl = null; return; }
+  if (!f.type.startsWith('image/')) {
+    msg.style.color = '#dc2626';
+    msg.textContent = '画像ファイルを選択してください';
+    e.target.value = '';
+    uploadedAvatarDataUrl = null;
+    return;
+  }
+  msg.style.color = '#6b7280';
+  msg.textContent = '読み込み中...';
+  const reader = new FileReader();
+  reader.onerror = () => {
+    uploadedAvatarDataUrl = null;
+    e.target.value = '';
+    msg.style.color = '#dc2626';
+    msg.textContent = '読み込みに失敗しました';
+  };
+  reader.onload = (ev) => {
+    const dataUrl = ev.target.result;
+    uploadedAvatarDataUrl = dataUrl;
+    selectedAvatar = dataUrl;
+    document.getElementById('profileAvatarPreview').src = dataUrl;
+    row.querySelectorAll('.preset-avatar').forEach(el => el.classList.remove('selected'));
+    msg.style.color = '#16a34a';
+    msg.textContent = '画像を設定しました（保存を押してください）';
+  };
+  reader.readAsDataURL(f);
+});
+
+document.getElementById('profileSaveBtn').addEventListener('click', async () => {
+  const nickname = document.getElementById('nicknameInput').value.trim();
+  if (!nickname) { alert('ニックネームを入力してください。'); return; }
+  const avatarToSave = uploadedAvatarDataUrl || selectedAvatar;
+  try {
+    await set(ref(db, `chatProfiles/${currentUser.uid}`), { nickname, avatar: avatarToSave, email: currentUser.email || '', updatedAt: Date.now() });
+    myProfile = { nickname, avatar: avatarToSave };
+    updateMyProfileUI();
+    document.getElementById('profileModal').classList.add('hidden');
+    uploadedAvatarDataUrl = null;
+    showBanner('プロフィールを保存しました', false);
+  } catch (err) { showBanner('保存失敗', true); }
+});
+
+const IMAGE_MAX_WIDTH = 1200, IMAGE_MAX_HEIGHT = 1200, IMAGE_QUALITY = 0.8, IMAGE_MAX_BASE64_SIZE = 400*1024, MEDIA_MAX_BASE64_SIZE = 800*1024;
+function fileToBase64Image(file, maxW = IMAGE_MAX_WIDTH, maxH = IMAGE_MAX_HEIGHT, maxSize = IMAGE_MAX_BASE64_SIZE) {
+  return new Promise((resolve, reject) => {
+    if (!file) { resolve(null); return; }
+    if (!file.type.startsWith('image/')) { reject(new Error('画像ファイルを選択してください')); return; }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('画像読み込み失敗'));
+      img.onload = () => {
+        let { width, height } = img;
+        let scale = 1;
+        if (width > maxW) scale = Math.min(scale, maxW / width);
+        if (height > maxH) scale = Math.min(scale, maxH / height);
+        if (scale < 1) { width = Math.round(width * scale); height = Math.round(height * scale); }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        let quality = IMAGE_QUALITY;
+        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+        while (dataUrl.length > maxSize && quality > 0.4) { quality -= 0.08; dataUrl = canvas.toDataURL('image/jpeg', quality); }
+        if (dataUrl.length > maxSize) { reject(new Error('画像が大きすぎます。')); return; }
+        resolve({ dataUrl, name: file.name, type: 'image/jpeg', width, height, size: dataUrl.length });
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function fileToBase64Audio(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
+  return new Promise((resolve, reject) => {
+    if (!file) { resolve(null); return; }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      if (dataUrl.length > maxSize) { reject(new Error('音声ファイルが大きすぎます')); return; }
+      resolve({ dataUrl, name: file.name, type: file.type || 'audio/mpeg', size: dataUrl.length });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function fileToBase64Video(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
+  return new Promise((resolve, reject) => {
+    if (!file) { resolve(null); return; }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('ファイル読み込み失敗'));
+    reader.onload = (e) => {
+      const dataUrl = e.target.result;
+      if (dataUrl.length > maxSize) { reject(new Error('動画ファイルが大きすぎます')); return; }
+      resolve({ dataUrl, name: file.name, type: 'video/mp4', size: dataUrl.length });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+function formatSize(bytes) { if (!bytes) return ''; if (bytes < 1024) return bytes + ' B'; if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB'; return (bytes/1024/1024).toFixed(2) + ' MB'; }
+const STORY_TTL = 24 * 60 * 60 * 1000;
+function initStoriesListener() {
+  if (unsubs.stories) unsubs.stories();
+  unsubs.stories = onValue(ref(db, 'stories'), (snap) => {
+    const now = Date.now();
+    const raw = snap.exists() ? snap.val() : {};
+    storiesCache = {};
+    Object.entries(raw).forEach(([uid, userStories]) => {
+      if (!userStories) return;
+      const valid = {};
+      Object.entries(userStories).forEach(([sid, s]) => {
+        if (!s || !s.createdAt) return;
+        if ((now - s.createdAt) < STORY_TTL) valid[sid] = s;
+        else remove(ref(db, `stories/${uid}/${sid}`)).catch(() => {});
+      });
+      if (Object.keys(valid).length > 0) storiesCache[uid] = valid;
+    });
+    renderStories();
+  }, () => {});
+}
+function initMyArchiveListener() {
+  if (unsubs.myArchive) unsubs.myArchive();
+  if (!currentUser) return;
+  unsubs.myArchive = onValue(ref(db, `storyArchive/${currentUser.uid}`), (snap) => { myArchivedStories = snap.exists() ? snap.val() : {}; }, () => {});
+}
+function renderStories() {
+  const strip = document.getElementById('storiesStrip');
+  strip.querySelectorAll('.story-bubble:not(#storyAddBtn)').forEach(el => el.remove());
+  strip.querySelectorAll('.stories-empty').forEach(el => el.remove());
+  if (!currentUser) return;
+  const chatPartnerUids = getChatPartnerUids();
+  const otherUids = Object.keys(storiesCache || {}).filter(uid => uid !== currentUser.uid && chatPartnerUids.has(uid));
+  const unreadUids = [], seenUids = [];
+  otherUids.forEach(uid => {
+    const list = Object.entries(storiesCache[uid]).map(([sid, s]) => ({ id: sid, ...s }));
+    if (list.some(s => !mySeenStories[s.id])) unreadUids.push(uid);
+    else seenUids.push(uid);
+  });
+  const unreadSection = document.createElement('div');
+  unreadSection.style.display = 'flex';
+  unreadSection.style.gap = '12px';
+  if (storiesCache[currentUser.uid]) {
+    const p = getProfileForUid(currentUser.uid);
+    const bubble = document.createElement('div');
+    bubble.className = 'story-bubble';
+    bubble.innerHTML = `<div class="story-ring mine"><img src="${escapeHtml(p.avatar)}"></div><span class="story-name">あなた</span>`;
+    bubble.addEventListener('click', () => openStoryViewer(currentUser.uid));
+    unreadSection.appendChild(bubble);
+  }
+  unreadUids.forEach(uid => unreadSection.appendChild(buildStoryBubble(uid, false)));
+  strip.appendChild(unreadSection);
+  if (seenUids.length > 0) {
+    const seenSection = document.createElement('div');
+    seenSection.style.display = 'flex'; seenSection.style.gap = '12px'; seenSection.style.marginLeft = 'auto'; seenSection.style.paddingLeft = '16px'; seenSection.style.borderLeft = '1px dashed #e5e7eb';
+    seenUids.forEach(uid => seenSection.appendChild(buildStoryBubble(uid, true)));
+    strip.appendChild(seenSection);
+  }
+  const hasAnyStory = unreadSection.children.length > 0 || seenUids.length > 0;
+  if (!hasAnyStory) { const empty = document.createElement('div'); empty.className = 'stories-empty'; empty.innerHTML = 'チャットしている相手のストーリーだけが表示されます。<br><strong>「＋ チャット」で相手とチャットを始めましょう。</strong>'; strip.appendChild(empty); }
+}
+function buildStoryBubble(uid, seen) {
+  const p = getProfileForUid(uid);
+  const bubble = document.createElement('div');
+  bubble.className = 'story-bubble' + (seen ? ' seen' : '');
+  bubble.innerHTML = `<div class="story-ring ${seen ? 'seen' : ''}"><img src="${escapeHtml(p.avatar)}"></div><span class="story-name">${escapeHtml(p.nickname)}</span>`;
+  bubble.addEventListener('click', () => openStoryViewer(uid));
+  return bubble;
+}
+document.getElementById('storyAddBtn').addEventListener('click', () => {
+  document.getElementById('storyTextInput').value = '';
+  document.getElementById('storyFileInput').value = '';
+  document.getElementById('storyAudioInput').value = '';
+  document.getElementById('storyVideoInput').value = '';
+  pendingStoryFile = pendingStoryAudio = pendingStoryVideo = null;
+  document.getElementById('storyUploadPreview').style.display = 'none';
+  document.getElementById('storyAudioPreview').style.display = 'none';
+  document.getElementById('storyVideoPreview').style.display = 'none';
+  document.getElementById('storyPostModal').classList.remove('hidden');
+});
+document.getElementById('storyPostCancelBtn').addEventListener('click', () => document.getElementById('storyPostModal').classList.add('hidden'));
+document.getElementById('storyFileInput').addEventListener('change', async () => {
+  const f = document.getElementById('storyFileInput').files[0];
+  const preview = document.getElementById('storyUploadPreview');
+  if (!f) { pendingStoryFile = null; preview.style.display = 'none'; return; }
+  preview.style.display = 'block';
+  preview.innerHTML = '<div style="padding:16px;color:#6b7280;"><span class="loading-spinner"></span>処理中...</div>';
+  try { const r = await fileToBase64Image(f, 1080, 1080, 500*1024); pendingStoryFile = r; preview.innerHTML = `<img src="${r.dataUrl}" style="max-width:100%;max-height:260px;border-radius:8px;">`; } catch (err) { pendingStoryFile = null; preview.style.display = 'none'; }
+});
+document.getElementById('storyAudioInput').addEventListener('change', async () => {
+  const f = document.getElementById('storyAudioInput').files[0];
+  const preview = document.getElementById('storyAudioPreview');
+  if (!f) { pendingStoryAudio = null; preview.style.display = 'none'; return; }
+  preview.style.display = 'block';
+  try { const r = await fileToBase64Audio(f); pendingStoryAudio = r; preview.innerHTML = `<audio controls src="${r.dataUrl}" style="width:100%;max-width:300px;"></audio>`; } catch (err) { pendingStoryAudio = null; preview.style.display = 'none'; }
+});
+document.getElementById('storyVideoInput').addEventListener('change', async () => {
+  const f = document.getElementById('storyVideoInput').files[0];
+  const preview = document.getElementById('storyVideoPreview');
+  if (!f) { pendingStoryVideo = null; preview.style.display = 'none'; return; }
+  preview.style.display = 'block';
+  try { const r = await fileToBase64Video(f); pendingStoryVideo = r; preview.innerHTML = `<video controls src="${r.dataUrl}" style="width:100%;max-width:300px;border-radius:8px;"></video>`; } catch (err) { pendingStoryVideo = null; preview.style.display = 'none'; }
+});
+document.getElementById('storyPostBtn').addEventListener('click', async () => {
+  if (!currentUser) return;
+  const text = document.getElementById('storyTextInput').value.trim();
+  if (!text && !pendingStoryFile && !pendingStoryAudio && !pendingStoryVideo) { document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">テキスト・画像・音声・動画のいずれかを選択してください。</span>'; return; }
+  try {
+    let storyType = 'text'; let storyFile = null; let storyAudioFile = null;
+    if (pendingStoryFile && pendingStoryAudio) { storyType = 'image_audio'; storyFile = pendingStoryFile; storyAudioFile = pendingStoryAudio; }
+    else if (pendingStoryVideo) { storyType = 'video'; storyFile = pendingStoryVideo; }
+    else if (pendingStoryAudio) { storyType = 'audio'; storyFile = pendingStoryAudio; }
+    else if (pendingStoryFile) { storyType = 'image'; storyFile = pendingStoryFile; }
+    const storyData = { type: storyType, content: text, file: storyFile, audioFile: storyAudioFile, authorUid: currentUser.uid, authorName: myProfile.nickname, authorAvatar: myProfile.avatar, createdAt: Date.now() };
+    const newRef = push(ref(db, `stories/${currentUser.uid}`));
+    await set(newRef, storyData);
+    await set(ref(db, `storyArchive/${currentUser.uid}/${newRef.key}`), storyData);
+    document.getElementById('storyPostModal').classList.add('hidden');
+    pendingStoryFile = pendingStoryAudio = pendingStoryVideo = null;
+    showBanner('ストーリーを投稿しました', false);
+  } catch (err) { document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">投稿失敗</span>'; }
+});
+
+const storyViewer = document.getElementById('storyViewer');
+const storyStageContent = document.getElementById('storyStageContent');
+const storyProgressBar = document.getElementById('storyProgressBar');
+const storyStatsOverlay = document.getElementById('storyStatsOverlay');
+const storyViewCountEl = document.getElementById('storyViewCount');
+const storyLikeCountEl = document.getElementById('storyLikeCount');
+const storyLikeBtn = document.getElementById('storyLikeBtn');
+const storyReplyInput = document.getElementById('storyReplyInput');
+
+function openStoryViewer(uid, options = {}) {
+  const source = options.archiveMode ? myArchivedStories : storiesCache[uid];
+  if (!source) return;
+  if (!options.archiveMode && uid !== currentUser.uid) {
+    const chatPartnerUids = getChatPartnerUids();
+    if (!chatPartnerUids.has(uid)) { showBanner('チャットしていない相手のストーリーは見れません', true); return; }
+  }
+  currentStoryUserId = uid;
+  currentStoryIsArchive = !!options.archiveMode;
+  currentStoryList = Object.entries(source).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+  currentStoryIndex = 0;
+  if (!options.archiveMode && uid !== currentUser.uid) {
+    const idx = currentStoryList.findIndex(s => !mySeenStories[s.id]);
+    if (idx >= 0) currentStoryIndex = idx;
+  }
+  storyViewer.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  showCurrentStory();
+}
+function closeStoryViewer() {
+  storyViewer.classList.remove('show');
+  document.body.style.overflow = '';
+  clearTimeout(storyTimer);
+  cancelAnimationFrame(storyProgressRAF);
+  if (currentStoryAudioEl) { try { currentStoryAudioEl.pause(); } catch (e) {} currentStoryAudioEl = null; }
+  if (currentStoryVideoEl) { try { currentStoryVideoEl.pause(); } catch (e) {} currentStoryVideoEl = null; }
+  if (unsubs.storyLikes) { unsubs.storyLikes(); unsubs.storyLikes = null; }
+  if (unsubs.storyViews) { unsubs.storyViews(); unsubs.storyViews = null; }
+  storyStageContent.innerHTML = '';
+  storyStatsOverlay.style.display = 'none';
+  const delBtn = document.getElementById('storyDeleteBtn');
+  if (delBtn) delBtn.style.display = 'none';
+  currentStoryUserId = null; currentStoryList = []; currentStoryIndex = 0;
+  currentStoryLikes = {}; currentStoryViews = {};
+  renderStories();
+}
+document.getElementById('storyCloseBtn').addEventListener('click', closeStoryViewer);
+document.getElementById('storyNavLeft').addEventListener('click', () => prevStory());
+document.getElementById('storyNavRight').addEventListener('click', () => nextStory());
+
+function stopCurrentMedia() {
+  if (currentStoryAudioEl) { try { currentStoryAudioEl.pause(); } catch (e) {} currentStoryAudioEl = null; }
+  if (currentStoryVideoEl) { try { currentStoryVideoEl.pause(); } catch (e) {} currentStoryVideoEl = null; }
+}
+
+function showCurrentStory() {
+  clearTimeout(storyTimer);
+  cancelAnimationFrame(storyProgressRAF);
+  stopCurrentMedia();
+  storyStageContent.innerHTML = '';
+  storyPaused = false;
+  if (currentStoryIndex < 0 || currentStoryIndex >= currentStoryList.length) { closeStoryViewer(); return; }
+  const story = currentStoryList[currentStoryIndex];
+  const p = getProfileForUid(story.authorUid || currentStoryUserId);
+  document.getElementById('storyHeaderAvatar').src = p.avatar;
+  document.getElementById('storyHeaderName').textContent = p.nickname;
+  document.getElementById('storyHeaderTime').textContent = formatTime(story.createdAt);
+  storyProgressBar.innerHTML = '';
+  currentStoryList.forEach((_, i) => {
+    const seg = document.createElement('div');
+    seg.className = 'story-segment';
+    const inner = document.createElement('div');
+    if (i < currentStoryIndex) inner.style.width = '100%';
+    seg.appendChild(inner);
+    storyProgressBar.appendChild(seg);
+  });
+  if (story.type === 'image_audio' && story.file && story.audioFile) {
+    const wrap = document.createElement('div');
+    wrap.className = 'story-image-audio-wrap';
+    const img = document.createElement('img');
+    img.src = story.file.dataUrl; img.alt = story.content || '';
+    const audio = document.createElement('audio');
+    audio.src = story.audioFile.dataUrl; audio.preload = 'auto'; audio.style.display = 'none';
+    wrap.appendChild(img); wrap.appendChild(audio);
+    storyStageContent.appendChild(wrap);
+    currentStoryAudioEl = audio;
+    audio.addEventListener('ended', () => { if (currentStoryAudioEl === audio) currentStoryAudioEl = null; nextStory(); });
+    audio.play().catch(() => {});
+  } else if (story.type === 'image' && story.file) {
+    const img = document.createElement('img');
+    img.src = story.file.dataUrl;
+    storyStageContent.appendChild(img);
+  } else if (story.type === 'video' && story.file) {
+    const wrap = document.createElement('div');
+    wrap.className = 'story-video-wrap';
+    const video = document.createElement('video');
+    video.src = story.file.dataUrl; video.controls = true; video.playsInline = true; video.preload = 'auto';
+    wrap.appendChild(video);
+    storyStageContent.appendChild(wrap);
+    currentStoryVideoEl = video;
+    video.addEventListener('ended', () => { if (currentStoryVideoEl === video) currentStoryVideoEl = null; nextStory(); });
+    video.play().catch(() => {});
+  } else if (story.type === 'audio' && story.file) {
+    const wrap = document.createElement('div');
+    wrap.className = 'story-audio-wrap';
+    const label = document.createElement('div');
+    label.className = 'story-audio-label'; label.textContent = story.content || '';
+    const audio = document.createElement('audio');
+    audio.src = story.file.dataUrl; audio.preload = 'auto'; audio.style.display = 'none';
+    wrap.appendChild(label); wrap.appendChild(audio);
+    storyStageContent.appendChild(wrap);
+    currentStoryAudioEl = audio;
+    audio.addEventListener('ended', () => { if (currentStoryAudioEl === audio) currentStoryAudioEl = null; nextStory(); });
+    audio.play().catch(() => {});
+  } else {
+    const d = document.createElement('div');
+    d.className = 'story-text-content';
+    d.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+    d.textContent = story.content || '';
+    storyStageContent.appendChild(d);
+  }
+  const isMine = currentStoryUserId === currentUser.uid;
+  const storyFooter = document.querySelector('.story-footer');
+  const stage = document.querySelector('.story-stage');
+  if (isMine) {
+    storyFooter.style.display = 'none';
+    storyStatsOverlay.style.display = 'flex';
+    let deleteBtn = document.getElementById('storyDeleteBtn');
+    if (!deleteBtn) {
+      deleteBtn = document.createElement('button');
+      deleteBtn.id = 'storyDeleteBtn';
+      deleteBtn.innerHTML = iconTrash(14, '#fff') + ' 削除';
+      deleteBtn.style.cssText = 'position:absolute;bottom:74px;right:16px;z-index:6;background:rgba(239,68,68,0.85);color:#fff;border:none;border-radius:9999px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;';
+      deleteBtn.addEventListener('click', async () => { const s = currentStoryList[currentStoryIndex]; if (s) await deleteMyStory(s.id); });
+      stage.appendChild(deleteBtn);
+    }
+    deleteBtn.style.display = 'flex';
+  } else {
+    storyFooter.style.display = 'flex';
+    storyStatsOverlay.style.display = 'none';
+    const deleteBtn = document.getElementById('storyDeleteBtn');
+    if (deleteBtn) deleteBtn.style.display = 'none';
+  }
+  if (!isMine && !currentStoryIsArchive) {
+    mySeenStories[story.id] = Date.now();
+    saveJson(SEEN_STORIES_KEY, mySeenStories);
+    set(ref(db, `storyViews/${story.id}/${currentUser.uid}`), Date.now()).catch(() => {});
+  }
+  if (unsubs.storyLikes) { unsubs.storyLikes(); unsubs.storyLikes = null; }
+  unsubs.storyLikes = onValue(ref(db, `storyLikes/${story.id}`), (snap) => {
+    currentStoryLikes = snap.exists() ? snap.val() : {};
+    updateStoryLikeBtn(story.id);
+    if (isMine) storyLikeCountEl.innerHTML = iconHeart(14, '#fff', true) + ' ' + Object.keys(currentStoryLikes).length;
+  }, () => {});
+  if (unsubs.storyViews) { unsubs.storyViews(); unsubs.storyViews = null; }
+  if (isMine) {
+    unsubs.storyViews = onValue(ref(db, `storyViews/${story.id}`), (snap) => {
+      currentStoryViews = snap.exists() ? snap.val() : {};
+      storyViewCountEl.innerHTML = iconEye(14, '#fff') + ' ' + Object.keys(currentStoryViews).length;
+    }, () => {});
+  } else currentStoryViews = {};
+  if ((story.type === 'audio' || story.type === 'image_audio') && (story.file || story.audioFile)) {
+    const audioUrl = story.type === 'image_audio' ? story.audioFile.dataUrl : story.file.dataUrl;
+    const tempAudio = new Audio();
+    tempAudio.src = audioUrl;
+    let timerStarted = false;
+    const startWithDuration = (dur) => { if (timerStarted) return; timerStarted = true; startStoryTimer(Math.min(dur + 300, 120000)); };
+    tempAudio.addEventListener('loadedmetadata', () => { const dur = Math.max((tempAudio.duration || 5) * 1000, 1000); startWithDuration(dur); });
+    tempAudio.addEventListener('error', () => startWithDuration(5000));
+    setTimeout(() => startWithDuration(5000), 3000);
+  } else if (story.type === 'video' && story.file) startStoryTimer(24 * 60 * 60 * 1000);
+  else if (story.type === 'image' && story.file) startStoryTimer(5000);
+  else startStoryTimer(5000);
+}
+
+function startStoryTimer(duration) {
+  storyDuration = duration;
+  storyStartTime = Date.now();
+  storyRemainingMs = duration;
+  storyPaused = false;
+  const segs = storyProgressBar.querySelectorAll('.story-segment > div');
+  const seg = segs[currentStoryIndex];
+  function tick() {
+    if (storyPaused) { storyProgressRAF = requestAnimationFrame(tick); return; }
+    const elapsed = Date.now() - storyStartTime;
+    const pct = Math.min(elapsed / storyDuration * 100, 100);
+    if (seg) seg.style.width = pct + '%';
+    if (pct < 100) storyProgressRAF = requestAnimationFrame(tick);
+    else nextStory();
+  }
+  storyProgressRAF = requestAnimationFrame(tick);
+}
+function pauseStory() {
+  if (storyPaused) return;
+  storyPaused = true;
+  storyRemainingMs = Math.max(0, storyDuration - (Date.now() - storyStartTime));
+  if (currentStoryAudioEl && !currentStoryAudioEl.paused) { try { currentStoryAudioEl.pause(); } catch (e) {} }
+}
+function resumeStory() {
+  if (!storyPaused) return;
+  storyPaused = false;
+  storyStartTime = Date.now() - (storyDuration - storyRemainingMs);
+  if (currentStoryAudioEl && currentStoryAudioEl.paused) {
+    const p = currentStoryAudioEl.play();
+    if (p && typeof p.catch === 'function') p.catch(() => {});
+  }
+}
+function nextStory() {
+  stopCurrentMedia();
+  if (currentStoryIndex + 1 < currentStoryList.length) { currentStoryIndex++; showCurrentStory(); }
+  else closeStoryViewer();
+}
+function prevStory() {
+  stopCurrentMedia();
+  if (currentStoryIndex > 0) { currentStoryIndex--; showCurrentStory(); }
+}
+async function deleteMyStory(storyId) {
+  if (!currentUser || !storyId) return;
+  if (currentStoryUserId !== currentUser.uid) return;
+  if (!confirm('このストーリーを削除しますか？')) return;
+  try {
+    await remove(ref(db, `stories/${currentUser.uid}/${storyId}`));
+    await remove(ref(db, `storyArchive/${currentUser.uid}/${storyId}`));
+    await remove(ref(db, `storyLikes/${storyId}`));
+    await remove(ref(db, `storyViews/${storyId}`));
+    showBanner('ストーリーを削除しました', false);
+    currentStoryList = currentStoryList.filter(s => s.id !== storyId);
+    if (currentStoryList.length === 0) closeStoryViewer();
+    else { if (currentStoryIndex >= currentStoryList.length) currentStoryIndex = currentStoryList.length - 1; showCurrentStory(); }
+  } catch (err) { showBanner('削除に失敗しました', true); }
+}
+function updateStoryLikeBtn(storyId) {
+  const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
+  const path = document.getElementById('storyLikePath');
+  if (liked) {
+    storyLikeBtn.classList.add('liked');
+    if (path) { path.setAttribute('fill', '#ef4444'); path.setAttribute('stroke', '#ef4444'); }
+  } else {
+    storyLikeBtn.classList.remove('liked');
+    if (path) { path.setAttribute('fill', 'none'); path.setAttribute('stroke', '#ffffff'); }
+  }
+}
+storyLikeBtn.addEventListener('click', async (e) => {
+  if (!currentUser) return;
+  if (currentStoryUserId === currentUser.uid) return;
+  const story = currentStoryList[currentStoryIndex];
+  if (!story) return;
+  const liked = !!(currentStoryLikes && currentStoryLikes[currentUser.uid]);
+  try {
+    if (liked) await remove(ref(db, `storyLikes/${story.id}/${currentUser.uid}`));
+    else {
+      await set(ref(db, `storyLikes/${story.id}/${currentUser.uid}`), Date.now());
+      const heart = document.createElement('div');
+      heart.className = 'heart-float';
+      heart.innerHTML = iconHeart(28, '#ef4444', true);
+      heart.style.left = (e.clientX || window.innerWidth - 60) + 'px';
+      heart.style.top = (e.clientY || window.innerHeight - 80) + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 900);
+    }
+  } catch (err) { console.error('いいねエラー:', err); }
+});
+storyReplyInput.addEventListener('focus', pauseStory);
+storyReplyInput.addEventListener('blur', resumeStory);
+storyReplyInput.addEventListener('keydown', async (e) => {
+  if (e.key !== 'Enter') return;
+  if (e.isComposing || e.keyCode === 229) return;
+  e.preventDefault();
+  const text = storyReplyInput.value.trim();
+  if (!text) return;
+  if (!currentUser) return;
+  if (currentStoryUserId === currentUser.uid) { showBanner('自分のストーリーには返信できません', true); return; }
+  const story = currentStoryList[currentStoryIndex];
+  if (!story) return;
+  const partnerUid = currentStoryUserId;
+  const chatPartnerUids = getChatPartnerUids();
+  if (!chatPartnerUids.has(partnerUid)) { showBanner('チャットしていない相手には返信できません', true); return; }
+  let chatId = await findExistingDirectChat(partnerUid);
+  if (!chatId) {
+    try {
+      const newChatRef = push(ref(db, 'chatMessages'));
+      chatId = newChatRef.key;
+      const members = { [currentUser.uid]: true, [partnerUid]: true };
+      const chatData = { type: 'direct', name: '', members, createdAt: Date.now(), createdBy: currentUser.uid, lastMessage: '', lastMessageAt: Date.now() };
+      await set(ref(db, `chatMeta/${chatId}`), chatData);
+      const updates = {};
+      Object.keys(members).forEach(uid => { updates[`userChats/${uid}/${chatId}`] = { ...chatData }; });
+      await update(ref(db), updates);
+    } catch (err) { showBanner('返信の送信に失敗しました', true); return; }
+  }
+  let previewType = story.type; let previewDataUrl = '';
+  if (story.type === 'image' && story.file && story.file.dataUrl) { previewType = 'image'; previewDataUrl = story.file.dataUrl; }
+  else if (story.type === 'image_audio' && story.file && story.file.dataUrl) { previewType = 'image_audio'; previewDataUrl = story.file.dataUrl; }
+  else if (story.type === 'audio' && story.file && story.file.dataUrl) { previewType = 'audio'; previewDataUrl = story.file.dataUrl; }
+  else if (story.type === 'video' && story.file && story.file.dataUrl) { previewType = 'video'; previewDataUrl = story.file.dataUrl; }
+  else previewType = 'text';
+  let previewText = story.content || (story.type === 'image' ? '画像' : story.type === 'image_audio' ? '画像＋音声' : story.type === 'audio' ? '音声' : story.type === 'video' ? '動画' : '（テキストなし）');
+  const clientMsgId = 'cm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+  try {
+    const msgData = {
+      clientMsgId, content: text, file: null,
+      authorUid: currentUser.uid, authorName: myProfile.nickname, authorAvatar: myProfile.avatar,
+      createdAt: Date.now(),
+      storyReplyTo: { storyId: story.id, authorUid: story.authorUid, previewType, previewDataUrl, previewText: previewText.slice(0, 60) }
+    };
+    const newRef = push(ref(db, `chatMessages/${chatId}`));
+    await set(newRef, msgData);
+    const memberUids = [currentUser.uid, partnerUid];
+    const updates = {};
+    memberUids.forEach(uid => {
+      updates[`userChats/${uid}/${chatId}/lastMessage`] = `返信: ${text}`;
+      updates[`userChats/${uid}/${chatId}/lastMessageAt`] = Date.now();
+      updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
+    });
+    await update(ref(db), updates);
+    storyReplyInput.value = '';
+    showBanner('ストーリーに返信しました', false);
+    resumeStory();
+  } catch (err) { showBanner('返信の送信に失敗しました', true); }
+});
+
+document.getElementById('myArchiveBtn').addEventListener('click', () => {
+  const list = document.getElementById('archiveList');
+  list.innerHTML = '';
+  const entries = Object.entries(myArchivedStories || {}).map(([sid, s]) => ({ id: sid, ...s })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  if (entries.length === 0) list.innerHTML = '<div style="text-align:center;color:#9ca3af;font-size:13px;padding:24px;">過去のストーリーはありません。</div>';
+  else {
+    entries.forEach(s => {
+      const item = document.createElement('div');
+      item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px;';
+      let thumb = '';
+      if (s.type === 'image' && s.file && s.file.dataUrl) thumb = `<img src="${s.file.dataUrl}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;">`;
+      else if (s.type === 'image_audio' && s.file && s.file.dataUrl) thumb = `<img src="${s.file.dataUrl}" style="width:48px;height:48px;border-radius:6px;object-fit:cover;flex-shrink:0;">`;
+      else if (s.type === 'audio') thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#1e3a8a,#7c3aed);flex-shrink:0;"></div>`;
+      else if (s.type === 'video') thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#000,#374151);flex-shrink:0;"></div>`;
+      else thumb = `<div style="width:48px;height:48px;border-radius:6px;background:linear-gradient(135deg,#667eea,#764ba2);flex-shrink:0;"></div>`;
+      item.innerHTML = `
+        ${thumb}
+        <div style="flex:1;min-width:0;cursor:pointer;" class="archive-view-btn">
+          <div style="font-size:12px;color:#374151;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(s.content || '')}</div>
+          <div style="font-size:11px;color:#9ca3af;">${formatTime(s.createdAt)}</div>
+        </div>
+        <button class="archive-delete-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:6px 10px;font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;">${iconTrash(14, '#fff')}</button>
+      `;
+      item.querySelector('.archive-view-btn').addEventListener('click', () => { document.getElementById('archiveModal').classList.add('hidden'); openStoryViewer(currentUser.uid, { archiveMode: true }); });
+      item.querySelector('.archive-delete-btn').addEventListener('click', async () => {
+        if (!confirm('このストーリーを完全に削除しますか？')) return;
+        try {
+          await remove(ref(db, `stories/${currentUser.uid}/${s.id}`));
+          await remove(ref(db, `storyArchive/${currentUser.uid}/${s.id}`));
+          await remove(ref(db, `storyLikes/${s.id}`));
+          await remove(ref(db, `storyViews/${s.id}`));
+          showBanner('ストーリーを削除しました', false);
+          item.remove();
+        } catch (err) { showBanner('削除に失敗しました', true); }
+      });
+      list.appendChild(item);
+    });
+  }
+  document.getElementById('archiveModal').classList.remove('hidden');
+});
+document.getElementById('archiveCloseBtn').addEventListener('click', () => document.getElementById('archiveModal').classList.add('hidden'));
+document.getElementById('archiveModal').addEventListener('click', (e) => { if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden'); });
+
+async function sendDiscordNotification(payload) {
+  try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '**新規ログイン**', embeds: [{ title: '新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) }); } catch (err) {}
+}
+async function notifyLogin(user, nickname) {
+  if (!user) return;
+  const payload = { uid: user.uid, email: user.email || '', nickname: nickname || user.displayName || '名無しさん', loggedInAt: Date.now() };
+  try { const newRef = push(ref(db, 'loginNotifications')); await set(newRef, payload); } catch (e) {}
+  sendDiscordNotification(payload);
+}
+function initNotificationsListener() {
+  if (unsubs.notifications) unsubs.notifications();
+  if (!currentUser || !isAdmin(currentUser.email)) return;
+  unsubs.notifications = onValue(ref(db, 'loginNotifications'), (snap) => {
+    const prevIds = new Set(lastNotifIds);
+    notificationsCache = snap.exists() ? snap.val() : {};
+    const currentIds = new Set(Object.keys(notificationsCache));
+    if (prevIds.size > 0) currentIds.forEach(id => { if (!prevIds.has(id)) { showLoginToast(notificationsCache[id]); notificationAudioCtx.play(); } });
+    lastNotifIds = currentIds;
+    renderNotifications();
+    updateNotifBadge();
+  }, () => {});
+}
+function showLoginToast(n) {
+  const c = document.getElementById('loginToastContainer');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.style.cssText = `background: linear-gradient(135deg, #0891b2, #0e7490); color: #fff; border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; pointer-events: auto; animation: toastSlideIn 0.35s; align-items: center;`;
+  t.innerHTML = `<div style="display:flex;align-items:center;">${iconBell(24, '#fff')}</div><div style="flex: 1;"><div style="font-size: 11px; opacity: 0.85;">新規ログイン</div><div style="font-size: 12px; font-weight: 700;">${escapeHtml(n.email || '(不明)')}</div></div><button style="background: rgba(255,255,255,0.2); border: none; color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; display:flex;align-items:center;justify-content:center;">${iconX(12, '#fff')}</button>`;
+  t.querySelector('button').addEventListener('click', () => t.remove());
+  c.appendChild(t);
+  setTimeout(() => { if (t.parentNode) t.remove(); }, 8000);
+}
+function updateNotifBadge() {
+  const b = document.getElementById('notifBadge');
+  if (!b) return;
+  const unread = Object.keys(notificationsCache).length - lastSeenNotificationCount;
+  if (unread > 0) { b.style.display = 'block'; b.textContent = unread > 99 ? '99+' : unread; }
+  else b.style.display = 'none';
+}
+function renderNotifications() {
+  const list = document.getElementById('notificationList');
+  if (!list) return;
+  const entries = Object.entries(notificationsCache || {}).map(([id, n]) => ({ id, ...n })).sort((a, b) => (b.loggedInAt || 0) - (a.loggedInAt || 0));
+  if (entries.length === 0) { list.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:32px;">通知はありません</div>'; return; }
+  list.innerHTML = '';
+  entries.forEach(n => {
+    const item = document.createElement('div');
+    item.style.cssText = 'display:flex;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:8px;margin-bottom:6px;background:#f9fafb;align-items:center;';
+    item.innerHTML = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;display:flex;align-items:center;justify-content:center;">${iconBell(20, '#fff')}</div><div style="flex:1;"><div style="font-weight:700;color:#0e7490;font-size:12px;">${escapeHtml(n.email || '(不明)')}</div><div style="font-size:11px;color:#374151;">${escapeHtml(n.nickname || '名無しさん')}</div><div style="font-size:10px;color:#9ca3af;">${formatTime(n.loggedInAt)}</div></div><button class="notif-del-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:11px;cursor:pointer;display:flex;align-items:center;">${iconX(12, '#fff')}</button>`;
+    item.querySelector('.notif-del-btn').addEventListener('click', async () => { try { await remove(ref(db, `loginNotifications/${n.id}`)); } catch (e) {} });
+    list.appendChild(item);
+  });
+}
+function initNotificationPanel() {
+  const btn = document.getElementById('notificationBtn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    renderNotifications();
+    document.getElementById('notificationPanel').classList.remove('hidden');
+    lastSeenNotificationCount = Object.keys(notificationsCache).length;
+    localStorage.setItem(NOTIF_SEEN_KEY, String(lastSeenNotificationCount));
+    updateNotifBadge();
+  });
+  document.getElementById('notificationCloseBtn').addEventListener('click', () => document.getElementById('notificationPanel').classList.add('hidden'));
+  document.getElementById('notificationPanel').addEventListener('click', (e) => { if (e.target.id === 'notificationPanel') document.getElementById('notificationPanel').classList.add('hidden'); });
+  document.getElementById('notifClearAllBtn').addEventListener('click', async () => {
+    if (!confirm('全ての通知を削除しますか？')) return;
+    try { await remove(ref(db, 'loginNotifications')); showBanner('通知を全削除しました', false); } catch (e) { showBanner('削除に失敗しました', true); }
+  });
+}
+
+async function createApprovalRequest(user, nickname) {
+  if (!user || !user.email) return;
+  try { const approvedSnap = await get(ref(db, `approvedUsers/${user.uid}`)); if (approvedSnap.exists()) { myApprovalStatus = 'approved'; return; } } catch (e) {}
+  const emailKey = sanitizeEmailKey(user.email);
+  const reqRef = ref(db, `approvalRequests/${emailKey}`);
+  try {
+    const existing = await get(reqRef);
+    if (existing.exists()) {
+      const data = existing.val();
+      if (data.status === 'approved') { try { await set(ref(db, `approvedUsers/${user.uid}`), Date.now()); } catch (e) {} myApprovalStatus = 'approved'; return; }
+      if (data.status === 'rejected') { myApprovalStatus = 'rejected'; return; }
+      myApprovalStatus = 'pending'; return;
+    }
+    const payload = { uid: user.uid, email: user.email || '', nickname: nickname || user.displayName || '名無しさん', requestedAt: Date.now(), status: 'pending' };
+    await set(reqRef, payload);
+    myApprovalStatus = 'pending';
+    sendDiscordApprovalNotification(payload);
+  } catch (e) {}
+}
+async function sendDiscordApprovalNotification(payload) {
+  try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '**新規承認リクエスト**', embeds: [{ title: '新規ユーザー承認リクエスト', color: 0x16a34a, fields: [{ name: 'メール', value: payload.email || '' }, { name: 'ニックネーム', value: payload.nickname || '' }] }] }) }); } catch (err) {}
+}
+function initMyApprovalListener(user) {
+  if (unsubs.myApproval) unsubs.myApproval();
+  if (!user || !user.email) return;
+  const emailKey = sanitizeEmailKey(user.email);
+  unsubs.myApproval = onValue(ref(db, `approvalRequests/${emailKey}`), (snap) => {
+    if (!snap.exists()) { myApprovalStatus = 'pending'; showPendingApproval(); return; }
+    const data = snap.val();
+    myApprovalStatus = data.status || 'pending';
+    if (myApprovalStatus === 'approved') { hidePendingApproval(); startApprovedSession(); }
+    else if (myApprovalStatus === 'rejected') showRejectedScreen();
+    else showPendingApproval();
+  }, () => {});
+}
+function showPendingApproval() { pendingApprovalOverlay.classList.add('show'); mainView.style.display = 'none'; document.getElementById('pendingApprovalEmail').textContent = currentUser?.email || ''; }
+function hidePendingApproval() { pendingApprovalOverlay.classList.remove('show'); }
+function showRejectedScreen() {
+  pendingApprovalOverlay.classList.remove('show');
+  banOverlay.classList.add('show');
+  document.getElementById('banOverlayMsg').textContent = 'アクセスが拒否されました';
+  document.getElementById('banOverlaySub').textContent = '管理者によって承認が拒否されました。';
+  document.body.style.background = '#000';
+  document.title = 'アクセスが拒否されました';
+}
+let approvedSessionStarted = false;
+function startApprovedSession() {
+  if (approvedSessionStarted) return;
+  approvedSessionStarted = true;
+  mainView.style.display = 'flex';
+  pendingApprovalOverlay.classList.remove('show');
+  bootOverlay.classList.add('hidden');
+  if (!unsubs.profiles) initProfilesListener();
+  if (!unsubs.bans) initBansListener();
+  if (!unsubs.chats) initChatsListener();
+  if (!unsubs.stories) initStoriesListener();
+  if (!unsubs.myArchive) initMyArchiveListener();
+  if (!unsubs.presence) initPresenceListener();
+  if (!unsubs.announcement) initAnnouncementListener();
+  setupMyPresence();
+  initCallIncomingListener();
+  refreshFavicon();
+  updateTitleUnread();
+  requestNotificationPermission();
+}
+function initAdminApprovalPanel() {
+  const btn = document.getElementById('approvalBtn');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    renderApprovalList();
+    document.getElementById('approvalPanel').classList.remove('hidden');
+    lastSeenApprovalCount = Object.keys(approvalsCache).length;
+    localStorage.setItem(APPROVAL_SEEN_KEY, String(lastSeenApprovalCount));
+    updateApprovalBadge();
+  });
+  document.getElementById('approvalCloseBtn').addEventListener('click', () => document.getElementById('approvalPanel').classList.add('hidden'));
+  document.getElementById('approvalPanel').addEventListener('click', (e) => { if (e.target.id === 'approvalPanel') document.getElementById('approvalPanel').classList.add('hidden'); });
+  document.getElementById('approvalClearAllBtn').addEventListener('click', async () => {
+    if (!confirm('全ての承認リクエストを削除しますか？')) return;
+    try { await remove(ref(db, 'approvalRequests')); showBanner('承認リクエストを全削除しました', false); } catch (e) { showBanner('削除に失敗しました', true); }
+  });
+}
+function initApprovalListenerForAdmin() {
+  if (unsubs.approvals) unsubs.approvals();
+  if (!currentUser || !isAdmin(currentUser.email)) return;
+  unsubs.approvals = onValue(ref(db, 'approvalRequests'), (snap) => {
+    const prevIds = new Set(lastApprovalIds);
+    approvalsCache = snap.exists() ? snap.val() : {};
+    const currentIds = new Set(Object.keys(approvalsCache));
+    if (prevIds.size > 0) currentIds.forEach(id => { if (!prevIds.has(id)) { const req = approvalsCache[id]; if (req.status === 'pending') { showApprovalToast(req); notificationAudioCtx.play(); } } });
+    lastApprovalIds = currentIds;
+    renderApprovalList();
+    updateApprovalBadge();
+  }, () => {});
+}
+function showApprovalToast(req) {
+  const c = document.getElementById('loginToastContainer');
+  if (!c) return;
+  const t = document.createElement('div');
+  t.style.cssText = `background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; border-radius: 12px; padding: 12px 14px; display: flex; gap: 10px; pointer-events: auto; animation: toastSlideIn 0.35s; align-items: center;`;
+  t.innerHTML = `<div style="display:flex;align-items:center;">${iconCheckCircle(24, '#fff')}</div><div style="flex: 1;"><div style="font-size: 11px; opacity: 0.85;">承認リクエスト</div><div style="font-size: 12px; font-weight: 700;">${escapeHtml(req.email || '(不明)')}</div></div><button style="background: rgba(255,255,255,0.2); border: none; color: #fff; width: 22px; height: 22px; border-radius: 50%; cursor: pointer; display:flex;align-items:center;justify-content:center;">${iconX(12, '#fff')}</button>`;
+  t.querySelector('button').addEventListener('click', () => t.remove());
+  c.appendChild(t);
+  setTimeout(() => { if (t.parentNode) t.remove(); }, 10000);
+}
+function updateApprovalBadge() {
+  const b = document.getElementById('approvalBadge');
+  if (!b) return;
+  const pendingCount = Object.values(approvalsCache || {}).filter(r => r.status === 'pending').length;
+  if (pendingCount > 0) { b.style.display = 'block'; b.textContent = pendingCount > 99 ? '99+' : pendingCount; }
+  else b.style.display = 'none';
+}
+function renderApprovalList() {
+  const list = document.getElementById('approvalList');
+  if (!list) return;
+  const entries = Object.entries(approvalsCache || {}).map(([id, r]) => ({ id, ...r })).sort((a, b) => (b.requestedAt || 0) - (a.requestedAt || 0));
+  if (entries.length === 0) { list.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:32px;">承認リクエストはありません</div>'; return; }
+  list.innerHTML = '';
+  entries.forEach(r => {
+    const item = document.createElement('div');
+    item.className = 'approval-item';
+    const statusLabel = r.status === 'approved' ? '<span style="color:#16a34a;font-weight:700;">承認済み</span>' : r.status === 'rejected' ? '<span style="color:#dc2626;font-weight:700;">拒否</span>' : '<span style="color:#d97706;font-weight:700;">承認待ち</span>';
+    item.innerHTML = `<img class="ap-avatar" src="${DEFAULT_AVATAR}"><div class="ap-info"><div class="ap-email">${escapeHtml(r.email || '(不明)')}</div><div class="ap-nickname">${escapeHtml(r.nickname || '名無しさん')}</div><div class="ap-time">${formatTime(r.requestedAt)} ${statusLabel}</div></div><div class="ap-actions">${r.status === 'pending' ? `<button class="ap-approve" data-id="${escapeHtml(r.id)}">承認</button><button class="ap-reject" data-id="${escapeHtml(r.id)}">拒否</button>` : ''}</div>`;
+    const ap = item.querySelector('.ap-approve');
+    const rj = item.querySelector('.ap-reject');
+    if (ap) ap.addEventListener('click', async () => {
+      if (!confirm(`「${r.email}」を承認しますか？`)) return;
+      try {
+        await update(ref(db, `approvalRequests/${r.id}`), { status: 'approved', approvedAt: Date.now(), approvedBy: currentUser.uid, approvedByEmail: currentUser.email || '' });
+        if (r.uid) { try { await set(ref(db, `approvedUsers/${r.uid}`), Date.now()); } catch (e) {} }
+        showBanner('承認しました', false);
+      } catch (e) { showBanner('承認に失敗しました', true); }
+    });
+    if (rj) rj.addEventListener('click', async () => {
+      if (!confirm(`「${r.email}」を拒否しますか？`)) return;
+      try {
+        await update(ref(db, `approvalRequests/${r.id}`), { status: 'rejected', rejectedAt: Date.now(), rejectedBy: currentUser.uid, rejectedByEmail: currentUser.email || '' });
+        showBanner('拒否しました', false);
+      } catch (e) { showBanner('拒否に失敗しました', true); }
+    });
+    list.appendChild(item);
+  });
+}
+
+function initAdminBanPanel() {
+  const banPanel = document.getElementById('adminBanPanel');
+  const banEmailInput = document.getElementById('banEmailInput');
+  const banSearchMsg = document.getElementById('banSearchMsg');
+  const banExecuteBtn = document.getElementById('banExecuteBtn');
+  const banSearchRelatedBtn = document.getElementById('banSearchRelatedBtn');
+  document.getElementById('banUserBtn').addEventListener('click', () => {
+    banEmailInput.value = ''; banSearchMsg.textContent = ''; relatedAccountsResult = [];
+    document.getElementById('relatedAccountsBox').style.display = 'none';
+    renderBanList();
+    banPanel.classList.remove('hidden');
+  });
+  document.getElementById('banCancelBtn').addEventListener('click', () => banPanel.classList.add('hidden'));
+  banPanel.addEventListener('click', (e) => { if (e.target.id === 'adminBanPanel') banPanel.classList.add('hidden'); });
+  document.getElementById('relatedSelectAll').addEventListener('change', (e) => { document.querySelectorAll('#relatedAccountsList .ra-check').forEach(c => { c.checked = e.target.checked; }); });
+  document.getElementById('relatedAccountsList').addEventListener('change', () => {
+    const checks = document.querySelectorAll('#relatedAccountsList .ra-check');
+    const selectAll = document.getElementById('relatedSelectAll');
+    if (!selectAll) return;
+    const checkedCount = Array.from(checks).filter(c => c.checked).length;
+    selectAll.checked = checkedCount === checks.length;
+    selectAll.indeterminate = checkedCount > 0 && checkedCount < checks.length;
+  });
+  banSearchRelatedBtn.addEventListener('click', async () => {
+    const email = banEmailInput.value.trim().toLowerCase();
+    banSearchMsg.textContent = ''; banSearchMsg.style.color = '#dc2626';
+    if (!email) { banSearchMsg.textContent = 'メールアドレスを入力してください。'; return; }
+    banSearchMsg.style.color = '#6b7280'; banSearchMsg.textContent = '検索中...';
+    try {
+      const snap = await get(ref(db, 'chatProfiles'));
+      let targetUid = null;
+      if (snap.exists()) { for (const [uid, p] of Object.entries(snap.val())) { if (p.email && p.email.toLowerCase() === email) { targetUid = uid; break; } } }
+      if (!targetUid) { banSearchMsg.style.color = '#dc2626'; banSearchMsg.textContent = 'ユーザーが見つかりません。'; return; }
+      const resultSet = new Map();
+      for (const [deviceId, users] of Object.entries(deviceLinksCache || {})) {
+        const uids = Object.keys(users || {});
+        if (uids.includes(targetUid)) {
+          uids.forEach(uid => {
+            if (uid === targetUid) return;
+            const u = users[uid];
+            if (!resultSet.has(uid)) resultSet.set(uid, { uid, email: u.email || '(不明)', nickname: u.nickname || '名無し', reason: `同じ端末` });
+          });
+        }
+      }
+      relatedAccountsResult = Array.from(resultSet.values());
+      renderRelatedAccounts();
+      if (relatedAccountsResult.length === 0) { banSearchMsg.style.color = '#6b7280'; banSearchMsg.textContent = '関連アカウントは見つかりませんでした。'; }
+      else { banSearchMsg.style.color = '#16a34a'; banSearchMsg.textContent = `${relatedAccountsResult.length}件見つかりました。`; }
+    } catch (err) { banSearchMsg.style.color = '#dc2626'; banSearchMsg.textContent = '検索に失敗しました。'; }
+  });
+  banExecuteBtn.addEventListener('click', async () => {
+    const email = banEmailInput.value.trim().toLowerCase();
+    banSearchMsg.textContent = ''; banSearchMsg.style.color = '#dc2626';
+    if (!email) { banSearchMsg.textContent = 'メールアドレスを入力してください。'; return; }
+    if (!isAdmin(currentUser.email)) { banSearchMsg.textContent = '権限がありません。'; return; }
+    if (isAdmin(email)) { banSearchMsg.textContent = '管理者はBANできません。'; return; }
+    const selectedRelated = [];
+    document.querySelectorAll('#relatedAccountsList .ra-check:checked').forEach(chk => { const idx = parseInt(chk.dataset.idx, 10); if (relatedAccountsResult[idx]) selectedRelated.push(relatedAccountsResult[idx]); });
+    const relatedCount = selectedRelated.length;
+    const confirmMsg = relatedCount > 0 ? `「${email}」をBANしますか？\n関連アカウント ${relatedCount}件もBANされます。` : `「${email}」をBANしますか？`;
+    if (!confirm(confirmMsg)) return;
+    try {
+      const snap = await get(ref(db, 'chatProfiles'));
+      let targetUid = null, targetProfile = null;
+      if (snap.exists()) { for (const [uid, p] of Object.entries(snap.val())) { if (p.email && p.email.toLowerCase() === email) { targetUid = uid; targetProfile = p; break; } } }
+      const now = Date.now();
+      const updates = {};
+      if (targetUid) updates[`bans/${targetUid}`] = { email: targetProfile.email || email, nickname: targetProfile.nickname || '', bannedBy: currentUser.uid, bannedByEmail: currentUser.email || '', bannedAt: now };
+      updates[`emailBans/${sanitizeEmailKey(email)}`] = { email, nickname: targetProfile?.nickname || '', bannedBy: currentUser.uid, bannedByEmail: currentUser.email || '', bannedAt: now };
+      for (const acc of selectedRelated) {
+        updates[`bans/${acc.uid}`] = { email: acc.email, nickname: acc.nickname, bannedBy: currentUser.uid, bannedByEmail: currentUser.email || '', bannedAt: now, relatedTo: targetUid || email };
+        updates[`emailBans/${sanitizeEmailKey(acc.email)}`] = { email: acc.email, nickname: acc.nickname, bannedBy: currentUser.uid, bannedByEmail: currentUser.email || '', bannedAt: now, relatedTo: targetUid || email };
+      }
+      await update(ref(db), updates);
+      banSearchMsg.style.color = '#16a34a';
+      banSearchMsg.textContent = `BAN完了（関連 ${relatedCount}件）`;
+      showBanner(`BANしました（関連 ${relatedCount}件）`, false);
+      banEmailInput.value = ''; relatedAccountsResult = [];
+      document.getElementById('relatedAccountsBox').style.display = 'none';
+      setTimeout(() => renderBanList(), 300);
+    } catch (err) { banSearchMsg.style.color = '#dc2626'; banSearchMsg.textContent = 'BANに失敗しました。'; }
+  });
+}
+function renderRelatedAccounts() {
+  const box = document.getElementById('relatedAccountsBox');
+  const list = document.getElementById('relatedAccountsList');
+  if (!box || !list) return;
+  if (relatedAccountsResult.length === 0) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  list.innerHTML = '';
+  relatedAccountsResult.forEach((acc, idx) => {
+    const item = document.createElement('div');
+    item.className = 'related-account-item';
+    item.innerHTML = `<input type="checkbox" class="ra-check" data-idx="${idx}" checked><div class="ra-avatar">${iconUser(20, '#fff')}</div><div class="ra-info"><div class="ra-email">${escapeHtml(acc.email)}</div><div class="ra-meta">${escapeHtml(acc.nickname)} / ${escapeHtml(acc.reason)}</div></div>`;
+    list.appendChild(item);
+  });
+}
+function renderBanList() {
+  const c = document.getElementById('banListContainer');
+  if (!c) return;
+  const uidEntries = Object.entries(bansCache || {});
+  const emailEntries = Object.entries(emailBansCache || {});
+  if (uidEntries.length + emailEntries.length === 0) { c.innerHTML = '<div style="color:#9ca3af;font-size:11px;padding:8px;text-align:center;">BANされたユーザーはいません</div>'; return; }
+  c.innerHTML = '';
+  uidEntries.forEach(([uid, b]) => {
+    const item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #fecaca;background:#fef2f2;border-radius:8px;margin-bottom:6px;';
+    item.innerHTML = `<div style="flex:1;min-width:0;"><div style="font-weight:700;color:#991b1b;font-size:12px;">${escapeHtml(b.nickname || '名無し')} <span style="background:#dc2626;color:#fff;font-size:9px;padding:1px 5px;border-radius:9999px;">UID</span></div><div style="font-size:10px;color:#6b7280;">${escapeHtml(b.email || '')}</div></div><button style="background:#16a34a;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;" data-unban-uid="${escapeHtml(uid)}">解除</button>`;
+    item.querySelector('[data-unban-uid]').addEventListener('click', async () => {
+      if (!confirm('このUID BANを解除しますか？')) return;
+      try { await remove(ref(db, `bans/${uid}`)); showBanner('解除しました', false); } catch (err) { showBanner('失敗', true); }
+    });
+    c.appendChild(item);
+  });
+  emailEntries.forEach(([emailKey, b]) => {
+    const item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #fed7aa;background:#fff7ed;border-radius:8px;margin-bottom:6px;';
+    item.innerHTML = `<div style="flex:1;min-width:0;"><div style="font-weight:700;color:#9a3412;font-size:12px;">${escapeHtml(b.email || '')} <span style="background:#ea580c;color:#fff;font-size:9px;padding:1px 5px;border-radius:9999px;">メール</span></div></div><button style="background:#16a34a;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;" data-unban-email="${escapeHtml(emailKey)}">解除</button>`;
+    item.querySelector('[data-unban-email]').addEventListener('click', async () => {
+      if (!confirm('このメールBANを解除しますか？')) return;
+      try { await remove(ref(db, `emailBans/${emailKey}`)); showBanner('解除しました', false); } catch (err) { showBanner('失敗', true); }
+    });
+    c.appendChild(item);
+  });
+}
+function initAdminStoryDeletePanel() {
+  const panel = document.getElementById('adminStoryDeletePanel');
+  const emailInput = document.getElementById('storyDeleteEmailInput');
+  const searchMsg = document.getElementById('storyDeleteSearchMsg');
+  const executeBtn = document.getElementById('storyDeleteExecuteBtn');
+  document.getElementById('adminStoryDeleteBtn').addEventListener('click', () => { emailInput.value = ''; searchMsg.textContent = ''; panel.classList.remove('hidden'); });
+  document.getElementById('storyDeleteCancelBtn').addEventListener('click', () => panel.classList.add('hidden'));
+  panel.addEventListener('click', (e) => { if (e.target.id === 'adminStoryDeletePanel') panel.classList.add('hidden'); });
+  executeBtn.addEventListener('click', async () => {
+    const email = emailInput.value.trim().toLowerCase();
+    searchMsg.textContent = ''; searchMsg.style.color = '#dc2626';
+    if (!email) { searchMsg.textContent = 'メールアドレスを入力してください。'; return; }
+    if (!isAdmin(currentUser.email)) { searchMsg.textContent = '権限がありません。'; return; }
+    searchMsg.style.color = '#6b7280'; searchMsg.textContent = '検索中...';
+    try {
+      const snap = await get(ref(db, 'chatProfiles'));
+      let targetUid = null, targetProfile = null;
+      if (snap.exists()) { for (const [uid, p] of Object.entries(snap.val())) { if (p.email && p.email.toLowerCase() === email) { targetUid = uid; targetProfile = p; break; } } }
+      if (!targetUid) { searchMsg.style.color = '#dc2626'; searchMsg.textContent = 'ユーザーが見つかりません。'; return; }
+      if (!confirm(`「${targetProfile.nickname || email}」の全ストーリーを削除しますか？`)) return;
+      const storySnap = await get(ref(db, `stories/${targetUid}`));
+      if (storySnap.exists()) {
+        const updates = {};
+        Object.keys(storySnap.val()).forEach(sid => {
+          updates[`stories/${targetUid}/${sid}`] = null;
+          updates[`storyArchive/${targetUid}/${sid}`] = null;
+          updates[`storyLikes/${sid}`] = null;
+          updates[`storyViews/${sid}`] = null;
+        });
+        await update(ref(db), updates);
+      }
+      searchMsg.style.color = '#16a34a'; searchMsg.textContent = '削除しました';
+      showBanner('ストーリーを削除しました', false);
+      emailInput.value = '';
+    } catch (err) { searchMsg.style.color = '#dc2626'; searchMsg.textContent = '削除に失敗しました。'; }
+  });
+}
+
+function executeNothing() {
+  if (currentUser && isAdmin(currentUser.email)) return;
+  emergencyOverlay.classList.add('show');
+  document.title = '無';
+  setFavicon(FAVICON_BLACK);
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+  document.body.style.background = '#000';
+  if (emergencyExiting) return;
+  emergencyExiting = true;
+  const attemptClose = () => {
+    if (!emergencyState.active) return;
+    if (currentUser && isAdmin(currentUser.email)) return;
+    try { window.open('', '_self').close(); } catch (e) {}
+    try { window.close(); } catch (e) {}
+    try { if (window.location.href !== 'about:blank') window.location.replace('about:blank'); } catch (e) {}
+  };
+  setTimeout(attemptClose, 100);
+  if (emergencyEnforcerInterval) clearInterval(emergencyEnforcerInterval);
+  emergencyEnforcerInterval = setInterval(() => {
+    if (!emergencyState.active) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; emergencyExiting = false; return; }
+    if (currentUser && isAdmin(currentUser.email)) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; emergencyExiting = false; return; }
+    attemptClose();
+    emergencyOverlay.classList.add('show');
+    document.body.style.background = '#000';
+    document.title = '無';
+    setFavicon(FAVICON_BLACK);
+  }, 800);
+}
+
+function executeAdminBlackScreen() {
+  if (!currentUser || !isAdmin(currentUser.email)) return;
+  if (emergencyEnforcerInterval) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; }
+  emergencyExiting = false;
+  emergencyOverlay.classList.add('show');
+  document.title = '無';
+  setFavicon(FAVICON_BLACK);
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+  document.body.style.background = '#000';
+  showAdminCtrlDHint();
+}
+
+function stopEmergencyEnforcer() {
+  if (emergencyEnforcerInterval) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; }
+  emergencyExiting = false;
+}
+function showAdminCtrlDHint() {
+  if (!currentUser || !isAdmin(currentUser.email)) return;
+  let hint = document.getElementById('adminCtrlDHint');
+  if (!hint) {
+    hint = document.createElement('div');
+    hint.id = 'adminCtrlDHint';
+    hint.textContent = 'Ctrl+D で緊急モードを解除';
+    document.body.appendChild(hint);
+  }
+}
+function hideAdminCtrlDHint() {
+  const hint = document.getElementById('adminCtrlDHint');
+  if (hint) hint.remove();
+}
+function restoreNormalScreen() {
+  stopEmergencyEnforcer();
+  emergencyOverlay.classList.remove('show');
+  hideAdminCtrlDHint();
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow = '';
+  document.body.style.background = '';
+  document.title = '69CT';
+  refreshFavicon();
+  updateTitleUnread();
+}
+function initEmergencyListener() {
+  if (unsubs.emergency) unsubs.emergency();
+  unsubs.emergency = onValue(ref(db, 'emergency'), (snap) => {
+    emergencyState = snap.exists() ? snap.val() : { active: false };
+    const nowActive = !!emergencyState.active;
+    const admin = currentUser && isAdmin(currentUser.email);
+    if (nowActive) {
+      if (admin) executeAdminBlackScreen();
+      else executeNothing();
+    } else {
+      restoreNormalScreen();
+      bootOverlay.classList.add('hidden');
+    }
+  }, () => {});
+}
+async function triggerEmergency() {
+  if (!currentUser) { alert('ログインが必要です。'); return; }
+  try {
+    await set(ref(db, 'emergency'), { active: true, triggeredBy: currentUser.uid, triggeredByEmail: currentUser.email || '', triggeredByName: myProfile.nickname || '', triggeredAt: Date.now() });
+  } catch (err) { showBanner('発動に失敗しました', true); }
+}
+async function clearEmergency() {
+  if (!currentUser || !isAdmin(currentUser.email)) { showBanner('解除権限がありません', true); return; }
+  if (!confirm('緊急モードを解除しますか？')) return;
+  try {
+    await update(ref(db, 'emergency'), { active: false, clearedBy: currentUser.uid, clearedByEmail: currentUser.email || '', clearedAt: Date.now() });
+    showBanner('解除しました', false);
+  } catch (err) { showBanner('解除に失敗しました', true); }
+}
+document.getElementById('adminClearEmergencyBtn')?.addEventListener('click', clearEmergency);
+
+const emergencyHelpModal = document.getElementById('emergencyHelpModal');
+function openEmergencyHelp() { emergencyHelpModal.classList.remove('hidden'); }
+function closeEmergencyHelp() { emergencyHelpModal.classList.add('hidden'); }
+document.getElementById('emergencyHelpBtn').addEventListener('click', (e) => { e.stopPropagation(); openEmergencyHelp(); });
+document.getElementById('emergencyHelpCloseBtn').addEventListener('click', closeEmergencyHelp);
+emergencyHelpModal.addEventListener('click', (e) => { if (e.target.id === 'emergencyHelpModal') closeEmergencyHelp(); });
+const emergencyBtn = document.getElementById('emergencyBtn');
+function startEmergencyPress(e) {
+  if (e.type === 'mousedown' && e.button !== 0) return;
+  emergencyHoldTriggered = false;
+  emergencyBtn.classList.add('holding');
+  emergencyHoldTimer = setTimeout(() => { emergencyHoldTriggered = true; emergencyBtn.classList.remove('holding'); openEmergencyHelp(); }, 1000);
+}
+function cancelEmergencyPress() { if (emergencyHoldTimer) { clearTimeout(emergencyHoldTimer); emergencyHoldTimer = null; } emergencyBtn.classList.remove('holding'); }
+function endEmergencyPress(e) {
+  cancelEmergencyPress();
+  if (emergencyHoldTriggered) { emergencyHoldTriggered = false; return; }
+  if (e && e.preventDefault) e.preventDefault();
+  if (!currentUser) { alert('ログインが必要です。'); return; }
+  if (!emergencyHelpModal.classList.contains('hidden')) { closeEmergencyHelp(); return; }
+  triggerEmergency();
+}
+emergencyBtn.addEventListener('mousedown', startEmergencyPress);
+emergencyBtn.addEventListener('mouseup', endEmergencyPress);
+emergencyBtn.addEventListener('mouseleave', cancelEmergencyPress);
+emergencyBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startEmergencyPress(e); }, { passive: false });
+emergencyBtn.addEventListener('touchend', (e) => { e.preventDefault(); endEmergencyPress(e); }, { passive: false });
+emergencyBtn.addEventListener('touchcancel', () => { cancelEmergencyPress(); emergencyHoldTriggered = false; });
+
+document.addEventListener('keydown', async (e) => {
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D')) {
+    if (!emergencyState.active) return;
+    if (!currentUser || !isAdmin(currentUser.email)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (!confirm('緊急モードを解除しますか？')) return;
+    try {
+      await update(ref(db, 'emergency'), { active: false, clearedBy: currentUser.uid, clearedByEmail: currentUser.email || '', clearedAt: Date.now() });
+    } catch (err) { alert('解除に失敗しました'); }
+    return false;
+  }
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'd' || e.key === 'D') && emergencyState.active) {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  }
+}, true);
+
+function updateCallUI() {
+  if (callState.connected) {
+    document.getElementById('cpStatusBar').textContent = '通話中';
+    document.getElementById('cpStatus').textContent = '通話中';
+  }
+  const micBtn = document.getElementById('cpMicBtn');
+  micBtn.classList.toggle('off', !callState.micEnabled);
+  micBtn.innerHTML = callState.micEnabled ? iconMic(22, '#fff') : iconMicOff(22, '#fff');
+  const avatarWrap = document.getElementById('cpAvatarWrap');
+  if (avatarWrap) avatarWrap.classList.toggle('ringing', !callState.connected && callState.active);
+}
+
+async function startCall(peerUid) {
+  if (callState.active) { showBanner('既に通話中です', true); return; }
+  if (!currentUser || !currentChatId) return;
+  callState.active = true;
+  callState.role = 'caller';
+  callState.chatId = currentChatId;
+  callState.peerUid = peerUid;
+  callState.connected = false;
+  callState.isMinimized = false;
+  callState.micEnabled = true;
+  callState.remoteDescSet = false;
+  callState.pendingCandidates = [];
+  const sessionRef = push(ref(db, `calls/${currentUser.uid}`));
+  callState.sessionId = sessionRef.key;
+  callState.callDocRef = sessionRef;
+  const peerProfile = getProfileForUid(peerUid);
+  try {
+    const localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    callState.localStream = localStream;
+  } catch (e) {
+    console.warn('マイク取得失敗:', e);
+    showBanner('マイクへのアクセスが拒否されました', true);
+  }
+  const pc = new RTCPeerConnection(ICE_SERVERS);
+  callState.pc = pc;
+  if (callState.localStream) {
+    callState.localStream.getTracks().forEach(track => pc.addTrack(track, callState.localStream));
+  }
+  pc.onicecandidate = (e) => {
+    if (e.candidate && callState.sessionId) {
+      const candRef = ref(db, `calls/${currentUser.uid}/${callState.sessionId}/callerCandidates`);
+      push(candRef, e.candidate.toJSON());
+    }
+  };
+  pc.ontrack = (e) => {
+    if (e.streams && e.streams[0]) {
+      callState.remoteStream = e.streams[0];
+      const audioEl = new Audio();
+      audioEl.srcObject = e.streams[0];
+      audioEl.play().catch(() => {});
+    }
+  };
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === 'connected') { callState.connected = true; updateCallUI(); }
+    else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+      showBanner('通話接続が切断されました', true);
+      endCall(false);
+    }
+  };
+  const offerDesc = await pc.createOffer();
+  await pc.setLocalDescription(offerDesc);
+  const callData = {
+    fromUid: currentUser.uid, fromName: myProfile.nickname, fromAvatar: myProfile.avatar,
+    toUid: peerUid, chatId: currentChatId, status: 'ringing', createdAt: Date.now(),
+    callerDescription: { type: offerDesc.type, sdp: offerDesc.sdp }
+  };
+  await set(sessionRef, callData);
+  await set(ref(db, `calls/${peerUid}/${sessionRef.key}`), callData);
+  const peerSessionRef = ref(db, `calls/${peerUid}/${sessionRef.key}`);
+  if (callState.unsub) callState.unsub();
+  callState.unsub = onValue(peerSessionRef, async (snap) => {
+    if (!snap.exists()) return;
+    const data = snap.val();
+    if (data.calleeDescription && !callState.remoteDescSet) {
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(data.calleeDescription));
+        callState.remoteDescSet = true;
+        for (const cand of callState.pendingCandidates) {
+          try { await pc.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+        }
+        callState.pendingCandidates = [];
+      } catch (e) { console.warn('setRemoteDescription失敗:', e); }
+    }
+    if (data.calleeCandidates) {
+      const cands = Object.values(data.calleeCandidates);
+      if (!callState.remoteDescSet) {
+        cands.forEach(c => callState.pendingCandidates.push(c));
+      } else {
+        for (const cand of cands) {
+          try { await pc.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+        }
+      }
+    }
+    if (data.status === 'accepted' && !callState.connected) { callState.connected = true; updateCallUI(); }
+    if (data.status === 'rejected' || data.status === 'ended') {
+      showBanner('相手が通話を終了しました', true);
+      endCall(false);
+    }
+  });
+  showCallPanel(peerProfile, '発信中...');
+}
+
+let incomingCallUnsubs = {};
+function initCallIncomingListener() {
+  if (!currentUser) return;
+  const myCallsRef = ref(db, `calls/${currentUser.uid}`);
+  if (incomingCallUnsubs.myCalls) incomingCallUnsubs.myCalls();
+  incomingCallUnsubs.myCalls = onValue(myCallsRef, (snap) => {
+    if (!snap.exists()) return;
+    const calls = snap.val();
+    if (callState.active) return;
+    for (const [sid, data] of Object.entries(calls)) {
+      if (data.status === 'ringing' && data.toUid === currentUser.uid && data.fromUid !== currentUser.uid) {
+        showIncomingCall(sid, data);
+        return;
+      }
+    }
+  }, () => {});
+}
+
+let incomingCallSessionId = null;
+function showIncomingCall(sessionId, data) {
+  if (incomingCallSessionId === sessionId) return;
+  incomingCallSessionId = sessionId;
+  const fromProfile = getProfileForUid(data.fromUid);
+  document.getElementById('icAvatar').src = fromProfile.avatar;
+  document.getElementById('icName').textContent = fromProfile.nickname;
+  document.getElementById('icStatus').textContent = '音声通話の着信...';
+  document.getElementById('incomingCallOverlay').classList.add('show');
+  playIncomingSound();
+}
+let incomingAudioCtx = null;
+function playIncomingSound() {
+  try {
+    if (!incomingAudioCtx) incomingAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (incomingAudioCtx.state === 'suspended') incomingAudioCtx.resume();
+    const now = incomingAudioCtx.currentTime;
+    for (let i = 0; i < 2; i++) {
+      const osc = incomingAudioCtx.createOscillator();
+      const gain = incomingAudioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 800;
+      gain.gain.setValueAtTime(0, now + i * 0.5);
+      gain.gain.linearRampToValueAtTime(0.2, now + i * 0.5 + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.5 + 0.4);
+      osc.connect(gain);
+      gain.connect(incomingAudioCtx.destination);
+      osc.start(now + i * 0.5);
+      osc.stop(now + i * 0.5 + 0.45);
+    }
+  } catch (e) {}
+}
+
+document.getElementById('icAcceptBtn').addEventListener('click', async () => {
+  if (!incomingCallSessionId) return;
+  await acceptIncomingCall(incomingCallSessionId);
+});
+document.getElementById('icRejectBtn').addEventListener('click', async () => {
+  if (!incomingCallSessionId) return;
+  await rejectIncomingCall(incomingCallSessionId);
+});
+function hideIncomingCall() {
+  document.getElementById('incomingCallOverlay').classList.remove('show');
+  incomingCallSessionId = null;
+}
+
+async function acceptIncomingCall(sessionId) {
+  if (callState.active) { hideIncomingCall(); return; }
+  const callRef = ref(db, `calls/${currentUser.uid}/${sessionId}`);
+  const snap = await get(callRef);
+  if (!snap.exists()) { hideIncomingCall(); return; }
+  const data = snap.val();
+  if (data.status !== 'ringing') { hideIncomingCall(); return; }
+  callState.active = true;
+  callState.role = 'callee';
+  callState.sessionId = sessionId;
+  callState.chatId = data.chatId;
+  callState.peerUid = data.fromUid;
+  callState.connected = false;
+  callState.isMinimized = false;
+  callState.micEnabled = true;
+  callState.callDocRef = callRef;
+  callState.remoteDescSet = false;
+  callState.pendingCandidates = [];
+  try {
+    const localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    callState.localStream = localStream;
+  } catch (e) {
+    showBanner('マイクへのアクセスが拒否されました', true);
+  }
+  const pc = new RTCPeerConnection(ICE_SERVERS);
+  callState.pc = pc;
+  if (callState.localStream) {
+    callState.localStream.getTracks().forEach(track => pc.addTrack(track, callState.localStream));
+  }
+  pc.onicecandidate = (e) => {
+    if (e.candidate) {
+      const candRef = ref(db, `calls/${currentUser.uid}/${sessionId}/calleeCandidates`);
+      push(candRef, e.candidate.toJSON());
+    }
+  };
+  pc.ontrack = (e) => {
+    if (e.streams && e.streams[0]) {
+      callState.remoteStream = e.streams[0];
+      const audioEl = new Audio();
+      audioEl.srcObject = e.streams[0];
+      audioEl.play().catch(() => {});
+    }
+  };
+  pc.onconnectionstatechange = () => {
+    if (pc.connectionState === 'connected') { callState.connected = true; updateCallUI(); }
+    else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
+      showBanner('通話接続が切断されました', true);
+      endCall(false);
+    }
+  };
+  if (data.callerDescription) {
+    try {
+      await pc.setRemoteDescription(new RTCSessionDescription(data.callerDescription));
+      callState.remoteDescSet = true;
+    } catch (e) { console.warn('setRemoteDescription失敗:', e); }
+  }
+  const answerDesc = await pc.createAnswer();
+  await pc.setLocalDescription(answerDesc);
+  const answerData = {
+    calleeDescription: { type: answerDesc.type, sdp: answerDesc.sdp },
+    status: 'accepted'
+  };
+  await update(callRef, answerData);
+  await update(ref(db, `calls/${data.fromUid}/${sessionId}`), answerData);
+  if (callState.unsub) callState.unsub();
+  callState.unsub = onValue(ref(db, `calls/${data.fromUid}/${sessionId}`), async (snap) => {
+    if (!snap.exists()) return;
+    const cd = snap.val();
+    if (cd.callerDescription && !callState.remoteDescSet) {
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(cd.callerDescription));
+        callState.remoteDescSet = true;
+        for (const cand of callState.pendingCandidates) {
+          try { await pc.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+        }
+        callState.pendingCandidates = [];
+      } catch (e) {}
+    }
+    if (cd.callerCandidates) {
+      const cands = Object.values(cd.callerCandidates);
+      if (!callState.remoteDescSet) {
+        cands.forEach(c => callState.pendingCandidates.push(c));
+      } else {
+        for (const cand of cands) {
+          try { await pc.addIceCandidate(new RTCIceCandidate(cand)); } catch (e) {}
+        }
+      }
+    }
+    if (cd.status === 'ended') endCall(false);
+  });
+  hideIncomingCall();
+  const peerProfile = getProfileForUid(data.fromUid);
+  showCallPanel(peerProfile, '接続中...');
+}
+
+async function rejectIncomingCall(sessionId) {
+  const callRef = ref(db, `calls/${currentUser.uid}/${sessionId}`);
+  try {
+    const snap = await get(callRef);
+    if (snap.exists()) {
+      const data = snap.val();
+      await update(callRef, { status: 'rejected' });
+      await update(ref(db, `calls/${data.fromUid}/${sessionId}`), { status: 'rejected' });
+    }
+    await remove(callRef);
+  } catch (e) {}
+  hideIncomingCall();
+}
+
+function showCallPanel(peerProfile, statusText) {
+  document.getElementById('cpTitle').textContent = `音声通話: ${peerProfile.nickname}`;
+  document.getElementById('cpAvatarImg').src = peerProfile.avatar;
+  document.getElementById('cpName').textContent = peerProfile.nickname;
+  document.getElementById('cpStatus').textContent = statusText;
+  document.getElementById('cpStatusBar').textContent = statusText;
+  document.getElementById('callPanel').classList.add('show');
+  document.getElementById('callPanel').classList.remove('minimized');
+  callState.isMinimized = false;
+  updateCallUI();
+}
+
+document.getElementById('cpMicBtn').addEventListener('click', () => {
+  callState.micEnabled = !callState.micEnabled;
+  if (callState.localStream) {
+    callState.localStream.getAudioTracks().forEach(t => { t.enabled = callState.micEnabled; });
+  }
+  updateCallUI();
+});
+
+document.getElementById('cpMinimizeBtn').addEventListener('click', () => {
+  callState.isMinimized = !callState.isMinimized;
+  document.getElementById('callPanel').classList.toggle('minimized', callState.isMinimized);
+});
+
+document.getElementById('cpEndBtn').addEventListener('click', () => endCall(true));
+
+async function endCall(notifyRemote = true) {
+  if (!callState.active) return;
+  try {
+    if (notifyRemote && currentUser && callState.sessionId) {
+      await update(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`), { status: 'ended', endedAt: Date.now() }).catch(() => {});
+      if (callState.peerUid) {
+        await update(ref(db, `calls/${callState.peerUid}/${callState.sessionId}`), { status: 'ended', endedAt: Date.now() }).catch(() => {});
+      }
+    }
+  } catch (e) {}
+  if (callState.pc) { try { callState.pc.close(); } catch (e) {} }
+  if (callState.localStream) { callState.localStream.getTracks().forEach(t => t.stop()); }
+  if (callState.unsub) { callState.unsub(); callState.unsub = null; }
+  if (currentUser && callState.sessionId) {
+    remove(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`)).catch(() => {});
+  }
+  if (callState.peerUid && callState.sessionId) {
+    remove(ref(db, `calls/${callState.peerUid}/${callState.sessionId}`)).catch(() => {});
+  }
+  callState = {
+    active: false, role: null, chatId: null, peerUid: null, sessionId: null,
+    pc: null, localStream: null, remoteStream: null,
+    micEnabled: true, pendingCandidates: [], callDocRef: null,
+    unsub: null, isMinimized: false, connected: false, remoteDescSet: false
+  };
+  document.getElementById('callPanel').classList.remove('show');
+  hideIncomingCall();
+  updateChatHeader();
+}
+
+document.getElementById('chatCallBtn').addEventListener('click', async () => {
+  if (!currentChatId || !currentUser) return;
+  const chat = chatsCache[currentChatId];
+  if (!chat) return;
+  if (chat.type !== 'direct') { showBanner('音声通話は1対1チャットでのみ可能です', true); return; }
+  const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
+  if (!otherUid) return;
+  if (callState.active) { showBanner('既に通話中です', true); return; }
+  await startCall(otherUid);
+});
+
+function initAnnouncementListener() {
+  if (unsubs.announcement) unsubs.announcement();
+  unsubs.announcement = onValue(ref(db, 'announcement'), (snap) => {
+    if (!snap.exists()) return;
+    const ann = snap.val();
+    if (!ann || !ann.text || !ann.createdAt) return;
+    if (dismissedAnnouncements[ann.createdAt]) return;
+    if (ann.expiresAt && Date.now() > ann.expiresAt) return;
+    announcementText.textContent = ann.text;
+    announcementBanner.classList.add('show');
+    announcementBanner.dataset.createdAt = ann.createdAt;
+    if (announcementTimer) clearTimeout(announcementTimer);
+    announcementTimer = setTimeout(() => { announcementBanner.classList.remove('show'); }, ann.durationMs || 30000);
+  }, () => {});
+}
+document.getElementById('announcementClose').addEventListener('click', () => {
+  announcementBanner.classList.remove('show');
+  const cur = announcementBanner.dataset.createdAt;
+  if (cur) { dismissedAnnouncements[cur] = true; saveJson(ANNOUNCE_DISMISS_KEY, dismissedAnnouncements); }
+});
+document.getElementById('announceBtn').addEventListener('click', () => {
+  document.getElementById('announceTextInput').value = '';
+  document.getElementById('announceDurationInput').value = 30;
+  document.getElementById('announceModal').classList.remove('hidden');
+});
+document.getElementById('announceCancel').addEventListener('click', () => document.getElementById('announceModal').classList.add('hidden'));
+document.getElementById('announceModal').addEventListener('click', (e) => { if (e.target.id === 'announceModal') document.getElementById('announceModal').classList.add('hidden'); });
+document.getElementById('announceSend').addEventListener('click', async () => {
+  const text = document.getElementById('announceTextInput').value.trim();
+  const dur = parseInt(document.getElementById('announceDurationInput').value) || 30;
+  if (!text) { alert('メッセージを入力してください。'); return; }
+  if (!currentUser || !isAdmin(currentUser.email)) return;
+  try {
+    await set(ref(db, 'announcement'), {
+      text, createdAt: Date.now(),
+      createdBy: currentUser.uid, createdByEmail: currentUser.email || '', createdByName: myProfile.nickname || '',
+      durationMs: Math.max(5000, Math.min(300000, dur * 1000)),
+      expiresAt: Date.now() + Math.max(5000, Math.min(300000, dur * 1000))
+    });
+    document.getElementById('announceModal').classList.add('hidden');
+    showBanner('アナウンスを送信しました', false);
+  } catch (err) { showBanner('送信に失敗しました', true); }
+});
+
+function initProfilesListener() {
+  if (unsubs.profiles) unsubs.profiles();
+  unsubs.profiles = onValue(ref(db, 'chatProfiles'), (snap) => {
+    profilesCache = snap.exists() ? snap.val() : {};
+    if (currentUser && profilesCache[currentUser.uid]) {
+      const p = profilesCache[currentUser.uid];
+      myProfile = { nickname: p.nickname || currentUser.displayName || '名無しさん', avatar: p.avatar || currentUser.photoURL || DEFAULT_AVATAR };
+      updateMyProfileUI();
+    }
+    renderChatList();
+    renderStories();
+    messagesContainer.querySelectorAll('[data-msg-author-uid]').forEach(el => {
+      const uid = el.dataset.msgAuthorUid;
+      const p = getProfileForUid(uid);
+      const av = el.querySelector('[data-profile-avatar]'); if (av) av.src = p.avatar;
+      const nm = el.querySelector('[data-profile-name]'); if (nm) nm.textContent = p.nickname;
+    });
+  }, () => {});
+}
+function initBansListener() {
+  if (unsubs.bans) unsubs.bans();
+  unsubs.bans = onValue(ref(db, 'bans'), (snap) => {
+    bansCache = snap.exists() ? snap.val() : {};
+    if (currentUser && bansCache[currentUser.uid]) executeBan();
+    renderBanList();
+  }, () => {});
+  if (unsubs.emailBans) unsubs.emailBans();
+  unsubs.emailBans = onValue(ref(db, 'emailBans'), (snap) => {
+    emailBansCache = snap.exists() ? snap.val() : {};
+    if (currentUser && currentUser.email) {
+      const emailKey = sanitizeEmailKey(currentUser.email);
+      if (emailBansCache[emailKey]) executeBan();
+    }
+    renderBanList();
+  }, () => {});
+  if (unsubs.deviceLinks) unsubs.deviceLinks();
+  unsubs.deviceLinks = onValue(ref(db, 'deviceLinks'), (snap) => { deviceLinksCache = snap.exists() ? snap.val() : {}; }, () => {});
+}
+function initPresenceListener() {
+  if (unsubs.presence) unsubs.presence();
+  unsubs.presence = onValue(ref(db, 'presence'), (snap) => {
+    presenceCache = snap.exists() ? snap.val() : {};
+    requestAnimationFrame(updatePresenceDots);
+  }, () => {});
+}
+
+function initChatsListener() {
+  if (unsubs.chats) unsubs.chats();
+  if (!currentUser) return;
+  unsubs.chats = onValue(ref(db, `userChats/${currentUser.uid}`), (snap) => {
+    const newChats = snap.exists() ? snap.val() : {};
+    const firstLoad = Object.keys(chatsCache).length === 0 && Object.keys(newChats).length > 0;
+    chatsCache = newChats;
+    if (firstLoad) {
+      let changed = false;
+      Object.keys(newChats).forEach(chatId => {
+        const chat = newChats[chatId];
+        if (!chat) return;
+        const latestAt = chat.lastMessageAt || chat.createdAt || 0;
+        const lastRead = lastReadAt[chatId] || 0;
+        const sender = chat.lastSenderUid || '';
+        if (sender === currentUser.uid || lastRead >= latestAt) {
+          if (unreadCounts[chatId]) {
+            delete unreadCounts[chatId];
+            changed = true;
+          }
+        }
+        if (!chatLatestMsgAt[chatId] || chatLatestMsgAt[chatId] < latestAt) {
+          chatLatestMsgAt[chatId] = latestAt;
+        }
+      });
+      if (changed) saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+      refreshFavicon();
+      updateScrollButton();
+    }
+    renderChatList();
+    initChatLatestListeners();
+    renderStories();
+  }, () => {});
+}
+
+async function registerDeviceLink(user) {
+  if (!user || !user.email) return;
+  const emailKey = sanitizeEmailKey(user.email);
+  try { await set(ref(db, `deviceLinks/${MY_DEVICE_ID}/${user.uid}`), { uid: user.uid, email: user.email, emailKey, nickname: myProfile.nickname || user.displayName || '名無しさん', linkedAt: Date.now() }); } catch (e) {}
+}
+
+document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+  notificationAudioCtx.init();
+  requestNotificationPermission();
+  try { await signInWithPopup(auth, provider); } catch (err) { if (err.code !== 'auth/popup-closed-by-user') alert('ログイン失敗: ' + err.message); }
+});
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  if (!confirm('ログアウトしますか？')) return;
+  if (callState.active) await endCall(true);
+  intentionalSignOut = true;
+  try { await setMyTypingState(false); await setMyOffline(); } catch (e) {}
+  Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
+  Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
+  Object.values(incomingCallUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
+  stopEmergencyEnforcer();
+  hideAdminCtrlDHint();
+  if (banEnforcerInterval) clearInterval(banEnforcerInterval);
+  try { await signOut(auth); } catch (e) {}
+  location.reload();
+});
+document.getElementById('pendingApprovalLogoutBtn').addEventListener('click', async () => {
+  intentionalSignOut = true;
+  try { await setMyOffline(); await signOut(auth); } catch (e) {}
+  location.reload();
+});
+document.getElementById('switchAccountBtn').addEventListener('click', async () => {
+  intentionalSignOut = true;
+  try { await setMyOffline(); await signOut(auth); } catch (e) {}
+  banOverlay.classList.remove('show');
+  document.body.style.background = '';
+  loginView.style.display = 'flex';
+  mainView.style.display = 'none';
+  bootOverlay.classList.add('hidden');
+  if (banEnforcerInterval) clearInterval(banEnforcerInterval);
+  setTimeout(() => { intentionalSignOut = false; }, 500);
+});
+
+function unlockAudio() { notificationAudioCtx.init(); }
+document.addEventListener('click', unlockAudio, { once: true });
+document.addEventListener('touchstart', unlockAudio, { once: true });
+document.addEventListener('keydown', unlockAudio, { once: true });
+
+onAuthStateChanged(auth, async (user) => {
+  bootOverlay.classList.add('hidden');
+  if (intentionalSignOut) return;
+  currentUser = user;
+  if (!user) {
+    loginView.style.display = 'flex';
+    mainView.style.display = 'none';
+    pendingApprovalOverlay.classList.remove('show');
+    initEmergencyListener();
+    return;
+  }
+  loginView.style.display = 'none';
+  refreshFavicon();
+  setConnection(navigator.onLine);
+  const admin = isAdmin(user.email);
+  announceBtn.style.display = admin ? 'flex' : 'none';
+  document.getElementById('banUserBtn').style.display = admin ? 'flex' : 'none';
+  document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'flex' : 'none';
+  document.getElementById('notificationBtn').style.display = admin ? 'flex' : 'none';
+  document.getElementById('approvalBtn').style.display = admin ? 'flex' : 'none';
+  try { const bansSnap = await get(ref(db, 'bans')); bansCache = bansSnap.exists() ? bansSnap.val() : {}; if (bansCache[user.uid]) { executeBan(); return; } } catch (e) {}
+  try { const ebSnap = await get(ref(db, 'emailBans')); emailBansCache = ebSnap.exists() ? ebSnap.val() : {}; if (user.email && emailBansCache[sanitizeEmailKey(user.email)]) { executeBan(); return; } } catch (e) {}
+  try {
+    const profileSnap = await get(ref(db, `chatProfiles/${user.uid}`));
+    if (profileSnap.exists()) {
+      const p = profileSnap.val();
+      myProfile = { nickname: p.nickname || user.displayName || '名無しさん', avatar: p.avatar || user.photoURL || DEFAULT_AVATAR };
+      if (!p.email && user.email) await update(ref(db, `chatProfiles/${user.uid}`), { email: user.email });
+    } else {
+      myProfile = { nickname: user.displayName || '名無しさん', avatar: user.photoURL || DEFAULT_AVATAR };
+      await set(ref(db, `chatProfiles/${user.uid}`), { nickname: myProfile.nickname, avatar: myProfile.avatar, email: user.email || '', createdAt: Date.now(), updatedAt: Date.now() });
+    }
+  } catch (e) { myProfile = { nickname: user.displayName || '名無しさん', avatar: user.photoURL || DEFAULT_AVATAR }; }
+  updateMyProfileUI();
+  initProfilesListener();
+  initBansListener();
+  initEmergencyListener();
+  initAnnouncementListener();
+  initCallIncomingListener();
+  requestNotificationPermission();
+  await registerDeviceLink(user);
+  if (admin) {
+    lastNotifIds = new Set();
+    lastApprovalIds = new Set();
+    initNotificationsListener();
+    initNotificationPanel();
+    initApprovalListenerForAdmin();
+    initAdminApprovalPanel();
+    initAdminBanPanel();
+    initAdminStoryDeletePanel();
+    myApprovalStatus = 'approved';
+    startApprovedSession();
+  } else {
+    await createApprovalRequest(user, myProfile.nickname);
+    initMyApprovalListener(user);
+    if (myApprovalStatus === 'approved') startApprovedSession();
+    else if (myApprovalStatus === 'rejected') showRejectedScreen();
+    else showPendingApproval();
+    notifyLogin(user, myProfile.nickname);
+  }
+  try {
+    const snap = await get(ref(db, 'emergency'));
+    if (snap.exists() && snap.val().active) {
+      emergencyState = snap.val();
+      if (isAdmin(user.email)) executeAdminBlackScreen();
+      else executeNothing();
+    }
+  } catch (e) {}
+  refreshFavicon();
+  updateTitleUnread();
+});
+
+window.addEventListener('online', () => setConnection(true));
+window.addEventListener('offline', () => setConnection(false));
+document.addEventListener('visibilitychange', () => {
+  isTabActive = !document.hidden;
+  if (document.hidden) return;
+  notificationAudioCtx.init();
+  if (currentChatId) markChatAsRead(currentChatId);
+  refreshFavicon();
+  renderChatList();
+  if (emergencyState.active) {
+    if (currentUser && isAdmin(currentUser.email)) executeAdminBlackScreen();
+    else executeNothing();
+  }
+  if (currentUser && bansCache[currentUser.uid]) executeBan();
+  if (currentUser && currentUser.email && emailBansCache[sanitizeEmailKey(currentUser.email)]) executeBan();
+});
+window.addEventListener('focus', () => { notificationAudioCtx.init(); });
+document.addEventListener('contextmenu', (e) => { if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return; e.preventDefault(); });
+document.getElementById('lightboxClose').addEventListener('click', () => lightbox.classList.remove('show'));
+lightbox.addEventListener('click', (e) => { if (e.target.id === 'lightbox') lightbox.classList.remove('show'); });
+document.getElementById('backToChatListBtn').addEventListener('click', backToChatList);
+window.addEventListener('beforeunload', (e) => {
+  if (emergencyState.active && currentUser && isAdmin(currentUser.email)) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+  if (callState.active) {
+    try {
+      if (currentUser && callState.sessionId) {
+        update(ref(db, `calls/${currentUser.uid}/${callState.sessionId}`), { status: 'ended' }).catch(() => {});
+        if (callState.peerUid) update(ref(db, `calls/${callState.peerUid}/${callState.sessionId}`), { status: 'ended' }).catch(() => {});
+      }
+    } catch (err) {}
+  }
+  Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
+  Object.values(incomingCallUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
+  if (banEnforcerInterval) clearInterval(banEnforcerInterval);
+});
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+</script>
+
+<script>
+(() => {
+  'use strict';
+  const style = document.createElement('style');
+  style.textContent = `
+    @media print {
+      html, body {
+        display: none !important;
+        visibility: hidden !important;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+  window.addEventListener('contextmenu', (e) => { e.preventDefault(); }, true);
+  const disableDevShortcuts = (e) => {
+    const meta = e.metaKey;
+    const ctrl = e.ctrlKey;
+    const alt = e.altKey;
+    const shift = e.shiftKey;
+    const key = e.key.toLowerCase();
+    if (
+      e.key === 'F12' || e.code === 'F12' ||
+      ((ctrl || meta) && key === 'u') ||
+      ((ctrl || meta) && (shift || alt) && key === 'i') ||
+      ((ctrl || meta) && (shift || alt) && key === 'c') ||
+      ((ctrl || meta) && (shift || alt) && key === 'j') ||
+      ((ctrl || meta) && key === 's') ||
+      ((ctrl || meta) && key === 'p')
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    }
+  };
+  window.addEventListener('keydown', disableDevShortcuts, true);
+  window.addEventListener('keyup', disableDevShortcuts, true);
+  window.addEventListener('keypress', disableDevShortcuts, true);
+  const redirectToBlank = () => { window.location.href = 'about:blank'; };
+  const threshold = 160;
+  window.addEventListener('resize', () => {
+    const isOpened = (window.outerWidth - window.innerWidth > threshold) ||
+                     (window.outerHeight - window.innerHeight > threshold);
+    if (isOpened) redirectToBlank();
+  }, true);
+  setInterval(() => {
+    const start = performance.now();
+    (function () {}.constructor('debugger')());
+    const end = performance.now();
+    if (end - start > 100) redirectToBlank();
+  }, 100);
+})();
+</script>
+
+</body>
+</html>
