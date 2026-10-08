@@ -370,6 +370,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </button>
   <img id="lightboxImg" src="" alt="">
 </div>
+
 <div id="incomingCallOverlay">
   <img id="icAvatar" class="ic-avatar" src="" alt="">
   <div class="ic-name" id="icName">音声通話</div>
@@ -500,6 +501,13 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
           <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M3 7L12 3L21 7V17L12 21L3 17V7Z" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
             <path d="M12 3V21" stroke="#ffffff" stroke-width="1.5"/>
+          </svg>
+        </button>
+        <button id="emergencyHistoryBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#ea580c,#9a3412);">
+          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 3L2 20H22L12 3Z" fill="#ffffff" stroke="#7f1d1d" stroke-width="1" stroke-linejoin="round"/>
+            <line x1="12" y1="9" x2="12" y2="15" stroke="#dc2626" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="12" cy="17.5" r="1" fill="#dc2626"/>
           </svg>
         </button>
         <button id="notificationBtn" class="admin-btn" style="display:none;background:linear-gradient(135deg,#0891b2,#0e7490);">
@@ -735,7 +743,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
     </div>
   </div>
 </div>
-
 <div id="adminBanPanel" class="modal-backdrop hidden">
   <div class="modal-content" style="border-top:6px solid #dc2626; max-width:520px;">
     <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#991b1b;">ユーザーBAN（関連アカウント対応）</h3>
@@ -773,6 +780,19 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
     <div style="display:flex;justify-content:flex-end;gap:8px;">
       <button id="storyDeleteCancelBtn" class="secondary-btn">キャンセル</button>
       <button id="storyDeleteExecuteBtn" style="background:#ec4899;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;">削除する</button>
+    </div>
+  </div>
+</div>
+
+<div id="emergencyHistoryPanel" class="modal-backdrop hidden">
+  <div class="modal-content" style="border-top:6px solid #ea580c; max-width:560px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h3 style="font-size:17px;font-weight:700;margin:0;color:#9a3412;">緊急ボタン発動履歴</h3>
+      <button id="emergencyHistoryClearAllBtn" style="background:#f3f4f6;border:1px solid #d1d5db;border-radius:6px;padding:5px 10px;font-size:11px;color:#6b7280;font-weight:600;cursor:pointer;">全削除</button>
+    </div>
+    <div id="emergencyHistoryList" style="max-height:55vh;overflow-y:auto;"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+      <button id="emergencyHistoryCloseBtn" class="secondary-btn">閉じる</button>
     </div>
   </div>
 </div>
@@ -896,22 +916,21 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
     </div>
   </div>
 </div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, push, set, remove, onValue, query, orderByChild, get, update, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 /* ============================================================
-   ★ bootOverlay 強制解除（エラーや遅延があっても必ず解除）
+   ★ bootOverlay 強制解除
    ============================================================ */
 (function forceBootOverlayHide() {
   const forceHide = () => {
     const el = document.getElementById('bootOverlay');
     if (el) el.classList.add('hidden');
   };
-  // 起動直後：12秒後に強制非表示
   setTimeout(forceHide, 12000);
-  // エラー発生時も即座に非表示
   window.addEventListener('error', forceHide, true);
   window.addEventListener('unhandledrejection', forceHide);
 })();
@@ -976,7 +995,7 @@ let currentUser = null;
 let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
 let currentChatId = null;
 let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {}, emailBansCache = {}, deviceLinksCache = {}, readsCache = {}, typingCache = {}, presenceCache = {}, reactionsCache = {};
-let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null };
+let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null, emergencyHistory: null };
 let chatLatestListeners = {};
 
 const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
@@ -1020,6 +1039,7 @@ let approvalsCache = {}, lastSeenApprovalCount = parseInt(localStorage.getItem(A
 let myApprovalStatus = null;
 let replyingTo = null, currentReactionPicker = null, addMemberTargetProfile = null;
 let relatedAccountsResult = [];
+let emergencyHistoryCache = {};
 
 let notificationPermissionGranted = false;
 
@@ -1310,7 +1330,7 @@ function renderChatList() {
     chatListContainer.appendChild(item);
   });
 }
-function updateChatHeader() {
+  function updateChatHeader() {
   const meta = document.getElementById('currentChatMeta');
   const headerAvatars = document.getElementById('chatHeaderAvatars');
   if (!currentChatId || !chatsCache[currentChatId]) return;
@@ -1913,6 +1933,7 @@ document.getElementById('messageForm').addEventListener('submit', async (e) => {
       });
       await update(ref(db), updates);
     }
+    cleanupOldMessages(chatIdAtSend).catch(() => {});
     if (currentChatId === chatIdAtSend) markChatAsRead(chatIdAtSend);
   } catch (err) {
     console.error('送信エラー:', err);
@@ -2172,6 +2193,45 @@ async function findExistingDirectChat(partnerUid) {
 }
 
 /* ============================================================
+   ★ 古いメッセージの自動削除（最新100件だけ保持）
+   ============================================================ */
+const MAX_MESSAGES_PER_CHAT = 100;
+
+async function cleanupOldMessages(chatId) {
+  if (!chatId) return;
+  try {
+    const snap = await get(ref(db, `chatMessages/${chatId}`));
+    if (!snap.exists()) return;
+    const all = [];
+    snap.forEach(child => {
+      const v = child.val() || {};
+      all.push({ key: child.key, createdAt: v.createdAt || 0 });
+    });
+    if (all.length <= MAX_MESSAGES_PER_CHAT) return;
+    all.sort((a, b) => a.createdAt - b.createdAt);
+    const excess = all.length - MAX_MESSAGES_PER_CHAT;
+    const toDelete = all.slice(0, excess);
+    const updates = {};
+    toDelete.forEach(m => { updates[`chatMessages/${chatId}/${m.key}`] = null; });
+    await update(ref(db), updates);
+  } catch (e) {
+    console.warn('メッセージ整理エラー:', e);
+  }
+}
+
+async function cleanupAllChats() {
+  if (!currentUser) return;
+  try {
+    const snap = await get(ref(db, `userChats/${currentUser.uid}`));
+    if (!snap.exists()) return;
+    const chatIds = Object.keys(snap.val());
+    for (const chatId of chatIds) {
+      await cleanupOldMessages(chatId).catch(() => {});
+    }
+  } catch (e) {}
+}
+
+/* ============================================================
    ★ プロフィール設定（画像アップロード対応）
    ============================================================ */
 document.getElementById('profileBtn').addEventListener('click', () => {
@@ -2203,7 +2263,6 @@ document.getElementById('profileBtn').addEventListener('click', () => {
 document.getElementById('profileCancelBtn').addEventListener('click', () => document.getElementById('profileModal').classList.add('hidden'));
 document.getElementById('profileModal').addEventListener('click', (e) => { if (e.target.id === 'profileModal') document.getElementById('profileModal').classList.add('hidden'); });
 
-/* ★ 画像アップロード処理（リサイズ・圧縮なし。そのまま dataUrl 化） */
 document.getElementById('profileAvatarFileInput').addEventListener('change', (e) => {
   const f = e.target.files[0];
   const msg = document.getElementById('profileUploadMsg');
@@ -2310,7 +2369,7 @@ function fileToBase64Video(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
   });
 }
 function formatSize(bytes) { if (!bytes) return ''; if (bytes < 1024) return bytes + ' B'; if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB'; return (bytes/1024/1024).toFixed(2) + ' MB'; }
-const STORY_TTL = 24 * 60 * 60 * 1000;
+  const STORY_TTL = 24 * 60 * 60 * 1000;
 function initStoriesListener() {
   if (unsubs.stories) unsubs.stories();
   unsubs.stories = onValue(ref(db, 'stories'), (snap) => {
@@ -2746,6 +2805,7 @@ storyReplyInput.addEventListener('keydown', async (e) => {
       updates[`userChats/${uid}/${chatId}/lastSenderUid`] = currentUser.uid;
     });
     await update(ref(db), updates);
+    cleanupOldMessages(chatId).catch(() => {});
     storyReplyInput.value = '';
     showBanner('ストーリーに返信しました', false);
     resumeStory();
@@ -2865,8 +2925,7 @@ function initNotificationPanel() {
     try { await remove(ref(db, 'loginNotifications')); showBanner('通知を全削除しました', false); } catch (e) { showBanner('削除に失敗しました', true); }
   });
 }
-
-async function createApprovalRequest(user, nickname) {
+  async function createApprovalRequest(user, nickname) {
   if (!user || !user.email) return;
   try { const approvedSnap = await get(ref(db, `approvedUsers/${user.uid}`)); if (approvedSnap.exists()) { myApprovalStatus = 'approved'; return; } } catch (e) {}
   const emailKey = sanitizeEmailKey(user.email);
@@ -2930,6 +2989,7 @@ function startApprovedSession() {
   refreshFavicon();
   updateTitleUnread();
   requestNotificationPermission();
+  setTimeout(() => { cleanupAllChats().catch(() => {}); }, 3000);
 }
 function initAdminApprovalPanel() {
   const btn = document.getElementById('approvalBtn');
@@ -3173,6 +3233,70 @@ function initAdminStoryDeletePanel() {
   });
 }
 
+/* ============================================================
+   ★ 緊急ボタン発動履歴パネル
+   ============================================================ */
+function initEmergencyHistoryPanel() {
+  const panel = document.getElementById('emergencyHistoryPanel');
+  const btn = document.getElementById('emergencyHistoryBtn');
+  if (!btn || !panel) return;
+  btn.addEventListener('click', () => {
+    renderEmergencyHistoryList();
+    panel.classList.remove('hidden');
+  });
+  document.getElementById('emergencyHistoryCloseBtn').addEventListener('click', () => panel.classList.add('hidden'));
+  panel.addEventListener('click', (e) => { if (e.target.id === 'emergencyHistoryPanel') panel.classList.add('hidden'); });
+  document.getElementById('emergencyHistoryClearAllBtn').addEventListener('click', async () => {
+    if (!confirm('全ての緊急履歴を削除しますか？')) return;
+    try { await remove(ref(db, 'emergencyHistory')); showBanner('緊急履歴を全削除しました', false); }
+    catch (e) { showBanner('削除に失敗しました', true); }
+  });
+}
+
+function initEmergencyHistoryListener() {
+  if (unsubs.emergencyHistory) unsubs.emergencyHistory();
+  if (!currentUser || !isAdmin(currentUser.email)) return;
+  unsubs.emergencyHistory = onValue(ref(db, 'emergencyHistory'), (snap) => {
+    emergencyHistoryCache = snap.exists() ? snap.val() : {};
+    const panel = document.getElementById('emergencyHistoryPanel');
+    if (panel && !panel.classList.contains('hidden')) {
+      renderEmergencyHistoryList();
+    }
+  }, () => {});
+}
+
+function renderEmergencyHistoryList() {
+  const list = document.getElementById('emergencyHistoryList');
+  if (!list) return;
+  const entries = Object.entries(emergencyHistoryCache || {})
+    .map(([id, h]) => ({ id, ...h }))
+    .sort((a, b) => (b.triggeredAt || 0) - (a.triggeredAt || 0));
+  if (entries.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:#9ca3af;padding:32px;">緊急ボタンの発動履歴はありません</div>';
+    return;
+  }
+  list.innerHTML = '';
+  entries.forEach(h => {
+    const item = document.createElement('div');
+    item.style.cssText = 'display:flex;gap:10px;padding:10px;border:1px solid #fed7aa;background:#fff7ed;border-radius:10px;margin-bottom:8px;align-items:center;';
+    item.innerHTML = `
+      <img src="${escapeHtml(h.avatar || DEFAULT_AVATAR)}" style="width:40px;height:40px;border-radius:50%;border:2px solid #fb923c;flex-shrink:0;object-fit:cover;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:700;color:#9a3412;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(h.nickname || '名無しさん')}</div>
+        <div style="font-size:11px;color:#78350f;word-break:break-all;">${escapeHtml(h.email || '(不明)')}</div>
+        <div style="font-size:10px;color:#a16207;margin-top:2px;">${formatTime(h.triggeredAt)}</div>
+      </div>
+      <button class="eh-del-btn" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:11px;cursor:pointer;display:flex;align-items:center;" data-id="${escapeHtml(h.id)}">${iconX(12, '#fff')}</button>
+    `;
+    item.querySelector('.eh-del-btn').addEventListener('click', async () => {
+      if (!confirm('この履歴を削除しますか？')) return;
+      try { await remove(ref(db, `emergencyHistory/${h.id}`)); showBanner('履歴を削除しました', false); }
+      catch (e) { showBanner('削除に失敗しました', true); }
+    });
+    list.appendChild(item);
+  });
+}
+
 function executeNothing() {
   if (currentUser && isAdmin(currentUser.email)) return;
   emergencyOverlay.classList.add('show');
@@ -3263,7 +3387,17 @@ function initEmergencyListener() {
 async function triggerEmergency() {
   if (!currentUser) { alert('ログインが必要です。'); return; }
   try {
-    await set(ref(db, 'emergency'), { active: true, triggeredBy: currentUser.uid, triggeredByEmail: currentUser.email || '', triggeredByName: myProfile.nickname || '', triggeredAt: Date.now() });
+    const now = Date.now();
+    await set(ref(db, 'emergency'), { active: true, triggeredBy: currentUser.uid, triggeredByEmail: currentUser.email || '', triggeredByName: myProfile.nickname || '', triggeredAt: now });
+    const historyRef = push(ref(db, 'emergencyHistory'));
+    await set(historyRef, {
+      uid: currentUser.uid,
+      email: currentUser.email || '',
+      nickname: myProfile.nickname || '名無しさん',
+      avatar: myProfile.avatar || DEFAULT_AVATAR,
+      triggeredAt: now,
+      type: 'trigger'
+    });
   } catch (err) { showBanner('発動に失敗しました', true); }
 }
 async function clearEmergency() {
@@ -3859,6 +3993,7 @@ onAuthStateChanged(auth, async (user) => {
   announceBtn.style.display = admin ? 'flex' : 'none';
   document.getElementById('banUserBtn').style.display = admin ? 'flex' : 'none';
   document.getElementById('adminStoryDeleteBtn').style.display = admin ? 'flex' : 'none';
+  document.getElementById('emergencyHistoryBtn').style.display = admin ? 'flex' : 'none';
   document.getElementById('notificationBtn').style.display = admin ? 'flex' : 'none';
   document.getElementById('approvalBtn').style.display = admin ? 'flex' : 'none';
   try { const bansSnap = await get(ref(db, 'bans')); bansCache = bansSnap.exists() ? bansSnap.val() : {}; if (bansCache[user.uid]) { executeBan(); return; } } catch (e) {}
@@ -3891,6 +4026,8 @@ onAuthStateChanged(auth, async (user) => {
     initAdminApprovalPanel();
     initAdminBanPanel();
     initAdminStoryDeletePanel();
+    initEmergencyHistoryPanel();
+    initEmergencyHistoryListener();
     myApprovalStatus = 'approved';
     startApprovedSession();
   } else {
