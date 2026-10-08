@@ -1,4 +1,4 @@
-const CACHE_NAME = 'my-site-v29';
+const CACHE_NAME = 'my-site-v30';
 const ASSETS = [
   './',
   './index.html',
