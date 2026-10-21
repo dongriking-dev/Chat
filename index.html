@@ -9,6 +9,7 @@
 <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
+/* ---- 既存スタイルは変更なし（省略せず完全維持） ---- */
 * { -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 body { -webkit-user-select: none; user-select: none; display: flex; flex-direction: column; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic UI", sans-serif; }
@@ -321,6 +322,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 </head>
 <body>
 
+<!-- HTML部分は既存のまま完全維持（省略なし） -->
 <div id="bootOverlay">
   <div class="boot-spinner"></div>
   <div style="font-size:14px;color:#9ca3af;">アカウントを確認しています...</div>
@@ -651,6 +653,7 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </div>
 </div>
 
+<!-- 以下、モーダル類は既存のまま完全維持 -->
 <div id="newChatModal" class="modal-backdrop hidden">
   <div class="modal-content">
     <h3 style="font-size:17px;font-weight:700;margin:0 0 4px;color:#1e3a8a;">新しいチャット</h3>
@@ -919,18 +922,23 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 </div>
 
 <script type="module">
+/* ================================================================
+   ★ 変更点（ダウンロード量削減）
+   1. import に limitToLast / orderByChild を追加
+   2. loadMessages: limitToLast(50)
+   3. initChatsListener: orderByChild('lastMessageAt') + limitToLast(30)
+   4. initReactionsListener: 監視はそのまま（chat単位で小さいので許容）
+   5. initProfilesListener: 全件監視 → 相手+自分のみ個別監視（新関数）
+   6. initPresenceListener: 全件監視 → 表示中チャットの相手のみ個別監視（新関数）
+   7. cleanupAllChats: 起動時に実行
+   ================================================================ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, push, set, remove, onValue, query, orderByChild, get, update, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { getDatabase, ref, push, set, remove, onValue, query, orderByChild, get, update, onDisconnect, limitToLast } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-/* ============================================================
-   ★ bootOverlay 強制解除
-   ============================================================ */
+/* bootOverlay 強制解除 */
 (function forceBootOverlayHide() {
-  const forceHide = () => {
-    const el = document.getElementById('bootOverlay');
-    if (el) el.classList.add('hidden');
-  };
+  const forceHide = () => { const el = document.getElementById('bootOverlay'); if (el) el.classList.add('hidden'); };
   setTimeout(forceHide, 12000);
   window.addEventListener('error', forceHide, true);
   window.addEventListener('unhandledrejection', forceHide);
@@ -992,12 +1000,24 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 setPersistence(auth, browserLocalPersistence).catch(() => {});
 
+/* ==========================================================
+   ★ ダウンロード量削減のための定数
+   ========================================================== */
+const MESSAGES_LIMIT = 50;           // 1チャットあたりの取得メッセージ上限
+const CHATS_LIST_LIMIT = 30;         // チャット一覧に表示する上限
+const MAX_MESSAGES_PER_CHAT = 100;   // DBに保持する最大メッセージ数（クリーンアップ用）
+
 let currentUser = null;
 let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
 let currentChatId = null;
 let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {}, emailBansCache = {}, deviceLinksCache = {}, readsCache = {}, typingCache = {}, presenceCache = {}, reactionsCache = {};
 let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null, emergencyHistory: null };
 let chatLatestListeners = {};
+
+/* ★ 個別プロフィール監視（全件監視をやめる） */
+let profileUnsubs = {};   // uid → unsubscribe
+/* ★ 個別プレゼンス監視（全件監視をやめる） */
+let presenceUnsubs = {};  // uid → unsubscribe
 
 const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
 const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v5';
@@ -1045,27 +1065,19 @@ let emergencyHistoryCache = {};
 let notificationPermissionGranted = false;
 
 const notificationAudioCtx = {
-  ctx: null,
-  unlocked: false,
+  ctx: null, unlocked: false,
   init() {
-    if (!this.ctx) {
-      try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { this.ctx = null; }
-    }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().then(() => { this.unlocked = true; }).catch(() => {});
-    } else if (this.ctx && this.ctx.state === 'running') {
-      this.unlocked = true;
-    }
+    if (!this.ctx) { try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { this.ctx = null; } }
+    if (this.ctx && this.ctx.state === 'suspended') { this.ctx.resume().then(() => { this.unlocked = true; }).catch(() => {}); }
+    else if (this.ctx && this.ctx.state === 'running') { this.unlocked = true; }
     return this.ctx;
   },
   play() {
-    const ctx = this.init();
-    if (!ctx) return;
+    const ctx = this.init(); if (!ctx) return;
     const playOnce = (delay) => {
       try {
         const now = ctx.currentTime + delay;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
+        const osc = ctx.createOscillator(); const gain = ctx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(880, now);
         osc.frequency.exponentialRampToValueAtTime(1320, now + 0.08);
@@ -1073,14 +1085,11 @@ const notificationAudioCtx = {
         gain.gain.setValueAtTime(0, now);
         gain.gain.linearRampToValueAtTime(0.35, now + 0.02);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.55);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(now); osc.stop(now + 0.55);
       } catch (e) {}
     };
-    playOnce(0);
-    playOnce(0.6);
+    playOnce(0); playOnce(0.6);
   }
 };
 
@@ -1088,9 +1097,7 @@ function requestNotificationPermission() {
   if (!('Notification' in window)) return;
   if (Notification.permission === 'granted') { notificationPermissionGranted = true; return; }
   if (Notification.permission === 'denied') return;
-  Notification.requestPermission().then((perm) => {
-    notificationPermissionGranted = (perm === 'granted');
-  }).catch(() => {});
+  Notification.requestPermission().then((perm) => { notificationPermissionGranted = (perm === 'granted'); }).catch(() => {});
 }
 function showDesktopNotification(title, body) {
   if (!notificationPermissionGranted) return;
@@ -1112,8 +1119,7 @@ function updateTitleUnread() {
   document.title = '69CT';
 }
 function fireNotification(chatId, senderName, messageText) {
-  notificationAudioCtx.play();
-  refreshFavicon();
+  notificationAudioCtx.play(); refreshFavicon();
   const title = senderName ? `${senderName}` : '新着メッセージ';
   const body = messageText || '新しいメッセージが届きました';
   showDesktopNotification(title, body);
@@ -1208,6 +1214,60 @@ async function setupMyPresence() {
   heartbeatTimer = setInterval(() => { if (currentUser && myPresenceRef) update(myPresenceRef, { online: true, lastChanged: Date.now() }).catch(()=>{}); }, HEARTBEAT_INTERVAL);
 }
 async function setMyOffline() { if (!currentUser) return; if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; } try { await set(ref(db, `presence/${currentUser.uid}`), { online: false, lastChanged: Date.now() }); } catch(e) {} }
+
+/* ★★★ 個別プロフィール監視（全件監視しない） ★★★ */
+function ensureProfileListener(uid) {
+  if (!uid || uid === currentUser?.uid) return;
+  if (profileUnsubs[uid]) return;
+  profileUnsubs[uid] = onValue(ref(db, `chatProfiles/${uid}`), (snap) => {
+    if (snap.exists()) {
+      profilesCache[uid] = snap.val();
+    } else {
+      profilesCache[uid] = { nickname: '名無しさん', avatar: DEFAULT_AVATAR };
+    }
+    renderChatList();
+    renderStories();
+    updateChatHeader();
+    // メッセージ内の名前・アバターを更新
+    messagesContainer.querySelectorAll(`[data-msg-author-uid="${uid}"]`).forEach(el => {
+      const p = getProfileForUid(uid);
+      const av = el.querySelector('[data-profile-avatar]'); if (av) av.src = p.avatar;
+      const nm = el.querySelector('[data-profile-name]'); if (nm) nm.textContent = p.nickname;
+    });
+  }, () => {});
+}
+function releaseProfileListener(uid) {
+  if (profileUnsubs[uid]) { try { profileUnsubs[uid](); } catch(e) {} delete profileUnsubs[uid]; delete profilesCache[uid]; }
+}
+function syncProfileListenersForChats() {
+  if (!currentUser) return;
+  const needed = getChatPartnerUids();
+  needed.add(currentUser.uid);
+  // 追加
+  needed.forEach(uid => { if (uid !== currentUser.uid) ensureProfileListener(uid); });
+  // 不要なものを解除（メモリ節約）
+  Object.keys(profileUnsubs).forEach(uid => { if (!needed.has(uid)) releaseProfileListener(uid); });
+}
+
+/* ★★★ 個別プレゼンス監視（全件監視しない） ★★★ */
+function ensurePresenceListener(uid) {
+  if (!uid || uid === currentUser?.uid) return;
+  if (presenceUnsubs[uid]) return;
+  presenceUnsubs[uid] = onValue(ref(db, `presence/${uid}`), (snap) => {
+    if (snap.exists()) presenceCache[uid] = snap.val();
+    else presenceCache[uid] = { online: false };
+    requestAnimationFrame(updatePresenceDots);
+  }, () => {});
+}
+function releasePresenceListener(uid) {
+  if (presenceUnsubs[uid]) { try { presenceUnsubs[uid](); } catch(e) {} delete presenceUnsubs[uid]; delete presenceCache[uid]; }
+}
+function syncPresenceListenersForChats() {
+  if (!currentUser) return;
+  const needed = getChatPartnerUids();
+  needed.forEach(uid => ensurePresenceListener(uid));
+  Object.keys(presenceUnsubs).forEach(uid => { if (!needed.has(uid)) releasePresenceListener(uid); });
+}
 
 function markChatAsRead(chatId) {
   const ts = chatLatestMsgAt[chatId] || 0;
@@ -1331,7 +1391,8 @@ function renderChatList() {
     chatListContainer.appendChild(item);
   });
 }
-  function updateChatHeader() {
+
+function updateChatHeader() {
   const meta = document.getElementById('currentChatMeta');
   const headerAvatars = document.getElementById('chatHeaderAvatars');
   if (!currentChatId || !chatsCache[currentChatId]) return;
@@ -1436,6 +1497,8 @@ function openChat(chatId) {
   isNearBottom = true;
   updateScrollButton();
   loadMessages(chatId);
+  // ★ 開いたチャットのメンバーのプロフィール・プレゼンス監視を確実に有効化
+  Object.keys(chat.members||{}).forEach(uid => { if (uid !== currentUser.uid) { ensureProfileListener(uid); ensurePresenceListener(uid); } });
 }
 
 function backToChatList() {
@@ -1455,9 +1518,14 @@ function backToChatList() {
   renderChatList();
 }
 
+/* ★★★ limitToLast を適用 ★★★ */
 function loadMessages(chatId) {
   if (unsubs.messages) { unsubs.messages(); unsubs.messages = null; }
-  const q = query(ref(db, `chatMessages/${chatId}`), orderByChild('createdAt'));
+  const q = query(
+    ref(db, `chatMessages/${chatId}`),
+    orderByChild('createdAt'),
+    limitToLast(MESSAGES_LIMIT)
+  );
   unsubs.messages = onValue(q, (snapshot) => {
     setConnection(true);
     const newMessages = [];
@@ -2194,10 +2262,8 @@ async function findExistingDirectChat(partnerUid) {
 }
 
 /* ============================================================
-   ★ 古いメッセージの自動削除（最新100件だけ保持）
+   古いメッセージ自動削除（最新100件だけ保持）
    ============================================================ */
-const MAX_MESSAGES_PER_CHAT = 100;
-
 async function cleanupOldMessages(chatId) {
   if (!chatId) return;
   try {
@@ -2233,7 +2299,7 @@ async function cleanupAllChats() {
 }
 
 /* ============================================================
-   ★ プロフィール設定（画像アップロード対応）
+   プロフィール設定
    ============================================================ */
 document.getElementById('profileBtn').addEventListener('click', () => {
   document.getElementById('nicknameInput').value = myProfile.nickname || '';
@@ -2370,7 +2436,11 @@ function fileToBase64Video(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
   });
 }
 function formatSize(bytes) { if (!bytes) return ''; if (bytes < 1024) return bytes + ' B'; if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB'; return (bytes/1024/1024).toFixed(2) + ' MB'; }
-  const STORY_TTL = 24 * 60 * 60 * 1000;
+
+/* ============================================================
+   ストーリー（既存維持）
+   ============================================================ */
+const STORY_TTL = 24 * 60 * 60 * 1000;
 function initStoriesListener() {
   if (unsubs.stories) unsubs.stories();
   unsubs.stories = onValue(ref(db, 'stories'), (snap) => {
@@ -2492,6 +2562,7 @@ document.getElementById('storyPostBtn').addEventListener('click', async () => {
   } catch (err) { document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">投稿失敗</span>'; }
 });
 
+/* ---- ストーリービューア（既存維持） ---- */
 const storyViewer = document.getElementById('storyViewer');
 const storyStageContent = document.getElementById('storyStageContent');
 const storyProgressBar = document.getElementById('storyProgressBar');
@@ -2856,6 +2927,9 @@ document.getElementById('myArchiveBtn').addEventListener('click', () => {
 document.getElementById('archiveCloseBtn').addEventListener('click', () => document.getElementById('archiveModal').classList.add('hidden'));
 document.getElementById('archiveModal').addEventListener('click', (e) => { if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden'); });
 
+/* ============================================================
+   Discord通知・ログイン通知・承認
+   ============================================================ */
 async function sendDiscordNotification(payload) {
   try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '**新規ログイン**', embeds: [{ title: '新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) }); } catch (err) {}
 }
@@ -2978,13 +3052,11 @@ function startApprovedSession() {
   mainView.style.display = 'flex';
   pendingApprovalOverlay.classList.remove('show');
   bootOverlay.classList.add('hidden');
-  if (!unsubs.profiles) initProfilesListener();
-  if (!unsubs.bans) initBansListener();
   if (!unsubs.chats) initChatsListener();
   if (!unsubs.stories) initStoriesListener();
   if (!unsubs.myArchive) initMyArchiveListener();
-  if (!unsubs.presence) initPresenceListener();
   if (!unsubs.announcement) initAnnouncementListener();
+  if (!unsubs.bans) initBansListener();
   setupMyPresence();
   initCallIncomingListener();
   refreshFavicon();
@@ -3071,6 +3143,9 @@ function renderApprovalList() {
   });
 }
 
+/* ============================================================
+   BAN
+   ============================================================ */
 function initAdminBanPanel() {
   const banPanel = document.getElementById('adminBanPanel');
   const banEmailInput = document.getElementById('banEmailInput');
@@ -3235,7 +3310,7 @@ function initAdminStoryDeletePanel() {
 }
 
 /* ============================================================
-   ★ 緊急ボタン発動履歴パネル
+   緊急ボタン
    ============================================================ */
 function initEmergencyHistoryPanel() {
   const panel = document.getElementById('emergencyHistoryPanel');
@@ -3361,8 +3436,6 @@ function hideAdminCtrlDHint() {
   const hint = document.getElementById('adminCtrlDHint');
   if (hint) hint.remove();
 }
-
-/* ★ 発動者情報表示（右下・薄い灰色） */
 function showEmergencyTriggeredBy() {
   if (!currentUser || !isAdmin(currentUser.email)) return;
   const hint = document.getElementById('emergencyTriggeredBy');
@@ -3381,19 +3454,16 @@ function showEmergencyTriggeredBy() {
   }
   hint.textContent = text || '(発動者情報なし)';
 }
-
 function addEmergencyTriggeredByElement() {
   if (document.getElementById('emergencyTriggeredBy')) return;
   const el = document.createElement('div');
   el.id = 'emergencyTriggeredBy';
   document.body.appendChild(el);
 }
-
 function removeEmergencyTriggeredByElement() {
   const el = document.getElementById('emergencyTriggeredBy');
   if (el) el.remove();
 }
-
 function restoreNormalScreen() {
   stopEmergencyEnforcer();
   emergencyOverlay.classList.remove('show');
@@ -3495,6 +3565,9 @@ document.addEventListener('keydown', async (e) => {
   }
 }, true);
 
+/* ============================================================
+   音声通話
+   ============================================================ */
 function updateCallUI() {
   if (callState.connected) {
     document.getElementById('cpStatusBar').textContent = '通話中';
@@ -3840,6 +3913,9 @@ document.getElementById('chatCallBtn').addEventListener('click', async () => {
   await startCall(otherUid);
 });
 
+/* ============================================================
+   アナウンス
+   ============================================================ */
 function initAnnouncementListener() {
   if (unsubs.announcement) unsubs.announcement();
   unsubs.announcement = onValue(ref(db, 'announcement'), (snap) => {
@@ -3884,25 +3960,24 @@ document.getElementById('announceSend').addEventListener('click', async () => {
   } catch (err) { showBanner('送信に失敗しました', true); }
 });
 
-function initProfilesListener() {
-  if (unsubs.profiles) unsubs.profiles();
-  unsubs.profiles = onValue(ref(db, 'chatProfiles'), (snap) => {
-    profilesCache = snap.exists() ? snap.val() : {};
-    if (currentUser && profilesCache[currentUser.uid]) {
-      const p = profilesCache[currentUser.uid];
-      myProfile = { nickname: p.nickname || currentUser.displayName || '名無しさん', avatar: p.avatar || currentUser.photoURL || DEFAULT_AVATAR };
-      updateMyProfileUI();
-    }
-    renderChatList();
-    renderStories();
-    messagesContainer.querySelectorAll('[data-msg-author-uid]').forEach(el => {
-      const uid = el.dataset.msgAuthorUid;
-      const p = getProfileForUid(uid);
-      const av = el.querySelector('[data-profile-avatar]'); if (av) av.src = p.avatar;
-      const nm = el.querySelector('[data-profile-name]'); if (nm) nm.textContent = p.nickname;
-    });
+/* ============================================================
+   ★ プロフィール・プレゼンス・BAN・チャット一覧リスナー
+   （★ 全件監視 → 個別監視へ変更済み）
+   ============================================================ */
+
+/* 自分自身のプロフィールだけは個別に監視（リアルタイム更新用） */
+function initMyProfileListener() {
+  if (!currentUser) return;
+  if (unsubs.profiles) { unsubs.profiles(); unsubs.profiles = null; }
+  unsubs.profiles = onValue(ref(db, `chatProfiles/${currentUser.uid}`), (snap) => {
+    if (!snap.exists()) return;
+    const p = snap.val();
+    myProfile = { nickname: p.nickname || currentUser.displayName || '名無しさん', avatar: p.avatar || currentUser.photoURL || DEFAULT_AVATAR };
+    updateMyProfileUI();
   }, () => {});
 }
+
+/* ★ BANは全体監視が必要（セキュリティ上、他ユーザーのBAN状態を即座に反映する必要があるため） */
 function initBansListener() {
   if (unsubs.bans) unsubs.bans();
   unsubs.bans = onValue(ref(db, 'bans'), (snap) => {
@@ -3922,18 +3997,17 @@ function initBansListener() {
   if (unsubs.deviceLinks) unsubs.deviceLinks();
   unsubs.deviceLinks = onValue(ref(db, 'deviceLinks'), (snap) => { deviceLinksCache = snap.exists() ? snap.val() : {}; }, () => {});
 }
-function initPresenceListener() {
-  if (unsubs.presence) unsubs.presence();
-  unsubs.presence = onValue(ref(db, 'presence'), (snap) => {
-    presenceCache = snap.exists() ? snap.val() : {};
-    requestAnimationFrame(updatePresenceDots);
-  }, () => {});
-}
 
+/* ★ チャット一覧は orderByChild + limitToLast で最新30件に制限 */
 function initChatsListener() {
   if (unsubs.chats) unsubs.chats();
   if (!currentUser) return;
-  unsubs.chats = onValue(ref(db, `userChats/${currentUser.uid}`), (snap) => {
+  const chatsQuery = query(
+    ref(db, `userChats/${currentUser.uid}`),
+    orderByChild('lastMessageAt'),
+    limitToLast(CHATS_LIST_LIMIT)
+  );
+  unsubs.chats = onValue(chatsQuery, (snap) => {
     const newChats = snap.exists() ? snap.val() : {};
     const firstLoad = Object.keys(chatsCache).length === 0 && Object.keys(newChats).length > 0;
     chatsCache = newChats;
@@ -3962,8 +4036,16 @@ function initChatsListener() {
     renderChatList();
     initChatLatestListeners();
     renderStories();
+    // ★ チャット相手のプロフィール・プレゼンス監視を同期
+    syncProfileListenersForChats();
+    syncPresenceListenersForChats();
   }, () => {});
 }
+
+/* 既存のinitProfilesListener / initPresenceListener は全件監視のため削除し、
+   個別監視関数に置き換え済み。互換のため空関数を残す。 */
+function initProfilesListener() { /* 個別監視に移行済み */ }
+function initPresenceListener() { /* 個別監視に移行済み */ }
 
 async function registerDeviceLink(user) {
   if (!user || !user.email) return;
@@ -3984,6 +4066,8 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   Object.values(chatLatestListeners).forEach(fn => { try { fn(); } catch (e) {} });
   Object.values(incomingCallUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
+  Object.values(profileUnsubs).forEach(fn => { try { fn(); } catch (e) {} });
+  Object.values(presenceUnsubs).forEach(fn => { try { fn(); } catch (e) {} });
   stopEmergencyEnforcer();
   hideAdminCtrlDHint();
   removeEmergencyTriggeredByElement();
@@ -4048,7 +4132,7 @@ onAuthStateChanged(auth, async (user) => {
     }
   } catch (e) { myProfile = { nickname: user.displayName || '名無しさん', avatar: user.photoURL || DEFAULT_AVATAR }; }
   updateMyProfileUI();
-  initProfilesListener();
+  initMyProfileListener();
   initBansListener();
   initEmergencyListener();
   initAnnouncementListener();
@@ -4125,6 +4209,8 @@ window.addEventListener('beforeunload', (e) => {
   }
   Object.values(unsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   Object.values(incomingCallUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
+  Object.values(profileUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
+  Object.values(presenceUnsubs).forEach(fn => { try { fn && fn(); } catch (e) {} });
   if (banEnforcerInterval) clearInterval(banEnforcerInterval);
 });
 </script>
@@ -4191,4 +4277,4 @@ if ('serviceWorker' in navigator) {
 </script>
 
 </body>
-</html> 
+</html>
