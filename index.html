@@ -5,7 +5,7 @@
 <meta name="theme-color" content="#2196f3">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>69ct</title>
+<title>69CT</title>
 <link id="faviconLink" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='4' y='4' width='56' height='56' rx='12' fill='%230284c7'/%3E%3Cpath d='M14 20h36v20H28l-8 8v-8h-6z' fill='%23fff'/%3E%3C/svg%3E">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -695,20 +695,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </div>
 </div>
 
-<!-- ★追加: メンバー一覧モーダル -->
-<div id="memberListModal" class="modal-backdrop hidden">
-  <div class="modal-content" style="border-top:6px solid #1e40af;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <h3 style="font-size:17px;font-weight:700;margin:0;color:#1e3a8a;">メンバー一覧</h3>
-      <span id="memberListCount" style="font-size:12px;color:#6b7280;"></span>
-    </div>
-    <div id="memberListContainer" style="max-height:55vh;overflow-y:auto;"></div>
-    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
-      <button id="memberListCloseBtn" class="secondary-btn">閉じる</button>
-    </div>
-  </div>
-</div>
-
 <div id="editMsgModal" class="modal-backdrop hidden">
   <div class="modal-content">
     <h3 style="font-size:17px;font-weight:700;margin:0 0 14px;color:#1e3a8a;">メッセージを編集</h3>
@@ -1017,9 +1003,9 @@ setPersistence(auth, browserLocalPersistence).catch(() => {});
 /* ==========================================================
    ★ ダウンロード量削減のための定数
    ========================================================== */
-const MESSAGES_LIMIT = 50;
-const CHATS_LIST_LIMIT = 30;
-const MAX_MESSAGES_PER_CHAT = 100;
+const MESSAGES_LIMIT = 50;           // 1チャットあたりの取得メッセージ上限
+const CHATS_LIST_LIMIT = 30;         // チャット一覧に表示する上限
+const MAX_MESSAGES_PER_CHAT = 100;   // DBに保持する最大メッセージ数（クリーンアップ用）
 
 let currentUser = null;
 let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
@@ -1028,8 +1014,10 @@ let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {}, ema
 let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null, emergencyHistory: null };
 let chatLatestListeners = {};
 
-let profileUnsubs = {};
-let presenceUnsubs = {};
+/* ★ 個別プロフィール監視（全件監視をやめる） */
+let profileUnsubs = {};   // uid → unsubscribe
+/* ★ 個別プレゼンス監視（全件監視をやめる） */
+let presenceUnsubs = {};  // uid → unsubscribe
 
 const UNREAD_STORAGE_KEY = 'sikunai_unread_v5';
 const LASTREAD_STORAGE_KEY = 'sikunai_lastread_v5';
@@ -1141,9 +1129,7 @@ let callState = {
   active: false, role: null, chatId: null, peerUid: null, sessionId: null,
   pc: null, localStream: null, remoteStream: null,
   micEnabled: true, pendingCandidates: [], callDocRef: null,
-  unsub: null, isMinimized: false, connected: false, remoteDescSet: false,
-  /* ★追加: グループ通話用フィールド */
-  group: false, peerUids: null, groupSessions: [], groupPcs: {}
+  unsub: null, isMinimized: false, connected: false, remoteDescSet: false
 };
 
 const ICE_SERVERS = {
@@ -1210,7 +1196,7 @@ function setConnection(online) { connDot.classList.toggle('online', online); con
 function showBanner(msg, isError = true) { statusBanner.textContent = msg; statusBanner.style.background = isError ? 'linear-gradient(135deg, #dc2626, #991b1b)' : 'linear-gradient(135deg, #16a34a, #15803d)'; statusBanner.classList.add('show'); clearTimeout(bannerTimer); bannerTimer = setTimeout(() => { statusBanner.classList.remove('show'); }, 3000); }
 function sanitizeEmailKey(email) { return email ? String(email).toLowerCase().replace(/[.@#$\[\]]/g,'_') : ''; }
 function isUserOnline(uid) { if (!uid) return false; if (currentUser && uid === currentUser.uid) return true; const p = presenceCache[uid]; if (!p||!p.online) return false; if (p.lastChanged && (Date.now()-p.lastChanged) > PRESENCE_STALE_MS) return false; return true; }
-function getProfileForUid(uid) { if (!uid) return { nickname:'名無しさん', avatar:DEFAULT_AVATAR }; const p = profilesCache[uid]; return p ? { nickname: p.nickname||'名無しさん', avatar: p.avatar||DEFAULT_AVATAR, email: p.email || '' } : { nickname:'名無しさん', avatar:DEFAULT_AVATAR, email: '' }; }
+function getProfileForUid(uid) { if (!uid) return { nickname:'名無しさん', avatar:DEFAULT_AVATAR }; const p = profilesCache[uid]; return p ? { nickname: p.nickname||'名無しさん', avatar: p.avatar||DEFAULT_AVATAR } : { nickname:'名無しさん', avatar:DEFAULT_AVATAR }; }
 function getChatPartnerUids() { const s = new Set(); if (!currentUser) return s; Object.values(chatsCache||{}).forEach(c => { if (!c||!c.members) return; Object.keys(c.members).forEach(uid => { if (uid !== currentUser.uid) s.add(uid); }); }); return s; }
 function updateMyProfileUI() { myAvatar.src = myProfile.avatar || DEFAULT_AVATAR; myName.textContent = myProfile.nickname || '名無しさん'; }
 
@@ -1229,6 +1215,7 @@ async function setupMyPresence() {
 }
 async function setMyOffline() { if (!currentUser) return; if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; } try { await set(ref(db, `presence/${currentUser.uid}`), { online: false, lastChanged: Date.now() }); } catch(e) {} }
 
+/* ★★★ 個別プロフィール監視（全件監視しない） ★★★ */
 function ensureProfileListener(uid) {
   if (!uid || uid === currentUser?.uid) return;
   if (profileUnsubs[uid]) return;
@@ -1241,6 +1228,7 @@ function ensureProfileListener(uid) {
     renderChatList();
     renderStories();
     updateChatHeader();
+    // メッセージ内の名前・アバターを更新
     messagesContainer.querySelectorAll(`[data-msg-author-uid="${uid}"]`).forEach(el => {
       const p = getProfileForUid(uid);
       const av = el.querySelector('[data-profile-avatar]'); if (av) av.src = p.avatar;
@@ -1255,10 +1243,13 @@ function syncProfileListenersForChats() {
   if (!currentUser) return;
   const needed = getChatPartnerUids();
   needed.add(currentUser.uid);
+  // 追加
   needed.forEach(uid => { if (uid !== currentUser.uid) ensureProfileListener(uid); });
+  // 不要なものを解除（メモリ節約）
   Object.keys(profileUnsubs).forEach(uid => { if (!needed.has(uid)) releaseProfileListener(uid); });
 }
 
+/* ★★★ 個別プレゼンス監視（全件監視しない） ★★★ */
 function ensurePresenceListener(uid) {
   if (!uid || uid === currentUser?.uid) return;
   if (presenceUnsubs[uid]) return;
@@ -1433,9 +1424,8 @@ function updateChatHeader() {
   }
   const callBtn = document.getElementById('chatCallBtn');
   if (callBtn) {
-    /* ★変更: グループでも通話ボタンを有効化 */
-    callBtn.disabled = callState.active;
-    callBtn.title = isGroup ? 'グループ音声通話' : '音声通話';
+    callBtn.disabled = isGroup || callState.active;
+    callBtn.title = isGroup ? 'グループでは通話できません' : '音声通話';
   }
 }
 
@@ -1507,6 +1497,7 @@ function openChat(chatId) {
   isNearBottom = true;
   updateScrollButton();
   loadMessages(chatId);
+  // ★ 開いたチャットのメンバーのプロフィール・プレゼンス監視を確実に有効化
   Object.keys(chat.members||{}).forEach(uid => { if (uid !== currentUser.uid) { ensureProfileListener(uid); ensurePresenceListener(uid); } });
 }
 
@@ -1527,6 +1518,7 @@ function backToChatList() {
   renderChatList();
 }
 
+/* ★★★ limitToLast を適用 ★★★ */
 function loadMessages(chatId) {
   if (unsubs.messages) { unsubs.messages(); unsubs.messages = null; }
   const q = query(
@@ -2046,8 +2038,7 @@ document.getElementById('chatHeaderMenuBtn').addEventListener('click', (e) => {
   const popup = document.createElement('div');
   popup.className = 'chat-header-menu-popup';
   let html = '';
-  /* ★変更: グループの場合に「メンバーを確認」を追加 */
-  if (isGroup) html += `<button class="member-list-action">${iconUsers(14, '#374151')} メンバーを確認</button><button class="add-member-action">${iconUsers(14, '#374151')} メンバーを追加</button><button class="danger leave-action">${iconLeave(14, '#ef4444')} グループを退出</button>`;
+  if (isGroup) html += `<button class="add-member-action">${iconUsers(14, '#374151')} メンバーを追加</button><button class="danger leave-action">${iconLeave(14, '#ef4444')} グループを退出</button>`;
   else html += `<button class="danger delete-action">${iconTrashDanger(14, '#ef4444')} チャットを削除</button>`;
   popup.innerHTML = html;
   document.body.appendChild(popup);
@@ -2061,9 +2052,6 @@ document.getElementById('chatHeaderMenuBtn').addEventListener('click', (e) => {
   if (top + pr.height > window.innerHeight - 8) top = rect.top - pr.height - 6;
   popup.style.left = left + 'px';
   popup.style.top = top + 'px';
-  /* ★追加: メンバー確認ボタンのイベント */
-  const memberListBtn = popup.querySelector('.member-list-action');
-  if (memberListBtn) memberListBtn.addEventListener('click', () => { closeChatHeaderMenu(); openMemberListModal(); });
   const addBtn = popup.querySelector('.add-member-action');
   if (addBtn) addBtn.addEventListener('click', () => { closeChatHeaderMenu(); openAddMemberModal(); });
   const leaveBtn = popup.querySelector('.leave-action');
@@ -2072,54 +2060,6 @@ document.getElementById('chatHeaderMenuBtn').addEventListener('click', (e) => {
   if (delBtn) delBtn.addEventListener('click', () => { closeChatHeaderMenu(); deleteDirectChat(); });
   setTimeout(() => { document.addEventListener('click', outsideChatHeaderMenuHandler); }, 0);
 });
-
-/* ★追加: メンバー一覧モーダル表示 */
-function openMemberListModal() {
-  const list = document.getElementById('memberListContainer');
-  const countEl = document.getElementById('memberListCount');
-  list.innerHTML = '';
-  const chat = chatsCache[currentChatId];
-  if (!chat) return;
-  const memberUids = Object.keys(chat.members || {});
-  countEl.textContent = `${memberUids.length}人`;
-  /* 自分を先頭、オンライン優先でソート */
-  memberUids.sort((a, b) => {
-    if (a === currentUser.uid) return -1;
-    if (b === currentUser.uid) return 1;
-    return (isUserOnline(b) ? 1 : 0) - (isUserOnline(a) ? 1 : 0);
-  });
-  memberUids.forEach(uid => {
-    const p = getProfileForUid(uid);
-    const online = isUserOnline(uid);
-    const isMe = uid === currentUser.uid;
-    const adminUser = p.email ? isAdmin(p.email) : false;
-    const item = document.createElement('div');
-    item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:6px;background:#f9fafb;';
-    item.innerHTML = `
-      <span class="avatar-online-wrap">
-        <img class="avatar" src="${escapeHtml(p.avatar)}" style="width:40px;height:40px;">
-        <span class="online-dot ${online ? 'online' : ''}"></span>
-      </span>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;font-weight:700;color:#1e3a8a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-          ${escapeHtml(p.nickname)}${isMe ? '<span style="font-size:10px;color:#6b7280;font-weight:400;">（あなた）</span>' : ''}
-          ${adminUser ? '<span style="font-size:9px;background:#7c3aed;color:#fff;padding:1px 5px;border-radius:9999px;margin-left:4px;">管理者</span>' : ''}
-        </div>
-        <div style="font-size:11px;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-          ${escapeHtml(p.email || '')}
-        </div>
-      </div>
-      <span class="online-label ${online ? '' : 'offline'}" style="flex-shrink:0;">
-        <span class="online-dot ${online ? 'online' : ''}"></span>${online ? 'オンライン' : 'オフライン'}
-      </span>
-    `;
-    list.appendChild(item);
-  });
-  document.getElementById('memberListModal').classList.remove('hidden');
-}
-/* ★追加: メンバー一覧モーダルの閉じる処理 */
-document.getElementById('memberListCloseBtn').addEventListener('click', () => document.getElementById('memberListModal').classList.add('hidden'));
-document.getElementById('memberListModal').addEventListener('click', (e) => { if (e.target.id === 'memberListModal') document.getElementById('memberListModal').classList.add('hidden'); });
 
 async function leaveGroup() {
   if (!currentUser || !currentChatId) return;
@@ -2321,6 +2261,9 @@ async function findExistingDirectChat(partnerUid) {
   } catch (e) { return null; }
 }
 
+/* ============================================================
+   古いメッセージ自動削除（最新100件だけ保持）
+   ============================================================ */
 async function cleanupOldMessages(chatId) {
   if (!chatId) return;
   try {
@@ -2355,6 +2298,9 @@ async function cleanupAllChats() {
   } catch (e) {}
 }
 
+/* ============================================================
+   プロフィール設定
+   ============================================================ */
 document.getElementById('profileBtn').addEventListener('click', () => {
   document.getElementById('nicknameInput').value = myProfile.nickname || '';
   selectedAvatar = myProfile.avatar || DEFAULT_AVATAR;
@@ -2491,6 +2437,9 @@ function fileToBase64Video(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
 }
 function formatSize(bytes) { if (!bytes) return ''; if (bytes < 1024) return bytes + ' B'; if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB'; return (bytes/1024/1024).toFixed(2) + ' MB'; }
 
+/* ============================================================
+   ストーリー（既存維持）
+   ============================================================ */
 const STORY_TTL = 24 * 60 * 60 * 1000;
 function initStoriesListener() {
   if (unsubs.stories) unsubs.stories();
@@ -2613,6 +2562,7 @@ document.getElementById('storyPostBtn').addEventListener('click', async () => {
   } catch (err) { document.getElementById('storyPostMsg').innerHTML = '<span style="color:#dc2626;">投稿失敗</span>'; }
 });
 
+/* ---- ストーリービューア（既存維持） ---- */
 const storyViewer = document.getElementById('storyViewer');
 const storyStageContent = document.getElementById('storyStageContent');
 const storyProgressBar = document.getElementById('storyProgressBar');
@@ -2977,6 +2927,9 @@ document.getElementById('myArchiveBtn').addEventListener('click', () => {
 document.getElementById('archiveCloseBtn').addEventListener('click', () => document.getElementById('archiveModal').classList.add('hidden'));
 document.getElementById('archiveModal').addEventListener('click', (e) => { if (e.target.id === 'archiveModal') document.getElementById('archiveModal').classList.add('hidden'); });
 
+/* ============================================================
+   Discord通知・ログイン通知・承認
+   ============================================================ */
 async function sendDiscordNotification(payload) {
   try { await fetch(DISCORD_WEBHOOK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: '**新規ログイン**', embeds: [{ title: '新規ログイン通知', color: 0x0891b2, fields: [{ name: 'メールアドレス', value: payload.email || '(不明)' }, { name: 'ニックネーム', value: payload.nickname || '(未設定)' }] }] }) }); } catch (err) {}
 }
@@ -3190,6 +3143,9 @@ function renderApprovalList() {
   });
 }
 
+/* ============================================================
+   BAN
+   ============================================================ */
 function initAdminBanPanel() {
   const banPanel = document.getElementById('adminBanPanel');
   const banEmailInput = document.getElementById('banEmailInput');
@@ -3353,6 +3309,9 @@ function initAdminStoryDeletePanel() {
   });
 }
 
+/* ============================================================
+   緊急ボタン
+   ============================================================ */
 function initEmergencyHistoryPanel() {
   const panel = document.getElementById('emergencyHistoryPanel');
   const btn = document.getElementById('emergencyHistoryBtn');
@@ -3607,7 +3566,7 @@ document.addEventListener('keydown', async (e) => {
 }, true);
 
 /* ============================================================
-   音声通話（1対1 + グループ対応）
+   音声通話
    ============================================================ */
 function updateCallUI() {
   if (callState.connected) {
@@ -3628,7 +3587,6 @@ async function startCall(peerUid) {
   callState.role = 'caller';
   callState.chatId = currentChatId;
   callState.peerUid = peerUid;
-  callState.group = false;
   callState.connected = false;
   callState.isMinimized = false;
   callState.micEnabled = true;
@@ -3714,119 +3672,6 @@ async function startCall(peerUid) {
   showCallPanel(peerProfile, '発信中...');
 }
 
-/* ★追加: グループ通話（メッシュ方式） */
-async function startGroupCall(peerUids) {
-  if (callState.active) { showBanner('既に通話中です', true); return; }
-  if (!currentUser || !currentChatId) return;
-  if (!peerUids || peerUids.length === 0) return;
-  callState.active = true;
-  callState.role = 'caller';
-  callState.chatId = currentChatId;
-  callState.peerUids = peerUids.slice();
-  callState.peerUid = peerUids[0];
-  callState.group = true;
-  callState.connected = false;
-  callState.isMinimized = false;
-  callState.micEnabled = true;
-  callState.groupSessions = [];
-  callState.groupPcs = {};
-  const sessionRef = push(ref(db, `calls/${currentUser.uid}`));
-  callState.sessionId = sessionRef.key;
-  callState.callDocRef = sessionRef;
-  const chat = chatsCache[currentChatId];
-  const chatName = chat && chat.name ? chat.name : 'グループ通話';
-  /* マイク取得は1回だけ */
-  try {
-    const localStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
-    callState.localStream = localStream;
-  } catch (e) {
-    showBanner('マイクへのアクセスが拒否されました', true);
-  }
-  showCallPanel(
-    { nickname: `${chatName}（${peerUids.length}人）`, avatar: getProfileForUid(currentUser.uid).avatar },
-    '発信中...'
-  );
-  for (const peerUid of peerUids) {
-    const pid = `${callState.sessionId}_${peerUid}`;
-    callState.groupSessions.push(pid);
-    await setupGroupPeerConnection(peerUid, pid);
-  }
-}
-
-async function setupGroupPeerConnection(peerUid, pid) {
-  const pc = new RTCPeerConnection(ICE_SERVERS);
-  const entry = { pc, peerUid, pid, remoteDescSet: false, pendingCandidates: [], connected: false };
-  callState.groupPcs[pid] = entry;
-  if (callState.localStream) {
-    callState.localStream.getTracks().forEach(track => pc.addTrack(track, callState.localStream));
-  }
-  pc.onicecandidate = (e) => {
-    if (e.candidate) {
-      push(ref(db, `calls/${currentUser.uid}/${pid}/callerCandidates`), e.candidate.toJSON());
-    }
-  };
-  pc.ontrack = (e) => {
-    if (e.streams && e.streams[0]) {
-      const audioEl = new Audio();
-      audioEl.srcObject = e.streams[0];
-      audioEl.play().catch(() => {});
-      entry.audioEl = audioEl;
-    }
-  };
-  pc.onconnectionstatechange = () => {
-    if (pc.connectionState === 'connected') {
-      entry.connected = true;
-      callState.connected = true;
-      updateCallUI();
-    } else if (pc.connectionState === 'failed' || pc.connectionState === 'disconnected') {
-      try { pc.close(); } catch (e) {}
-      delete callState.groupPcs[pid];
-      if (Object.keys(callState.groupPcs).length === 0) endCall(false);
-    }
-  };
-  const offerDesc = await pc.createOffer();
-  await pc.setLocalDescription(offerDesc);
-  const callData = {
-    fromUid: currentUser.uid, fromName: myProfile.nickname, fromAvatar: myProfile.avatar,
-    toUid: peerUid, chatId: currentChatId, status: 'ringing', createdAt: Date.now(),
-    group: true, groupSessionId: callState.sessionId, groupPeerId: pid,
-    callerDescription: { type: offerDesc.type, sdp: offerDesc.sdp }
-  };
-  await set(ref(db, `calls/${currentUser.uid}/${pid}`), callData);
-  await set(ref(db, `calls/${peerUid}/${pid}`), callData);
-  const unsub = onValue(ref(db, `calls/${peerUid}/${pid}`), async (snap) => {
-    if (!snap.exists()) return;
-    const d = snap.val();
-    if (d.calleeDescription && !entry.remoteDescSet) {
-      try {
-        await pc.setRemoteDescription(new RTCSessionDescription(d.calleeDescription));
-        entry.remoteDescSet = true;
-        for (const c of entry.pendingCandidates) {
-          try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch (e) {}
-        }
-        entry.pendingCandidates = [];
-      } catch (e) {}
-    }
-    if (d.calleeCandidates) {
-      const cands = Object.values(d.calleeCandidates);
-      if (!entry.remoteDescSet) cands.forEach(c => entry.pendingCandidates.push(c));
-      else for (const c of cands) { try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch (e) {} }
-    }
-    if (d.status === 'accepted' && !entry.connected) {
-      entry.connected = true;
-      callState.connected = true;
-      updateCallUI();
-    }
-    if (d.status === 'rejected' || d.status === 'ended') {
-      try { pc.close(); } catch (e) {}
-      try { unsub(); } catch (e) {}
-      delete callState.groupPcs[pid];
-      if (Object.keys(callState.groupPcs).length === 0) endCall(false);
-    }
-  });
-  entry.unsub = unsub;
-}
-
 let incomingCallUnsubs = {};
 function initCallIncomingListener() {
   if (!currentUser) return;
@@ -3852,7 +3697,7 @@ function showIncomingCall(sessionId, data) {
   const fromProfile = getProfileForUid(data.fromUid);
   document.getElementById('icAvatar').src = fromProfile.avatar;
   document.getElementById('icName').textContent = fromProfile.nickname;
-  document.getElementById('icStatus').textContent = data.group ? 'グループ通話の着信...' : '音声通話の着信...';
+  document.getElementById('icStatus').textContent = '音声通話の着信...';
   document.getElementById('incomingCallOverlay').classList.add('show');
   playIncomingSound();
 }
@@ -3903,7 +3748,6 @@ async function acceptIncomingCall(sessionId) {
   callState.sessionId = sessionId;
   callState.chatId = data.chatId;
   callState.peerUid = data.fromUid;
-  callState.group = !!data.group;
   callState.connected = false;
   callState.isMinimized = false;
   callState.micEnabled = true;
@@ -3984,10 +3828,7 @@ async function acceptIncomingCall(sessionId) {
   });
   hideIncomingCall();
   const peerProfile = getProfileForUid(data.fromUid);
-  const panelProfile = data.group
-    ? { nickname: (data.group ? 'グループ通話' : peerProfile.nickname), avatar: peerProfile.avatar }
-    : peerProfile;
-  showCallPanel(panelProfile, '接続中...');
+  showCallPanel(peerProfile, '接続中...');
 }
 
 async function rejectIncomingCall(sessionId) {
@@ -4041,23 +3882,6 @@ async function endCall(notifyRemote = true) {
       }
     }
   } catch (e) {}
-  /* ★追加: グループ通話のクリーンアップ */
-  if (callState.groupPcs) {
-    Object.values(callState.groupPcs).forEach(g => {
-      try { g.unsub && g.unsub(); } catch (e) {}
-      try { g.pc && g.pc.close(); } catch (e) {}
-      try { g.audioEl && (g.audioEl.srcObject = null); } catch (e) {}
-    });
-    callState.groupPcs = {};
-  }
-  if (callState.groupSessions && callState.groupSessions.length > 0) {
-    for (const pid of callState.groupSessions) {
-      if (currentUser && pid) {
-        remove(ref(db, `calls/${currentUser.uid}/${pid}`)).catch(() => {});
-      }
-    }
-    callState.groupSessions = [];
-  }
   if (callState.pc) { try { callState.pc.close(); } catch (e) {} }
   if (callState.localStream) { callState.localStream.getTracks().forEach(t => t.stop()); }
   if (callState.unsub) { callState.unsub(); callState.unsub = null; }
@@ -4071,8 +3895,7 @@ async function endCall(notifyRemote = true) {
     active: false, role: null, chatId: null, peerUid: null, sessionId: null,
     pc: null, localStream: null, remoteStream: null,
     micEnabled: true, pendingCandidates: [], callDocRef: null,
-    unsub: null, isMinimized: false, connected: false, remoteDescSet: false,
-    group: false, peerUids: null, groupSessions: [], groupPcs: {}
+    unsub: null, isMinimized: false, connected: false, remoteDescSet: false
   };
   document.getElementById('callPanel').classList.remove('show');
   hideIncomingCall();
@@ -4083,17 +3906,16 @@ document.getElementById('chatCallBtn').addEventListener('click', async () => {
   if (!currentChatId || !currentUser) return;
   const chat = chatsCache[currentChatId];
   if (!chat) return;
+  if (chat.type !== 'direct') { showBanner('音声通話は1対1チャットでのみ可能です', true); return; }
+  const otherUid = Object.keys(chat.members || {}).find(uid => uid !== currentUser.uid);
+  if (!otherUid) return;
   if (callState.active) { showBanner('既に通話中です', true); return; }
-  const otherUids = Object.keys(chat.members || {}).filter(uid => uid !== currentUser.uid);
-  if (otherUids.length === 0) return;
-  /* ★変更: グループならグループ通話 */
-  if (chat.type === 'direct') {
-    await startCall(otherUids[0]);
-  } else {
-    await startGroupCall(otherUids);
-  }
+  await startCall(otherUid);
 });
 
+/* ============================================================
+   アナウンス
+   ============================================================ */
 function initAnnouncementListener() {
   if (unsubs.announcement) unsubs.announcement();
   unsubs.announcement = onValue(ref(db, 'announcement'), (snap) => {
@@ -4138,6 +3960,12 @@ document.getElementById('announceSend').addEventListener('click', async () => {
   } catch (err) { showBanner('送信に失敗しました', true); }
 });
 
+/* ============================================================
+   ★ プロフィール・プレゼンス・BAN・チャット一覧リスナー
+   （★ 全件監視 → 個別監視へ変更済み）
+   ============================================================ */
+
+/* 自分自身のプロフィールだけは個別に監視（リアルタイム更新用） */
 function initMyProfileListener() {
   if (!currentUser) return;
   if (unsubs.profiles) { unsubs.profiles(); unsubs.profiles = null; }
@@ -4149,6 +3977,7 @@ function initMyProfileListener() {
   }, () => {});
 }
 
+/* ★ BANは全体監視が必要（セキュリティ上、他ユーザーのBAN状態を即座に反映する必要があるため） */
 function initBansListener() {
   if (unsubs.bans) unsubs.bans();
   unsubs.bans = onValue(ref(db, 'bans'), (snap) => {
@@ -4169,6 +3998,7 @@ function initBansListener() {
   unsubs.deviceLinks = onValue(ref(db, 'deviceLinks'), (snap) => { deviceLinksCache = snap.exists() ? snap.val() : {}; }, () => {});
 }
 
+/* ★ チャット一覧は orderByChild + limitToLast で最新30件に制限 */
 function initChatsListener() {
   if (unsubs.chats) unsubs.chats();
   if (!currentUser) return;
@@ -4206,11 +4036,14 @@ function initChatsListener() {
     renderChatList();
     initChatLatestListeners();
     renderStories();
+    // ★ チャット相手のプロフィール・プレゼンス監視を同期
     syncProfileListenersForChats();
     syncPresenceListenersForChats();
   }, () => {});
 }
 
+/* 既存のinitProfilesListener / initPresenceListener は全件監視のため削除し、
+   個別監視関数に置き換え済み。互換のため空関数を残す。 */
 function initProfilesListener() { /* 個別監視に移行済み */ }
 function initPresenceListener() { /* 個別監視に移行済み */ }
 
