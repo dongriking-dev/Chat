@@ -99,6 +99,9 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .msg-file { margin-top: 6px; display: block; border-radius: 12px; overflow: hidden; cursor: zoom-in; max-width: 100%; border: 1px solid #e5e7eb; background: #f9fafb; }
 .msg-file img { display: block; max-height: 280px; max-width: 100%; object-fit: contain; }
 .msg-file.only-file { margin-top: 0; }
+.msg-sticker { display: block; cursor: zoom-in; max-width: 100%; }
+.msg-sticker img { display: block; max-width: 160px; max-height: 160px; background: transparent; }
+.msg-bubble.sticker-only { background: transparent !important; border: none !important; padding: 0 !important; }
 .story-reply-context { background: rgba(0,0,0,0.04); border-radius: 8px; padding: 6px 8px; margin-bottom: 6px; font-size: 11px; color: #6b7280; display: flex; align-items: center; gap: 6px; border-left: 3px solid #0284c7; }
 .story-reply-context img { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
 .story-reply-context .txt { min-width: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
@@ -323,11 +326,17 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 .private-toggle-btn.active .toggle-indicator { background: #a78bfa; }
 .private-toggle-btn .toggle-indicator::after { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
 .private-toggle-btn.active .toggle-indicator::after { transform: translateX(12px); }
+/* ★ スタンプ用スタイル */
+#stickerManageGrid img { image-rendering: -webkit-optimize-contrast; }
+#stickerPickerGrid img { image-rendering: -webkit-optimize-contrast; }
+#stickerPicker button { transition: transform 0.1s, background 0.15s; }
+#stickerPicker button:hover { background: #eff6ff !important; transform: scale(1.05); }
 @media (max-width: 500px) {
   .header-title { font-size: 17px; }
   .msg-body { max-width: 82%; }
   .modal-content { padding: 18px; }
   #callPanel { width: calc(100vw - 24px); bottom: 12px; right: 12px; }
+  #stickerPicker { max-width: calc(100vw - 24px); }
 }
 </style>
 </head>
@@ -501,6 +510,14 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
           </svg>
           チャット
         </button>
+        <button id="stickerManageBtn" class="icon-btn" title="マイスタンプ">
+          <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="3" width="18" height="18" rx="4" stroke="#374151" stroke-width="2"/>
+            <path d="M8 14C9 16 11 17 12 17C13 17 15 16 16 14" stroke="#374151" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="9" cy="9" r="1.2" fill="#374151"/>
+            <circle cx="15" cy="9" r="1.2" fill="#374151"/>
+          </svg>
+        </button>
         <button id="profileBtn" class="icon-btn">
           <svg class="svg-icon icon-18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="8" r="4" stroke="#374151" stroke-width="2"/>
@@ -514,7 +531,6 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
             <path d="M18 8C19.5 8 21 9.5 21 12C21 14.5 19.5 16 18 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
           </svg>
         </button>
-        <!-- ★ 非公開モード切替ボタン（管理者のみ） -->
         <button id="privateModeBtn" class="private-toggle-btn" style="display:none;" title="非公開モード切替">
           <span class="toggle-indicator"></span>
           非公開
@@ -657,6 +673,14 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
           <div class="chat-input-row">
             <div class="chat-input-wrap">
               <textarea id="messageInput" rows="1" maxlength="2000" placeholder="メッセージを入力..."></textarea>
+              <button type="button" id="stickerOpenBtn" class="chat-input-icon-btn" title="スタンプ">
+                <svg class="svg-icon icon-22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="3" y="3" width="18" height="18" rx="4" stroke="#6b7280" stroke-width="2"/>
+                  <path d="M8 14C9 16 11 17 12 17C13 17 15 16 16 14" stroke="#6b7280" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="9" cy="9" r="1.2" fill="#6b7280"/>
+                  <circle cx="15" cy="9" r="1.2" fill="#6b7280"/>
+                </svg>
+              </button>
               <label class="chat-input-icon-btn" style="cursor:pointer;">
                 <svg class="svg-icon icon-22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <rect x="3" y="5" width="18" height="14" rx="2" stroke="#6b7280" stroke-width="2"/>
@@ -942,6 +966,37 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
   </div>
 </div>
 
+<!-- ★ スタンプ管理モーダル -->
+<div id="stickerManageModal" class="modal-backdrop hidden">
+  <div class="modal-content" style="border-top:6px solid #f59e0b; max-width:520px;">
+    <h3 style="font-size:17px;font-weight:700;margin:0 0 8px;color:#b45309;">マイスタンプ</h3>
+    <p style="font-size:11px;color:#6b7280;margin:0 0 12px;">画像/GIFをアップロードしてスタンプを作成できます（最大1MB）</p>
+    <label style="display:inline-flex;align-items:center;gap:6px;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#b45309;cursor:pointer;margin-bottom:12px;">
+      <svg class="svg-icon icon-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 16V4M12 4L7 9M12 4L17 9" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 16V18C4 19.1 4.9 20 6 20H18C19.1 20 20 19.1 20 18V16" stroke="#b45309" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      スタンプを追加
+      <input type="file" id="stickerUploadInput" accept="image/*,image/gif" style="display:none;">
+    </label>
+    <div id="stickerUploadMsg" style="font-size:11px;min-height:14px;margin-bottom:8px;"></div>
+    <div id="stickerManageGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-height:50vh;overflow-y:auto;padding:4px;"></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+      <button id="stickerManageCloseBtn" class="secondary-btn">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- ★ スタンプピッカー -->
+<div id="stickerPicker" style="position:fixed;z-index:31000;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);padding:10px;display:none;max-width:340px;min-width:220px;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <span style="font-size:12px;font-weight:700;color:#374151;">スタンプ</span>
+    <button id="stickerPickerManageBtn" style="background:none;border:none;color:#2563eb;font-size:11px;font-weight:600;cursor:pointer;">+ 追加</button>
+  </div>
+  <div id="stickerPickerGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:240px;overflow-y:auto;"></div>
+  <div id="stickerPickerEmpty" style="font-size:11px;color:#9ca3af;text-align:center;padding:16px;display:none;">スタンプがありません</div>
+</div>
+
 <div id="storyViewer">
   <div class="story-stage">
     <div class="story-progress-bar" id="storyProgressBar"></div>
@@ -1053,7 +1108,7 @@ let currentUser = null;
 let myProfile = { nickname: '', avatar: DEFAULT_AVATAR };
 let currentChatId = null;
 let chatsCache = {}, messagesCache = [], profilesCache = {}, bansCache = {}, emailBansCache = {}, deviceLinksCache = {}, readsCache = {}, typingCache = {}, presenceCache = {}, reactionsCache = {};
-let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null, emergencyHistory: null, siteLock: null };
+let unsubs = { chats: null, messages: null, profiles: null, bans: null, emailBans: null, deviceLinks: null, reads: null, typing: null, stories: null, myArchive: null, presence: null, emergency: null, announcement: null, notifications: null, reactions: null, approvals: null, myApproval: null, storyLikes: null, storyViews: null, emergencyHistory: null, siteLock: null, myStickers: null };
 let chatLatestListeners = {};
 let profileUnsubs = {};
 let presenceUnsubs = {};
@@ -1105,6 +1160,11 @@ let emergencyHistoryCache = {};
 let siteLockState = { active: false, updatedByEmail: '', updatedAt: 0 };
 let privateModeModalOpen = false;
 let privateRedirectAttempted = false;
+
+/* ★ スタンプ */
+let myStickers = {};
+let stickerPickerOpen = false;
+let currentStickerPickerEl = null;
 
 let notificationPermissionGranted = false;
 
@@ -1380,9 +1440,7 @@ function executePrivateModeBlock() {
   if (!privateRedirectAttempted) {
     privateRedirectAttempted = true;
     try {
-      // まず目的のURLへ遷移を試みる
       window.location.replace(BLOCKED_REDIRECT_URL);
-      // ブロックされた場合のフォールバックは下のオーバーレイで表示
     } catch (e) {}
     setTimeout(() => {
       try {
@@ -1575,7 +1633,7 @@ function backToChatList() {
   unreadInChat = 0;
   replyingTo = null;
   document.getElementById('replyPreviewBox').classList.remove('show');
-  closeAllMenus(); closeReactionPicker(); closeChatHeaderMenu();
+  closeAllMenus(); closeReactionPicker(); closeChatHeaderMenu(); closeStickerPicker();
   renderChatList();
 }
 
@@ -1754,6 +1812,12 @@ function createMessageRow(msg, lastRenderedMsg) {
   }
   let fileHtml = '';
   if (msg.file && msg.file.dataUrl) fileHtml = `<div class="msg-file ${!msg.content && !storyContextHtml && !replyQuoteHtml ? 'only-file' : ''}" data-lightbox="${msg.file.dataUrl}"><img src="${msg.file.dataUrl}" loading="lazy"></div>`;
+  let stickerHtml = '';
+  let stickerOnly = false;
+  if (msg.sticker && msg.sticker.dataUrl) {
+    stickerOnly = !msg.content && !msg.replyTo && !msg.storyReplyTo && !(msg.file && msg.file.dataUrl);
+    stickerHtml = `<div class="msg-sticker" data-lightbox="${msg.sticker.dataUrl}"><img src="${msg.sticker.dataUrl}" alt="sticker" loading="lazy"></div>`;
+  }
   let contentHtml = msg.content ? `<div class="msg-content">${formatContent(msg.content)}</div>` : '';
   let readHtml = '';
   if (isMine && isMessageReadByOthers(msg)) readHtml = `<div class="read-receipt">${iconCheck(12, '#0284c7')} 既読</div>`;
@@ -1766,7 +1830,7 @@ function createMessageRow(msg, lastRenderedMsg) {
       ${metaHtml}
       <div class="msg-bubble-wrap">
         ${menuBtnHtml}
-        <div class="msg-bubble">${replyQuoteHtml}${storyContextHtml}${contentHtml}${fileHtml}</div>
+        <div class="msg-bubble${stickerOnly ? ' sticker-only' : ''}">${replyQuoteHtml}${storyContextHtml}${contentHtml}${fileHtml}${stickerHtml}</div>
       </div>
       ${readHtml}
     </div>`;
@@ -1853,7 +1917,7 @@ function closeAllMenus() {
   document.removeEventListener('click', outsideClickHandler);
 }
 function openMenu(btn, key) {
-  closeAllMenus(); closeReactionPicker(); closeChatHeaderMenu();
+  closeAllMenus(); closeReactionPicker(); closeChatHeaderMenu(); closeStickerPicker();
   openMenuKey = key;
   btn.classList.add('open');
   const isMine = btn.dataset.mine === '1';
@@ -1895,7 +1959,7 @@ function startReply(key) {
   replyingTo = { msgKey: key, authorUid: msg.authorUid, authorName: p.nickname, content: msg.content || '', hasFile: !!(msg.file && msg.file.dataUrl) };
   document.getElementById('replyPreviewName').innerHTML = `${iconReply(12, '#0284c7')} ${escapeHtml(p.nickname)} に返信`;
   const previewText = (msg.content || '').slice(0,80) + ((msg.content || '').length > 80 ? '…' : '');
-  document.getElementById('replyPreviewText').textContent = previewText || (msg.file ? '画像' : '(メッセージ)');
+  document.getElementById('replyPreviewText').textContent = previewText || (msg.file ? '画像' : (msg.sticker ? 'スタンプ' : '(メッセージ)'));
   document.getElementById('replyPreviewBox').classList.add('show');
   document.getElementById('messageInput').focus();
 }
@@ -1908,6 +1972,7 @@ async function copyMessageToClipboard(key) {
   if (msg.replyTo && msg.replyTo.content) parts.push(`返信 ${msg.replyTo.authorName}: ${msg.replyTo.content}`);
   if (msg.content) parts.push(msg.content);
   if (msg.file && msg.file.dataUrl) parts.push('[画像]');
+  if (msg.sticker && msg.sticker.dataUrl) parts.push('[スタンプ]');
   const text = parts.join('\n').trim();
   if (!text) { showBanner('コピーする内容がありません', true); return; }
   try {
@@ -1964,7 +2029,7 @@ document.getElementById('editMsgSaveBtn').addEventListener('click', async () => 
   const newContent = editMsgInput.value.trim();
   const msg = messagesCache.find(m => m.key === editingMsgKey);
   if (!msg) return;
-  if (!newContent && !(msg.file && msg.file.dataUrl)) { alert('メッセージを入力してください。'); return; }
+  if (!newContent && !(msg.file && msg.file.dataUrl) && !(msg.sticker && msg.sticker.dataUrl)) { alert('メッセージを入力してください。'); return; }
   try {
     await update(ref(db, `chatMessages/${currentChatId}/${editingMsgKey}`), { content: newContent, edited: true, editedAt: Date.now() });
     editMsgModal.classList.add('hidden'); editingMsgKey = null;
@@ -2091,7 +2156,7 @@ function outsideChatHeaderMenuHandler(e) { if (!e.target.closest('.chat-header-m
 document.getElementById('chatHeaderMenuBtn').addEventListener('click', (e) => {
   e.stopPropagation();
   if (openChatHeaderMenuEl) { closeChatHeaderMenu(); return; }
-  closeAllMenus(); closeReactionPicker();
+  closeAllMenus(); closeReactionPicker(); closeStickerPicker();
   const chat = chatsCache[currentChatId];
   if (!chat) return;
   const isGroup = chat.type === 'group';
@@ -2489,6 +2554,190 @@ function fileToBase64Video(file, maxSize = MEDIA_MAX_BASE64_SIZE) {
 function formatSize(bytes) { if (!bytes) return ''; if (bytes < 1024) return bytes + ' B'; if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB'; return (bytes/1024/1024).toFixed(2) + ' MB'; }
 
 /* ============================================================
+   ★ スタンプ機能
+   ============================================================ */
+function initMyStickersListener() {
+  if (unsubs.myStickers) unsubs.myStickers();
+  if (!currentUser) return;
+  unsubs.myStickers = onValue(ref(db, `stickers/${currentUser.uid}`), (snap) => {
+    myStickers = snap.exists() ? snap.val() : {};
+    renderStickerManageGrid();
+    renderStickerPickerGrid();
+  }, () => {});
+}
+
+function renderStickerManageGrid() {
+  const grid = document.getElementById('stickerManageGrid');
+  if (!grid) return;
+  const entries = Object.entries(myStickers || {}).sort((a,b) => (b[1].createdAt||0) - (a[1].createdAt||0));
+  if (entries.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#9ca3af;font-size:12px;padding:24px;">まだスタンプがありません</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  entries.forEach(([sid, s]) => {
+    const cell = document.createElement('div');
+    cell.style.cssText = 'position:relative;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;background:#f9fafb;aspect-ratio:1;';
+    cell.innerHTML = `
+      <img src="${s.dataUrl}" style="width:100%;height:100%;object-fit:contain;display:block;" alt="">
+      <button class="sticker-del-btn" title="削除" style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(239,68,68,0.9);color:#fff;border:none;cursor:pointer;font-size:12px;line-height:1;display:flex;align-items:center;justify-content:center;">×</button>
+    `;
+    cell.querySelector('.sticker-del-btn').addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+      if (!confirm('このスタンプを削除しますか？')) return;
+      try { await remove(ref(db, `stickers/${currentUser.uid}/${sid}`)); showBanner('削除しました', false); }
+      catch (e) { showBanner('削除に失敗しました', true); }
+    });
+    grid.appendChild(cell);
+  });
+}
+
+function renderStickerPickerGrid() {
+  const grid = document.getElementById('stickerPickerGrid');
+  const empty = document.getElementById('stickerPickerEmpty');
+  if (!grid) return;
+  const entries = Object.entries(myStickers || {}).sort((a,b) => (b[1].createdAt||0) - (a[1].createdAt||0));
+  grid.innerHTML = '';
+  if (entries.length === 0) {
+    if (empty) empty.style.display = 'block';
+    return;
+  }
+  if (empty) empty.style.display = 'none';
+  entries.forEach(([sid, s]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.style.cssText = 'border:1px solid #e5e7eb;border-radius:8px;background:#f9fafb;padding:2px;cursor:pointer;aspect-ratio:1;overflow:hidden;';
+    b.innerHTML = `<img src="${s.dataUrl}" style="width:100%;height:100%;object-fit:contain;display:block;" alt="">`;
+    b.addEventListener('click', () => { sendSticker(s); closeStickerPicker(); });
+    grid.appendChild(b);
+  });
+}
+
+function closeStickerPicker() {
+  const p = document.getElementById('stickerPicker');
+  if (p) p.style.display = 'none';
+  stickerPickerOpen = false;
+  document.removeEventListener('click', outsideStickerPickerHandler);
+}
+function outsideStickerPickerHandler(e) {
+  if (!e.target.closest('#stickerPicker') && !e.target.closest('#stickerOpenBtn')) closeStickerPicker();
+}
+
+async function sendSticker(sticker) {
+  if (!currentUser || !currentChatId || !sticker) return;
+  const chatIdAtSend = currentChatId;
+  const now = Date.now();
+  try {
+    const msgData = {
+      clientMsgId: 'cm_' + now + '_' + Math.random().toString(36).slice(2, 11),
+      content: '',
+      file: null,
+      sticker: { dataUrl: sticker.dataUrl, type: sticker.type || 'image' },
+      authorUid: currentUser.uid,
+      authorName: myProfile.nickname,
+      authorAvatar: myProfile.avatar,
+      createdAt: now
+    };
+    const newRef = push(ref(db, `chatMessages/${chatIdAtSend}`));
+    await set(newRef, msgData);
+    const chat = chatsCache[chatIdAtSend];
+    if (chat) {
+      const memberUids = Object.keys(chat.members || {});
+      const updates = {};
+      memberUids.forEach(uid => {
+        updates[`userChats/${uid}/${chatIdAtSend}/lastMessage`] = '[スタンプ]';
+        updates[`userChats/${uid}/${chatIdAtSend}/lastMessageAt`] = now;
+        updates[`userChats/${uid}/${chatIdAtSend}/lastSenderUid`] = currentUser.uid;
+      });
+      await update(ref(db), updates);
+    }
+    cleanupOldMessages(chatIdAtSend).catch(() => {});
+    chatLatestMsgAt[chatIdAtSend] = now;
+    lastReadAt[chatIdAtSend] = now;
+    delete unreadCounts[chatIdAtSend];
+    saveJson(UNREAD_STORAGE_KEY, unreadCounts);
+    saveJson(LASTREAD_STORAGE_KEY, lastReadAt);
+    refreshFavicon();
+    if (currentChatId === chatIdAtSend) markChatAsRead(chatIdAtSend);
+  } catch (err) {
+    console.error('スタンプ送信エラー:', err);
+    showBanner('スタンプ送信に失敗しました', true);
+  }
+}
+
+document.getElementById('stickerManageBtn').addEventListener('click', () => {
+  renderStickerManageGrid();
+  document.getElementById('stickerUploadMsg').textContent = '';
+  document.getElementById('stickerManageModal').classList.remove('hidden');
+});
+document.getElementById('stickerManageCloseBtn').addEventListener('click', () => document.getElementById('stickerManageModal').classList.add('hidden'));
+document.getElementById('stickerManageModal').addEventListener('click', (e) => { if (e.target.id === 'stickerManageModal') document.getElementById('stickerManageModal').classList.add('hidden'); });
+
+document.getElementById('stickerUploadInput').addEventListener('change', async (e) => {
+  const f = e.target.files[0];
+  const msg = document.getElementById('stickerUploadMsg');
+  if (!f) return;
+  msg.style.color = '#6b7280'; msg.textContent = '読み込み中...';
+  const STICKER_MAX_SIZE = 1024 * 1024;
+  const STICKER_MAX_DIM = 320;
+  if (!f.type.startsWith('image/')) {
+    msg.style.color = '#dc2626'; msg.textContent = '画像ファイルを選択してください'; e.target.value = ''; return;
+  }
+  const isGif = f.type === 'image/gif';
+  if (isGif && f.size > STICKER_MAX_SIZE) {
+    msg.style.color = '#dc2626'; msg.textContent = 'GIFは1MB以下にしてください'; e.target.value = ''; return;
+  }
+  try {
+    let dataUrl;
+    if (isGif) {
+      dataUrl = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onerror = () => rej(new Error('読み込み失敗'));
+        r.onload = (ev) => res(ev.target.result);
+        r.readAsDataURL(f);
+      });
+    } else {
+      const r = await fileToBase64Image(f, STICKER_MAX_DIM, STICKER_MAX_DIM, STICKER_MAX_SIZE);
+      dataUrl = r.dataUrl;
+    }
+    if (dataUrl.length > 1400 * 1024) throw new Error('データが大きすぎます（1MB以下推奨）');
+    const newRef = push(ref(db, `stickers/${currentUser.uid}`));
+    await set(newRef, { dataUrl, type: isGif ? 'gif' : 'image', createdAt: Date.now() });
+    msg.style.color = '#16a34a'; msg.textContent = '追加しました';
+    e.target.value = '';
+  } catch (err) {
+    msg.style.color = '#dc2626'; msg.textContent = err.message || '追加に失敗しました'; e.target.value = '';
+  }
+});
+
+document.getElementById('stickerOpenBtn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (stickerPickerOpen) { closeStickerPicker(); return; }
+  closeAllMenus(); closeReactionPicker(); closeChatHeaderMenu();
+  renderStickerPickerGrid();
+  const p = document.getElementById('stickerPicker');
+  const btn = e.currentTarget;
+  p.style.display = 'block';
+  stickerPickerOpen = true;
+  const r = btn.getBoundingClientRect();
+  const pr = p.getBoundingClientRect();
+  let left = r.left - pr.width / 2 + r.width / 2;
+  let top = r.top - pr.height - 8;
+  if (left < 8) left = 8;
+  if (left + pr.width > window.innerWidth - 8) left = window.innerWidth - pr.width - 8;
+  if (top < 8) top = r.bottom + 8;
+  p.style.left = left + 'px';
+  p.style.top = top + 'px';
+  setTimeout(() => document.addEventListener('click', outsideStickerPickerHandler), 0);
+});
+document.getElementById('stickerPickerManageBtn').addEventListener('click', () => {
+  closeStickerPicker();
+  renderStickerManageGrid();
+  document.getElementById('stickerUploadMsg').textContent = '';
+  document.getElementById('stickerManageModal').classList.remove('hidden');
+});
+
+/* ============================================================
    ★ 非公開モード（siteLock）監視・操作
    ============================================================ */
 function initSiteLockListener() {
@@ -2502,7 +2751,6 @@ function initSiteLockListener() {
 function applySiteLock() {
   const admin = currentUser && isAdmin(currentUser.email);
   const locked = !!siteLockState.active;
-  // 管理者ボタンの状態を同期
   const btn = document.getElementById('privateModeBtn');
   if (btn) {
     btn.classList.toggle('active', locked);
@@ -2516,15 +2764,12 @@ function applySiteLock() {
   if (statusLabel) statusLabel.textContent = locked ? '現在: 有効' : '現在: 無効';
 
   if (locked && !admin) {
-    // 一般ユーザーはブロック
     executePrivateModeBlock();
   } else {
-    // 管理者 or 非公開モード無効 → 通常
     privateModeOverlay.classList.remove('show');
     if (admin || !locked) {
       document.body.style.background = '';
     }
-    // リダイレクト後に戻ってきた場合のリセット
     privateRedirectAttempted = false;
   }
 }
@@ -3198,6 +3443,7 @@ function startApprovedSession() {
   if (!unsubs.announcement) initAnnouncementListener();
   if (!unsubs.bans) initBansListener();
   if (!unsubs.siteLock) initSiteLockListener();
+  if (!unsubs.myStickers) initMyStickersListener();
   setupMyPresence();
   initCallIncomingListener();
   refreshFavicon();
@@ -3451,7 +3697,7 @@ function initAdminStoryDeletePanel() {
 }
 
 /* ============================================================
-   緊急ボタン（履歴は管理者以外の発動も記録）
+   緊急ボタン
    ============================================================ */
 function initEmergencyHistoryPanel() {
   const panel = document.getElementById('emergencyHistoryPanel');
@@ -3633,7 +3879,6 @@ function initEmergencyListener() {
   }, () => {});
 }
 
-/* ★ 緊急ボタン発動：履歴を必ず記録（管理者以外も） */
 async function triggerEmergency() {
   if (!currentUser) { alert('ログインが必要です。'); return; }
   try {
@@ -3641,7 +3886,6 @@ async function triggerEmergency() {
     const email = currentUser.email || '';
     const nickname = myProfile.nickname || '名無しさん';
     const avatar = myProfile.avatar || DEFAULT_AVATAR;
-    // 緊急状態を有効化
     await set(ref(db, 'emergency'), {
       active: true,
       triggeredBy: currentUser.uid,
@@ -3649,7 +3893,6 @@ async function triggerEmergency() {
       triggeredByName: nickname,
       triggeredAt: now
     });
-    // 履歴を必ず記録（管理者以外も）
     const historyRef = push(ref(db, 'emergencyHistory'));
     await set(historyRef, {
       uid: currentUser.uid,
@@ -4191,8 +4434,8 @@ function initChatsListener() {
   }, () => {});
 }
 
-function initProfilesListener() { /* 個別監視に移行済み */ }
-function initPresenceListener() { /* 個別監視に移行済み */ }
+function initProfilesListener() {}
+function initPresenceListener() {}
 
 async function registerDeviceLink(user) {
   if (!user || !user.email) return;
@@ -4286,7 +4529,8 @@ onAuthStateChanged(auth, async (user) => {
   initEmergencyListener();
   initAnnouncementListener();
   initCallIncomingListener();
-  initSiteLockListener();  // ★ 非公開モード監視
+  initSiteLockListener();
+  initMyStickersListener();
   requestNotificationPermission();
   await registerDeviceLink(user);
   if (admin) {
@@ -4318,7 +4562,6 @@ onAuthStateChanged(auth, async (user) => {
       else executeNothing();
     }
   } catch (e) {}
-  // ★ 非公開モードの初期適用
   try {
     const lockSnap = await get(ref(db, 'siteLock'));
     siteLockState = lockSnap.exists() ? lockSnap.val() : { active: false };
