@@ -331,6 +331,8 @@ input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-sele
 #stickerPickerGrid img { image-rendering: -webkit-optimize-contrast; }
 #stickerPicker button { transition: transform 0.1s, background 0.15s; }
 #stickerPicker button:hover { background: #eff6ff !important; transform: scale(1.05); }
+/* ★ 緊急発動者の視認性向上（一般ユーザーの黒画面でも読める） */
+#emergencyTriggeredBy { color: rgba(255, 255, 255, 0.55) !important; text-shadow: 0 1px 2px rgba(0,0,0,0.9); }
 @media (max-width: 500px) {
   .header-title { font-size: 17px; }
   .msg-body { max-width: 82%; }
@@ -3768,6 +3770,10 @@ function executeNothing() {
   document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
   document.body.style.background = '#000';
+
+  // ★ 発動者情報を黒画面に表示（一般ユーザーでも誰が押したか分かる）
+  renderEmergencyTriggeredBy(true);
+
   if (emergencyExiting) return;
   emergencyExiting = true;
   const attemptClose = () => {
@@ -3787,10 +3793,11 @@ function executeNothing() {
     document.body.style.background = '#000';
     document.title = '無';
     setFavicon(FAVICON_BLACK);
+    renderEmergencyTriggeredBy(true);
   }, 800);
 }
 
-function executeAdminBlackScreen() {
+async function executeAdminBlackScreen() {
   if (!currentUser || !isAdmin(currentUser.email)) return;
   if (emergencyEnforcerInterval) { clearInterval(emergencyEnforcerInterval); emergencyEnforcerInterval = null; }
   emergencyExiting = false;
@@ -3802,7 +3809,15 @@ function executeAdminBlackScreen() {
   document.body.style.background = '#000';
   showAdminCtrlDHint();
   addEmergencyTriggeredByElement();
-  showEmergencyTriggeredBy();
+
+  // ★ stateが空ならDBから再取得してから表示
+  if (!emergencyState.triggeredByEmail && !emergencyState.triggeredByName && !emergencyState.triggeredBy) {
+    try {
+      const snap = await get(ref(db, 'emergency'));
+      if (snap.exists()) emergencyState = snap.val();
+    } catch (e) {}
+  }
+  renderEmergencyTriggeredBy(false);
 }
 
 function stopEmergencyEnforcer() {
@@ -3823,24 +3838,52 @@ function hideAdminCtrlDHint() {
   const hint = document.getElementById('adminCtrlDHint');
   if (hint) hint.remove();
 }
-function showEmergencyTriggeredBy() {
-  if (!currentUser || !isAdmin(currentUser.email)) return;
-  const hint = document.getElementById('emergencyTriggeredBy');
-  if (!hint) return;
+
+/* ★ 発動者情報を黒画面右下に描画（管理者/一般共通・DBフォールバック付き） */
+async function renderEmergencyTriggeredBy(isGeneralUser) {
+  // 要素がなければ作る（一般ユーザーは黒画面生成時に呼ばれる）
+  let hint = document.getElementById('emergencyTriggeredBy');
+  if (!hint) {
+    hint = document.createElement('div');
+    hint.id = 'emergencyTriggeredBy';
+    document.body.appendChild(hint);
+  }
+
+  // stateが空ならDBフォールバック（1回だけ）
+  if (!emergencyState.triggeredByEmail && !emergencyState.triggeredByName && !emergencyState.triggeredBy && currentUser) {
+    try {
+      const snap = await get(ref(db, 'emergency'));
+      if (snap.exists()) emergencyState = { ...emergencyState, ...snap.val() };
+    } catch (e) {}
+  }
+
   const email = emergencyState.triggeredByEmail || '';
   const nickname = emergencyState.triggeredByName || '';
+  const uid = emergencyState.triggeredBy || '';
   const ts = emergencyState.triggeredAt || 0;
+  const adminFlag = email ? isAdmin(email) : false;
+
   let text = '';
   if (email) text = email;
   if (nickname) text += (text ? ' / ' : '') + nickname;
+  if (!email && !nickname && uid) text = `UID: ${uid}`;
   if (ts) {
     try {
       const t = new Date(ts).toLocaleString('ja-JP', { month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' });
       text += (text ? '  ' : '') + t;
     } catch (e) {}
   }
-  hint.textContent = text || '(発動者情報なし)';
+  if (!text) text = '(発動者情報なし)';
+
+  // 管理者以外の画面では控えめに、管理者画面では発動者ラベル付き
+  if (isGeneralUser) {
+    hint.textContent = `発動者: ${text}` + (adminFlag ? '（管理者）' : '');
+  } else {
+    hint.textContent = text;
+  }
+  hint.style.display = 'block';
 }
+
 function addEmergencyTriggeredByElement() {
   if (document.getElementById('emergencyTriggeredBy')) return;
   const el = document.createElement('div');
@@ -3856,6 +3899,8 @@ function restoreNormalScreen() {
   emergencyOverlay.classList.remove('show');
   hideAdminCtrlDHint();
   removeEmergencyTriggeredByElement();
+  const hint = document.getElementById('emergencyTriggeredBy');
+  if (hint) hint.style.display = 'none';
   document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
   document.body.style.background = '';
@@ -3886,6 +3931,16 @@ async function triggerEmergency() {
     const email = currentUser.email || '';
     const nickname = myProfile.nickname || '名無しさん';
     const avatar = myProfile.avatar || DEFAULT_AVATAR;
+
+    // ★ ローカルstateも即時更新（DB反映待ちの空白を防ぐ）
+    emergencyState = {
+      active: true,
+      triggeredBy: currentUser.uid,
+      triggeredByEmail: email,
+      triggeredByName: nickname,
+      triggeredAt: now
+    };
+
     await set(ref(db, 'emergency'), {
       active: true,
       triggeredBy: currentUser.uid,
@@ -3893,6 +3948,7 @@ async function triggerEmergency() {
       triggeredByName: nickname,
       triggeredAt: now
     });
+
     const historyRef = push(ref(db, 'emergencyHistory'));
     await set(historyRef, {
       uid: currentUser.uid,
@@ -4553,6 +4609,18 @@ onAuthStateChanged(auth, async (user) => {
     else if (myApprovalStatus === 'rejected') showRejectedScreen();
     else showPendingApproval();
     notifyLogin(user, myProfile.nickname);
+
+    // ★ 一般ユーザー：自分の発動履歴を確認（誤操作の事後把握用）
+    try {
+      const histSnap = await get(ref(db, 'emergencyHistory'));
+      if (histSnap.exists()) {
+        const mine = Object.values(histSnap.val()).filter(h => h && h.uid === user.uid);
+        if (mine.length > 0) {
+          const last = mine.sort((a, b) => (b.triggeredAt || 0) - (a.triggeredAt || 0))[0];
+          showBanner(`過去に緊急ボタンを発動した履歴があります（${formatTime(last.triggeredAt)}）`, true);
+        }
+      }
+    } catch (e) {}
   }
   try {
     const snap = await get(ref(db, 'emergency'));
